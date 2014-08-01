@@ -1,0 +1,29 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>			
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Apache GUI</title>
+
+<link rel="stylesheet" href="../resources/dijit/themes/${theme}/${theme}.css?version=${version}" type="text/css">
+<link rel="stylesheet" type="text/css" href="../resources/dojox/grid/resources/${theme}Grid.css?version=${version}" />
+<link rel="stylesheet" type="text/css" href="../resources/dojox/grid/resources/Grid.css?version=${version}" />
+<link rel="stylesheet" type="text/css" href="../resources/dojox/layout/resources/ExpandoPane.css?version=${version}" />
+<link rel="stylesheet" type="text/css" href="../resources/dojox/form/resources/FileUploader.css?version=${version}" />
+<link rel="stylesheet" type="text/css" href="../resources/dojox/form/resources/UploaderFileList.css?version=${version}" />
+<link rel="stylesheet" type="text/css" href="../resources/dojox/form/resources/FileInput.css?version=${version}" />
+<link rel="stylesheet" href="../resources/style/style.css?version=${version}" media="screen" type="text/css">
+
+<script src="../resources/dojo/dojo.js?version=${version}" data-dojo-config="isDebug: false,parseOnLoad: false, cacheBust: true"></script>
+
+<script src="../resources/ca/apachegui/Util.js?version=${version}"></script>
+<script src="../resources/ca/apachegui/String.js?version=${version}"></script>
+<script src="../resources/ca/apachegui/Interval.js?version=${version}"></script>
+
+<script>
+require([ "ca/apachegui/Main"
+], function(Main){	
+	ca.apachegui.Main.getInstance().setApacheGuiVersion('${version}');
+	ca.apachegui.Main.getInstance().setIsWindows(${windows});
+});
+</script>

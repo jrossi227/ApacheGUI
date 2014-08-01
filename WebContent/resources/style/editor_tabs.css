@@ -1,0 +1,58 @@
+.cm-tab { background: url('images/light_tabs.png');
+	background-position: right; 
+	background-repeat: no-repeat; 
+}
+
+.cm-s-ambiance .cm-tab { 
+	background: url('images/dark_tabs.png');	
+	background-position: right; 
+	background-repeat: no-repeat; 
+}
+
+.cm-s-blackboard .cm-tab { 
+	background: url('images/dark_tabs.png');	
+	background-position: right; 
+	background-repeat: no-repeat; 
+}
+
+.cm-s-cobalt .cm-tab { 
+	background: url('images/dark_tabs.png');	
+	background-position: right; 
+	background-repeat: no-repeat; 
+}
+
+.cm-s-erlang-dark .cm-tab { 
+	background: url('images/dark_tabs.png');	
+	background-position: right; 
+	background-repeat: no-repeat; 
+}
+
+.cm-s-lesser-dark .cm-tab {
+	background: url('images/dark_tabs.png');	
+	background-position: right; 
+	background-repeat: no-repeat; 
+}
+
+.cm-s-monokai .cm-tab { 
+	background: url('images/dark_tabs.png');	
+	background-position: right; 
+	background-repeat: no-repeat; 
+}
+
+.cm-s-night .cm-tab {
+	background: url('images/dark_tabs.png');	
+	background-position: right; 
+	background-repeat: no-repeat; 
+}
+
+.cm-s-vibrant-ink .cm-tab { 
+	background: url('images/dark_tabs.png');	
+	background-position: right; 
+	background-repeat: no-repeat; 
+}
+
+.cm-s-xq-dark .cm-tab { 
+	background: url('images/dark_tabs.png');	
+	background-position: right; 
+	background-repeat: no-repeat; 
+}

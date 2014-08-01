@@ -1,0 +1,280 @@
+/* Dojo Based css styling */
+
+* {
+    outline: none !important;
+}
+
+html, body {
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
+	padding: 0;
+	
+}
+
+body {
+    font-family: Lucida Sans,Lucida Grande,Arial !important;
+    font-size: 13px !important;
+    background: white;
+    color: #333;
+    position: relative;
+}
+
+h1 {
+	font-size:2.5em;
+	text-align: center;
+}
+
+#appLayout {
+    height: 100%;
+}
+
+#leftCol {
+    width: 159px;
+}
+
+#appLayout .mainHeading {
+    margin: 0;
+}
+
+.claro .demoLayout .edgePanel {
+    background-color: #d0e9fc;
+}
+
+#upload_file_list tr td {
+	text-align: center;
+}
+
+#viewsChart {
+	width: 550px; 
+	height: 550px;
+}
+.topLink {
+    position: absolute;
+    top: 0;
+    left: -200px;
+}
+
+.warningTooltip {
+	display: inline-block;
+	background: url('images/warning.png');
+	height: 18px;
+	width: 18px;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.warningDialog {
+	width: 350px;
+}
+
+.dijitTreeContainer {
+	width: auto !important;
+}
+
+/* Main Heading */
+#titlePane {
+	position: relative;
+}
+
+#titleContainer {
+	height: 105px;
+}
+
+#mainHeading {
+	position: absolute;
+	width: 300px;
+	z-index: 0;
+	margin-left: -150px;
+	left: 50%;
+}
+
+#leftTitlePane {
+	float: left;
+	position: relative;
+	z-index: 10;
+}
+
+#loginBody #logoutButtonContainer {
+	visibility:hidden;
+}
+
+/* Word Wrap grids */
+.dojoxGridCell {
+	word-wrap: break-word;	
+}
+
+/* Code Mirror Based Styling */
+.CodeMirror {
+	height: 100%;	
+}
+
+#fileform {
+	height: 100%;
+}
+
+.CodeMirror-scroll {
+	height: 100%; 
+	overflow-y: auto;
+	overflow-x: auto;
+}
+
+.CodeMirror-dialog {
+	border: 1px solid #B5BCC7;
+	padding: 8px;
+	background: #ffffff;
+	cursor: move;
+}
+
+#searchPane {
+	position: absolute;
+	z-index: 900;
+	left: 50%;
+	top: 50%;
+	width: 725px;
+	text-align: center;
+	margin-left:-312px;
+}
+
+/* Control specific css */
+#controlBody .running {
+    color: #00ff00;
+}
+
+#controlBody .stopped {
+    color: #ff0000;
+}
+
+/* logs specific css rules */
+#logsBody .CodeMirror-scroll {
+	height: auto; 
+	overflow-y: auto;
+	overflow-x: auto;
+}
+
+#logsBody #optionPane {
+	height: 124px;
+}
+
+/* History specific css rules */
+#historyBody #searchTable,
+#historyBody #graphTable,
+#historyBody #optionsTable
+ {
+	margin: 0 auto;	
+}
+
+#historyBody #searchTable,
+#historyBody #graphTable {
+	width:382px;	
+}
+
+#historyBody #searchTable > tbody > tr > td,
+#historyBody #graphTable > tbody > tr > td{
+	width:191px;	
+}
+
+#historyBody #optionsTable {
+	width: 600px;
+	margin-bottom: 30px;	
+}
+
+#historyBody #optionsTable > tbody > tr > td {
+	width: 300px;
+}
+
+/*GUISettings specific css rules*/
+#guiSettingsBody #guiInfoTable td{
+	padding: 5px;
+	vertical-align: top;
+}
+
+#guiSettingsBody #settingsGrid {
+	margin-bottom: 10px;
+}
+
+#guiSettingsBody #updateEncodingDialog p {
+	width: 400px;	
+}
+
+/*Editor specific css rules */ 
+body.editor .editorMenuItem {
+	width: 175px;
+}
+
+body.editor .editorMenuItem .option{
+	float: left;
+	line-height: 16px;
+	vertical-align: middle;
+}
+
+body.editor .editorMenuItem .command{
+	float: right;
+	font-size: 11px;
+	line-height: 16px;
+	vertical-align: middle;
+}
+
+body.editor .menu_selected {
+	color: #162252; font-weight: bold; font-size: 1.2em;
+}
+
+body.editor #menu_toolbar.dijitToolbar {
+	background: none !important;
+	border: none !important;
+	padding: 4px 0 0 4px !important;
+}
+
+body.editor #editor_theme_selector {
+	vertical-align: middle;
+}
+
+body.editor #searchResults p {
+	margin: 5px 10px 5px 20px;
+}
+
+body.editor #filename_container {
+	display: inline-block;
+    height: 19px;
+    margin-left: 10px;
+}
+
+body.editor #filename_container em {
+	font-weight: bold;
+	font-style: normal;	
+}	
+
+/*Global Settings Specific css rules */
+#GlobalSettingsBody h3 {
+	display: inline-block;
+	margin: 0;
+	height: 100%;
+}
+
+#GlobalSettingsBody .column_two {
+	display: inline-block;
+	width: 47%;
+	padding-right: 2%;
+	vertical-align: top;
+}
+
+#GlobalSettingsBody #listeningContainer .dijitButton,
+#GlobalSettingsBody #nameVirtualHostContainer .dijitButton {
+	display: block;
+	margin-top: 15px;
+}
+
+#GlobalSettingsBody #keepAliveContainer .dijitButton,
+#GlobalSettingsBody #requestSettingsContainer .dijitButton,
+#GlobalSettingsBody #serverSettingsContainer .dijitButton {
+	display: block;
+	margin-top: 10px;
+}
+
+#GlobalSettingsBody #serverTokenPreviewContainer span.hidden {
+	display: none;
+}
+
+#GlobalSettingsBody #serverTokenPreviewContainer span.selected {
+	display: inline;
+}

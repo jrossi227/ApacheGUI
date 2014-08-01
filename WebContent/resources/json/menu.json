@@ -1,0 +1,18 @@
+{
+	identifier: 'id',
+	label: 'name',
+	items: [
+	        { id: 'Configuration', name:'Configuration', type:'apache', children:[{_reference:'Configuration-AR'}] },
+	        { id: 'Configuration-AR', name:'Argentina'},
+	        { id: 'Directories', name:'Directories', type:'apache', children:[{_reference:'Directories-AN'}] },
+	        { id: 'Directories-AN', name:'Angola', type:'country' },
+	        { id: 'VirtualHosts', name:'Virtual Hosts', type:'apache', children:[{_reference:'VirtualHosts-AT'}] },
+	        { id: 'VirtualHosts-AT', name:'Antarctica', type:'country' },
+	        { id: 'Logs', name:'Logs', type:'apache', children:[{_reference:'Logs-CA'}] },
+	        { id: 'Logs-CA', name:'Canada', type:'country' },
+	        { id: 'OtherFiles', name:'Other Files', type:'apache', children:[{_reference:'OtherFiles-US'}] },
+	        { id: 'OtherFiles-US', name:'United States', type:'country' },
+	        { id: 'Control', name:'Control', type:'apache' },
+	        { id: 'GUISettings', name:'GUI Settings', type:'apache' }
+	       ]
+}
