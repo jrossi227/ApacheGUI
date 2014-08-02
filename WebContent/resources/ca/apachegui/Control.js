@@ -175,21 +175,17 @@ define([ "dojo/_base/declare",
 		
 		refreshExtendedServerInfo: function() { 
 			
-			request.get("../Control", {
+			request.get("../web/Control", {
 				query: 	{
 					option: 'extendedServerInfo'
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				preventCache: true,
 				sync: false
-			}).response.then(function(response) {
-				
-				var data = json.fromJson(response.data);
-								
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
-				} else {
+			}).response.then(
+				function(response) {
+					var data = response.data;
+	
 					dom.byId('totalRequests').innerHTML=data.totalRequests;
 					dom.byId('totalKB').innerHTML=data.totalKB;
 					if(!ca.apachegui.Main.getInstance().isWindows()) {
@@ -201,29 +197,29 @@ define([ "dojo/_base/declare",
 					dom.byId('bytesPerRequest').innerHTML=data.bytesPerRequest;
 					dom.byId('busyWorkers').innerHTML=data.busyWorkers;
 					dom.byId('idleWorkers').innerHTML=data.idleWorkers;
+					
+					
+				}, function(error) {
+					ca.apachegui.Util.alert('Info',error.response.data.message);
 				}
-				
-			});
+			);
 		},
 	
 		refreshExtendedProcessInfo: function() {
 			var that=this;
 	
-			request.get("../Control", {
+			request.get("../web/Control", {
 				query: 	{
 					option: 'extendedRunningProcesses'
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				preventCache: true,
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-								
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
-				} else {
+					var data = response.data;
+
 					that.extendedProcessesStore.fetch({query : {id : '*'},
 			             onItem : function (item ) {
 
@@ -239,33 +235,32 @@ define([ "dojo/_base/declare",
 				   {   
 					   var itemit=data.items[k];
 					   that.extendedProcessesStore.newItem({id: itemit.id, extendedPid: itemit.extendedPid, extendedRequests: itemit.extendedRequests, extendedCpu: itemit.extendedCpu, extendedTimeSinceLastRequest: itemit.extendedTimeSinceLastRequest, extendedTimeToProcessLastRequest: itemit.extendedTimeToProcessLastRequest, extendedMegaBytesThisConnection: itemit.extendedMegaBytesThisConnection, extendedClient: itemit.extendedClient, extendedVirtualHost: itemit.extendedVirtualHost,extendedRequest: itemit.extendedRequest });
-				   }
+				   }					
+					
+				}, function(error) {
+					ca.apachegui.Util.alert('Info',error.response.data.message);
 				}
-				
-			});
+			);
 		},
 	
 		updateProcessInfo: function() {
 			var that=this;
 			
-			request.post("../Control", {
+			request.post("../web/Control", {
 				data: 	{
 					option: 'updateProcessInfo',
 					processInfoRefreshRate: dom.byId('processInfoRefreshRate').value,
 					off: dom.byId('processInfoRefreshRatecb').checked
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: true
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-								
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data.result);
-				} else {
-					var timer=data.result;
-					if(timer==0) {
+					var data = response.data;
+
+					var timer = data.result;
+					if(timer == 0) {
 						dom.byId('processInfoRefreshRateDisplay').innerHTML='(Refresh Off)';
 						dom.byId('processInfoRefreshRatecb').checked=true;
 						registry.byId('processInfoRefreshRate').set('disabled', true);
@@ -279,9 +274,11 @@ define([ "dojo/_base/declare",
 					
 					registry.byId('processInfoRefreshRate').set('value', timer);
 					that.setRefreshTimer();
+					
+				}, function(error) {
+					ca.apachegui.Util.alert('Info',error.response.data.message);
 				}
-				
-			});
+			);
 		},
 	
 		updateExtendedStatus: function(forcedStatus) {
@@ -766,7 +763,7 @@ define([ "dojo/_base/declare",
 		},
 		
 		buildExtendedProcessGrid: function() {
-			this.extendedProcessesStore = new ItemFileWriteStore({url: '../Control?option=extendedRunningProcesses', urlPreventCache: true, clearOnClose: true});
+			this.extendedProcessesStore = new ItemFileWriteStore({url: '../web/Control?option=extendedRunningProcesses', urlPreventCache: true, clearOnClose: true});
 			
 			var gridStructure;
 			

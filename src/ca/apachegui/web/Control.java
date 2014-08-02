@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import apache.conf.global.Utils;
@@ -48,134 +49,12 @@ public class Control extends HttpServlet {
     }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log.trace("Control.doGet called");
-		PrintWriter out = response.getWriter();
-		
-		String option = request.getParameter("option");
-		log.trace("GET: option called: " + option);
-		boolean running=false;
-		try 
-		{
-			running=ca.apachegui.server.Control.isServerRunning();
-		} 
-		catch (Exception e1) 
-		{
-			log.error("Process command: " + Constants.runningProcessName + " not found!!");
-		}
-		
-		//return extended server Info here
-		if(option.equals("extendedServerInfo"))
-		{
-			if(Settings.getSetting(Constants.extendedStatus).equals("on") && running)
-			{
-				try
-				{
-					ExtendedServerInfo extendedServerInfo = ExtendedServerInfo.getExtendedServerInfo();
-					if(Utils.isWindows()) {
-						out.println("{totalRequests:'" + extendedServerInfo.getTotalRequests() + "',totalKB:'" + extendedServerInfo.getTotalKB() + "',upTime:'" + extendedServerInfo.getUpTime() + "',requestsPerSecond:'" + extendedServerInfo.getRequestsPerSecond() + "',bytesPerSecond:'" + extendedServerInfo.getBytesPerSecond() + "',bytesPerRequest:'" + extendedServerInfo.getBytesPerRequest() + "',busyWorkers:'" + extendedServerInfo.getBusyWorkers() + "',idleWorkers:'" + extendedServerInfo.getIdleWorkers() + "'}");
-					} else {
-						out.println("{totalRequests:'" + extendedServerInfo.getTotalRequests() + "',totalKB:'" + extendedServerInfo.getTotalKB() + "',cpuUsage:'" + extendedServerInfo.getCpuUsage() + "',upTime:'" + extendedServerInfo.getUpTime() + "',requestsPerSecond:'" + extendedServerInfo.getRequestsPerSecond() + "',bytesPerSecond:'" + extendedServerInfo.getBytesPerSecond() + "',bytesPerRequest:'" + extendedServerInfo.getBytesPerRequest() + "',busyWorkers:'" + extendedServerInfo.getBusyWorkers() + "',idleWorkers:'" + extendedServerInfo.getIdleWorkers() + "'}");
-					}
-				}
-				catch(Exception e)
-				{
-					StringWriter sw = new StringWriter();
-					e.printStackTrace(new PrintWriter(sw));
-					log.error(sw.toString());
-					out.println("{totalRequests:'',totalKB:'',cpuUsage:'',upTime:'',requestsPerSecond:'',bytesPerSecond:'',bytesPerRequest:'',busyWorkers:'',idleWorkers:''}");
-				}
-			}
-			else
-			{	
-				out.println("{totalRequests:'',totalKB:'',cpuUsage:'',upTime:'',requestsPerSecond:'',bytesPerSecond:'',bytesPerRequest:'',busyWorkers:'',idleWorkers:''}");
-			}
-		}
-		
-		//need to format two graphs here
-		if(option.equals("extendedRunningProcesses"))
-		{
-			try 
-			{ 
-				log.trace("getting extended process info");
-			
-				//obviously we need advanced scraping techniques here
-				if(Settings.getSetting(Constants.extendedStatus).equals("on")  && running)
-				{
-					ExtendedRunningProcess processes[]=ExtendedRunningProcess.getExtendedRunningProcessInfo();
-					
-					out.println("{");
-					out.println(	"identifier: 'id', ");
-					out.println(	"label: 'name', ");
-					out.println(	"items: [");
-					if(processes.length>0)
-					{	
-						for(int i=0; i<processes.length; i++)
-						{
-							if(Utils.isWindows()) {
-								out.print("{id: 'extended" + i + processes[i].getPid() + "', extendedPid: '" + processes[i].getPid() + "',extendedRequests: '" + processes[i].getRequests() + "',extendedTimeSinceLastRequest: '" + processes[i].getTimeSinceLastRequest() + "',extendedTimeToProcessLastRequest: '" + processes[i].getTimeToProcessLastRequest() + "',extendedMegaBytesThisConnection: '" + processes[i].getMegaBytesThisConnection() + "',extendedClient: '" + processes[i].getClient() + "',extendedVirtualHost: '" + processes[i].getVirtualHost() + "',extendedRequest: '" + processes[i].getRequest() + "' }");							
-							} else {
-								out.print("{id: 'extended" + i + processes[i].getPid() + "', extendedPid: '" + processes[i].getPid() + "',extendedRequests: '" + processes[i].getRequests() + "',extendedCpu: '" + processes[i].getCpu() + "',extendedTimeSinceLastRequest: '" + processes[i].getTimeSinceLastRequest() + "',extendedTimeToProcessLastRequest: '" + processes[i].getTimeToProcessLastRequest() + "',extendedMegaBytesThisConnection: '" + processes[i].getMegaBytesThisConnection() + "',extendedClient: '" + processes[i].getClient() + "',extendedVirtualHost: '" + processes[i].getVirtualHost() + "',extendedRequest: '" + processes[i].getRequest() + "' }");
-							}
-							if(i!=(processes.length-1))
-								out.print(",");
-						}
-					}	
-					out.println("]}");
-				}
-				else
-				{	
-					out.println("{");
-					out.println(	"identifier: 'id', ");
-					out.println(	"label: 'name', ");
-					out.println(	"items: [");
-					//out.print("{id: 'N/A', extendedPid: 'N/A',extendedRequests: 'N/A',extendedCpu: 'N/A',extendedTimeSinceLastRequest: 'N/A',extendedTimeToProcessLastRequest: 'N/A',extendedMegaBytesThisConnection: 'N/A',extendedClient: 'N/A',extendedVirtualHost: 'N/A',extendedRequest: 'N/A' }");
-					out.println("]}");
-				}
-			}
-			catch(Exception e){
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
-			}
-		}
-	}
-
-	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		log.trace("Control.doPost called");
 		String option=request.getParameter("option");
 		log.trace("POST: option called: " + option);
-		
-		if(option.equals("updateProcessInfo")) 
-		{
-			String processInfoRefreshRate=request.getParameter("processInfoRefreshRate");
-			log.trace("processInfoRefreshRate " + processInfoRefreshRate);
-			
-			String off=request.getParameter("off");
-			log.trace("off " + off);
-			
-			PrintWriter out = response.getWriter();
-			
-			if(off.equals("true") || processInfoRefreshRate.equals("0")) 
-			{
-				log.trace("off is true setting processInfoRefreshRate to 0");
-				Settings.setSetting(Constants.processInfoRefreshRate, "0");
-				//out.print("{result: \"(Refresh Off)\"}");
-				out.print("{result: 0}");
-			}
-			else 
-			{
-				log.trace("Setting processInfoRefreshRate to " + processInfoRefreshRate);
-				Settings.setSetting(Constants.processInfoRefreshRate, processInfoRefreshRate);
-				//out.print("{result: \"(Refresh " + processInfoRefreshRate + " Seconds)\"}");
-				out.print("{result: " + processInfoRefreshRate + "}");
-			}
-		}
 		
 		if(option.equals("killProcess"))
 		{
@@ -479,6 +358,111 @@ public class Control extends HttpServlet {
 		}
 	}
 	
+	@RequestMapping(method=RequestMethod.GET,params="option=extendedRunningProcesses",produces="application/json;charset=UTF-8")
+	public String extendedRunningProcesses(){
+	
+		boolean running = false;
+		try {
+			running=ca.apachegui.server.Control.isServerRunning();
+		} 
+		catch (Exception e) {
+			log.error("Process command: " + Constants.runningProcessName + " not found!!");
+		}
+		
+		JSONObject result = new JSONObject();
+		result.put("identifier", "id");
+		result.put("label", "name");
+		
+		JSONArray items = new JSONArray();
+		try 
+		{ 
+			log.trace("getting extended process info");
+		
+			if(Settings.getSetting(Constants.extendedStatus).equals("on")  && running)
+			{
+				ExtendedRunningProcess processes[]=ExtendedRunningProcess.getExtendedRunningProcessInfo();
+				
+				JSONObject item;
+				for(int i=0; i<processes.length; i++)
+				{
+					item = new JSONObject();
+					item.put("id", "extended" + i + processes[i].getPid());
+					item.put("extendedPid", processes[i].getPid());
+					item.put("extendedRequests", processes[i].getRequests());
+					if(!Utils.isWindows()) {
+						item.put("extendedCpu", processes[i].getCpu());
+					}
+					item.put("extendedTimeSinceLastRequest", processes[i].getTimeSinceLastRequest());
+					item.put("extendedTimeToProcessLastRequest", processes[i].getTimeToProcessLastRequest());
+					item.put("extendedMegaBytesThisConnection", processes[i].getMegaBytesThisConnection());
+					item.put("extendedClient", processes[i].getClient());
+					item.put("extendedVirtualHost", processes[i].getVirtualHost());
+					item.put("extendedRequest", processes[i].getRequest());
+					
+					items.put(item);
+				}
+			}
+		}
+		catch(Exception e){
+			log.error(e.getMessage(), e);
+		}
+		
+		result.put("items", items);
+		
+		return result.toString();
+	}
+	
+	//return extended server Info here
+	@RequestMapping(method=RequestMethod.GET,params="option=extendedServerInfo",produces="application/json;charset=UTF-8")
+	public String extendedServerInfo() throws Exception {
+
+		boolean running = false;
+		try {
+			running=ca.apachegui.server.Control.isServerRunning();
+		} 
+		catch (Exception e) {
+			log.error("Process command: " + Constants.runningProcessName + " not found!!");
+		}
+		
+		JSONObject result = new JSONObject();
+		result.put("totalRequests", "");
+		result.put("totalKB", "");
+		result.put("cpuUsage", "");
+		result.put("upTime", "");
+		result.put("requestsPerSecond", "");
+		result.put("bytesPerSecond", "");
+		result.put("bytesPerRequest", "");
+		result.put("busyWorkers", "");
+		result.put("idleWorkers", "");
+		
+		if(Settings.getSetting(Constants.extendedStatus).equals("on") && running)
+		{
+			try
+			{
+				ExtendedServerInfo extendedServerInfo = ExtendedServerInfo.getExtendedServerInfo();
+
+				result.put("totalRequests", extendedServerInfo.getTotalRequests());
+				result.put("totalKB", extendedServerInfo.getTotalKB());
+				if(!Utils.isWindows()) {
+					result.put("cpuUsage", extendedServerInfo.getCpuUsage());
+				}
+				
+				result.put("upTime", extendedServerInfo.getUpTime());
+				result.put("requestsPerSecond", extendedServerInfo.getRequestsPerSecond());
+				result.put("bytesPerSecond", extendedServerInfo.getBytesPerSecond());
+				result.put("bytesPerRequest", extendedServerInfo.getBytesPerRequest());
+				result.put("busyWorkers", extendedServerInfo.getBusyWorkers());
+				result.put("idleWorkers", extendedServerInfo.getIdleWorkers());
+			}
+			catch(Exception e)
+			{
+				log.error(e.getMessage(), e);
+			}
+		}
+		
+		return result.toString();
+	}
+	
 	@RequestMapping(method=RequestMethod.GET,params="option=runningProcesses",produces="application/json;charset=UTF-8")
 	public String runningProcesses() throws Exception {
 	
@@ -541,7 +525,7 @@ public class Control extends HttpServlet {
 	}
 	
 	@RequestMapping(method=RequestMethod.GET,params="option=checkProcessCommand",produces="application/json;charset=UTF-8")
-	public String checkProcessCommand(HttpServletResponse response) throws Exception {
+	public String checkProcessCommand() throws Exception {
 		
 		JSONObject resultJSON = new JSONObject();
 		try 
@@ -565,5 +549,27 @@ public class Control extends HttpServlet {
 		
 		return resultJSON.toString();
 	}
-
+	
+	@RequestMapping(method=RequestMethod.POST,params="option=updateProcessInfo",produces="application/json;charset=UTF-8")
+	public String updateProcessInfo(@RequestParam(value="processInfoRefreshRate") String processInfoRefreshRate,
+									@RequestParam(value="off") String off) {
+		log.trace("processInfoRefreshRate " + processInfoRefreshRate);
+		log.trace("off " + off);
+		
+		JSONObject result = new JSONObject();
+		if(off.equals("true") || processInfoRefreshRate.equals("0")) 
+		{
+			log.trace("off is true setting processInfoRefreshRate to 0");
+			Settings.setSetting(Constants.processInfoRefreshRate, "0");
+			result.put("result", 0);
+		}
+		else 
+		{
+			log.trace("Setting processInfoRefreshRate to " + processInfoRefreshRate);
+			Settings.setSetting(Constants.processInfoRefreshRate, processInfoRefreshRate);
+			result.put("result", processInfoRefreshRate);
+		}
+		
+		return result.toString();
+	}
 }
