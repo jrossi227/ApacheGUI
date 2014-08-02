@@ -60,22 +60,16 @@ define([ "dojo/_base/declare",
 		},
 		
 		isServerRunning: function (running, notRunning){
-			request.post("../Control", {
-				data: 	{
+			request.get("../web/Control", {
+				query: 	{
 					option: 'isServerRunning'
 				},
-				handleAs: 'text',
-				sync: false
-			}).response.then(function(response) {
-				
-				var data = json.fromJson(response.data);
-								
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data.result);
-				}
-				else {
-					var result=data.result;
+				handleAs: 'json',
+				sync: false,
+				preventCache: true
+			}).response.then(
+				function(response) {				
+					var result=response.data.result;
 					
 					if(result==true) {
 						if(!!running) {
@@ -86,29 +80,31 @@ define([ "dojo/_base/declare",
 							notRunning();
 						}
 					}
+					
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Info',error.response.data.message);
 				}
-				
-			});
+			);
 		},
 		
 		checkProcessCommand: function() {
 			//check tasklist and taskkill here
-			request.post("../Control", {
-				data: 	{
+			request.get("../web/Control", {
+				query: 	{
 					option: 'checkProcessCommand'
 				},
-				handleAs: 'text',
+				handleAs: 'json',
+				preventCache: true,
 				sync: true
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-								
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data.result);
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Info',error.response.data.message);
 				}
-				
-			});
+			);
 		},
 		
 		setRefreshTimer: function() {
@@ -142,21 +138,18 @@ define([ "dojo/_base/declare",
 		refreshStandardProcessInfo: function () {
 			var that=this;
 			
-			request.get("../Control", {
+			request.get("../web/Control", {
 				query: 	{
 					option: 'runningProcesses'
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				preventCache: true,
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-								
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
-				} else {
+					var data = response.data;
+
 					that.processesStore.fetch({query : {pid : '*'},
 			             onItem : function (item ) {
 			            	 if(item!=null) {
@@ -172,9 +165,12 @@ define([ "dojo/_base/declare",
 					   var itemit=data.items[k];
 					   that.processesStore.newItem({id: itemit.id, uid : itemit.uid, pid : itemit.pid, ppid : itemit.ppid, cpuTime : itemit.cpuTime, command : itemit.command});
 				   }
+					
+					
+				}, function(error) {
+					ca.apachegui.Util.alert('Info',error.response.data.message);
 				}
-				
-			});
+			);
 		},
 		
 		refreshExtendedServerInfo: function() { 
@@ -678,7 +674,7 @@ define([ "dojo/_base/declare",
 		buildProcessGrid: function() {
 			var that=this;
 			
-			this.processesStore = new ItemFileWriteStore({url: '../Control?option=runningProcesses', urlPreventCache: true, clearOnClose: true});
+			this.processesStore = new ItemFileWriteStore({url: '../web/Control?option=runningProcesses', urlPreventCache: true, clearOnClose: true});
 			
 			var gridStructure =[[
 		                          { 

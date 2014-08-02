@@ -5,16 +5,19 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import apache.conf.global.Utils;
 import apache.conf.parser.EnclosureParser;
-
 import ca.apachegui.conf.ConfFiles;
 import ca.apachegui.db.Settings;
 import ca.apachegui.global.Constants;
@@ -30,7 +33,8 @@ import ca.apachegui.server.ServerInfo;
 /**
  * Servlet implementation class Control
  */
-@WebServlet("/Control")
+@RestController
+@RequestMapping("/Control")
 public class Control extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static Logger log = Logger.getLogger(Control.class);
@@ -60,39 +64,6 @@ public class Control extends HttpServlet {
 		catch (Exception e1) 
 		{
 			log.error("Process command: " + Constants.runningProcessName + " not found!!");
-		}
-		if(option.equals("runningProcesses"))
-		{
-			try 
-			{ 
-				log.trace("getting process info");
-				RunningProcess processes[] = RunningProcess.getRunningProcessInfo(Constants.runningProcessName);
-			
-				out.println("{");
-				out.println(	"identifier: 'id', ");
-				out.println(	"label: 'name', ");
-				out.println(	"items: [");
-				
-				if(processes.length>0)
-				{
-					for(int i=0; i< processes.length; i++)
-					{
-						out.print("{id:'" + processes[i].getPid() + "', uid:'" + processes[i].getUid() + "', pid:'" + processes[i].getPid() + "',ppid: '" + processes[i].getPpid() + "',cpuTime: '" + processes[i].getCpuTime() + "',command: '" + processes[i].getCommand() + "'}");
-						if(i!=(processes.length-1))
-							out.print(",");
-					}	
-				}
-				else 
-				{
-					out.print("{id: '', uid:'', pid: '',ppid: '',cpuTime: '',command: ''}");
-				}
-				out.println("]}");
-			}
-			catch(Exception e){
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
-			}
 		}
 		
 		//return extended server Info here
@@ -179,50 +150,6 @@ public class Control extends HttpServlet {
 		log.trace("Control.doPost called");
 		String option=request.getParameter("option");
 		log.trace("POST: option called: " + option);
-		if(option.equals("isServerRunning")) 
-		{
-			PrintWriter out=response.getWriter();
-			try 
-			{
-				if(ca.apachegui.server.Control.isServerRunning()) {
-					out.print("{result: true}");
-				}	
-				else {
-					out.print("{result: false}");
-				}
-			} 
-			catch (Exception e) 
-			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
-				response.setStatus(206);
-				out.print("{result:\"" + Constants.processInfoCommandAdivsory + "\"}"); 
-			}
-		}
-		
-		if(option.equals("checkProcessCommand")) 
-		{
-			PrintWriter out=response.getWriter();
-			try 
-			{
-				log.trace("checking " + Constants.processInfoCommand);
-				ca.apachegui.server.Control.isServerRunning();
-				
-				log.trace("checking " + Constants.processKillCommand);
-				RunningProcess.killProcess("9999999999");
-				
-				out.print("{result: \"success\"}");
-			} 
-			catch (Exception e) 
-			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
-				response.setStatus(206);
-				out.print("{result:\"" + Constants.processInfoCommandAdivsory + "\"}"); 
-			}
-		}
 		
 		if(option.equals("updateProcessInfo")) 
 		{
@@ -550,6 +477,93 @@ public class Control extends HttpServlet {
 				out.print("{result:\"There was an error with the server\"}"); 
 			}
 		}
+	}
+	
+	@RequestMapping(method=RequestMethod.GET,params="option=runningProcesses",produces="application/json;charset=UTF-8")
+	public String runningProcesses() throws Exception {
+	
+		
+		log.trace("getting process info");
+		RunningProcess processes[] = RunningProcess.getRunningProcessInfo(Constants.runningProcessName);
+	
+		JSONObject result = new JSONObject();
+		result.put("identifier", "id");
+		result.put("label", "name");
+		
+		JSONArray items = new JSONArray();
+		
+		JSONObject item;
+		if(processes.length>0)
+		{
+			for(int i=0; i< processes.length; i++)
+			{
+				item = new JSONObject();
+				item.put("id", processes[i].getPid());
+				item.put("uid", processes[i].getUid());
+				item.put("pid", processes[i].getPid());
+				item.put("ppid", processes[i].getPpid());
+				item.put("cpuTime", processes[i].getCpuTime());
+				item.put("command", processes[i].getCommand());
+				
+				items.put(item);
+			}	
+		}
+		else 
+		{
+			item = new JSONObject();
+			item.put("id", "");
+			item.put("uid", "");
+			item.put("pid", "");
+			item.put("ppid", "");
+			item.put("cpuTime", "");
+			item.put("command", "");
+			items.put(item);
+		}
+		
+		result.put("items", items);
+		
+		return result.toString();
+		
+	}
+	
+	@RequestMapping(method=RequestMethod.GET,params="option=isServerRunning",produces="application/json;charset=UTF-8")
+	public String isServerRunning() throws Exception {
+			
+		boolean result = false;
+		if(ca.apachegui.server.Control.isServerRunning()) {
+			result = true;
+		}	
+			
+		JSONObject resultJSON = new JSONObject();
+		resultJSON.put("result", result);
+		
+		return resultJSON.toString();
+	}
+	
+	@RequestMapping(method=RequestMethod.GET,params="option=checkProcessCommand",produces="application/json;charset=UTF-8")
+	public String checkProcessCommand(HttpServletResponse response) throws Exception {
+		
+		JSONObject resultJSON = new JSONObject();
+		try 
+		{
+			log.trace("checking " + Constants.processInfoCommand);
+			ca.apachegui.server.Control.isServerRunning();
+			
+			log.trace("checking " + Constants.processKillCommand);
+			RunningProcess.killProcess("9999999999");
+			
+			resultJSON.put("result", "success");
+		} 
+		catch (Exception e) 
+		{
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			log.error(sw.toString());
+			
+			throw new Exception(Constants.processInfoCommandAdivsory);
+		}
+		
+		return resultJSON.toString();
 	}
 
 }
