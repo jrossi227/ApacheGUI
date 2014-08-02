@@ -1,13 +1,7 @@
 package ca.apachegui.web;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -31,333 +25,12 @@ import ca.apachegui.server.ExtendedStatus;
 import ca.apachegui.server.RunningProcess;
 import ca.apachegui.server.ServerInfo;
 
-/**
- * Servlet implementation class Control
- */
+
 @RestController
 @RequestMapping("/Control")
-public class Control extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+public class Control {
 	private static Logger log = Logger.getLogger(Control.class);
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public Control() {
-        super();
-        // TODO Auto-generated constructor stub 
-    }
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log.trace("Control.doPost called");
-		String option=request.getParameter("option");
-		log.trace("POST: option called: " + option);
-		
-		if(option.equals("killProcess"))
-		{
-			PrintWriter out=response.getWriter();
-			try 
-			{
-				String pid=request.getParameter("pid");
-				RunningProcess.killProcess(pid);
-				
-				out.print("{result: \"success\"}");
-			}
-			catch (Exception e) 
-			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
-				response.setStatus(206);
-				out.print("{result:\"There was an error while trying to kill the process\"}"); 
-			}
-		}
-		
-		//Check if mod_status is loaded or available
-		if(option.equals("checkExtendedStatusModule"))
-		{
-			try
-			{
-				boolean isExtendedStatusModuleLoaded = ExtendedStatus.isExtendedStatusModuleLoaded();
-				boolean isExtendedStatusModuleAvailable = AvailableModuleHandler.exists(Constants.ServerStatusModuleName);
-				
-				PrintWriter out=response.getWriter();
-				if(!isExtendedStatusModuleLoaded && !isExtendedStatusModuleAvailable) {
-					out.print("{result: false}");
-				} else {
-					out.print("{result: true}");
-				}
-			}
-			catch (Exception e) 
-			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
-				response.setStatus(206);
-				PrintWriter out=response.getWriter();
-				out.print("{result:\"There was an error while trying to retrieve extended process info\"}"); 
-			}
-		}
-		
-		if(option.equals("checkExtendedStatusRestart"))
-		{
-			try
-			{
-				boolean checkRestartRequired = ExtendedStatus.checkExtendedStatusRestart();
-				PrintWriter out=response.getWriter();
-				if(!checkRestartRequired) {
-					out.print("{result: false}");
-				} else {
-					out.print("{result: true}");
-				}	
-			}
-			catch (Exception e) 
-			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
-				response.setStatus(206);
-				PrintWriter out=response.getWriter();
-				out.print("{result:\"There was an error while trying to retrieve extended process info\"}"); 
-			}
-		}
-		
-		if(option.equals("updateExtendedStatus"))
-		{
-			try
-			{
-				String on = request.getParameter("extendedStatus");
-				String currentExtendedStatus=Settings.getSetting(Constants.extendedStatus);
-				
-				boolean change=false;
-				if((on.equals("true") && currentExtendedStatus.equals("off")) || (on.equals("false") && currentExtendedStatus.equals("on")))
-				{
-					change=true;
-				}
-				
-				PrintWriter out = response.getWriter();
-				if(on.equals("true") && currentExtendedStatus.equals("off"))
-				{
-					if(ExtendedStatus.checkExtendedStatusRestart())
-					{
-						//Comment out existing mod_status logic
-						new EnclosureParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).deleteEnclosure("IfModule", "mod_status\\.c");
-						
-						//Load the module if it isn't loaded
-						if(!ExtendedStatus.isExtendedStatusModuleLoaded()) {
-							SharedModuleHandler.installModule(Constants.ServerStatusModuleName);
-						}
-						
-						//the handler isnt set
-						if(!ExtendedStatus.checkExtendedStatusEnclosure() && ExtendedStatus.checkExtendedStatusDirective())
-						{	
-							if(ServerInfo.isTwoPointTwo(Settings.getSetting(Constants.binFile))) {
-								ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointTwo);	
-							} else {
-								ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointFour);	
-							}
-						}
-						//the extended status directive isnt set
-						else if(ExtendedStatus.checkExtendedStatusEnclosure() && !ExtendedStatus.checkExtendedStatusDirective())
-						{	
-							ConfFiles.deleteFromConfigFiles(Constants.extendedStatusDirectiveString, false);
-							ConfFiles.appendToGUIConfigFile(Constants.extendedStatusDirective);	
-						}
-						//both the handler isnt set and extended status isnt set
-						else
-						{
-							ConfFiles.deleteFromConfigFiles(Constants.extendedStatusDirectiveString, false);
-							if(ServerInfo.isTwoPointTwo(Settings.getSetting(Constants.binFile))) {
-								ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointTwo);	
-							} else {
-								ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointFour);	
-							}
-							ConfFiles.appendToGUIConfigFile(Constants.extendedStatusDirective);
-						}
-						if(ca.apachegui.server.Control.isServerRunning())
-						{	
-							String error="";
-							try
-							{
-								error=ca.apachegui.server.Control.restartServer();
-								if(!ca.apachegui.server.Control.isServerRunning())
-								{
-									throw new Exception("The server could not restart");
-								}
-							}
-							catch(Exception e)
-							{
-								StringWriter sw = new StringWriter();
-								e.printStackTrace(new PrintWriter(sw));
-								log.error(sw.toString());
-								response.setStatus(206);
-								out.print("{result:\"There was an error while trying to restart the server: " + error.replace("\"", "\\\"") + e.getMessage().replace("\"", "\\\"") + "\"}"); 
-							}
-						}
-					}
-					Settings.setSetting(Constants.extendedStatus,"on");
-					out.print("{result: \"on\", change:" + change + "}");
-				}
-				if(on.equals("false") && currentExtendedStatus.equals("on"))
-				{
-					Settings.setSetting(Constants.extendedStatus,"off");
-					out.print("{result: \"off\", change:" + change + "}");
-				}
-				if(on.equals("false") && currentExtendedStatus.equals("off"))
-				{
-					out.print("{result: \"off\", change:" + change + "}");
-				}
-				if(on.equals("true") && currentExtendedStatus.equals("on"))
-				{
-					out.print("{result: \"on\", change:" + change + "}");
-				}
-			}
-			catch (Exception e) 
-			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
-				response.setStatus(206);
-				PrintWriter out=response.getWriter();
-				out.print("{result:\"There was an error while trying to modify extended status\"}"); 
-			}
-		}
-		if(option.equals("startServer"))
-		{
-			String error="";
-			PrintWriter out=response.getWriter();
-			try
-			{
-				error=ca.apachegui.server.Control.startServer();
-				if(!ca.apachegui.server.Control.isServerRunning())
-				{
-					if(Utils.isWindows()) {
-						throw new Exception("The server could not start. Have you installed Apache as a service?");				
-					} else {
-						throw new Exception("The server could not start");
-					}
-				}
-				out.print("{result: \"success\"}");
-			}
-			catch(Exception e)
-			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
-				response.setStatus(206);
-				out.print("{result:\"There was an error while trying to start the server: " + error.replace("\"", "\\\"") + e.getMessage().replace("\"", "\\\"") + "\"}"); 
-			}
-		}
-		
-		if(option.equals("restartServer"))
-		{
-			String error="";
-			PrintWriter out=response.getWriter();
-			try
-			{
-				error=ca.apachegui.server.Control.restartServer();
-				if(!ca.apachegui.server.Control.isServerRunning())
-				{
-					throw new Exception("The server could not restart");
-				}
-				out.print("{result: \"success\"}");
-			}
-			catch(Exception e)
-			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
-				response.setStatus(206);
-				out.print("{result:\"There was an error while trying to restart the server: " + error.replace("\"", "\\\"") + e.getMessage().replace("\"", "\\\"") + "\"}"); 
-			}
-		}
-		
-		if(option.equals("stopServer"))
-		{
-			String error="";
-			PrintWriter out=response.getWriter();
-			try
-			{
-				error=ca.apachegui.server.Control.stopServer();
-				long i=0;
-				//lets wait up to 10 seconds for the server to stop
-				boolean stopped=true;
-				while(ca.apachegui.server.Control.isServerRunning())
-				{
-					Thread.sleep(1000);
-					i+=1000;
-					if(i>=Constants.stopServerWaitTime)
-					{	
-						stopped=false;
-						break;
-					}	
-				}
-				if(!stopped) {
-					throw new Exception("There was an error when stopping the server");
-				}
-				
-				out.print("{result: \"success\"}");
-			}
-			catch(Exception e)
-			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
-				response.setStatus(206);
-				out.print("{result:\"There was an error while stopping the server: " + error.replace("\"", "\\\"") + e.getMessage().replace("\"", "\\\"") + "\"}"); 
-			}
-		}
-		
-		if(option.equals("isExtendedStatusEnabled"))
-		{
-			String error="";
-			try
-			{
-				String extendedStatus=Settings.getSetting(Constants.extendedStatus);
-				PrintWriter out=response.getWriter();
-				if(extendedStatus.equals("on"))
-				{
-					out.print("{result: true}");
-				}
-				if(extendedStatus.equals("off"))
-				{
-					out.print("{result: false}");
-				}
-			}
-			catch(Exception e)
-			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
-				response.setStatus(206);
-				PrintWriter out=response.getWriter();
-				out.print("{result:\"There was an error with the server\"}"); 
-			}
-		}
-		
-		if(option.equals("getRefreshRate"))
-		{
-			try
-			{
-				PrintWriter out=response.getWriter();
-				
-				out.print("{result: " + Settings.getSetting(Constants.processInfoRefreshRate) + "}");
-			}
-			catch(Exception e)
-			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
-				response.setStatus(206);
-				PrintWriter out=response.getWriter();
-				out.print("{result:\"There was an error with the server\"}"); 
-			}
-		}
-	}
-	
 	@RequestMapping(method=RequestMethod.GET,params="option=extendedRunningProcesses",produces="application/json;charset=UTF-8")
 	public String extendedRunningProcesses(){
 	
@@ -572,4 +245,267 @@ public class Control extends HttpServlet {
 		
 		return result.toString();
 	}
+	
+	@RequestMapping(method=RequestMethod.POST,params="option=updateExtendedStatus",produces="application/json;charset=UTF-8")
+	public String updateExtendedStatus(@RequestParam(value="extendedStatus") String on) throws Exception {
+		JSONObject result = new JSONObject();
+		
+		try
+		{
+			String currentExtendedStatus=Settings.getSetting(Constants.extendedStatus);
+			
+			boolean change=false;
+			if((on.equals("true") && currentExtendedStatus.equals("off")) || (on.equals("false") && currentExtendedStatus.equals("on"))) {
+				change=true;
+			}
+			
+			if(on.equals("true") && currentExtendedStatus.equals("off"))
+			{
+				if(ExtendedStatus.checkExtendedStatusRestart())
+				{
+					//Comment out existing mod_status logic
+					new EnclosureParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).deleteEnclosure("IfModule", "mod_status\\.c");
+					
+					//Load the module if it isn't loaded
+					if(!ExtendedStatus.isExtendedStatusModuleLoaded()) {
+						SharedModuleHandler.installModule(Constants.ServerStatusModuleName);
+					}
+					
+					//the handler isnt set
+					if(!ExtendedStatus.checkExtendedStatusEnclosure() && ExtendedStatus.checkExtendedStatusDirective())
+					{	
+						if(ServerInfo.isTwoPointTwo(Settings.getSetting(Constants.binFile))) {
+							ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointTwo);	
+						} else {
+							ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointFour);	
+						}
+					}
+					//the extended status directive isnt set
+					else if(ExtendedStatus.checkExtendedStatusEnclosure() && !ExtendedStatus.checkExtendedStatusDirective())
+					{	
+						ConfFiles.deleteFromConfigFiles(Constants.extendedStatusDirectiveString, false);
+						ConfFiles.appendToGUIConfigFile(Constants.extendedStatusDirective);	
+					}
+					//both the handler isnt set and extended status isnt set
+					else
+					{
+						ConfFiles.deleteFromConfigFiles(Constants.extendedStatusDirectiveString, false);
+						if(ServerInfo.isTwoPointTwo(Settings.getSetting(Constants.binFile))) {
+							ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointTwo);	
+						} else {
+							ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointFour);	
+						}
+						ConfFiles.appendToGUIConfigFile(Constants.extendedStatusDirective);
+					}
+					if(ca.apachegui.server.Control.isServerRunning())
+					{	
+						ca.apachegui.server.Control.restartServer();
+						if(!ca.apachegui.server.Control.isServerRunning())
+						{
+							throw new Exception("The server could not restart");
+						}
+					}
+				}
+				Settings.setSetting(Constants.extendedStatus,"on");
+				result.put("result", "on");
+				result.put("change", change);
+			}
+			if(on.equals("false") && currentExtendedStatus.equals("on"))
+			{
+				Settings.setSetting(Constants.extendedStatus,"off");
+				result.put("result", "off");
+				result.put("change", change);
+			}
+			if(on.equals("false") && currentExtendedStatus.equals("off"))
+			{
+				result.put("result", "off");
+				result.put("change", change);
+			}
+			if(on.equals("true") && currentExtendedStatus.equals("on"))
+			{
+				result.put("result", "on");
+				result.put("change", change);
+			}
+		}
+		catch (Exception e) 
+		{
+			log.error(e.getMessage(), e);
+			throw new Exception("There was an error while trying to modify extended status: " + e.getMessage());
+		}
+		
+		return result.toString();
+	}
+	
+	@RequestMapping(method=RequestMethod.GET,params="option=checkExtendedStatusModule",produces="application/json;charset=UTF-8")
+	public String checkExtendedStatusModule() throws Exception {
+		
+		JSONObject result = new JSONObject();
+		
+		try
+		{
+			boolean isExtendedStatusModuleLoaded = ExtendedStatus.isExtendedStatusModuleLoaded();
+			boolean isExtendedStatusModuleAvailable = AvailableModuleHandler.exists(Constants.ServerStatusModuleName);
+			
+			boolean isLoaded = true;
+			if(!isExtendedStatusModuleLoaded && !isExtendedStatusModuleAvailable) {
+				isLoaded = false;
+			} 
+			
+			result.put("result", isLoaded);
+		}
+		catch (Exception e) 
+		{
+			log.error(e.getMessage(), e);
+			throw new Exception("There was an error while trying to retrieve extended process info"); 
+		}
+		
+		return result.toString();
+	}
+	
+	@RequestMapping(method=RequestMethod.GET,params="option=checkExtendedStatusRestart",produces="application/json;charset=UTF-8")
+	public String checkExtendedStatusRestart() throws Exception {
+		
+		JSONObject result = new JSONObject();
+		
+		try
+		{
+			boolean checkRestartRequired = ExtendedStatus.checkExtendedStatusRestart();
+			result.put("result", checkRestartRequired);
+		}
+		catch (Exception e) 
+		{
+			log.error(e.getMessage(), e);
+			throw new Exception("There was an error while trying to retrieve extended process info"); 
+		}
+		
+		return result.toString();
+	}
+	
+	@RequestMapping(method=RequestMethod.POST,params="option=killProcess",produces="application/json;charset=UTF-8")
+	public String killProcess(@RequestParam(value="pid") String pid) throws Exception {
+		JSONObject result = new JSONObject();
+		try 
+		{
+			RunningProcess.killProcess(pid);
+			result.put("result", "success");
+		}
+		catch (Exception e) 
+		{ 
+			log.error(e.getMessage(), e);
+			throw new Exception("There was an error while trying to kill the process");
+		}
+		
+		return result.toString();
+	}
+	
+	@RequestMapping(method=RequestMethod.POST,params="option=startServer",produces="application/json;charset=UTF-8")
+	public String startServer() throws Exception {
+		JSONObject result = new JSONObject();
+		
+		String error = "";
+		try
+		{
+			error=ca.apachegui.server.Control.startServer();
+			if(!ca.apachegui.server.Control.isServerRunning())
+			{
+				if(Utils.isWindows()) {
+					throw new Exception("The server could not start. Have you installed Apache as a service?");				
+				} else {
+					throw new Exception("The server could not start");
+				}
+			}
+			result.put("result", "success");
+		}
+		catch(Exception e)
+		{
+			log.error(e.getMessage(), e);
+			throw new Exception("There was an error while trying to start the server: " + error + " " + e.getMessage()); 
+		}
+		
+		return result.toString();
+	}
+	
+	@RequestMapping(method=RequestMethod.POST,params="option=restartServer",produces="application/json;charset=UTF-8")
+	public String restartServer() throws Exception {
+		JSONObject result = new JSONObject();
+		
+		String error="";
+		try
+		{
+			error=ca.apachegui.server.Control.restartServer();
+			if(!ca.apachegui.server.Control.isServerRunning())
+			{
+				throw new Exception("The server could not restart");
+			}
+			result.put("result", "success");
+		}
+		catch(Exception e)
+		{
+			log.error(e.getMessage(), e);
+			throw new Exception("There was an error while trying to restart the server: " + error + " " + e.getMessage());  
+		}
+		
+		return result.toString();
+	}
+	
+	@RequestMapping(method=RequestMethod.POST,params="option=stopServer",produces="application/json;charset=UTF-8")
+	public String stopServer() throws Exception {
+		JSONObject result = new JSONObject();
+		
+		String error="";
+		try
+		{
+			error=ca.apachegui.server.Control.stopServer();
+			long i=0;
+			//lets wait up to 10 seconds for the server to stop
+			boolean stopped=true;
+			while(ca.apachegui.server.Control.isServerRunning())
+			{
+				Thread.sleep(1000);
+				i+=1000;
+				if(i>=Constants.stopServerWaitTime)
+				{	
+					stopped=false;
+					break;
+				}	
+			}
+			if(!stopped) {
+				throw new Exception("There was an error when stopping the server");
+			}
+			
+			result.put("result", "success");
+		}
+		catch(Exception e)
+		{
+			log.error(e.getMessage(), e);
+			throw new Exception("There was an error while stopping the server: " + error + " " + e.getMessage());  
+		}
+		
+		return result.toString();
+	}
+	
+	@RequestMapping(method=RequestMethod.GET,params="option=isExtendedStatusEnabled",produces="application/json;charset=UTF-8")
+	public String isExtendedStatusEnabled() throws Exception {
+		JSONObject result = new JSONObject();
+		
+		String extendedStatus=Settings.getSetting(Constants.extendedStatus);
+		if(extendedStatus.equals("on")) {
+			result.put("result", true);
+		}
+		if(extendedStatus.equals("off")) {
+			result.put("result", false);
+		}
+	
+		return result.toString();
+	}
+	
+	@RequestMapping(method=RequestMethod.GET,params="option=getRefreshRate",produces="application/json;charset=UTF-8")
+	public String getRefreshRate() throws Exception {
+		JSONObject result = new JSONObject();
+					
+		result.put("result", Settings.getSetting(Constants.processInfoRefreshRate));
+			
+		return result.toString();	
+	}
+	
 }

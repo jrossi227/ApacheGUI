@@ -286,29 +286,25 @@ define([ "dojo/_base/declare",
 			
 			var status='';
 			
-			if(!!forcedStatus) 
-			{
+			if(!!forcedStatus) {
 				status=forcedStatus;
 			}
-			else 
-			{
+			else {
 				status=dom.byId('extendedStatusToggle').checked;
 			}	
 				
-			request.post("../Control", {
+			request.post("../web/Control", {
 				data: 	{
 					option: 'updateExtendedStatus',
 					extendedStatus: status
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: true
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-								
-				if(response.status!=200) {
-					ca.apachegui.Util.alert('Error',data.result);
-				} else {
+					var data = response.data;
+	
 					if(data.result=='on') 
 					{
 						dom.byId('extendedStatusToggle').checked=true;
@@ -325,9 +321,11 @@ define([ "dojo/_base/declare",
 							that.destroyExtendedProcessGrid();
 						}
 					}
+					
+				}, function(error) {
+					ca.apachegui.Util.alert('Info',error.response.data.message);
 				}
-				
-			});
+			);
 			
 		},
 		
@@ -361,32 +359,31 @@ define([ "dojo/_base/declare",
 			
 			if(dom.byId('extendedStatusToggle').checked==true && this.isExtendedStatusEnabled()==false)
 			{	
-				request.post("../Control", {
-					data: 	{
+				request.get("../web/Control", {
+					query: 	{
 						option: 'checkExtendedStatusModule'
 					},
-					handleAs: 'text',
-					sync: true
-				}).response.then(function(response) {
+					handleAs: 'json',
+					sync: true,
+					preventCache: true
+				}).response.then(
+					function(response) {
 					
-					var data = json.fromJson(response.data);
-									
-					if(response.status!=200) {
-						ca.apachegui.Util.alert('Error',data.result);
-						dom.byId('extendedStatusToggle').checked=false;
-					} else {
-						if(data.result==false) 
-						{
+						var data = response.data;			
+						
+						if(data.result==false) {
 							dom.byId('extendedStatusToggle').checked=false;
 							ca.apachegui.Util.alert("status_module not available", "Turning on extended status requires that the status_module is loaded into apache.<BR/> This module is not currently loaded and is not in the available modules folder.");
 						}
-						else
-						{
+						else {
 							that.extendedStatusRestartWarning();
 						}
+						
+					}, function(error) {
+						ca.apachegui.Util.alert('Error',error.response.data.message);
+						dom.byId('extendedStatusToggle').checked=false;
 					}
-					
-				});
+				);
 			}
 		},
 	
@@ -409,23 +406,22 @@ define([ "dojo/_base/declare",
 			
 			var restart=false;
 			
-			request.post("../Control", {
-				data: 	{
+			request.get("../web/Control", {
+				query: 	{
 					option: 'checkExtendedStatusRestart'
 				},
-				handleAs: 'text',
-				sync: true
-			}).response.then(function(response) {
-				
-				var data = json.fromJson(response.data);
-								
-				if(response.status!=200) {
-					ca.apachegui.Util.alert('Error',data.result);
-				} else {
+				handleAs: 'json',
+				sync: true,
+				preventCache: true
+			}).response.then(
+				function(response) {
+					var data = response.data;
 					restart=data.result; 
+					
+				}, function(error) {
+					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
-				
-			});
+			);
 			return restart;
 	
 		},
@@ -446,48 +442,45 @@ define([ "dojo/_base/declare",
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Killing', 'Killing Process Please Wait...');
 			thisdialog.show();
 			
-			request.post("../Control", {
+			request.post("../web/Control", {
 				data: 	{
 					option: 'killProcess',
 					pid: pid
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: false
-			}).response.then(function(response) {
-				
-				var data = json.fromJson(response.data);
-								
-				if(response.status!=200) {
-					ca.apachegui.Util.alert('Error',data.result);
-				} else {
+			}).response.then(
+				function(response) {
 					that.refreshProcessInfo();
+					thisdialog.remove();
+				}, function(error) {
+					thisdialog.remove();
+					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
-				
-				thisdialog.remove();
-			});
+			);
 				
 		},
 	
 		isExtendedStatusEnabled: function() {
 			var enabled=false;
 			
-			request.post("../Control", {
-				data: 	{
+			request.get("../web/Control", {
+				query: 	{
 					option: 'isExtendedStatusEnabled'
 				},
-				handleAs: 'text',
-				sync: true
-			}).response.then(function(response) {
+				handleAs: 'json',
+				sync: true,
+				preventCache: true
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-								
-				if(response.status!=200) {
-					ca.apachegui.Util.alert('Error',data.result);
-				} else {
+					var data = response.data;
 					enabled=data.result;
+					
+				}, function(error) {
+					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
-				
-			});
+			);
 			
 			return enabled;
 		},
@@ -495,23 +488,24 @@ define([ "dojo/_base/declare",
 		getRefreshRate: function() {
 			var refreshRate=0;
 			
-			request.post("../Control", {
-				data: 	{
+			request.get("../web/Control", {
+				query: 	{
 					option: 'getRefreshRate'
 				},
-				handleAs: 'text',
-				sync: true
-			}).response.then(function(response) {
+				handleAs: 'json',
+				sync: true,
+				preventCache: true
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-								
-				if(response.status!=200) {
-					ca.apachegui.Util.alert('Error',data.result);
-				} else {
+					var data = response.data;
 					refreshRate=data.result;
+					
+				}, function(error) {
+					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
-				
-			});
+			);
+			
 			return refreshRate;
 		},
 		
@@ -521,26 +515,25 @@ define([ "dojo/_base/declare",
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Starting', 'Starting Please Wait...');
 			thisdialog.show();
 			
-			request.post("../Control", {
+			request.post("../web/Control", {
 				data: 	{
 					option: 'startServer'
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-								
-				if(response.status!=200) {
-					ca.apachegui.Util.alert('Error',data.result);
-				} else {
 					registry.byId('startApacheForm').hide();
 					that.displayServerStarted();
+					
+					thisdialog.remove();
+					
+				}, function(error) {
+					thisdialog.remove();
+					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
-				
-				thisdialog.remove();
-				
-			});
+			);
 		},
 		
 		restartServer: function() {
@@ -549,26 +542,25 @@ define([ "dojo/_base/declare",
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Restarting', 'Restarting Please Wait...');
 			thisdialog.show();
 			
-			request.post("../Control", {
+			request.post("../web/Control", {
 				data: 	{
 					option: 'restartServer'
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-								
-				if(response.status!=200) {
-					ca.apachegui.Util.alert('Error',data.result);
-				} else {
 					registry.byId('restartApacheForm').hide();
 					that.refreshProcessInfo();
+					
+					thisdialog.remove();
+					
+				}, function(error) {
+					thisdialog.remove();
+					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
-				
-				thisdialog.remove();
-				
-			});
+			);
 		},
 	
 		stopServer: function() {
@@ -577,26 +569,25 @@ define([ "dojo/_base/declare",
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Stopping', 'Stopping Please Wait...');
 			thisdialog.show();
 			
-			request.post("../Control", {
+			request.post("../web/Control", {
 				data: 	{
 					option: 'stopServer'
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-								
-				if(response.status!=200) {
-					ca.apachegui.Util.alert('Error',data.result);
-				} else {
 					registry.byId('stopApacheForm').hide();
 					that.displayServerStopped();
+					
+					thisdialog.remove();
+					
+				}, function(error) {
+					thisdialog.remove();
+					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
-				
-				thisdialog.remove();
-				
-			});
+			);
 		},
 		
 		displayServerStarted: function() {
