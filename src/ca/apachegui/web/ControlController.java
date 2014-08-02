@@ -28,8 +28,8 @@ import ca.apachegui.server.ServerInfo;
 
 @RestController
 @RequestMapping("/Control")
-public class Control {
-	private static Logger log = Logger.getLogger(Control.class);
+public class ControlController {
+	private static Logger log = Logger.getLogger(ControlController.class);
        
 	@RequestMapping(method=RequestMethod.GET,params="option=extendedRunningProcesses",produces="application/json;charset=UTF-8")
 	public String extendedRunningProcesses(){

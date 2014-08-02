@@ -110,15 +110,6 @@
   </listener>
   
   <servlet>
-    <display-name>Control</display-name>
-    <servlet-name>Control</servlet-name>
-    <servlet-class>ca.apachegui.web.Control</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Control</servlet-name>
-    <url-pattern>/Control</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <display-name>GUISettings</display-name>
     <servlet-name>GUISettings</servlet-name>
     <servlet-class>ca.apachegui.web.GUISettings</servlet-class>
