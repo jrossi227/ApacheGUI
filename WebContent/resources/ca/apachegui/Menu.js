@@ -344,17 +344,17 @@ define([ "dojo/_base/declare",
 		download: function () {
 			 if(this.isLogs(this.getCurrentMenuId()))
 			 {
-				 window.open('../DownloadFile?file=' + this.extractLogFile(this.getCurrentMenuId()));
+				 window.open('../web/DownloadFile?file=' + this.extractLogFile(this.getCurrentMenuId()));
 			 }		 
 			
 			 if(this.isDocuments(this.getCurrentMenuId()))
 			 {
-				 window.open('../DownloadFile?file=' + this.extractDocumentFile(this.getCurrentMenuId()));
+				 window.open('../web/DownloadFile?file=' + this.extractDocumentFile(this.getCurrentMenuId()));
 			 }		 
 
 			 if(this.isConfiguration(this.getCurrentMenuId()))
 			 {
-				 window.open('../DownloadFile?file=' + this.extractConfigurationFile(this.getCurrentMenuId()));
+				 window.open('../web/DownloadFile?file=' + this.extractConfigurationFile(this.getCurrentMenuId()));
 			 }	
 		},
 		
