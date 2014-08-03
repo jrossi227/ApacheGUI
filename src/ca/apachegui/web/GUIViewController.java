@@ -219,7 +219,7 @@ public class GUIViewController {
 		int extension=file.getName().indexOf(".");
 		if(extension!=-1) {
 			String ext=file.getName().substring(extension +1);
-			if(ext.matches(Utilities.extensionsToRegex(new String[]{"jpg","jpeg","bmp","tif","tiff","gif","png","jpe","ico"})) && file.exists()) {	
+			if(ext.matches(Utilities.extensionsToRegex(new String[]{"jpg","jpeg","bmp","tif","tiff","gif","png","jpe","ico","svg"})) && file.exists()) {	
 				fileType="image";	
 			}
 			else {	

@@ -74,7 +74,7 @@
 			</c:if>	
 			<c:if test="${fileType == 'image'}">
 			
-				<img alt="image" src="../Image?file=${filePath}" />
+				<img alt="image" src="../web/Image?file=${filePath}" />
 				
 			</c:if>
 			</div>

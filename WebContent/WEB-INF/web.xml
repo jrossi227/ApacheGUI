@@ -137,15 +137,6 @@
     <url-pattern>/Logs</url-pattern>
   </servlet-mapping>
   <servlet>
-    <display-name>Image</display-name>
-    <servlet-name>Image</servlet-name>
-    <servlet-class>ca.apachegui.web.Image</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Image</servlet-name>
-    <url-pattern>/Image</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <display-name>Main</display-name>
     <servlet-name>Main</servlet-name>
     <servlet-class>ca.apachegui.web.Main</servlet-class>
