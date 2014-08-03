@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -60,9 +59,7 @@ public class MenuController {
 		PrintWriter out = response.getWriter();
 		
 		String path = URLDecoder.decode(request.getRequestURI().substring(request.getContextPath().length() + "/web/Menu/rest/".length()),"UTF-8");
-		
-		log.info(path);
-		
+				
 		if(path.startsWith(Constants.ConfigurationRoot))
 		{	
 			out.print(ConfFiles.getNodeJson(path.substring(Constants.ConfigurationRoot.length())));
