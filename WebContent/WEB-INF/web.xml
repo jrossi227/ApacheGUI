@@ -146,16 +146,6 @@
     <url-pattern>/Main</url-pattern>
   </servlet-mapping>
   <servlet>
-    <display-name>Menu</display-name>
-    <servlet-name>Menu</servlet-name>
-    <servlet-class>ca.apachegui.web.Menu</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Menu</servlet-name>
-    <url-pattern>/Menu</url-pattern>
-    <url-pattern>/Menu/*</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <display-name>Modules</display-name>
     <servlet-name>Modules</servlet-name>
     <servlet-class>ca.apachegui.web.Modules</servlet-class>
