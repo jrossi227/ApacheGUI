@@ -11,10 +11,7 @@
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
   <listener>
-    <listener-class>ca.apachegui.history.HistoryMaintenance</listener-class>
-  </listener>
-  <listener>
-    <listener-class>ca.apachegui.global.SearchContextListener</listener-class>
+    <listener-class>ca.apachegui.global.ServerContextListener</listener-class>
   </listener>
   <mime-mapping>
     <extension>csv</extension>
@@ -103,11 +100,6 @@
      	org.springframework.web.context.request.RequestContextListener
      </listener-class>
    </listener>
-   <listener>
-	 <listener-class>
-		org.springframework.web.context.ContextLoaderListener
-	 </listener-class>
-  </listener>
   
   <servlet>
     <display-name>GUISettings</display-name>

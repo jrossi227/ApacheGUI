@@ -4,11 +4,11 @@ import org.springframework.core.task.TaskExecutor;
 
 import ca.apachegui.global.SearchTask.State;
 
-public class SearchExecutor {
+public class SearchTaskExecutor {
 	
 	private TaskExecutor taskExecutor;
 	
-	public SearchExecutor(TaskExecutor taskExecutor) {
+	public SearchTaskExecutor(TaskExecutor taskExecutor) {
         this.taskExecutor = taskExecutor;
     }
 	

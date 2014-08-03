@@ -1,43 +1,45 @@
 package ca.apachegui.history;
 
-import apache.conf.parser.File;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
 import org.apache.log4j.Logger;
 
-/**
- * Class used to spawn a thread that manages the history database.
- * 
- * @author jonathan
- *
- */
-public class HistoryMaintenance implements ServletContextListener 
+import ca.apachegui.db.LogData;
+import ca.apachegui.db.Settings;
+import ca.apachegui.global.Constants;
+
+public class HistoryMaintenance 
 {
 	private static Logger log = Logger.getLogger(HistoryMaintenance.class);
-	private static ExecutorService threadExecute=Executors.newCachedThreadPool();   
+
+	private int iter;
 	
-	@Override
-	public void contextInitialized(ServletContextEvent arg0) 
-	{
-		log.info("HistoryMaintenance contextInitialized called");
-		HistoryMaintenanceT history=new HistoryMaintenanceT();
-		threadExecute.execute(history);
-		
-		//delete File if it exists
-		if(new File(System.getProperty("java.io.tmpdir"),"ApacheGUIUpdate").exists()) {
-			new File(System.getProperty("java.io.tmpdir"),"ApacheGUIUpdate").delete();
-		}
+	public HistoryMaintenance() {
+		iter = 0;
 	}
 	
-	@Override
-	public void contextDestroyed(ServletContextEvent arg0) 
-	{
-		log.info("HistoryMaintenance contextDestroyed Called");
-		threadExecute.shutdownNow();
+	/**
+	 * Thread used to shrink log data and rebuild insert date index for efficiency.
+	 */
+	public void clean() {
+	      			     		
+	    if(Settings.getSetting("init")!=null) {
+	    	log.trace("Shrinking " + Constants.logDataTable);
+    		    	
+	        iter++;  
+	    	  
+	    	LogData.shrinkLogData(Integer.parseInt(Settings.getSetting(Constants.historyRetention)));
+	      
+	      	if(iter==Constants.rebuildIndexInterval)
+	      	{	  
+	    	  //rebuild index
+	    	  log.trace("Rebuilding index");
+	    	  LogData.rebuildInsertDateIndex();
+	    	  iter=0;
+	      	}
+	      	//wake up once an interval
+	    } else {
+	    	log.trace("ApacheGUI has not been initialized, going back to sleep");
+	    }
+		
 	}
 
 }

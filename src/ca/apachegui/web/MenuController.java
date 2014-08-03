@@ -21,7 +21,7 @@ import ca.apachegui.conf.ConfFiles;
 import ca.apachegui.db.Settings;
 import ca.apachegui.docs.DocFiles;
 import ca.apachegui.global.Constants;
-import ca.apachegui.global.SearchExecutor;
+import ca.apachegui.global.SearchTaskExecutor;
 import ca.apachegui.global.SearchTask;
 import ca.apachegui.global.Utilities;
 import ca.apachegui.logs.LogFiles;
@@ -32,7 +32,7 @@ public class MenuController {
 	private static Logger log = Logger.getLogger(MenuController.class);
        
 	@Autowired 
-	private SearchExecutor search;
+	private SearchTaskExecutor search;
 
 	@RequestMapping(value="/rest",method=RequestMethod.GET,produces="application/json;charset=UTF-8")
 	public void menuRoot(HttpServletResponse response) throws Exception {

@@ -3,6 +3,7 @@
     xmlns:mvc="http://www.springframework.org/schema/mvc"
     xmlns:p="http://www.springframework.org/schema/p"
     xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:task="http://www.springframework.org/schema/task"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
         http://www.springframework.org/schema/beans
@@ -10,7 +11,9 @@
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc.xsd
         http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd">
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task.xsd">
 
 	<mvc:annotation-driven />
 	<context:component-scan base-package="ca.apachegui.web" />
@@ -39,8 +42,16 @@
 	    <property name="WaitForTasksToCompleteOnShutdown" value="true" />
 	</bean>
 	
-	<bean id="search" class="ca.apachegui.global.SearchExecutor">
+	<bean id="search" class="ca.apachegui.global.SearchTaskExecutor">
 	    <constructor-arg ref="taskExecutor" />
 	</bean>
+    
+    <bean id="historyMaintenance" class="ca.apachegui.history.HistoryMaintenance"></bean>
+    
+    <task:scheduled-tasks scheduler="historyScheduler">
+    	<task:scheduled ref="historyMaintenance" method="clean" fixed-rate="3600000"/>
+	</task:scheduled-tasks>
+
+	<task:scheduler id="historyScheduler" pool-size="1"/>
     
 </beans>

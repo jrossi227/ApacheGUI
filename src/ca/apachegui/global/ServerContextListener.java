@@ -5,23 +5,28 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.Logger;
 
+import apache.conf.parser.File;
 import ca.apachegui.global.SearchTask.State;
-import ca.apachegui.history.HistoryMaintenance;
  
-public class SearchContextListener  implements ServletContextListener 
+public class ServerContextListener  implements ServletContextListener 
 {
-	private static Logger log = Logger.getLogger(HistoryMaintenance.class);
+	private static Logger log = Logger.getLogger(ServerContextListener.class);
 	
 	@Override
 	public void contextInitialized(ServletContextEvent arg0) 
 	{
-		log.info("Search contextInitialized called");
+		log.info("ServerContextListener contextInitialized called");
+		
+		//delete update File if it exists
+		if(new File(System.getProperty("java.io.tmpdir"),"ApacheGUIUpdate").exists()) {
+			new File(System.getProperty("java.io.tmpdir"),"ApacheGUIUpdate").delete();
+		}
 	}
 	
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) 
 	{
-		log.info("Search contextDestroyed Called");
+		log.info("ServerContextListener contextDestroyed Called");
 		
 		if(SearchTask.getCurrentState() != State.IDLE && SearchTask.getCurrentState() != State.CANCELLED) {
 			try {
