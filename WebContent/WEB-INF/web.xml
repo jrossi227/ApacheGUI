@@ -174,15 +174,6 @@
     <url-pattern>/Modules</url-pattern>
   </servlet-mapping>
   <servlet>
-    <display-name>UploadFile</display-name>
-    <servlet-name>UploadFile</servlet-name>
-    <servlet-class>ca.apachegui.web.UploadFile</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>UploadFile</servlet-name>
-    <url-pattern>/UploadFile</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <display-name>DownloadFile</display-name>
     <servlet-name>DownloadFile</servlet-name>
     <servlet-class>ca.apachegui.web.DownloadFile</servlet-class>

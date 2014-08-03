@@ -117,7 +117,7 @@
     </form>
 </div>
 <div dojoType="dijit.Dialog" id="uploadFileDialog" title="Upload File" style="width: 700px; height: auto;">
-    <form dojoType="dijit.form.Form" id="uploadFileForm" action="../UploadFile" enctype="multipart/form-data" method="post">
+    <form dojoType="dijit.form.Form" id="uploadFileForm" action="../web/UploadFile" enctype="multipart/form-data" method="post">
     	<input type="hidden" name="uploadDirectoryName" id="uploadDirectoryName"/>
     	<input type="hidden" name="currentURL" id="currentURL"/>
         
