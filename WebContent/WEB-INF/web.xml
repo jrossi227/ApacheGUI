@@ -174,15 +174,6 @@
     <url-pattern>/Modules</url-pattern>
   </servlet-mapping>
   <servlet>
-    <display-name>DownloadFile</display-name>
-    <servlet-name>DownloadFile</servlet-name>
-    <servlet-class>ca.apachegui.web.DownloadFile</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>DownloadFile</servlet-name>
-    <url-pattern>/DownloadFile</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <display-name>ReceiveLogData</display-name>
     <servlet-name>ReceiveLogData</servlet-name>
     <servlet-class>ca.apachegui.web.ReceiveLogData</servlet-class>
