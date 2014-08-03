@@ -32,4 +32,15 @@
         <property name="maxUploadSize" value="100000000" />
  
     </bean>
+    
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+	    <property name="corePoolSize" value="1" />
+	    <property name="maxPoolSize" value="1" />
+	    <property name="WaitForTasksToCompleteOnShutdown" value="true" />
+	</bean>
+	
+	<bean id="search" class="ca.apachegui.global.SearchExecutor">
+	    <constructor-arg ref="taskExecutor" />
+	</bean>
+    
 </beans>

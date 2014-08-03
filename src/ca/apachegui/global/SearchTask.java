@@ -17,7 +17,7 @@ import org.json.JSONObject;
 
 import apache.conf.parser.File;
  
-public class SearchT  implements Runnable {
+public class SearchTask  implements Runnable {
 
 	public enum State {
 		IDLE,
@@ -27,7 +27,7 @@ public class SearchT  implements Runnable {
 		CANCELLED
 	}
 	
-	private static Logger log = Logger.getLogger(SearchT.class);
+	private static Logger log = Logger.getLogger(SearchTask.class);
 	
 	private String directory;
 	private String fileList;
@@ -38,7 +38,7 @@ public class SearchT  implements Runnable {
 	private static State state = State.IDLE;
 	private static String output;
 	
-	public SearchT(String directory, String fileList, String filter, boolean recursive) {		
+	public SearchTask(String directory, String fileList, String filter, boolean recursive) {		
 		this.directory = directory;
 		this.fileList = fileList;
 		this.filter = filter;

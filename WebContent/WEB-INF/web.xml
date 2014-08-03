@@ -14,7 +14,7 @@
     <listener-class>ca.apachegui.history.HistoryMaintenance</listener-class>
   </listener>
   <listener>
-    <listener-class>ca.apachegui.global.Search</listener-class>
+    <listener-class>ca.apachegui.global.SearchContextListener</listener-class>
   </listener>
   <mime-mapping>
     <extension>csv</extension>

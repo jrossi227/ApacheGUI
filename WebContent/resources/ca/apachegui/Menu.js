@@ -132,29 +132,28 @@ define([ "dojo/_base/declare",
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Renaming', 'Renaming Please Wait...');
 			thisdialog.show();
 			
-			request.post("../Menu", {
+			request.post("../web/Menu", {
 				data: {
 					option: 'renameFile',
 					oldFile: this.currentMenuId.substring(this.currentMenuId.indexOf("-")+1),
 					newFile: (this.currentMenuId.substring(this.currentMenuId.indexOf("-")+1,this.currentMenuId.lastIndexOf("/")+1) + dom.byId('renameFileFilename').value)
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = response.data;
-				
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
-				} else {
 					//update menu here
 					registry.byId('renameFileDialog').hide();
-					that.refresh();
-				}	
-				
-				thisdialog.remove();
-			});
+					that.refresh();	
+					
+					thisdialog.remove();
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Info',error.response.data.message);
+					thisdialog.remove();
+				}
+			);
 		},
 		
 		newFile: function () {
@@ -172,29 +171,28 @@ define([ "dojo/_base/declare",
 			var thisdialog = ca.apachegui.Util.noCloseDialog('New File', 'Creating New File Please Wait...');
 			thisdialog.show();
 			
-			request.post("../Menu", {
+			request.post("../web/Menu", {
 				data: {
 					option: 'newFile',
 					filename: (this.currentMenuId.substring(this.currentMenuId.indexOf("-")+1) + '/' + dom.byId('newFileFilename').value),
 					type: type
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = response.data;
-				
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
-				} else {
 					//update menu here
 					registry.byId('newFileDialog').hide();
 					that.refresh();
-				}	
-				
-				thisdialog.remove();
-			});
+					
+					thisdialog.remove();
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Info',error.response.data.message);
+					thisdialog.remove();
+				}
+			);
 		},
 		
 		cut: function () {
@@ -218,29 +216,28 @@ define([ "dojo/_base/declare",
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Pasting', 'Pasting Please Wait...');
 			thisdialog.show();
 			
-			request.post("../Menu", {
+			request.post("../web/Menu", {
 				data: {
 					option: option,
 					oldFile: this.fileBuffer.file, 
 					directory: this.currentMenuId.substring(this.currentMenuId.indexOf("-")+1)
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = response.data;
-				
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
-				} else {
 					//update menu here
 					that.fileBuffer=new Object();
-					that.refresh();
-				}	
-				
-				thisdialog.remove();
-			});
+					that.refresh();	
+					
+					thisdialog.remove();
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Info',error.response.data.message);
+					thisdialog.remove();
+				}
+			);
 		},
 		
 		deleteFile: function () {
@@ -254,27 +251,25 @@ define([ "dojo/_base/declare",
 					var thisdialog = ca.apachegui.Util.noCloseDialog('Deleting', 'Deleting Please Wait...');
 					thisdialog.show();
 				
-					request.post("../Menu", {
+					request.post("../web/Menu", {
 						data: {
 							option: 'deleteFile',
 							filename: that.currentMenuId.substring(that.currentMenuId.indexOf("-")+1)
 						},
-						handleAs: 'text',
+						handleAs: 'json',
 						sync: false
-					}).response.then(function(response) {
+					}).response.then(
+						function(response) {
 						
-						var data = response.data;
-						
-						var status = response.status;
-						if(status!=200) {
-							ca.apachegui.Util.alert('Error',data);
-						} else {
-							//update menu here
-							that.refresh();
-						}	
-						
-						thisdialog.remove();
-					});
+							that.refresh();	
+							
+							thisdialog.remove();
+						},
+						function(error) {
+							ca.apachegui.Util.alert('Info',error.response.data.message);
+							thisdialog.remove();
+						}
+					);
 					
 				});
 		},
@@ -394,7 +389,7 @@ define([ "dojo/_base/declare",
 			
 			var searchDirectory = dom.byId('searchDirectoryDisplay').innerHTML.trim();
 			
-			request.post('../Menu', {
+			request.post('../web/Menu', {
 				data: 	{
 					option: 'submitSearch',
 					searchFilter: searchFilter,
@@ -402,19 +397,13 @@ define([ "dojo/_base/declare",
 					searchRecursively: searchRecursively,
 					searchDirectory: searchDirectory
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-				
-				var status = response.status;
-				if(status!=200)
-				{
-					ca.apachegui.Util.alert('Error',data.error);
-				}
-				else
-				{					
+					var data = response.data;
+					
 					var message = '';
 					
 					var started = data.started;
@@ -434,34 +423,30 @@ define([ "dojo/_base/declare",
 					
 					that.searchInterval = ca.apachegui.Interval.setInterval(function() {
 						that.searchCheck();
-					}, 2000);
+					}, 2000);	
 					
-				}	
-				
-			});
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Info',error.response.data.message);
+				}
+			);
 		},
 		
 		searchCheck: function() {
 			var that = this;
 			
-			request.post('../Menu', {
-				data: 	{
+			request.get('../web/Menu', {
+				query: 	{
 					option: 'searchCheck'
 				},
-				handleAs: 'text',
-				sync: false
-			}).response.then(function(response) {
+				handleAs: 'json',
+				sync: false,
+				preventCache: true
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-				
-				var status = response.status;
-				if(status!=200)
-				{
-					ca.apachegui.Util.alert('Error',data.result);
-				}
-				else
-				{
-					
+					var data = response.data;
+	
 					var searchStatus = data.status;
 					if(searchStatus == 'running') {
 						dom.byId('searchProgressMessage').innerHTML = data.output;
@@ -505,9 +490,12 @@ define([ "dojo/_base/declare",
 						that.clearSearchInterval();
 						registry.byId('searchProgressDialog').hide();
 					}
-				}	
-				
-			});
+
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Info',error.response.data.message);
+				}
+			);
 		},
 		
 		searchCancel: function() {
@@ -517,26 +505,24 @@ define([ "dojo/_base/declare",
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Cancelling', 'Cancelling Please Wait...');
 			thisdialog.show();
 			
-			request.post('../Menu', {
+			request.post('../web/Menu', {
 				data: 	{
 					option: 'searchCancel'
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = response.data;
-				
-				var status = response.status;
-				if(status!=200)
-				{
-					ca.apachegui.Util.alert('Error',data);
+					registry.byId('searchProgressDialog').hide();
+					
+					thisdialog.remove();
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Info',error.response.data.message);
+					thisdialog.remove();
 				}
-				
-				registry.byId('searchProgressDialog').hide();
-				
-				thisdialog.remove();
-			});
+			);
 		},
 		
 		submitConfigurationSearch: function() {

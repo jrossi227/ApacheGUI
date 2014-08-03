@@ -37,9 +37,9 @@
         		New Tab
     		</div>
 		</ul>
-		<!--  <div dojoType="dojo.data.ItemFileWriteStore" jsId="apacheStore" url="../Menu">
+		<!--  <div dojoType="dojo.data.ItemFileWriteStore" jsId="apacheStore" url="../web/Menu/rest">
 		</div>-->
-		<div dojoType="dojox.data.JsonRestStore" jsId="apacheStore" target="<%=(request.getContextPath() + "/Menu") %>" labelAttribute="name"></div>
+		<div dojoType="dojox.data.JsonRestStore" jsId="apacheStore" target="<%=(request.getContextPath() + "/web/Menu/rest") %>" labelAttribute="name"></div>
 		
 		<div dojoType="dijit.tree.ForestStoreModel" jsId="apacheModel" store="apacheStore"
 			rootId="apacheRoot" rootLabel="Apache" childrenAttrs="children" deferItemLoadingUntilExpand="true" >
