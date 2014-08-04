@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ca.apachegui.db.Users;
 import ca.apachegui.global.Constants;
 
-/**
- * Servlet implementation class Settings
- */
 @RestController
 @RequestMapping("/Settings")
 public class SettingsController {

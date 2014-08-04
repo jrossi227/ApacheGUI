@@ -77,25 +77,22 @@ define([ "dojo/_base/declare",
 		checkIfEnabled: function () {
 			var isHistoryEnabled=false;
 			
-			request.post("../History", {
-				data: 	{
+			request.get("../web/History", {
+				query: 	{
 					option: 'checkIfEnabled'
 				},
-				handleAs: 'text',
-				sync: true
-			}).response.then(function(response) {
-				
-				var data = response.data;
-				
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
+				handleAs: 'json',
+				sync: true,
+				preventCache: true
+			}).response.then(
+				function(response) {
+					var data = response.data;
+					isHistoryEnabled=data.enabled;	
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
-				else {
-					var jsonData = json.fromJson(data);
-					isHistoryEnabled=jsonData.enabled;
-				}	
-			});
+			);
 			
 			return isHistoryEnabled;
 		},
@@ -109,27 +106,25 @@ define([ "dojo/_base/declare",
 				thisdialog = ca.apachegui.Util.noCloseDialog('Enabling', 'Please wait...');
 				thisdialog.show();
 				
-				request.post("../History", {
+				request.post("../web/History", {
 					data: 	{
 						option: 'enable'
 					},
-					handleAs: 'text',
+					handleAs: 'json',
 					sync: false
-				}).response.then(function(response) {
+				}).response.then(
+					function(response) {
 					
-					var data = response.data;
-					
-					var status = response.status;
-					if(status!=200) {
-						ca.apachegui.Util.alert('Error',data);
-					}
-					else {
 						that.historyEnabled=true;
-						that.showEnabled();
-					}	
-					
-					thisdialog.remove();
-				});
+						that.showEnabled();	
+						
+						thisdialog.remove();
+					},
+					function(error) {
+						thisdialog.remove();
+						ca.apachegui.Util.alert('Error',error.response.data.message);
+					}
+				);
 			};
 			
 			ca.apachegui.Control.getInstance().isServerRunning(
@@ -164,26 +159,22 @@ define([ "dojo/_base/declare",
 				thisdialog = ca.apachegui.Util.noCloseDialog('Disabling', 'Please wait...');
 				thisdialog.show();
 				
-				request.post("../History", {
+				request.post("../web/History", {
 					data: 	{
 						option: 'disable'
 					},
-					handleAs: 'text',
+					handleAs: 'json',
 					sync: false
 				}).response.then(function(response) {
 					
-					var data = response.data;
-					
-					var status = response.status;
-					if(status!=200) {
-						ca.apachegui.Util.alert('Error',data);
-					}
-					else {
-						that.historyEnabled=false;
-						that.showDisabled();
-					}	
+					that.historyEnabled=false;
+					that.showDisabled();	
 					
 					thisdialog.remove();
+				},
+				function(error) {
+					thisdialog.remove();
+					ca.apachegui.Util.alert('Error',error.response.data.message);
 				});
 			};
 				

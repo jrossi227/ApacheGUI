@@ -50,7 +50,7 @@
 				<h3>Historical Data</h3>
             </div>
 			
-			<span dojoType="dojo.data.ItemFileWriteStore" jsId="historyStore" url="../History" urlPreventCache="true"></span>
+			<span dojoType="dojo.data.ItemFileWriteStore" jsId="historyStore" url="../web/History/Current" urlPreventCache="true"></span>
 			
 			<table dojoType="dojox.grid.DataGrid" jsId="historyGrid" store="historyStore" query="{ numHistory: '*' }" clientSort="false" selectable="true" style="width: 100%;" autoHeight="true" rowSelector="20px">
     			<thead>
