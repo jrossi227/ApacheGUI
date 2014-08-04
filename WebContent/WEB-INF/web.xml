@@ -84,11 +84,9 @@
 
    <servlet-mapping>
 	 <servlet-name>spring</servlet-name>
-	 <url-pattern>/</url-pattern>
+	 <url-pattern>*.jsp</url-pattern>
 	 <url-pattern>/web/*</url-pattern>
 	 <url-pattern>/pass/*</url-pattern>
-	 <url-pattern>/HistoryFiles/*</url-pattern>
-	 <url-pattern>/search/*</url-pattern>
    </servlet-mapping>
    
    <servlet-mapping>
