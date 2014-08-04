@@ -385,7 +385,7 @@
 		
 		<div id="centerPanel" class="centerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'center'">
 			<div class="dijitDialogPaneContentArea"><h3>Application Settings</h3></div>
-			<span dojoType="dojo.data.ItemFileWriteStore" jsId="settingsStore" url="../GUISettings" urlPreventCache="true">
+			<span dojoType="dojo.data.ItemFileWriteStore" jsId="settingsStore" url="../web/GUISettings/Current" urlPreventCache="true">
 			</span>
 			<table id="settingsGrid" dojoType="dojox.grid.DataGrid" jsId="settingsGrid" store="settingsStore" query="{ name: '*' }" clientSort="false" selectable="true" style="width: 100%;" autoHeight="true" rowSelector="20px">
     			<thead>

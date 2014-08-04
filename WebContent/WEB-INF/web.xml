@@ -103,15 +103,6 @@
    </listener>
   
   <servlet>
-    <display-name>GUISettings</display-name>
-    <servlet-name>GUISettings</servlet-name>
-    <servlet-class>ca.apachegui.web.GUISettings</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>GUISettings</servlet-name>
-    <url-pattern>/GUISettings</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <display-name>Init</display-name>
     <servlet-name>Init</servlet-name>
     <servlet-class>ca.apachegui.web.Init</servlet-class>

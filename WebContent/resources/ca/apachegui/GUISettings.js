@@ -48,25 +48,21 @@ define([ "dojo/_base/declare",
 				var thisdialog = ca.apachegui.Util.noCloseDialog('Loading', 'Configuring new server, please wait...');
 				thisdialog.show();
 				
-				request.post("../GUISettings", {
+				request.post("../web/GUISettings", {
 					data: 	{
 						option: 'newServer'
 					},
-					handleAs: 'text',
+					handleAs: 'json',
 					sync: true
-				}).response.then(function(response) {
-					
-					var data = response.data;
-					
-					var status = response.status;
-					if(status!=200) {
-						thisdialog.remove();
-						ca.apachegui.Util.alert('Error',data);
-					}
-					else {
+				}).response.then(
+					function(response) {
 						window.location.reload();
-					}	
-				});
+					},
+					function(error) {
+						thisdialog.remove();
+						ca.apachegui.Util.alert('Info',error.response.data.message);
+					}
+				);
 			}
 		},
 		
@@ -276,7 +272,7 @@ define([ "dojo/_base/declare",
 			}
 			
 			//dialog and ajax here
-			var newStore = new ItemFileWriteStore({url: '../GUISettings', urlPreventCache: true});
+			var newStore = new ItemFileWriteStore({url: '../web/GUISettings/Current', urlPreventCache: true});
 			settingsGrid.setStore(newStore);
 		},
 		
@@ -285,26 +281,27 @@ define([ "dojo/_base/declare",
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Loading', 'Please Wait...');
 			thisdialog.show();
 			
-			request.post("../GUISettings", {
-				data: 	{
+			request.get("../web/GUISettings", {
+				query: 	{
 					option: 'getServerInfo'
 				},
+				preventCache: true,
 				handleAs: 'text',
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = response.data;
-				
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
+					var data = response.data;
+					
+					ca.apachegui.Util.alert('Info',data);	
+					
+					thisdialog.remove();
+				},
+				function(error) {
+					thisdialog.remove();
+					ca.apachegui.Util.alert('Info',error.response.data.message);
 				}
-				else {
-					ca.apachegui.Util.alert('Info',data);
-				}	
-				
-				thisdialog.remove();
-			});
+			);
 		},
 		
 		isUpdateAvailable: function(newVersion) {
