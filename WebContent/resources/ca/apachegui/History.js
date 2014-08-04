@@ -226,7 +226,7 @@ define([ "dojo/_base/declare",
 				var thisdialog = ca.apachegui.Util.noCloseDialog('Generating', 'Please wait...');
 				thisdialog.show();
 				
-				request.get("../SearchResults", {
+				request.get("../web/SearchResults", {
 					query: 	{
 						option: 'csv',
 						startDate: dom.byId('startDate').value,
@@ -240,22 +240,19 @@ define([ "dojo/_base/declare",
 						contentSize: dom.byId('contentSize').value,
 						maxResults: dom.byId('maxResults').value
 					},
-					handleAs: 'text',
+					handleAs: 'json',
 					sync: false,
 					preventCache: true
-				}).response.then(function(response) {
-					thisdialog.remove();
-					
-					var data = response.data;
-					
-					var status = response.status;
-					if(status!=200) {
-						ca.apachegui.Util.alert('Error',data);
+				}).response.then(
+					function(response) {
+						thisdialog.remove();
+						document.location='../HistoryFiles/ApacheGUIHistory.csv';	
+					},
+					function(error) {
+						thisdialog.remove();
+						ca.apachegui.Util.alert('Error',error.response.data.message);
 					}
-					else {
-						document.location='../HistoryFiles/ApacheGUIHistory.csv';
-					}	
-				});
+				);
 				
 			}
 		},
@@ -270,7 +267,7 @@ define([ "dojo/_base/declare",
 						var thisdialog = ca.apachegui.Util.noCloseDialog('Deleting ', 'Please wait...');
 						thisdialog.show();
 						
-						request.get("../SearchResults", {
+						request.get("../web/SearchResults", {
 							query: 	{
 								option: 'delete',
 								startDate: dom.byId('startDate').value,
@@ -283,22 +280,18 @@ define([ "dojo/_base/declare",
 								status: dom.byId('status').value,
 								contentSize: dom.byId('contentSize').value
 							},
-							handleAs: 'text',
+							handleAs: 'json',
 							sync: false,
 							preventCache: true
-						}).response.then(function(response) {
-							thisdialog.remove();
-							
-							var data = response.data;
-							
-							var status = response.status;
-							if(status!=200) {
-								ca.apachegui.Util.alert('Error',data);
-							}
-							else {
+						}).response.then(
+							function(response) {
 								window.location.reload();
-							}	
-						});
+							},
+							function(error) {
+								thisdialog.remove();
+								ca.apachegui.Util.alert('Error',error.response.data.message);
+							}
+						);
 					}
 				}
 			);

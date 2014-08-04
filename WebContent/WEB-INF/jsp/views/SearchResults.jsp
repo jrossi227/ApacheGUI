@@ -30,7 +30,7 @@
 	<div id="appLayout" class="demoLayout" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline'">
 		
 		<div id="mainPanel" class="centerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'top'" style="width: 100%; height:100%;overflow:auto;">
-			<span dojoType="dojo.data.ItemFileWriteStore" jsId="historyStore" url="../SearchResults?option=window&startDate=${startDate}&startTime=${startTime}&endDate=${endDate}&endTime=${endTime}&host=${host}&userAgent=${userAgent}&requestString=${requestString}&status=${status}&contentSize=${contentSize}&maxResults=${maxResults}">
+			<span dojoType="dojo.data.ItemFileWriteStore" jsId="historyStore" url="../web/SearchResults?option=window&startDate=${startDate}&startTime=${startTime}&endDate=${endDate}&endTime=${endTime}&host=${host}&userAgent=${userAgent}&requestString=${requestString}&status=${status}&contentSize=${contentSize}&maxResults=${maxResults}">
 			</span>
 			<table dojoType="dojox.grid.DataGrid" jsId="historyGrid" store="historyStore" query="{ insertDate: '*' }" clientSort="false" selectable="true" style="width: 100%;" autoHeight="true" rowSelector="20px">
 				<thead>

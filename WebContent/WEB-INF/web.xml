@@ -13,6 +13,7 @@
   <listener>
     <listener-class>ca.apachegui.global.ServerContextListener</listener-class>
   </listener>
+    
   <mime-mapping>
     <extension>csv</extension>
     <mime-type>text/csv</mime-type>
@@ -23,6 +24,8 @@
       <web-resource-name>SecretProtection</web-resource-name>
       <url-pattern>/jsp/*</url-pattern>
       <url-pattern>/web/*</url-pattern>
+      <url-pattern>/HistoryFiles/*</url-pattern>
+      <url-pattern>/search/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>apachegui</role-name>
@@ -81,9 +84,11 @@
 
    <servlet-mapping>
 	 <servlet-name>spring</servlet-name>
-	 <url-pattern>*.jsp</url-pattern>
+	 <url-pattern>/</url-pattern>
 	 <url-pattern>/web/*</url-pattern>
 	 <url-pattern>/pass/*</url-pattern>
+	 <url-pattern>/HistoryFiles/*</url-pattern>
+	 <url-pattern>/search/*</url-pattern>
    </servlet-mapping>
    
    <servlet-mapping>
@@ -137,15 +142,6 @@
   <servlet-mapping>
     <servlet-name>Modules</servlet-name>
     <url-pattern>/Modules</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <display-name>SearchResults</display-name>
-    <servlet-name>SearchResults</servlet-name>
-    <servlet-class>ca.apachegui.web.SearchResults</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>SearchResults</servlet-name>
-    <url-pattern>/SearchResults</url-pattern>
   </servlet-mapping>
   <servlet>
     <display-name>Networking</display-name>
