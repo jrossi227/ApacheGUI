@@ -83,6 +83,7 @@
 	 <servlet-name>spring</servlet-name>
 	 <url-pattern>*.jsp</url-pattern>
 	 <url-pattern>/web/*</url-pattern>
+	 <url-pattern>/pass/*</url-pattern>
    </servlet-mapping>
    
    <servlet-mapping>
@@ -145,15 +146,6 @@
   <servlet-mapping>
     <servlet-name>Modules</servlet-name>
     <url-pattern>/Modules</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <display-name>ReceiveLogData</display-name>
-    <servlet-name>ReceiveLogData</servlet-name>
-    <servlet-class>ca.apachegui.web.ReceiveLogData</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>ReceiveLogData</servlet-name>
-    <url-pattern>/ReceiveLogData</url-pattern>
   </servlet-mapping>
   <servlet>
     <display-name>History</display-name>

@@ -15,20 +15,16 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 
 import ca.apachegui.global.Constants;
-import ca.apachegui.history.InsertHistory;
 
 public class LogData extends JdbcConnection 
 {
 	private static Logger log = Logger.getLogger(LogData.class);
-	private static ExecutorService threadExecute=Executors.newCachedThreadPool();   
 	private String host;
 	private Timestamp insertDate;
 	private String userAgent;
 	private String requestString;
 	private String status;
 	private String contentSize;
-	private static int logDataCounter=1;
-	private static ArrayList<LogData> logData=new ArrayList<LogData>();
 	
 	public LogData(Timestamp insertDate, String host, String userAgent, String requestString, String status, String contentSize)
 	{
@@ -38,28 +34,6 @@ public class LogData extends JdbcConnection
 		this.requestString=requestString;
 		this.status=status;
 		this.contentSize=contentSize;
-	}
-	
-	/**
-	 * Buffers log Data until the logData counter is reached. 
-	 * Once the counter is reached a thread is spawned to write the records to the database.
-	 * 
-	 * @param data - The Log data to add to the database.
-	 */
-	public static synchronized void addLogData(LogData data)
-	{
-		logDataCounter++;
-		logData.add(data);
-		
-		if(logDataCounter>(Integer.parseInt(Settings.getSetting(Constants.historyBuffer))))
-		{	
-			//commit in a new Thread
-			InsertHistory history=new InsertHistory(logData.toArray(new LogData[logData.size()]));
-			threadExecute.execute(history);
-		
-			logDataCounter=1;
-			logData.clear();
-		}
 	}
 	
 	/**
@@ -101,14 +75,6 @@ public class LogData extends JdbcConnection
 			closeStatement(st);
 			disconnect(conn);
 		}	
-	}
-	
-	/**
-	 * Shuts down any threads currently writing LogData
-	 */
-	public static void stopLogData()
-	{
-		threadExecute.shutdownNow();
 	}
 	
 	/**
