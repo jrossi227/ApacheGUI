@@ -60,7 +60,7 @@ define([ "dojo/_base/declare",
 					},
 					function(error) {
 						thisdialog.remove();
-						ca.apachegui.Util.alert('Info',error.response.data.message);
+						ca.apachegui.Util.alert('Error',error.response.data.message);
 					}
 				);
 			}
@@ -299,7 +299,9 @@ define([ "dojo/_base/declare",
 				},
 				function(error) {
 					thisdialog.remove();
-					ca.apachegui.Util.alert('Info',error.response.data.message);
+					
+					var data = json.fromJson(error.response.data);
+					ca.apachegui.Util.alert('Error',data.message);
 				}
 			);
 		},

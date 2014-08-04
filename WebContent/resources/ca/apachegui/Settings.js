@@ -8,25 +8,22 @@ define([ "dojo/_base/declare",
 		
 		constructor: function() {
 			var currSettingsMap={};
-			request.post('../Settings', {
-				data: 	{
+			request.get('../web/Settings', {
+				query: 	{
 					option: 'getAllSettingsNames'
 				},
-				handleAs: 'text',
-				sync: true
-			}).response.then(function(response) {
-				
-				var data = json.fromJson(response.data);
-				var status = response.status;
-				if(status!=200)
-				{
-					ca.apachegui.Util.alert('Error',data);
+				handleAs: 'json',
+				sync: true,
+				preventCache: true
+			}).response.then(
+				function(response) {
+					var data = response.data;
+					currSettingsMap=data;	
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
-				else
-				{
-					currSettingsMap=data;
-				}	
-			});
+			);
 			
 			this.settingsMap=currSettingsMap;
 		},
@@ -34,26 +31,24 @@ define([ "dojo/_base/declare",
 		getSetting: function(name) {
 			var setting='';
 			
-			request.post('../Settings', {
-				data: 	{
+			request.get('../web/Settings', {
+				query: 	{
 					option: 'getSetting',
 					name: name
 				},
-				handleAs: 'text',
-				sync: true
-			}).response.then(function(response) {
+				handleAs: 'json',
+				sync: true,
+				preventCache: true
+			}).response.then(
+				function(response) {
 				
-				var data = response.data;
-				var status = response.status;
-				if(status!=200)
-				{
-					ca.apachegui.Util.alert('Error',data);
+					var data = response.data;
+					setting=data.value;	
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
-				else
-				{
-					setting=data;
-				}	
-			});
+			);
 			
 			return setting;
 		},
@@ -61,25 +56,23 @@ define([ "dojo/_base/declare",
 		setSetting: function(name, value) {
 			var change=true;
 			
-			request.post('../Settings', {
+			request.post('../web/Settings', {
 				data: 	{
 					option: 'setSetting',
 					name: name,
 					value: value
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: true
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = response.data;
-				var status = response.status;
-				if(status!=200)
-				{
-					change=false;
-					ca.apachegui.Util.alert('Error',data);
-				}	
-			});
-			
+				},
+				function(error) {
+					change = false;
+					ca.apachegui.Util.alert('Error',error.response.data.message);
+				});
+				
 			return change;
 		}
 	});
