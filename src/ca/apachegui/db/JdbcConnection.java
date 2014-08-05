@@ -1,10 +1,11 @@
 package ca.apachegui.db;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
@@ -12,26 +13,17 @@ import ca.apachegui.global.Constants;
 
 public class JdbcConnection 
 {
-    private static String driver = "org.apache.derby.jdbc.EmbeddedDriver";
-    private static String protocol = "jdbc:derby:";
-    private static boolean loaded=false;
     private static Logger log = Logger.getLogger(JdbcConnection.class);
     
-    protected static void loadDriver() throws IllegalAccessException, InstantiationException, ClassNotFoundException
-    {
-    	Class.forName(driver).newInstance();
-    }
+    private static DataSource dataSource;
+    
+    public void setDataSource(DataSource dataSourceIn) {
+		dataSource = dataSourceIn;
+	}
     
     protected static Connection connect() throws SQLException, IllegalAccessException, InstantiationException, ClassNotFoundException 
     {	
-    	if(!loaded)
-    	{	
-    		loadDriver();
-    		loaded =true;
-    	}
-    	
-    	Connection conn = DriverManager.getConnection(protocol + Constants.dbName, null);
-    	return conn;
+    	return dataSource.getConnection();
     }
     
     protected static void disconnect(Connection conn) 
@@ -39,8 +31,8 @@ public class JdbcConnection
     	try 
     	{
     		if (conn != null){ 
-            conn.close();
-            conn = null;
+    			conn.close();
+            	conn = null;
 			} 
     	}
     	catch (SQLException e) {}
@@ -51,8 +43,8 @@ public class JdbcConnection
     	try 
     	{
     		if (res != null){ 
-            res.close();
-            res = null;
+    			res.close();
+            	res = null;
 			} 
     	}
     	catch (SQLException e) {}
@@ -63,40 +55,11 @@ public class JdbcConnection
     	try 
     	{
     		if (st != null){ 
-            st.close();
-            st = null;
+    			st.close();
+    			st = null;
 			} 
     	}
     	catch (SQLException e) {}
-    }
-    
-    //shuts down the database
-    protected static void shutdown()
-    {	
-    	try
-    	{
-    		// the shutdown=true attribute shuts down Derby
-    		DriverManager.getConnection("jdbc:derby:;shutdown=true");
-
-    		// To shut down a specific database only, but keep the
-    		// engine running (for example for connecting to other
-    		// databases), specify a database in the connection URL:
-    		//DriverManager.getConnection("jdbc:derby:" + dbName + ";shutdown=true");
-    	}
-    	catch (SQLException se)
-    	{
-    		if (( (se.getErrorCode() == 50000) && ("XJ015".equals(se.getSQLState()) ))) {
-    			// we got the expected exception
-    			System.out.println("Derby shut down normally");
-    			// Note that for single database shutdown, the expected
-    			// SQL state is "08006", and the error code is 45000.
-    		} 
-    		else {
-                // if the error code or SQLState is different, we have
-                // an unexpected exception (shutdown failed)
-    			System.err.println("Derby did not shut down normally");
-    		}
-    	}
     }
     
     /**
