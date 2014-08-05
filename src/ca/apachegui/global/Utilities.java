@@ -7,8 +7,11 @@ import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 
+import javax.servlet.ServletContext;
+
 import org.apache.log4j.Logger;
 
+import apache.conf.parser.File;
 import ca.apachegui.db.Settings;
 import ca.apachegui.directives.Listen;
 import ca.apachegui.history.History;
@@ -230,9 +233,29 @@ public class Utilities
 		
 	  }
 	  
-	  public static String getTomcatInstallDirectory() 
+	  public static String getTomcatInstallDirectory(ServletContext context) 
 	  {
-		  return History.getTomcatDirectory();
+		  File current = (new File(context.getRealPath("/")));
+		  
+		  while(!isTomcatDirectory(current)) {
+			  current = new File(current.getParentFile());
+		  }
+		  
+		  return current.getAbsolutePath();
+	  }
+	  
+	  private static boolean isTomcatDirectory(File file) {
+		  
+		  if(file.getName().equals("tomcat")) {
+			  return true;
+		  }
+		  
+		  return false;
+	  }
+	  
+	  public static String getWebappDirectory(ServletContext context) 
+	  {
+		  return (new File(context.getRealPath("/"))).getAbsolutePath();
 	  }
 	  
 	  public static String getJavaHome() 

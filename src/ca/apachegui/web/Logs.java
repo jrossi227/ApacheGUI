@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -26,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.ServletContextAware;
 
 import ca.apachegui.global.Constants;
 import ca.apachegui.global.Utilities;
@@ -33,23 +36,19 @@ import ca.apachegui.global.Utilities;
 /**
  * Servlet implementation class Logs
  */
-@WebServlet("/Logs")
-public class Logs extends HttpServlet {
+@RestController
+public class Logs extends HttpServlet implements ServletContextAware {
 	private static final long serialVersionUID = 1L;
 	private static Logger log = Logger.getLogger(Logs.class);
        
+	private ServletContext context;
+	
     /**
      * @see HttpServlet#HttpServlet()
      */
     public Logs() {
         super();
         // TODO Auto-generated constructor stub
-    }
-    
-    @Override
-    public void init()
-    {
-    	ca.apachegui.history.History.setTomcatDirectory((new File(getServletContext().getRealPath("/"))).getParentFile().getParentFile().getAbsolutePath());
     }
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
@@ -131,8 +130,7 @@ public class Logs extends HttpServlet {
 			log.trace("export called with searchFilter " + searchFilter + " file " + file.getAbsolutePath());
 			try 
 			{
-				String cat = Utilities.getTomcatInstallDirectory();
-				File outputFile=new File(cat, "webapps/ApacheGUI/search/" + Constants.searchFile);
+				File outputFile=new File(Utilities.getWebappDirectory(context), "webapps/ApacheGUI/search/" + Constants.searchFile);
 				BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputFile));
             	
         		FileInputStream fstream = new FileInputStream(file);
@@ -235,6 +233,12 @@ public class Logs extends HttpServlet {
 				out.print(sw.toString());
 			}
 		}
+	}
+
+	@Override
+	public void setServletContext(ServletContext servletContext) {
+		this.context = servletContext;
+		
 	}
 
 }

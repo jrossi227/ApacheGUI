@@ -1,5 +1,7 @@
 package ca.apachegui.history;
 
+import javax.servlet.ServletContext;
+
 import apache.conf.global.Utils;
 import apache.conf.parser.DirectiveParser;
 import apache.conf.parser.File;
@@ -20,8 +22,6 @@ import ca.apachegui.modules.StaticModuleHandler;
 
 public class History 
 {
-	private static String tomcatDirectory="";
-	
 	/**
 	 * Method used to check if history is enabled.
 	 * 
@@ -38,22 +38,18 @@ public class History
 	 * 
 	 * @throws Exception
 	 */
-	public static void enable() throws Exception
+	public static void enable(ServletContext context) throws Exception
 	{
 		if(checkIfEnabled())
 			return;
 		
-		File cat = new File(Utilities.getTomcatInstallDirectory());
+		File cat = new File(Utilities.getTomcatInstallDirectory(context));
 		File java = new File(Utilities.getJavaHome(),"bin/java" + (Utils.isWindows() ? ".exe" : ""));
 		
 		String includeString = "#This section is written by the apache gui do not manually edit " + Constants.historyLogHolder + Constants.newLine +
 							   "LogFormat \"%h\\\",\\\"%{User-agent}i\\\",\\\"%r\\\",\\\"%>s\\\",\\\"%B\" " + Constants.historyLogHolder + Constants.newLine;
 		
-		if(Utils.isWindows()) {
-			includeString += "CustomLog \"|\\\"" + java.getAbsolutePath() + "\\\" -jar \\\"" + (new File(cat, "bin/LogParser.jar")).getAbsolutePath() + "\\\" \\\"" + (new File(cat, "conf/server.xml")).getAbsolutePath() + "\\\"\" " + Constants.historyLogHolder + Constants.newLine;
-		} else {
-			includeString += "CustomLog \"|" + java.getAbsolutePath() + " -jar \\\"" + cat.getAbsolutePath() + "/bin/LogParser.jar\\\" \\\"" + cat.getAbsolutePath() + "/conf/server.xml\\\"\" " + Constants.historyLogHolder + Constants.newLine;
-		}
+		includeString += "CustomLog \"|\\\"" + java.getAbsolutePath() + "\\\" -jar \\\"" + (new File(cat, "bin/LogParser.jar")).getAbsolutePath() + "\\\" \\\"" + (new File(cat, "conf/server.xml")).getAbsolutePath() + "\\\"\" " + Constants.historyLogHolder + Constants.newLine;
 		
 		//Search for access.log and insert after access.log
 		DirectiveParser parser = new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
@@ -76,13 +72,5 @@ public class History
 		
 		ConfFiles.deleteFromConfigFiles(".*" + Constants.historyLogHolder + ".*", true);
 		
-	}
-	
-	public static String getTomcatDirectory() {
-		return tomcatDirectory;
-	}
-
-	public static synchronized void setTomcatDirectory(String tomcatDirectory) {
-		History.tomcatDirectory = tomcatDirectory;
 	}
 }

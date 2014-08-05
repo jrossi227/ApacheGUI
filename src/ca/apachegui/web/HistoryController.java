@@ -3,21 +3,26 @@ package ca.apachegui.web;
 import java.io.IOException;
 import java.sql.Timestamp;
 
+import javax.servlet.ServletContext;
+
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.ServletContextAware;
 
 import ca.apachegui.db.LogData;
 
 
 @RestController
 @RequestMapping("/History")
-public class HistoryController {
+public class HistoryController implements ServletContextAware {
 	private static Logger log = Logger.getLogger(HistoryController.class);
     
+	private ServletContext context;
+	
     @RequestMapping(value="/Current",method=RequestMethod.GET,produces="application/json;charset=UTF-8")
 	public String getHistory() throws IOException, InterruptedException {
 		int numberEntries=LogData.getNumberOfEntries();
@@ -58,7 +63,7 @@ public class HistoryController {
 	@RequestMapping(method=RequestMethod.POST,params="option=enable",produces="application/json;charset=UTF-8")
 	public String enable() throws Exception {
 	
-		ca.apachegui.history.History.enable();
+		ca.apachegui.history.History.enable(context);
 		if(ca.apachegui.server.Control.isServerRunning())
 		{	
 			String error="";
@@ -102,7 +107,7 @@ public class HistoryController {
 			catch(Exception e)
 			{
 				log.error(e.getMessage(), e);
-				ca.apachegui.history.History.enable();
+				ca.apachegui.history.History.enable(context);
 				throw new Exception("There was an error while trying to restart the server, the changes were reverted: " + error + " " + e.getMessage());
 			}
 		}
@@ -112,5 +117,10 @@ public class HistoryController {
 		
 		return result.toString();
 		
+	}
+
+	@Override
+	public void setServletContext(ServletContext servletContext) {
+		this.context = servletContext;
 	}
 }

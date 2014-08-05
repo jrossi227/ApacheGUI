@@ -53,6 +53,8 @@ public class SettingsController {
 			value=ca.apachegui.db.Settings.getSetting(name);
 		}
 		
+		value = (value == null ? "" : value);
+		
 		JSONObject result = new JSONObject();
 		result.put("value", value);
 		

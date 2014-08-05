@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import apache.conf.parser.File;
 import ca.apachegui.global.SearchTask.State;
-import ca.apachegui.history.History;
  
 public class ServerContextListener  implements ServletContextListener 
 {
@@ -22,10 +21,6 @@ public class ServerContextListener  implements ServletContextListener
 		if(new File(System.getProperty("java.io.tmpdir"),"ApacheGUIUpdate").exists()) {
 			new File(System.getProperty("java.io.tmpdir"),"ApacheGUIUpdate").delete();
 		}
-		
-		String tomcatDirectory = (new File(sce.getServletContext().getRealPath("/"))).getParentFile().getParentFile().getAbsolutePath();
-		History.setTomcatDirectory(tomcatDirectory);
-		log.info("Initialized tomcat directory: " + tomcatDirectory);
 	}
 	
 	@Override

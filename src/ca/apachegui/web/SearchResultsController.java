@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import javax.servlet.ServletContext;
+
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,15 +19,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.ServletContextAware;
 
 import ca.apachegui.db.LogData;
 import ca.apachegui.global.Constants;
 import ca.apachegui.global.Utilities;
 
 @RestController
-public class SearchResultsController {
+public class SearchResultsController implements ServletContextAware {
 	private static Logger log = Logger.getLogger(SearchResultsController.class);
     
+	private ServletContext context;
+	
     @RequestMapping(value="/SearchResults",method=RequestMethod.GET,produces="application/json;charset=UTF-8")
 	public String searchResults(
 			@RequestParam(value="option") String option,
@@ -125,8 +130,7 @@ public class SearchResultsController {
 			//ServletOutputStream stream = response.getOutputStream();
 			log.trace("Entering csv option");
 			LogData[] results=LogData.queryLogData(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize, maxResults);
-			File cat = new File(Utilities.getTomcatInstallDirectory());
-		    File doc = new File(cat,"webapps/ApacheGUI/HistoryFiles/" + Constants.historyFilename);
+		    File doc = new File(Utilities.getWebappDirectory(context),"HistoryFiles/" + Constants.historyFilename);
 			BufferedWriter writer = new BufferedWriter(new FileWriter(doc));
 			writer.write("\"INSERTDATE\",\"HOST\",\"USERAGENT\",\"REQUESTSTRING\",\"STATUS\",\"CONTENTSIZE\"");
 			writer.newLine();
@@ -150,6 +154,11 @@ public class SearchResultsController {
 		
 		return result.toString();
 		
+	}
+
+	@Override
+	public void setServletContext(ServletContext servletContext) {
+		this.context = servletContext;
 	}
 	
 
