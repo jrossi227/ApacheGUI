@@ -55,18 +55,19 @@
      </init-param>
   </filter>
 
-  <filter-mapping>
-     <filter-name>CharacterEncodingFilter</filter-name>
-     <url-pattern>/*</url-pattern>
-  </filter-mapping>
-
   <filter>
     <filter-name>SharedModuleFilter</filter-name>
     <filter-class>ca.apachegui.modules.SharedModuleFilter</filter-class>
   </filter>
+
+  <filter-mapping>
+     <filter-name>CharacterEncodingFilter</filter-name>
+     <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
   <filter-mapping>
     <filter-name>SharedModuleFilter</filter-name>
-    <url-pattern>/Init</url-pattern>
+    <url-pattern>/web/Init</url-pattern>
   </filter-mapping>
   
   <servlet>

@@ -14,11 +14,16 @@ import org.apache.log4j.Logger;
 import apache.conf.parser.File;
 import ca.apachegui.db.SettingsDao;
 import ca.apachegui.directives.Listen;
-import ca.apachegui.history.History;
 
 public class Utilities 
 {
 	private static Logger log = Logger.getLogger(Utilities.class);
+	
+	private static ServletContext context;
+	
+	public static void setServletcontext(ServletContext servletContext) {
+		context = servletContext; 
+	}
 	
 	/**
 	 * Goes through Apache Listen directives to search for a port/url that is available on the input ip.
@@ -233,7 +238,7 @@ public class Utilities
 		
 	  }
 	  
-	  public static String getTomcatInstallDirectory(ServletContext context) 
+	  public static String getTomcatInstallDirectory() 
 	  {
 		  File current = (new File(context.getRealPath("/")));
 		  
@@ -253,7 +258,7 @@ public class Utilities
 		  return false;
 	  }
 	  
-	  public static String getWebappDirectory(ServletContext context) 
+	  public static String getWebappDirectory() 
 	  {
 		  return (new File(context.getRealPath("/"))).getAbsolutePath();
 	  }

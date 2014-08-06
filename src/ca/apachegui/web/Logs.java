@@ -130,7 +130,7 @@ public class Logs extends HttpServlet implements ServletContextAware {
 			log.trace("export called with searchFilter " + searchFilter + " file " + file.getAbsolutePath());
 			try 
 			{
-				File outputFile=new File(Utilities.getWebappDirectory(context), "webapps/ApacheGUI/search/" + Constants.searchFile);
+				File outputFile=new File(Utilities.getWebappDirectory(), "webapps/ApacheGUI/search/" + Constants.searchFile);
 				BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputFile));
             	
         		FileInputStream fstream = new FileInputStream(file);

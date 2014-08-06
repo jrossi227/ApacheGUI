@@ -43,7 +43,7 @@ public class History
 		if(checkIfEnabled())
 			return;
 		
-		File cat = new File(Utilities.getTomcatInstallDirectory(context));
+		File cat = new File(Utilities.getTomcatInstallDirectory());
 		File java = new File(Utilities.getJavaHome(),"bin/java" + (Utils.isWindows() ? ".exe" : ""));
 		
 		String includeString = "#This section is written by the apache gui do not manually edit " + Constants.historyLogHolder + Constants.newLine +

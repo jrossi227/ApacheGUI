@@ -21,6 +21,8 @@ public class ServerContextListener  implements ServletContextListener
 		if(new File(System.getProperty("java.io.tmpdir"),"ApacheGUIUpdate").exists()) {
 			new File(System.getProperty("java.io.tmpdir"),"ApacheGUIUpdate").delete();
 		}
+		
+		Utilities.setServletcontext(sce.getServletContext());
 	}
 	
 	@Override

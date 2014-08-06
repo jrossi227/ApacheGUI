@@ -4,17 +4,19 @@ package ca.apachegui.web;
 import apache.conf.global.Utils;
 import apache.conf.parser.DirectiveParser;
 import apache.conf.parser.File;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import ca.apachegui.conf.ConfFiles;
 import ca.apachegui.db.JdbcConnection;
@@ -25,10 +27,8 @@ import ca.apachegui.modules.SharedModuleHandler;
 import ca.apachegui.modules.StaticModuleHandler;
 import ca.apachegui.server.ServerInfo;
 
-/**
- * Servlet implementation class Init
- */
-@WebServlet("/Init")
+@RestController
+@RequestMapping("/Init")
 public class Init extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static Logger log = Logger.getLogger(Init.class);
