@@ -385,29 +385,35 @@ define([ "dojo/_base/declare",
 			
 			var path=ca.apachegui.Util.getQueryParam('file');
 			
-			request.post('../Main', {
-				data: 	{
+			request.get('../web/Main', {
+				query: 	{
 					option: 'lastModifiedTime', 
 					path: path
 				},
-				handleAs: 'text',
-				sync: false
-			}).response.then(function(response) {
+				handleAs: 'json',
+				sync: false,
+				preventCache: true
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-				
-				var time = data.time;
-				if(time > that.getOpenTime()) {
-					that.setOpenTime(time);
+					var data = response.data;
 					
-					ca.apachegui.Util.confirmDialog("Reload", "This file has been modified outside of this editor. Would you like to reload?", function confirm(conf) {
-						if(conf)
-						{
-							window.location.reload();
-						}
-					});
+					var time = parseInt(data.time);
+					if(time > that.getOpenTime()) {
+						that.setOpenTime(time);
+						
+						ca.apachegui.Util.confirmDialog("Reload", "This file has been modified outside of this editor. Would you like to reload?", function confirm(conf) {
+							if(conf)
+							{
+								window.location.reload();
+							}
+						});
+					}
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
-			});
+			);
 		},
 		
 		addListeners: function() {
