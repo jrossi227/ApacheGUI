@@ -110,15 +110,6 @@
     <url-pattern>/Logs</url-pattern>
   </servlet-mapping>
   <servlet>
-    <display-name>Main</display-name>
-    <servlet-name>Main</servlet-name>
-    <servlet-class>ca.apachegui.web.Main</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Main</servlet-name>
-    <url-pattern>/Main</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <display-name>Modules</display-name>
     <servlet-name>Modules</servlet-name>
     <servlet-class>ca.apachegui.web.Modules</servlet-class>
