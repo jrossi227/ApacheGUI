@@ -83,12 +83,13 @@ public class GUIViewController {
 	}
 	
 	@RequestMapping(value="/jsp/Login.jsp")
-	public String renderLoginViewJsp(HttpServletRequest request, Model model) {
+	public String renderLoginViewJsp(@RequestParam(value="error", required=false) String error, HttpServletRequest request, Model model) {
 		
 		model.addAttribute("advisory",UsersDao.getInstance().getLoginAdvisory());
 		
 		String userAgent=request.getHeader("User-Agent");  
 		model.addAttribute("supportedBrowser",Utils.matchUserAgent(userAgent, Constants.supportedUserAgentRegex));
+		model.addAttribute("error", error == null ? false : true);
 		
 		return "views/Login";
 	}
@@ -293,11 +294,6 @@ public class GUIViewController {
 		model.addAttribute("mode", mode);
 		
 		return "views/Configuration";
-	}
-	
-	@RequestMapping(value="/jsp/Error.jsp", method=RequestMethod.POST)
-	public String renderLoginerrorJsp() {
-		return "views/Error";
 	}
 	
 	//Catch all view render

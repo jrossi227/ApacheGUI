@@ -35,7 +35,7 @@
     <auth-method>FORM</auth-method>
     <form-login-config>
       <form-login-page>/jsp/Login.jsp</form-login-page>
-      <form-error-page>/jsp/Error.jsp</form-error-page>
+      <form-error-page>/jsp/Login.jsp?error=true</form-error-page>
     </form-login-config>
   </login-config>
   <security-role>

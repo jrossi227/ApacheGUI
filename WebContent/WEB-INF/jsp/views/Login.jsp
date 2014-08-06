@@ -31,6 +31,10 @@
 					'<img alt="Safari" src="../resources/images/safari.jpg"/>');	
 				</c:if>
 				
+				<c:if test="${error == true}">
+				ca.apachegui.Util.alert('Login Failure','You have entered invalid credentials');
+				</c:if>
+				
 			});
 		});
 	    
