@@ -10,6 +10,7 @@ define([ "dojo/_base/declare",
 		apacheGuiVersion: '',
 		windows: false,
 		sessionActive: true,
+		notRunningDialog: null,
 		
 		getCurrentOption: function() {
 			return this.currentOption;
@@ -39,17 +40,23 @@ define([ "dojo/_base/declare",
 		{
 			var confFilePath='';
 			
-			request.post('../Main', {
-				data: 	{
+			request.get('../web/Main', {
+				query: 	{
 					option: 'confFilePath'
 				},
-				handleAs: 'text',
-				sync: true
-			}).response.then(function(response) {
+				handleAs: 'json',
+				sync: true,
+				preventCache: true
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-				confFilePath=data.file;
-			});
+					var data = response.data;
+					confFilePath=data.file;
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Error',error.response.data.message);
+				}
+			);
 			
 			return confFilePath;
 		},
@@ -58,17 +65,22 @@ define([ "dojo/_base/declare",
 		{
 			var logFilePath='';
 			
-			request.post('../Main', {
-				data: 	{
+			request.get('../web/Main', {
+				query: 	{
 					option: 'logFilePath'
 				},
-				handleAs: 'text',
-				sync: true
-			}).response.then(function(response) {
-				
-				var data = json.fromJson(response.data);
-				logFilePath=data.file;
-			});
+				handleAs: 'json',
+				sync: true,
+				preventCache: true
+			}).response.then(
+				function(response) {
+					var data = response.data;
+					logFilePath=data.file;
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Error',error.response.data.message);
+				}
+			);
 			
 			return logFilePath;
 		},
@@ -77,17 +89,23 @@ define([ "dojo/_base/declare",
 		{
 			var docFilePath='';
 			
-			request.post('../Main', {
-				data: 	{
+			request.get('../web/Main', {
+				query: 	{
 					option: 'docFilePath'
 				},
-				handleAs: 'text',
-				sync: true
-			}).response.then(function(response) {
+				handleAs: 'json',
+				sync: true,
+				preventCache: true
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-				docFilePath=data.file;
-			});
+					var data = response.data;
+					docFilePath=data.file;
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Error',error.response.data.message);
+				}
+			);
 			
 			return docFilePath;
 		},
@@ -96,18 +114,24 @@ define([ "dojo/_base/declare",
 		{
 			var exists=false;
 			
-			request.post('../Main', {
-				data: 	{
+			request.get('../web/Main', {
+				query: 	{
 					option: 'validateFileExists',
 					filename: file
 				},
-				handleAs: 'text',
-				sync: true
-			}).response.then(function(response) {
+				handleAs: 'json',
+				sync: true,
+				preventCache: true
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-				exists=data.exists;
-			});
+					var data = response.data;
+					exists=data.exists;
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Error',error.response.data.message);
+				}
+			);
 			
 			return exists;
 		},
@@ -115,20 +139,29 @@ define([ "dojo/_base/declare",
 		checkSession: function() {
 			var that = this;
 			
-			request.post('../Main', {
-				data: 	{
+			request.get('../web/Main', {
+				query: 	{
 					option: 'checkSession'
 				},
 				handleAs: 'text',
-				sync: false
-			}).response.then(function(response) {
-				var data = response.data;
-				var status = response.status;
-				if(status != 200 || data.indexOf('<html>')>-1) {
-					that.sessionActive = false;
-					window.location.reload();
-				}	
-			});
+				sync: false,
+				preventCache: true
+			}).response.then(
+				function(response) {
+					var data = response.data;
+					if(data.indexOf('<html>') > -1) {
+						that.sessionActive = false;
+						window.location.reload();
+					}	
+				},
+				function(error) {
+					if(that.notRunningDialog == null) {
+						that.sessionActive = false;
+						that.notRunningDialog = ca.apachegui.Util.noCloseDialog('Application Unavailable','The ApacheGUI application is not currently running. Your browser window will reload once the application has started.');
+						that.notRunningDialog.show();
+					}
+				}
+			);
 		},
 		
 		startSessionTimer: function() {			
