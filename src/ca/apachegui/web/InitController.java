@@ -5,17 +5,11 @@ import apache.conf.global.Utils;
 import apache.conf.parser.DirectiveParser;
 import apache.conf.parser.File;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ca.apachegui.conf.ConfFiles;
@@ -29,194 +23,158 @@ import ca.apachegui.server.ServerInfo;
 
 @RestController
 @RequestMapping("/Init")
-public class Init extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-	private static Logger log = Logger.getLogger(Init.class);
+public class InitController {
+	private static Logger log = Logger.getLogger(InitController.class);
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public Init() {
-        super();
-    }
-
-    /**
-	 * Check if this is the first time use
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 * @return 500 if its the first time use, return 200 if the database is initialized
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
-	{
-		/**
-		 * 500 indicates first time use
-		 * 200 indicates the settings have been initialized
-		 */
-		log.trace("Init.doGet called");
+	@RequestMapping(value="/CheckFirstTime",method=RequestMethod.GET,produces="application/json;charset=UTF-8")
+	public String checkInit() {
+		
 		String init=SettingsDao.getInstance().getSetting("init");
 		log.trace("init value " + init);
-		if(init==null)
-		{	
-			log.trace("Sending 206 response");
-			response.setStatus(206);
-		}
-		else
-		{	
-			log.trace("Sending 200 response");
-			response.setStatus(200);
-		}	
-		response.setContentLength(0);
-	}
-
-	/**
-	 * General functionality to initialize GUI
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
-	{
-		log.trace("Init.doPost called");
-		String option=request.getParameter("option");
-		log.trace("Init Servlet called with option " + option);
 		
-		StringBuffer error = new StringBuffer();
-		PrintWriter out = response.getWriter();
-		try
-		{
-			if(option.equals("submitSource"))
-			{
-				String serverRoot=request.getParameter("serverRoot").trim().replaceAll("\\\\", "/");
-				if(serverRoot.endsWith("/"))
-				{
-					serverRoot=serverRoot.substring(0,serverRoot.length()-1);
-				}
-				log.trace("serverRoot " + serverRoot);
-				
-				if(!(new File(serverRoot).exists())) {
-					throw new Exception("The Server Root directory " + serverRoot + " does not exist");
-				}
-					
-				if(!(new File(serverRoot)).isDirectory()) {
-					throw new Exception("The Server Root is not a directory");
-				}
-				
-				if(Utils.isWindows() && !serverRoot.contains(":")) {
-					throw new Exception("The Server Root must specify the drive eg. C:/");
-				}
-				
-				String username=request.getParameter("username");
-				log.trace("username " + username);
-				
-				String password1=request.getParameter("password1");
-				String password2=request.getParameter("password2");
-				
-				if(!password1.equals(password2)) {
-					throw new Exception("The input passwords do not match");
-				}
-				
-				initializeDatabaseSource(serverRoot, username, password1);
-			}
+		JSONObject result = new JSONObject();
+		result.put("firstTime", (init == null ? true : false));
+		
+		return result.toString();
+	}
+	
+	@RequestMapping(method=RequestMethod.POST,params="option=submitSource",produces="application/json;charset=UTF-8")
+	public String submitSource(@RequestParam(value="serverRoot") String serverRoot,
+					      	   @RequestParam(value="username") String username,
+					      	   @RequestParam(value="password1") String password1,
+					      	   @RequestParam(value="password2") String password2) throws Exception {
+		
+		log.trace("serverRoot " + serverRoot);
+		
+		File serverRootFile = new File(serverRoot.trim());
+		
+		if(!(serverRootFile.exists())) {
+			throw new Exception("The Server Root directory " + serverRoot + " does not exist");
+		}
 			
-			if(option.equals("submitPackage"))
-			{	  
-				String serverRoot=request.getParameter("serverRoot").trim().replaceAll("\\\\", "/");
-				if(serverRoot.endsWith("/"))
-				{
-					serverRoot=serverRoot.substring(0,serverRoot.length()-1);
-				}
-				log.trace("serverRoot " + serverRoot);
-				
-				if(!(new File(serverRoot).exists())) {
-					throw new Exception("The Directory " + serverRoot + " does not exist");
-				}
-					
-				String confFile=request.getParameter("confFile").trim().replaceAll("\\\\", "/");
-				log.trace("confFile " + confFile);
-				
-				if(!(new File(confFile).exists())) {
-					throw new Exception("The Configuration File " + confFile + " does not exist");
-				}
-				
-				if((new File(confFile)).isDirectory()) {
-					throw new Exception("The Configuration File " + confFile + " is a directory");
-				}
-				
-				String confDirectory=request.getParameter("confDirectory").trim().replaceAll("\\\\", "/");
-				if(confDirectory.endsWith("/"))
-				{
-					confDirectory=confDirectory.substring(0,confDirectory.length()-1);
-				}
-				log.trace("confDirectory " + confDirectory);
-				
-				if(!(new File(confDirectory).exists())) {
-					throw new Exception("The Directory " + confDirectory + " does not exist");
-				}
-				
-				if(!(new File(confDirectory)).isDirectory()) {
-					throw new Exception("The Directory " + confDirectory + " is not a directory");
-				}
-				
-				String logDirectory=request.getParameter("logDirectory").trim().replaceAll("\\\\", "/");
-				if(logDirectory.endsWith("/"))
-				{
-					logDirectory=logDirectory.substring(0,logDirectory.length()-1);
-				}
-				log.trace("logDirectory " + logDirectory);
-				
-				if(!(new File(logDirectory).exists())) {
-					throw new Exception("The Log Directory " + logDirectory + " does not exist");
-				}
-				
-				if(!(new File(logDirectory)).isDirectory()) {
-					throw new Exception("The Log Directory " + logDirectory + " is not a directory");
-				}
-				
-				String modulesDirectory=request.getParameter("modulesDirectory").trim().replaceAll("\\\\", "/");
-				if(modulesDirectory.endsWith("/"))
-				{
-					modulesDirectory=modulesDirectory.substring(0,modulesDirectory.length()-1);
-				}
-				log.trace("modulesDirectory " + modulesDirectory);
-				
-				if(!(new File(modulesDirectory).exists())) {
-					throw new Exception("The modules Directory " + modulesDirectory + " does not exist");
-				}
-				
-				if(!(new File(modulesDirectory)).isDirectory()) {
-					throw new Exception("The Directory " + modulesDirectory + " is not a directory");
-				}
-				
-				String binFile=request.getParameter("binFile").trim().replaceAll("\\\\", "/");
-				log.trace("binFile " + binFile);
-				
-				if(!(new File(binFile).exists())) {
-					throw new Exception("The Binary File " + binFile + " does not exist");
-				}
-				
-				if((new File(binFile)).isDirectory()) {
-					throw new Exception("The Binary File " + binFile + " is a directory");
-				}
-				
-				String username=request.getParameter("username");
-				log.trace("username " + username);
-				
-				String password1=request.getParameter("password1");
-				String password2=request.getParameter("password2");
-				
-				if(!password1.equals(password2)) {
-					throw new Exception("The input passwords do not match");
-				}
-				
-				initializeDatabasePackage(serverRoot, confFile, confDirectory, logDirectory, modulesDirectory, binFile, username, password1);
-			}
+		if(!serverRootFile.isDirectory()) {
+			throw new Exception("The Server Root is not a directory");
 		}
-		catch(Exception e)
-		{
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			log.error(sw.toString());
-			error.append(e.getMessage());
-			response.setStatus(206);
-			out.print(error.toString());
-			out.flush();
+		
+		if(Utils.isWindows() && !serverRoot.contains(":")) {
+			throw new Exception("The Server Root must specify the drive eg. C:/");
 		}
+		
+		log.trace("username " + username);
+		
+		if(!password1.equals(password2)) {
+			throw new Exception("The input passwords do not match");
+		}
+		
+		initializeDatabaseSource(serverRootFile.getAbsolutePath(), username, password1);
+		
+		JSONObject result = new JSONObject();
+		result.put("result", "success");
+		
+		return result.toString();
+	}
+	
+	@RequestMapping(method=RequestMethod.POST,params="option=submitPackage",produces="application/json;charset=UTF-8")
+	public String submitPackage(@RequestParam(value="serverRoot") String serverRoot,
+								@RequestParam(value="confFile") String confFile,
+								@RequestParam(value="confDirectory") String confDirectory,
+								@RequestParam(value="logDirectory") String logDirectory,
+								@RequestParam(value="modulesDirectory") String modulesDirectory,
+								@RequestParam(value="binFile") String binFile,
+					      	    @RequestParam(value="username") String username,
+					      	    @RequestParam(value="password1") String password1,
+					      	    @RequestParam(value="password2") String password2) throws Exception {
+		
+		
+		log.trace("serverRoot " + serverRoot);
+		File serverRootFile = new File(serverRoot.trim());
+		
+		if(!(serverRootFile.exists())) {
+			throw new Exception("The Server Root directory " + serverRoot + " does not exist");
+		}
+			
+		if(!serverRootFile.isDirectory()) {
+			throw new Exception("The Server Root is not a directory");
+		}
+		
+		if(Utils.isWindows() && !serverRoot.contains(":")) {
+			throw new Exception("The Server Root must specify the drive eg. C:/");
+		}
+			
+		log.trace("confFile " + confFile);
+		File confFileFile = new File(confFile.trim());
+		
+		if(!confFileFile.exists()) {
+			throw new Exception("The Configuration File " + confFile + " does not exist");
+		}
+		
+		if(confFileFile.isDirectory()) {
+			throw new Exception("The Configuration File " + confFile + " is a directory");
+		}
+		
+		log.trace("confDirectory " + confDirectory);
+		File confDirectoryFile = new File(confDirectory.trim());
+		
+		if(!confDirectoryFile.exists()) {
+			throw new Exception("The Directory " + confDirectory + " does not exist");
+		}
+		
+		if(!confDirectoryFile.isDirectory()) {
+			throw new Exception("The Directory " + confDirectory + " is not a directory");
+		}
+		
+		log.trace("logDirectory " + logDirectory);
+		File logDirectoryFile = new File(logDirectory.trim());
+		
+		if(!logDirectoryFile.exists()) {
+			throw new Exception("The Log Directory " + logDirectory + " does not exist");
+		}
+		
+		if(!logDirectoryFile.isDirectory()) {
+			throw new Exception("The Log Directory " + logDirectory + " is not a directory");
+		}
+		
+		log.trace("modulesDirectory " + modulesDirectory);
+		File modulesDirectoryFile = new File(modulesDirectory.trim());
+		
+		if(!modulesDirectoryFile.exists()) {
+			throw new Exception("The modules Directory " + modulesDirectory + " does not exist");
+		}
+		
+		if(!modulesDirectoryFile.isDirectory()) {
+			throw new Exception("The Directory " + modulesDirectory + " is not a directory");
+		}
+		
+		log.trace("binFile " + binFile);
+		File binFileFile = new File(binFile.trim());
+		
+		if(!binFileFile.exists()) {
+			throw new Exception("The Binary File " + binFile + " does not exist");
+		}
+		
+		if(binFileFile.isDirectory()) {
+			throw new Exception("The Binary File " + binFile + " is a directory");
+		}
+		
+		log.trace("username " + username);		
+		
+		if(!password1.equals(password2)) {
+			throw new Exception("The input passwords do not match");
+		}
+		
+		initializeDatabasePackage(serverRootFile.getAbsolutePath(), 
+								  confFileFile.getAbsolutePath(), 
+								  confDirectoryFile.getAbsolutePath(), 
+								  logDirectoryFile.getAbsolutePath(), 
+								  modulesDirectoryFile.getAbsolutePath(), 
+								  binFileFile.getAbsolutePath(), 
+								  username, 
+								  password1);
+		
+		JSONObject result = new JSONObject();
+		result.put("result", "success");
+		
+		return result.toString();
 	}
 	
 	private void initializeDatabaseSource(String serverRoot, String username, String password) throws Exception

@@ -27,16 +27,17 @@ define([ "dojo/_base/declare",
 		firstTimeUse: function() {
 			var firstTime=false;
 		    
-		    request.get("../Init", {
-				handleAs: 'text',
+		    request.get("../web/Init/CheckFirstTime", {
+				handleAs: 'json',
 				preventCache: true,
 				sync: true
-			}).response.then(function(response) {								
-				var status = response.status;
-				if(status!=200) {
-					firstTime=true;
-				}
-			});
+			}).response.then(
+				function(response) {								
+					firstTime = response.data.firstTime;
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Error',error.response.data.message);
+				});
 		    
 		    return firstTime;
 		},
@@ -85,23 +86,21 @@ define([ "dojo/_base/declare",
 				};
 			}
 						
-			request.post('../Init', {
+			var thisdialog = ca.apachegui.Util.noCloseDialog('Initializing', 'Please wait...');
+			thisdialog.show();
+			
+			request.post('../web/Init', {
 				data: xhrArgs,
-				handleAs: 'text',
-				sync: true
+				handleAs: 'json',
+				sync: false
 			}).response.then(function(response) {
-				
-				var data = response.data;
-				
-				var status = response.status;
-				if(status!=200)
-				{
-					ca.apachegui.Util.alert('Error',data);
-				}
-				else
-				{
-					document.location='GUISettings.jsp';
-				}	
+		
+				document.location='GUISettings.jsp';	
+			
+			},
+			function(error) {
+				thisdialog.remove();
+				ca.apachegui.Util.alert('Error',error.response.data.message);
 			});
 		},
 		

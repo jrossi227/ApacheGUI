@@ -67,7 +67,7 @@
   
   <filter-mapping>
     <filter-name>SharedModuleFilter</filter-name>
-    <url-pattern>/web/Init</url-pattern>
+    <url-pattern>/web/Init/CheckFirstTime</url-pattern>
   </filter-mapping>
   
   <servlet>
@@ -100,21 +100,6 @@
 	 <param-value>/WEB-INF/spring-servlet.xml</param-value>
    </context-param>
 
-   <listener>
-     <listener-class>
-     	org.springframework.web.context.request.RequestContextListener
-     </listener-class>
-   </listener>
-  
-  <servlet>
-    <display-name>Init</display-name>
-    <servlet-name>Init</servlet-name>
-    <servlet-class>ca.apachegui.web.Init</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Init</servlet-name>
-    <url-pattern>/Init</url-pattern>
-  </servlet-mapping>
   <servlet>
     <display-name>Logs</display-name>
     <servlet-name>Logs</servlet-name>
