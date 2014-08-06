@@ -1,9 +1,6 @@
 package ca.apachegui.db;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.sql.DataSource;
 
@@ -36,7 +33,7 @@ public class JdbcConnection
      * @throws InstantiationException
      * @throws ClassNotFoundException
      */
-    public void clearDatabase() throws SQLException, IllegalAccessException, InstantiationException, ClassNotFoundException
+    public void clearDatabase()
     {
     	//need to fill in with deletions for all of the tables
     	log.info("Clearing database");
