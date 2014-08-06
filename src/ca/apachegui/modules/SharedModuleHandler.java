@@ -8,7 +8,7 @@ import apache.conf.parser.DirectiveParser;
 import apache.conf.parser.File;
 
 import ca.apachegui.conf.ConfFiles;
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 
 public class SharedModuleHandler extends ModuleHandler{
@@ -38,12 +38,12 @@ public class SharedModuleHandler extends ModuleHandler{
 	 * @throws Exception
 	 */
 	public static boolean removeModule(String name) throws Exception {
-		String file=new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveFile(Constants.loadModuleDirective, name);
+		String file=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveFile(Constants.loadModuleDirective, name);
 		
 		if(file!=null)
 		{	
 			log.trace("Module " + name + " Found in file " + file);
-			new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).removeDirectiveFromFile(Constants.loadModuleDirective, file, name, true);
+			new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).removeDirectiveFromFile(Constants.loadModuleDirective, file, name, true);
 			return true;
 		}
 		
@@ -76,7 +76,7 @@ public class SharedModuleHandler extends ModuleHandler{
 	 */
 	public static void updateSharedModules() throws Exception
 	{
-		SharedModuleParser parser = new SharedModuleParser(new File(Settings.getSetting(Constants.binFile)));
+		SharedModuleParser parser = new SharedModuleParser(new File(SettingsDao.getInstance().getSetting(Constants.binFile)));
 		
 		savedSharedModules = parser.getSharedModules();
 	}

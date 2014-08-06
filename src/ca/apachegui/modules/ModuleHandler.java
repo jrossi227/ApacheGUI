@@ -3,7 +3,7 @@ package ca.apachegui.modules;
 import apache.conf.global.Utils;
 import apache.conf.parser.File;
 
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 
 public class ModuleHandler
@@ -41,9 +41,9 @@ public class ModuleHandler
 	public static String getModuleConfigString(String name) {
 		String configString = "";
 		if(Utils.isWindows()) {
-			configString = Constants.loadModuleDirective + " " + name + " \"" + (new File(Settings.getSetting(Constants.modulesDirectory),nameToFilename(name))).getAbsolutePath() + "\"";
+			configString = Constants.loadModuleDirective + " " + name + " \"" + (new File(SettingsDao.getInstance().getSetting(Constants.modulesDirectory),nameToFilename(name))).getAbsolutePath() + "\"";
 		} else {
-			configString = Constants.loadModuleDirective + " " + name + " " + (new File(Settings.getSetting(Constants.modulesDirectory),nameToFilename(name))).getAbsolutePath();
+			configString = Constants.loadModuleDirective + " " + name + " " + (new File(SettingsDao.getInstance().getSetting(Constants.modulesDirectory),nameToFilename(name))).getAbsolutePath();
 		}
 		return configString;
 	}

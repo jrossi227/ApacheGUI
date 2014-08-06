@@ -16,7 +16,7 @@ import org.json.JSONObject;
 import apache.conf.global.Utils;
 import apache.conf.parser.Parser;
 import apache.conf.parser.File;
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.global.Utilities;
 import ca.apachegui.modules.SharedModuleHandler;
@@ -38,10 +38,10 @@ public class Configuration {
 		String output="";
 		
 		if(Utils.isWindows()) {
-			String command[] = { "cmd", "/c", Settings.getSetting(Constants.binFile), "-t" };
+			String command[] = { "cmd", "/c", SettingsDao.getInstance().getSetting(Constants.binFile), "-t" };
 			output=Utils.RunProcessWithOutput(command);
 		} else {
-			String command[]={Settings.getSetting(Constants.binFile),"-t"};
+			String command[]={SettingsDao.getInstance().getSetting(Constants.binFile),"-t"};
 			output=Utils.RunProcessWithOutput(command);
 		}
 		output=output.replaceAll(Constants.newLine, "<br/>");
@@ -65,11 +65,11 @@ public class Configuration {
 		String confFiles[];
 		  
 		if(activeFilesFilter) {			
-	        String includedFiles[] = new Parser(Settings.getSetting(Constants.confFile),Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getActiveConfFileList();
+	        String includedFiles[] = new Parser(SettingsDao.getInstance().getSetting(Constants.confFile),SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getActiveConfFileList();
 			confFiles = includedFiles;
 	        
 		} else {
-			confFiles = Utils.getFileList(new File(Settings.getSetting(Constants.confDirectory)));
+			confFiles = Utils.getFileList(new File(SettingsDao.getInstance().getSetting(Constants.confDirectory)));
 		}
 		
 		if(!Utils.isWindows()) {

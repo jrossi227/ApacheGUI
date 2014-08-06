@@ -10,7 +10,7 @@ import apache.conf.parser.DirectiveParser;
 import apache.conf.parser.Enclosure;
 import apache.conf.parser.EnclosureParser;
 
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.global.Utilities;
 import ca.apachegui.modules.SharedModuleHandler;
@@ -85,7 +85,7 @@ public class ExtendedStatus
 	{
 		log.trace("ExtendedStatusControl.checkExtendedStatusEnclosure called");
 		log.trace("Checking for Extended Status Enclosure " + "\"" + Constants.locationDirectiveString + "\"");
-		Enclosure enclosure[] = new EnclosureParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.locationDirectiveString);
+		Enclosure enclosure[] = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.locationDirectiveString);
 		Directive directives[]=null;
 		for(int i=0; i<enclosure.length; i++)
 		{
@@ -125,7 +125,7 @@ public class ExtendedStatus
 	{
 		log.trace("ExtendedStatusControl.checkExtendedStatusDirective called");
 		log.trace("Checking for Extended Status Directive " + "\"" + Constants.extendedStatusDirectiveString + "\"");
-		String extendedStatusCheck[]=new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.extendedStatusDirectiveString);
+		String extendedStatusCheck[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.extendedStatusDirectiveString);
 		if(extendedStatusCheck.length>0)
 		{	
 			log.trace("found " + Constants.extendedStatusDirectiveString);
@@ -171,7 +171,7 @@ public class ExtendedStatus
 		String path="";
 		
 		log.trace("Searching for Enclosure " + Constants.locationDirectiveString);
-		Enclosure enclosure[] = new EnclosureParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.locationDirectiveString);
+		Enclosure enclosure[] = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.locationDirectiveString);
 		Directive directives[]=null;
 		boolean foundDirective =false;
 		for(int i=0; i<enclosure.length&&!foundDirective; i++)

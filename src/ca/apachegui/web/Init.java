@@ -18,8 +18,8 @@ import org.apache.log4j.Logger;
 
 import ca.apachegui.conf.ConfFiles;
 import ca.apachegui.db.JdbcConnection;
-import ca.apachegui.db.Settings;
-import ca.apachegui.db.Users;
+import ca.apachegui.db.SettingsDao;
+import ca.apachegui.db.UsersDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.modules.SharedModuleHandler;
 import ca.apachegui.modules.StaticModuleHandler;
@@ -52,7 +52,7 @@ public class Init extends HttpServlet {
 		 * 200 indicates the settings have been initialized
 		 */
 		log.trace("Init.doGet called");
-		String init=Settings.getSetting("init");
+		String init=SettingsDao.getInstance().getSetting("init");
 		log.trace("init value " + init);
 		if(init==null)
 		{	
@@ -282,55 +282,55 @@ public class Init extends HttpServlet {
 		}
 		
 		log.info("Clearing the database");
-		JdbcConnection.clearDatabase();
+		JdbcConnection.getInstance().clearDatabase();
 		
 		log.trace("Setting name:" + Constants.init + " value: true");
-		Settings.setSetting(Constants.init, "true");
+		SettingsDao.getInstance().setSetting(Constants.init, "true");
 		
 		log.trace("Setting name:" + Constants.serverRoot + " value: " + serverRoot);
-		Settings.setSetting(Constants.serverRoot, serverRoot);
+		SettingsDao.getInstance().setSetting(Constants.serverRoot, serverRoot);
 		
 		log.trace("Setting name:" + Constants.username + " value: " + username);
-		Users.setUsername(username);
+		UsersDao.getInstance().setUsername(username);
 		
 		log.trace("Setting name:" + Constants.password + " value: XXXXX");
-		Users.setPassword(password);
+		UsersDao.getInstance().setPassword(password);
 		
 		log.trace("Setting name:" + Constants.confDirectory + " value: " + confDirectory);
-		Settings.setSetting(Constants.confDirectory, confDirectory);
+		SettingsDao.getInstance().setSetting(Constants.confDirectory, confDirectory);
 		
 		log.trace("Setting name:" + Constants.confFile + " value: " + confFile);
-		Settings.setSetting(Constants.confFile, confFile);
+		SettingsDao.getInstance().setSetting(Constants.confFile, confFile);
 		
 		log.trace("Setting name:" + Constants.logDirectory + " value: " + logDirectory);
-		Settings.setSetting(Constants.logDirectory, logDirectory);
+		SettingsDao.getInstance().setSetting(Constants.logDirectory, logDirectory);
 		
 		log.trace("Setting name:" + Constants.modulesDirectory + " value: " + modulesDirectory);
-		Settings.setSetting(Constants.modulesDirectory, modulesDirectory);
+		SettingsDao.getInstance().setSetting(Constants.modulesDirectory, modulesDirectory);
 		
 		log.trace("Setting name:" + Constants.binFile + " value: " + binFile);
-		Settings.setSetting(Constants.binFile, binFile);
+		SettingsDao.getInstance().setSetting(Constants.binFile, binFile);
 		
 		log.trace("Setting name:" + Constants.processInfoRefreshRate + " value: " + Constants.processInfoRefreshRateDefault);
-		Settings.setSetting(Constants.processInfoRefreshRate, Constants.processInfoRefreshRateDefault);
+		SettingsDao.getInstance().setSetting(Constants.processInfoRefreshRate, Constants.processInfoRefreshRateDefault);
 		
 		log.trace("Setting name:" + Constants.extendedStatus + " value: " + Constants.extendedStatusDefault);
-		Settings.setSetting(Constants.extendedStatus, Constants.extendedStatusDefault);
+		SettingsDao.getInstance().setSetting(Constants.extendedStatus, Constants.extendedStatusDefault);
 		
 		log.trace("Setting name:" + Constants.theme + " value: " + Constants.defaultTheme);
-		Settings.setSetting(Constants.theme, Constants.defaultTheme);
+		SettingsDao.getInstance().setSetting(Constants.theme, Constants.defaultTheme);
 		
 		log.trace("resetting history buffer");
-		Settings.setSetting(Constants.historyBuffer, Constants.defaultHistoryBuffer);
+		SettingsDao.getInstance().setSetting(Constants.historyBuffer, Constants.defaultHistoryBuffer);
 		
 		log.trace("resetting history retention");
-		Settings.setSetting(Constants.historyRetention, Constants.defaultHistoryRetention);
+		SettingsDao.getInstance().setSetting(Constants.historyRetention, Constants.defaultHistoryRetention);
 	
 		if(Utils.isWindows()) {
 			//Setting SRVROOT Variable to entered Server Root
 			String files[] = ConfFiles.getFullConfFileList();
 			for(int i=0; i< files.length; i++) {
-				new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).setDirectiveInFile(Constants.defineDirective, files[i], Constants.serverRootDirectiveValue + " \"" + serverRoot + "\"", Constants.serverRootDirectiveValue, false);
+				new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).setDirectiveInFile(Constants.defineDirective, files[i], Constants.serverRootDirectiveValue + " \"" + serverRoot + "\"", Constants.serverRootDirectiveValue, false);
 			}
 		}
 	}
@@ -350,48 +350,48 @@ public class Init extends HttpServlet {
 		}
 		
 		log.info("Clearing the database");
-		JdbcConnection.clearDatabase();
+		JdbcConnection.getInstance().clearDatabase();
 		
 		log.trace("Setting name:" + Constants.init + " value: true");
-		Settings.setSetting(Constants.init, "true");
+		SettingsDao.getInstance().setSetting(Constants.init, "true");
 		
 		log.trace("Setting name:" + Constants.serverRoot + " value: " + serverRoot);
-		Settings.setSetting(Constants.serverRoot, serverRoot);
+		SettingsDao.getInstance().setSetting(Constants.serverRoot, serverRoot);
 		
 		log.trace("Setting name:" + Constants.username + " value: " + username);
-		Users.setUsername(username);
+		UsersDao.getInstance().setUsername(username);
 		
 		log.trace("Setting name:" + Constants.password + " value: XXXXX");
-		Users.setPassword(password);
+		UsersDao.getInstance().setPassword(password);
 		
 		log.trace("Setting name:" + Constants.confDirectory + " value: " + confDirectory);
-		Settings.setSetting(Constants.confDirectory, confDirectory);
+		SettingsDao.getInstance().setSetting(Constants.confDirectory, confDirectory);
 		
 		log.trace("Setting name:" + Constants.confFile + " value: " + confFile);
-		Settings.setSetting(Constants.confFile, confFile);
+		SettingsDao.getInstance().setSetting(Constants.confFile, confFile);
 		
 		log.trace("Setting name:" + Constants.logDirectory + " value: " + logDirectory);
-		Settings.setSetting(Constants.logDirectory, logDirectory);
+		SettingsDao.getInstance().setSetting(Constants.logDirectory, logDirectory);
 		
 		log.trace("Setting name:" + Constants.modulesDirectory + " value: " + modulesDirectory);
-		Settings.setSetting(Constants.modulesDirectory, modulesDirectory);
+		SettingsDao.getInstance().setSetting(Constants.modulesDirectory, modulesDirectory);
 		
 		log.trace("Setting name:" + Constants.binFile + " value: " + binFile);
-		Settings.setSetting(Constants.binFile, binFile);
+		SettingsDao.getInstance().setSetting(Constants.binFile, binFile);
 		
 		log.trace("Setting name:" + Constants.processInfoRefreshRate + " value: " + Constants.processInfoRefreshRateDefault);
-		Settings.setSetting(Constants.processInfoRefreshRate, Constants.processInfoRefreshRateDefault);
+		SettingsDao.getInstance().setSetting(Constants.processInfoRefreshRate, Constants.processInfoRefreshRateDefault);
 		
 		log.trace("Setting name:" + Constants.extendedStatus + " value: " + Constants.extendedStatusDefault);
-		Settings.setSetting(Constants.extendedStatus, Constants.extendedStatusDefault);
+		SettingsDao.getInstance().setSetting(Constants.extendedStatus, Constants.extendedStatusDefault);
 		
 		log.trace("Setting name:" + Constants.theme + " value: " + Constants.defaultTheme);
-		Settings.setSetting(Constants.theme, Constants.defaultTheme);
+		SettingsDao.getInstance().setSetting(Constants.theme, Constants.defaultTheme);
 		
 		log.trace("resetting history buffer");
-		Settings.setSetting(Constants.historyBuffer, Constants.defaultHistoryBuffer);
+		SettingsDao.getInstance().setSetting(Constants.historyBuffer, Constants.defaultHistoryBuffer);
 		
 		log.trace("resetting history retention");
-		Settings.setSetting(Constants.historyRetention, Constants.defaultHistoryRetention);
+		SettingsDao.getInstance().setSetting(Constants.historyRetention, Constants.defaultHistoryRetention);
 	}
 }

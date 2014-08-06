@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import apache.conf.global.Utils;
 
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 
 public class ServerInfo {
@@ -41,7 +41,7 @@ public class ServerInfo {
 		String output="";
 			
 		if(binFile==null) {
-			output=Utils.RunProcessWithOutput(getVersionCommand(Settings.getSetting(Constants.binFile)));
+			output=Utils.RunProcessWithOutput(getVersionCommand(SettingsDao.getInstance().getSetting(Constants.binFile)));
 		}
 		else
 		{

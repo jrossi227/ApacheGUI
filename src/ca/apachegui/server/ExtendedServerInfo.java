@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 
 /** 
@@ -69,7 +69,7 @@ public class ExtendedServerInfo extends ExtendedStatus
 	{
 		log.trace("ExtendedServerInfo.getExtendedServerInfo called");
 		
-		if(Settings.getSetting(Constants.extendedStatus).equals("on"))
+		if(SettingsDao.getInstance().getSetting(Constants.extendedStatus).equals("on"))
 		{	
 			try
 			{

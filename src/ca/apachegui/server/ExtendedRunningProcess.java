@@ -12,7 +12,7 @@ import org.jsoup.select.Elements;
 
 import apache.conf.global.Utils;
 
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 
 /** Class that provides extended details for running Proccesses
@@ -109,7 +109,7 @@ public class ExtendedRunningProcess extends ExtendedStatus
 	public static ExtendedRunningProcess[]  getExtendedRunningProcessInfo()
 	{
 		log.trace("ExtendedRunningProcess.getExtendedRunningProcessInfo called");
-		if(Settings.getSetting(Constants.extendedStatus).equals("on"))
+		if(SettingsDao.getInstance().getSetting(Constants.extendedStatus).equals("on"))
 		{	
 			try
 			{

@@ -1,7 +1,7 @@
 package ca.apachegui.directives;
 
 import apache.conf.parser.DirectiveParser;
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.modules.SharedModuleHandler;
 import ca.apachegui.modules.StaticModuleHandler;
@@ -56,7 +56,7 @@ public class Group extends SingletonDirective{
 	 */ 
 	@Override
 	Group getConfigured() throws Exception {
-		String group[]=new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName);
+		String group[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName);
 
 		Group groupFound=null;
 		

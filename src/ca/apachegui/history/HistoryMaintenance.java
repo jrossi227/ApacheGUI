@@ -2,8 +2,8 @@ package ca.apachegui.history;
 
 import org.apache.log4j.Logger;
 
-import ca.apachegui.db.LogData;
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.LogDataDao;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 
 public class HistoryMaintenance 
@@ -21,18 +21,18 @@ public class HistoryMaintenance
 	 */
 	public void clean() {
 	      			     		
-	    if(Settings.getSetting("init")!=null) {
+	    if(SettingsDao.getInstance().getSetting("init")!=null) {
 	    	log.trace("Shrinking " + Constants.logDataTable);
     		    	
 	        iter++;  
 	    	  
-	    	LogData.shrinkLogData(Integer.parseInt(Settings.getSetting(Constants.historyRetention)));
+	    	LogDataDao.getInstance().shrinkLogData(Integer.parseInt(SettingsDao.getInstance().getSetting(Constants.historyRetention)));
 	      
 	      	if(iter==Constants.rebuildIndexInterval)
 	      	{	  
 	    	  //rebuild index
 	    	  log.trace("Rebuilding index");
-	    	  LogData.rebuildInsertDateIndex();
+	    	  LogDataDao.getInstance().rebuildInsertDateIndex();
 	    	  iter=0;
 	      	}
 	      	//wake up once an interval

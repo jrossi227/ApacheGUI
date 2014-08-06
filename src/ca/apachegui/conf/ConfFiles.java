@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.modules.SharedModuleHandler;
 import ca.apachegui.modules.StaticModuleHandler;
@@ -38,7 +38,7 @@ public class ConfFiles
 	{
 		log.trace("ConfFiles.appendToRootConfigFile called");
 		
-		String confFile=Settings.getSetting(Constants.confFile);
+		String confFile=SettingsDao.getInstance().getSetting(Constants.confFile);
 		log.trace("Writing " + message + " To the configuration File " + confFile);
 		
 		
@@ -60,7 +60,7 @@ public class ConfFiles
 	{
 		log.trace("ConfFiles.appendToGUIConfigFile called");
 
-		String confDirectory=Settings.getSetting(Constants.confDirectory);
+		String confDirectory=SettingsDao.getInstance().getSetting(Constants.confDirectory);
 		log.trace("Writing " + message + " To the configuration File " + (new File(confDirectory,Constants.guiConfFile)).getAbsolutePath());
 		
 		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream((new File(confDirectory,Constants.guiConfFile)).getAbsolutePath(),true)));
@@ -68,7 +68,7 @@ public class ConfFiles
         out.close();
         
         //check if gui file is included, if its not then include it
-        String includedFiles[] = new Parser(Settings.getSetting(Constants.confFile),Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getActiveConfFileList();
+        String includedFiles[] = new Parser(SettingsDao.getInstance().getSetting(Constants.confFile),SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getActiveConfFileList();
         
         boolean included=false;
         for(int i=0; i<includedFiles.length&&!included; i++)
@@ -101,7 +101,7 @@ public class ConfFiles
 	{
 		log.trace("ConfFiles.removeFromGUIConfigFile called");
 		
-		File guiFile=new File(Settings.getSetting(Constants.confDirectory),Constants.guiConfFile);
+		File guiFile=new File(SettingsDao.getInstance().getSetting(Constants.confDirectory),Constants.guiConfFile);
 		log.trace("Parsing " + guiFile.getAbsolutePath() + " for regex " + regex);
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(guiFile),"UTF-8"));
@@ -149,7 +149,7 @@ public class ConfFiles
 		log.trace("Deleting " + regex + " from configuration files");
 		Pattern linePattern=Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 				
-        String includedFiles[] = new Parser(Settings.getSetting(Constants.confFile),Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getActiveConfFileList();
+        String includedFiles[] = new Parser(SettingsDao.getInstance().getSetting(Constants.confFile),SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getActiveConfFileList();
 		
 		boolean found=false;
 		StringBuffer file=new StringBuffer();
@@ -206,7 +206,7 @@ public class ConfFiles
 		
 		Pattern linePattern=Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 				
-        String includedFiles[] = new Parser(Settings.getSetting(Constants.confFile),Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getActiveConfFileList();
+        String includedFiles[] = new Parser(SettingsDao.getInstance().getSetting(Constants.confFile),SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getActiveConfFileList();
 		
 		for(int i=0; i<includedFiles.length; i++)
 		{	
@@ -244,7 +244,7 @@ public class ConfFiles
 	 */
 	public static String[] getFullConfFileList() throws IOException
 	{	  
-		String confDirectory=Settings.getSetting(Constants.confDirectory);
+		String confDirectory=SettingsDao.getInstance().getSetting(Constants.confDirectory);
 		String confFiles[] = Utils.getFileList(new File(confDirectory));
 	  
 	    if(!Utils.isWindows()) {
@@ -264,7 +264,7 @@ public class ConfFiles
 	{
 		
 		File targetDirectory=new File(path);
-		File confDirectory=new File(Settings.getSetting(Constants.confDirectory));
+		File confDirectory=new File(SettingsDao.getInstance().getSetting(Constants.confDirectory));
 		
 		StringBuffer result= new StringBuffer();
 		result.append("{ id: '" + Constants.ConfigurationRoot + targetDirectory.getAbsolutePath() + "', name:'" + (targetDirectory.equals(confDirectory) ? "Configuration" : targetDirectory.getName()) + "', type:'Configuration', children:[");
@@ -278,7 +278,7 @@ public class ConfFiles
 		   child=new File(children[i]);
 		   if(child.isDirectory())
 		   {
-			   if(!child.getAbsolutePath().matches(Settings.getSetting(Constants.confDirectory) + Constants.sanitizedConfigFiles)) {
+			   if(!child.getAbsolutePath().matches(SettingsDao.getInstance().getSetting(Constants.confDirectory) + Constants.sanitizedConfigFiles)) {
 				   result.append("{ $ref: '" + Constants.ConfigurationRoot + child.getAbsolutePath() + "', id:'" + Constants.ConfigurationRoot +  child.getAbsolutePath() + "', type:'Configuration', name: '" + child.getName() + "', children: true},");
 			   }
 		   }
@@ -288,7 +288,7 @@ public class ConfFiles
 		   child=new File(children[i]);
 		   if(!child.isDirectory())
 		   {
-			   if(!child.getAbsolutePath().matches(Settings.getSetting(Constants.confDirectory) + Constants.sanitizedConfigFiles)) {
+			   if(!child.getAbsolutePath().matches(SettingsDao.getInstance().getSetting(Constants.confDirectory) + Constants.sanitizedConfigFiles)) {
 				   result.append("{ $ref: '" + Constants.ConfigurationRoot +  child.getAbsolutePath() + "', id:'" + Constants.ConfigurationRoot +  child.getAbsolutePath() + "', type:'Configuration', name: '" + child.getName() + "'},");
 			   }
 		   }
@@ -312,7 +312,7 @@ public class ConfFiles
 	public static String[] sanitizeConfFiles(String[] confFiles) 
 	{
 		log.trace("ConfFiles.sanitizeConfFiles called");
-		String confDirectory=Settings.getSetting(Constants.confDirectory);
+		String confDirectory=SettingsDao.getInstance().getSetting(Constants.confDirectory);
 		
 		log.trace("Sanitize String: " + Constants.sanitizedConfigFiles);
 		ArrayList <String> filteredFiles=new ArrayList<String>(); 

@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ca.apachegui.conf.ServerMime;
-import ca.apachegui.db.LogData;
-import ca.apachegui.db.Users;
+import ca.apachegui.db.LogDataDao;
+import ca.apachegui.db.UsersDao;
 import ca.apachegui.directives.Group;
 import ca.apachegui.directives.KeepAlive;
 import ca.apachegui.directives.KeepAliveTimeout;
@@ -42,7 +42,7 @@ public class GUIViewController {
 	
 	@ModelAttribute("theme")
 	public String getTheme() {
-	   return ((ca.apachegui.db.Settings.getSetting(Constants.theme)==null)?Constants.defaultTheme: ca.apachegui.db.Settings.getSetting(Constants.theme));
+	   return ((ca.apachegui.db.SettingsDao.getInstance().getSetting(Constants.theme)==null)?Constants.defaultTheme: ca.apachegui.db.SettingsDao.getInstance().getSetting(Constants.theme));
 	}
 	
 	@ModelAttribute("version")
@@ -57,7 +57,7 @@ public class GUIViewController {
 	
 	@ModelAttribute("confDirectory")
 	public String getConfDirectory() {
-	   return ca.apachegui.db.Settings.getSetting(Constants.confDirectory);
+	   return ca.apachegui.db.SettingsDao.getInstance().getSetting(Constants.confDirectory);
 	}
 	
 	@ModelAttribute("restartWarning")
@@ -85,7 +85,7 @@ public class GUIViewController {
 	@RequestMapping(value="/jsp/Login.jsp")
 	public String renderLoginViewJsp(HttpServletRequest request, Model model) {
 		
-		model.addAttribute("advisory",Users.getLoginAdvisory());
+		model.addAttribute("advisory",UsersDao.getInstance().getLoginAdvisory());
 		
 		String userAgent=request.getHeader("User-Agent");  
 		model.addAttribute("supportedBrowser",Utils.matchUserAgent(userAgent, Constants.supportedUserAgentRegex));
@@ -168,7 +168,7 @@ public class GUIViewController {
 			java.util.Date startParsedDate = startDateFormat.parse(date + " 00:00:00");
 			java.sql.Timestamp startTimestamp = new java.sql.Timestamp(startParsedDate.getTime());
 			cal.setTimeInMillis(startTimestamp.getTime());
-			int hourCount[]=LogData.getDailyReportByHour(startTimestamp, host, userAgent, requestString, status, contentSize);
+			int hourCount[]=LogDataDao.getInstance().getDailyReportByHour(startTimestamp, host, userAgent, requestString, status, contentSize);
 			for(int i=0; i<hourCount.length; i++)
 			{
 				coordinates.append("[" + i + "," + hourCount[i]  +"]");
@@ -182,7 +182,7 @@ public class GUIViewController {
 			java.util.Date startParsedDate = startDateFormat.parse(date + " 00:00:00");
 			java.sql.Timestamp startTimestamp = new java.sql.Timestamp(startParsedDate.getTime());
 			cal.setTimeInMillis(startTimestamp.getTime());
-			int dayCount[]=LogData.getMonthlyReportByDay(startTimestamp, host, userAgent, requestString, status, contentSize);
+			int dayCount[]=LogDataDao.getInstance().getMonthlyReportByDay(startTimestamp, host, userAgent, requestString, status, contentSize);
 			
 			for(int i=1; i<dayCount.length; i++)
 			{
@@ -260,9 +260,9 @@ public class GUIViewController {
 	@RequestMapping(value="/jsp/Control.jsp")
 	public String renderControlViewJsp(Model model) throws Exception {
 		
-		String startCommand = ca.apachegui.db.Settings.getSetting(Constants.binFile) + " " + (Utils.isWindows() ? "-k" : "");
-		String stopCommand = ca.apachegui.db.Settings.getSetting(Constants.binFile) + " " + (Utils.isWindows() ? "-k" : "");
-		String restartCommand = ca.apachegui.db.Settings.getSetting(Constants.binFile) + " " + (Utils.isWindows() ? "-k" : "");
+		String startCommand = ca.apachegui.db.SettingsDao.getInstance().getSetting(Constants.binFile) + " " + (Utils.isWindows() ? "-k" : "");
+		String stopCommand = ca.apachegui.db.SettingsDao.getInstance().getSetting(Constants.binFile) + " " + (Utils.isWindows() ? "-k" : "");
+		String restartCommand = ca.apachegui.db.SettingsDao.getInstance().getSetting(Constants.binFile) + " " + (Utils.isWindows() ? "-k" : "");
 		
 		model.addAttribute("startCommand", startCommand);
 		model.addAttribute("stopCommand", stopCommand);
@@ -358,7 +358,7 @@ public class GUIViewController {
 	@RequestMapping(value="/jsp/global_settings/Modules.jsp")
 	public String renderModulesViewJsp(Model model) throws Exception {
 		
-		model.addAttribute("modulesDirectory", ca.apachegui.db.Settings.getSetting(Constants.modulesDirectory));
+		model.addAttribute("modulesDirectory", ca.apachegui.db.SettingsDao.getInstance().getSetting(Constants.modulesDirectory));
 		model.addAttribute("availableModulesType", Constants.availableModulesType);
 		model.addAttribute("sharedModulesType", Constants.sharedModulesType);
 		model.addAttribute("staticModulesType", Constants.staticModulesType);

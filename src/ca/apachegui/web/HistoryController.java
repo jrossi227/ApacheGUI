@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.ServletContextAware;
 
-import ca.apachegui.db.LogData;
+import ca.apachegui.db.LogDataDao;
 
 
 @RestController
@@ -25,10 +25,10 @@ public class HistoryController implements ServletContextAware {
 	
     @RequestMapping(value="/Current",method=RequestMethod.GET,produces="application/json;charset=UTF-8")
 	public String getHistory() throws IOException, InterruptedException {
-		int numberEntries=LogData.getNumberOfEntries();
-		Timestamp newestTimeStamp=LogData.getNewestTime();
+		int numberEntries=LogDataDao.getInstance().getNumberOfEntries();
+		Timestamp newestTimeStamp=LogDataDao.getInstance().getNewestTime();
 		String newestTime = (newestTimeStamp==null)?"":newestTimeStamp.toString();
-		Timestamp oldestTimeStamp=LogData.getOldestTime();
+		Timestamp oldestTimeStamp=LogDataDao.getInstance().getOldestTime();
 		String oldestTime = (oldestTimeStamp==null)?"":oldestTimeStamp.toString();
 		
 		JSONObject result = new JSONObject();

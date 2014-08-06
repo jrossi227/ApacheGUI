@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import apache.conf.global.Utils;
 
 import ca.apachegui.conf.Configuration;
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 
 public class Control {
@@ -26,7 +26,7 @@ public class Control {
 	{
 		log.trace("RunningProcess.startServer called");
 		
-		String command[]=Utils.isWindows() ? ("cmd,/c," + Settings.getSetting(Constants.binFile) + ",-k,start").split(",") : (Settings.getSetting(Constants.binFile) +",start").split(",");
+		String command[]=Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.binFile) + ",-k,start").split(",") : (SettingsDao.getInstance().getSetting(Constants.binFile) +",start").split(",");
 		
 		String output=Utils.RunProcessWithOutput(command);
 		log.trace("Output " + output);
@@ -63,7 +63,7 @@ public class Control {
 			throw new Exception("The server was not restarted. There is an error with the configuration " + status);
 		}
 		
-		String command[]=Utils.isWindows() ? ("cmd,/c," + Settings.getSetting(Constants.binFile) + ",-k,restart").split(",") : (Settings.getSetting(Constants.binFile) +",restart").split(",");
+		String command[]=Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.binFile) + ",-k,restart").split(",") : (SettingsDao.getInstance().getSetting(Constants.binFile) +",restart").split(",");
 		
 		String output=Utils.RunProcessWithOutput(command);
 		log.trace("Output " + output);
@@ -92,7 +92,7 @@ public class Control {
 	public static String stopServer() throws Exception
 	{
 		log.trace("RunningProcess.stopServer called");
-		String command[]=Utils.isWindows() ? ("cmd,/c," + Settings.getSetting(Constants.binFile) + ",-k,stop").split(",") : (Settings.getSetting(Constants.binFile) +",stop").split(",");
+		String command[]=Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.binFile) + ",-k,stop").split(",") : (SettingsDao.getInstance().getSetting(Constants.binFile) +",stop").split(",");
 		
 		String output=Utils.RunProcessWithOutput(command);
 		log.trace("Output " + output);

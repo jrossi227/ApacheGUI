@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import ca.apachegui.db.JdbcConnection;
-import ca.apachegui.db.Settings;
-import ca.apachegui.db.Users;
+import ca.apachegui.db.SettingsDao;
+import ca.apachegui.db.UsersDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.server.ServerInfo;
 
@@ -30,15 +30,15 @@ public class GUISettingsController {
 		
 		JSONArray items = new JSONArray();
 		
-		items.put(createJSON(Constants.serverRoot,"Server Root",Settings.getSetting(Constants.serverRoot)));
-		items.put(createJSON(Constants.confDirectory,"Configuration Directory",Settings.getSetting(Constants.confDirectory)));
-		items.put(createJSON(Constants.confFile,"Configuration File",Settings.getSetting(Constants.confFile)));
-		items.put(createJSON(Constants.logDirectory,"Logs Directory",Settings.getSetting(Constants.logDirectory)));
-		items.put(createJSON(Constants.modulesDirectory,"Modules Directory",Settings.getSetting(Constants.modulesDirectory)));
-		items.put(createJSON(Constants.binFile,"Bin File",Settings.getSetting(Constants.binFile)));
-		items.put(createJSON(Constants.username,"Username",Users.getUsername()));
+		items.put(createJSON(Constants.serverRoot,"Server Root",SettingsDao.getInstance().getSetting(Constants.serverRoot)));
+		items.put(createJSON(Constants.confDirectory,"Configuration Directory",SettingsDao.getInstance().getSetting(Constants.confDirectory)));
+		items.put(createJSON(Constants.confFile,"Configuration File",SettingsDao.getInstance().getSetting(Constants.confFile)));
+		items.put(createJSON(Constants.logDirectory,"Logs Directory",SettingsDao.getInstance().getSetting(Constants.logDirectory)));
+		items.put(createJSON(Constants.modulesDirectory,"Modules Directory",SettingsDao.getInstance().getSetting(Constants.modulesDirectory)));
+		items.put(createJSON(Constants.binFile,"Bin File",SettingsDao.getInstance().getSetting(Constants.binFile)));
+		items.put(createJSON(Constants.username,"Username",UsersDao.getInstance().getUsername()));
 		items.put(createJSON(Constants.password,"Password","************"));
-		items.put(createJSON(Constants.theme,"Theme",Settings.getSetting(Constants.theme)));
+		items.put(createJSON(Constants.theme,"Theme",SettingsDao.getInstance().getSetting(Constants.theme)));
 		items.put(createJSON(Constants.encoding,"Document Encoding","UTF-8"));
 		
 		result.put("items", items);
@@ -58,7 +58,7 @@ public class GUISettingsController {
 	@RequestMapping(method=RequestMethod.POST,params="option=newServer",produces="application/json;charset=UTF-8")
 	public String newServer() throws SQLException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 	
-		JdbcConnection.clearDatabase();
+		JdbcConnection.getInstance().clearDatabase();
 		log.trace("Database Cleared");
 		
 		JSONObject result = new JSONObject();

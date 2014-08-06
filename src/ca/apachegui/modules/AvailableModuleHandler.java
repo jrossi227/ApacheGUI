@@ -10,7 +10,7 @@ import apache.conf.modules.SharedModule;
 import apache.conf.modules.StaticModule;
 import apache.conf.parser.File;
 
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 
 public class AvailableModuleHandler extends ModuleHandler {
@@ -27,7 +27,7 @@ public class AvailableModuleHandler extends ModuleHandler {
 	public static AvailableModule[] getAvailableModules() throws Exception
 	{
 		log.trace("Modules.getAvailableModules called");
-		String modulesDirectory=Settings.getSetting(Constants.modulesDirectory);
+		String modulesDirectory=SettingsDao.getInstance().getSetting(Constants.modulesDirectory);
 		
 		File dir = new File(modulesDirectory);
 		String[] children;

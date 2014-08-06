@@ -2,7 +2,7 @@ package ca.apachegui.directives;
 
 import apache.conf.parser.DirectiveParser;
 import ca.apachegui.conf.ConfFiles;
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.modules.SharedModuleHandler;
 import ca.apachegui.modules.StaticModuleHandler;
@@ -35,7 +35,7 @@ public abstract class FactoryDirective extends BaseDirective {
 		}
 		
 		//Add Listen after first found listener
-		new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).insertDirectiveBeforeOrAfterFirstFound(directiveName, toString(), before);
+		new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).insertDirectiveBeforeOrAfterFirstFound(directiveName, toString(), before);
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public abstract class FactoryDirective extends BaseDirective {
 			}
 		}
 		
-		DirectiveParser parser = new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
+		DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 
 		String directive[]=parser.getDirectiveValue(directiveName);
 		
@@ -86,7 +86,7 @@ public abstract class FactoryDirective extends BaseDirective {
 	 */
 	public void removeFromConfiguration() throws Exception
 	{
-		DirectiveParser parser = new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
+		DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 		
 		String file=parser.getDirectiveFile(directiveName, getReplaceValue());
 		

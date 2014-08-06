@@ -10,7 +10,7 @@ import apache.conf.parser.DirectiveParser;
 import apache.conf.parser.Enclosure;
 import apache.conf.parser.EnclosureParser;
 import apache.conf.parser.File;
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.global.Utilities;
 import ca.apachegui.modules.SharedModuleHandler;
@@ -35,9 +35,9 @@ public class DocFiles
 		
 		log.trace("DocFiles.getDirectories called Getting all directory enclosures");
 	  	
-		String serverRoot=ca.apachegui.db.Settings.getSetting(Constants.serverRoot);
+		String serverRoot=ca.apachegui.db.SettingsDao.getInstance().getSetting(Constants.serverRoot);
 		
-		Enclosure directories[] = new EnclosureParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.directoryDirectiveString);
+		Enclosure directories[] = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.directoryDirectiveString);
 	  	
 		ArrayList<String> docFiles=new ArrayList<String>();
 	  
@@ -58,7 +58,7 @@ public class DocFiles
 	  	}	
 	  	
 	  	//get DocumentRoot(s) here
-	  	String documentRoot[] = new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.documentRootString);
+	  	String documentRoot[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.documentRootString);
 	  	
 	  	for(int i=0; i<documentRoot.length; i++ ) {
 	  		

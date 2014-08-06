@@ -6,7 +6,7 @@ import apache.conf.global.Utils;
 import apache.conf.parser.DirectiveParser;
 import apache.conf.parser.File;
 import ca.apachegui.conf.ConfFiles;
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.global.Utilities;
 import ca.apachegui.modules.SharedModuleHandler;
@@ -52,7 +52,7 @@ public class History
 		includeString += "CustomLog \"|\\\"" + java.getAbsolutePath() + "\\\" -jar \\\"" + (new File(cat, "bin/LogParser.jar")).getAbsolutePath() + "\\\" \\\"" + (new File(cat, "conf/server.xml")).getAbsolutePath() + "\\\"\" " + Constants.historyLogHolder + Constants.newLine;
 		
 		//Search for access.log and insert after access.log
-		DirectiveParser parser = new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
+		DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 		boolean inserted = parser.insertDirectiveBeforeOrAfterFirstFound(Constants.customLogDirectiveString, includeString, "(.*/access.log.*|.*\\access.log.*|.*/access_log.*|.*\\access_log.*)", false);
 		
 		if(!inserted) {

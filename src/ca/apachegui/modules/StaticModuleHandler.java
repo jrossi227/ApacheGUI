@@ -4,7 +4,7 @@ import apache.conf.modules.StaticModule;
 import apache.conf.modules.StaticModuleParser;
 import apache.conf.parser.File;
 
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 
 public class StaticModuleHandler extends ModuleHandler{
@@ -22,7 +22,7 @@ public class StaticModuleHandler extends ModuleHandler{
 	{
 		if(savedStaticModules == null )
 		{	
-			StaticModuleParser parser = new StaticModuleParser(new File(Settings.getSetting(Constants.binFile)));
+			StaticModuleParser parser = new StaticModuleParser(new File(SettingsDao.getInstance().getSetting(Constants.binFile)));
 			
 			savedStaticModules=parser.getStaticModules();
 		}

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import apache.conf.global.Utils;
 import apache.conf.parser.EnclosureParser;
 import ca.apachegui.conf.ConfFiles;
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.modules.AvailableModuleHandler;
 import ca.apachegui.modules.SharedModuleHandler;
@@ -51,7 +51,7 @@ public class ControlController {
 		{ 
 			log.trace("getting extended process info");
 		
-			if(Settings.getSetting(Constants.extendedStatus).equals("on")  && running)
+			if(SettingsDao.getInstance().getSetting(Constants.extendedStatus).equals("on")  && running)
 			{
 				ExtendedRunningProcess processes[]=ExtendedRunningProcess.getExtendedRunningProcessInfo();
 				
@@ -108,7 +108,7 @@ public class ControlController {
 		result.put("busyWorkers", "");
 		result.put("idleWorkers", "");
 		
-		if(Settings.getSetting(Constants.extendedStatus).equals("on") && running)
+		if(SettingsDao.getInstance().getSetting(Constants.extendedStatus).equals("on") && running)
 		{
 			try
 			{
@@ -233,13 +233,13 @@ public class ControlController {
 		if(off.equals("true") || processInfoRefreshRate.equals("0")) 
 		{
 			log.trace("off is true setting processInfoRefreshRate to 0");
-			Settings.setSetting(Constants.processInfoRefreshRate, "0");
+			SettingsDao.getInstance().setSetting(Constants.processInfoRefreshRate, "0");
 			result.put("result", 0);
 		}
 		else 
 		{
 			log.trace("Setting processInfoRefreshRate to " + processInfoRefreshRate);
-			Settings.setSetting(Constants.processInfoRefreshRate, processInfoRefreshRate);
+			SettingsDao.getInstance().setSetting(Constants.processInfoRefreshRate, processInfoRefreshRate);
 			result.put("result", processInfoRefreshRate);
 		}
 		
@@ -252,7 +252,7 @@ public class ControlController {
 		
 		try
 		{
-			String currentExtendedStatus=Settings.getSetting(Constants.extendedStatus);
+			String currentExtendedStatus=SettingsDao.getInstance().getSetting(Constants.extendedStatus);
 			
 			boolean change=false;
 			if((on.equals("true") && currentExtendedStatus.equals("off")) || (on.equals("false") && currentExtendedStatus.equals("on"))) {
@@ -264,7 +264,7 @@ public class ControlController {
 				if(ExtendedStatus.checkExtendedStatusRestart())
 				{
 					//Comment out existing mod_status logic
-					new EnclosureParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).deleteEnclosure("IfModule", "mod_status\\.c");
+					new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).deleteEnclosure("IfModule", "mod_status\\.c");
 					
 					//Load the module if it isn't loaded
 					if(!ExtendedStatus.isExtendedStatusModuleLoaded()) {
@@ -274,7 +274,7 @@ public class ControlController {
 					//the handler isnt set
 					if(!ExtendedStatus.checkExtendedStatusEnclosure() && ExtendedStatus.checkExtendedStatusDirective())
 					{	
-						if(ServerInfo.isTwoPointTwo(Settings.getSetting(Constants.binFile))) {
+						if(ServerInfo.isTwoPointTwo(SettingsDao.getInstance().getSetting(Constants.binFile))) {
 							ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointTwo);	
 						} else {
 							ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointFour);	
@@ -290,7 +290,7 @@ public class ControlController {
 					else
 					{
 						ConfFiles.deleteFromConfigFiles(Constants.extendedStatusDirectiveString, false);
-						if(ServerInfo.isTwoPointTwo(Settings.getSetting(Constants.binFile))) {
+						if(ServerInfo.isTwoPointTwo(SettingsDao.getInstance().getSetting(Constants.binFile))) {
 							ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointTwo);	
 						} else {
 							ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointFour);	
@@ -306,13 +306,13 @@ public class ControlController {
 						}
 					}
 				}
-				Settings.setSetting(Constants.extendedStatus,"on");
+				SettingsDao.getInstance().setSetting(Constants.extendedStatus,"on");
 				result.put("result", "on");
 				result.put("change", change);
 			}
 			if(on.equals("false") && currentExtendedStatus.equals("on"))
 			{
-				Settings.setSetting(Constants.extendedStatus,"off");
+				SettingsDao.getInstance().setSetting(Constants.extendedStatus,"off");
 				result.put("result", "off");
 				result.put("change", change);
 			}
@@ -488,7 +488,7 @@ public class ControlController {
 	public String isExtendedStatusEnabled() throws Exception {
 		JSONObject result = new JSONObject();
 		
-		String extendedStatus=Settings.getSetting(Constants.extendedStatus);
+		String extendedStatus=SettingsDao.getInstance().getSetting(Constants.extendedStatus);
 		if(extendedStatus.equals("on")) {
 			result.put("result", true);
 		}
@@ -503,7 +503,7 @@ public class ControlController {
 	public String getRefreshRate() throws Exception {
 		JSONObject result = new JSONObject();
 					
-		result.put("result", Settings.getSetting(Constants.processInfoRefreshRate));
+		result.put("result", SettingsDao.getInstance().getSetting(Constants.processInfoRefreshRate));
 			
 		return result.toString();	
 	}

@@ -6,7 +6,7 @@ import apache.conf.parser.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 
 public class LogFiles 
@@ -19,7 +19,7 @@ public class LogFiles
 	 */
 	public static String[] getLogFileList() throws IOException
 	{
-		String logDirectory=Settings.getSetting(Constants.logDirectory);
+		String logDirectory=SettingsDao.getInstance().getSetting(Constants.logDirectory);
 	  	
 	  	return Utils.getFileList(new File(logDirectory));
 	}	
@@ -34,7 +34,7 @@ public class LogFiles
 	{
 		
 		File targetDirectory=new File(path);
-		File logDirectory=new File(Settings.getSetting(Constants.logDirectory));
+		File logDirectory=new File(SettingsDao.getInstance().getSetting(Constants.logDirectory));
 		
 		StringBuffer result= new StringBuffer();
 		result.append("{ id: '" + Constants.LogsRoot + targetDirectory.getAbsolutePath() + "', name:'" + (targetDirectory.equals(logDirectory) ? "Logs" : targetDirectory.getName()) + "', type:'Logs', children:[");

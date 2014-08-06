@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ca.apachegui.db.LogData;
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.LogDataDao;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 
 @RestController
@@ -89,7 +90,7 @@ public class ReceiveLogDataController {
 		logDataCounter++;
 		logData.add(data);
 		
-		if(logDataCounter>(Integer.parseInt(Settings.getSetting(Constants.historyBuffer))))
+		if(logDataCounter>(Integer.parseInt(SettingsDao.getInstance().getSetting(Constants.historyBuffer))))
 		{	
 			//commit in a new Thread
 			InsertHistory history=new InsertHistory(logData.toArray(new LogData[logData.size()]));
@@ -113,7 +114,7 @@ public class ReceiveLogDataController {
 		@Override
 		public void run() 
 		{
-			LogData.commitLogData(data);
+			LogDataDao.getInstance().commitLogData(data);
 		}
 
 	}

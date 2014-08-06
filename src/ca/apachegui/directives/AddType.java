@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import apache.conf.global.Utils;
 import apache.conf.parser.DirectiveParser;
 
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.modules.SharedModuleHandler;
 import ca.apachegui.modules.StaticModuleHandler;
@@ -106,7 +106,7 @@ public class AddType extends FactoryDirective {
 	public AddType[] getAllConfigured() throws Exception {
 		ArrayList<AddType> addTypes = new ArrayList<AddType>();
 		
-		String allAddTypes[]=new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName);
+		String allAddTypes[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName);
 		for(int i=0; i<allAddTypes.length; i++) {
 			addTypes.add(new AddType(allAddTypes[i]));
 		}

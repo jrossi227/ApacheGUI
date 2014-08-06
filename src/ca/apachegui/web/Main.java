@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.global.Utilities;
 
@@ -40,13 +40,13 @@ public class Main extends HttpServlet {
 		try 
 		{
 			if(option.equals("confFilePath")){
-				out.print("{file: '" + Settings.getSetting(Constants.confDirectory) + "'}");
+				out.print("{file: '" + SettingsDao.getInstance().getSetting(Constants.confDirectory) + "'}");
 			}
 			if(option.equals("docFilePath")) {	
 				out.print("{file: '" + Utilities.getFileSystemDrive() + "'}");
 			}
 			if(option.equals("logFilePath")) {
-				out.print("{file: '" + Settings.getSetting(Constants.logDirectory) + "'}");
+				out.print("{file: '" + SettingsDao.getInstance().getSetting(Constants.logDirectory) + "'}");
 			}
 			if(option.equals("validateFileExists")) {
 				String file=request.getParameter("filename");

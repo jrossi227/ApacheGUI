@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.ServletContextAware;
 
 import ca.apachegui.db.LogData;
+import ca.apachegui.db.LogDataDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.global.Utilities;
 
@@ -85,7 +86,7 @@ public class SearchResultsController implements ServletContextAware {
 		if(option.equals("window"))
 		{
 			log.trace("Entering window option");
-			LogData[] results=LogData.queryLogData(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize, maxResults);
+			LogData[] results=LogDataDao.getInstance().queryLogData(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize, maxResults);
 			
 			result.put("identifier", "id");
 			result.put("label", "name");
@@ -129,7 +130,7 @@ public class SearchResultsController implements ServletContextAware {
 		{
 			//ServletOutputStream stream = response.getOutputStream();
 			log.trace("Entering csv option");
-			LogData[] results=LogData.queryLogData(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize, maxResults);
+			LogData[] results=LogDataDao.getInstance().queryLogData(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize, maxResults);
 		    File doc = new File(Utilities.getWebappDirectory(context),"HistoryFiles/" + Constants.historyFilename);
 			BufferedWriter writer = new BufferedWriter(new FileWriter(doc));
 			writer.write("\"INSERTDATE\",\"HOST\",\"USERAGENT\",\"REQUESTSTRING\",\"STATUS\",\"CONTENTSIZE\"");
@@ -147,7 +148,7 @@ public class SearchResultsController implements ServletContextAware {
 		if(option.equals("delete"))
 		{
 			log.trace("Entering delete option");
-			LogData.deleteLogData(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize);
+			LogDataDao.getInstance().deleteLogData(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize);
 			
 			result.put("result", "success");
 		}

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import apache.conf.parser.Parser;
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.modules.SharedModuleHandler;
 import ca.apachegui.modules.StaticModuleHandler;
@@ -42,9 +42,9 @@ public class ConfigurationController {
 	@RequestMapping(method=RequestMethod.GET,params="option=activeFileList",produces="application/json;charset=UTF-8")
 	public String getActiveFileList() throws Exception {
 		
-		String rootConfFile = Settings.getSetting(Constants.confFile);
+		String rootConfFile = SettingsDao.getInstance().getSetting(Constants.confFile);
 		
-		String activeFileList[]=new Parser(rootConfFile, Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getActiveConfFileList();
+		String activeFileList[]=new Parser(rootConfFile, SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getActiveConfFileList();
 		Arrays.sort(activeFileList);
 		
 		JSONArray files = new JSONArray();

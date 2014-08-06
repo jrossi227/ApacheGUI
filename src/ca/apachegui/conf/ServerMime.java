@@ -12,7 +12,7 @@ import apache.conf.parser.DirectiveParser;
 import apache.conf.parser.Parser;
 import apache.conf.parser.File;
 
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.modules.SharedModuleHandler;
 import ca.apachegui.modules.StaticModuleHandler;
@@ -40,19 +40,19 @@ public class ServerMime extends Mime {
 	 */
 	public static String getServerMimeFile() throws Exception 
 	{
-		String typesConfig[] = new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot),StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.typesConfigDirective);
+		String typesConfig[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.typesConfigDirective);
 		
 		if(typesConfig.length > 0) 
 		{
 			if((!Utils.isWindows() && typesConfig[0].startsWith("/")) || (Utils.isWindows() && typesConfig[0].contains(":"))) {
 				return typesConfig[0];
 			} else {
-				return new File(Settings.getSetting(Constants.serverRoot), typesConfig[0]).getAbsolutePath();
+				return new File(SettingsDao.getInstance().getSetting(Constants.serverRoot), typesConfig[0]).getAbsolutePath();
 			}
 		}
 		else
 		{
-			return new File(Settings.getSetting(Constants.confDirectory), "mime.types").getAbsolutePath();
+			return new File(SettingsDao.getInstance().getSetting(Constants.confDirectory), "mime.types").getAbsolutePath();
 		}
 	}
 	

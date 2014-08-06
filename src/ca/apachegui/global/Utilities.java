@@ -12,7 +12,7 @@ import javax.servlet.ServletContext;
 import org.apache.log4j.Logger;
 
 import apache.conf.parser.File;
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.directives.Listen;
 import ca.apachegui.history.History;
 
@@ -270,7 +270,7 @@ public class Utilities
 	   */
 	  public static String getFileSystemDrive() {
 		  
-		  String serverRoot=Settings.getSetting(Constants.serverRoot);
+		  String serverRoot=SettingsDao.getInstance().getSetting(Constants.serverRoot);
 		  
 		  return serverRoot.substring(0, serverRoot.indexOf("/")+1);
 	  }

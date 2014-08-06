@@ -6,7 +6,7 @@ import apache.conf.global.Utils;
 import apache.conf.parser.DirectiveParser;
 import apache.conf.parser.Enclosure;
 import apache.conf.parser.EnclosureParser;
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.modules.SharedModuleHandler;
 import ca.apachegui.modules.StaticModuleHandler;
@@ -130,7 +130,7 @@ public class NameVirtualHost extends FactoryDirective {
 	public NameVirtualHost[] getAllConfigured() throws Exception {
 		ArrayList<NameVirtualHost> currNameVirtualHosts = new ArrayList<NameVirtualHost>();
 		
-		String nameVirtualHosts[]=new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName);
+		String nameVirtualHosts[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName);
 		for(int i=0; i<nameVirtualHosts.length; i++) {
 			currNameVirtualHosts.add(new NameVirtualHost(nameVirtualHosts[i]));
 		}
@@ -158,7 +158,7 @@ public class NameVirtualHost extends FactoryDirective {
 		}
 		
 		//check if a virtual host exists
-		Enclosure virtualHosts[]=new EnclosureParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.virtualHostDirectiveString);
+		Enclosure virtualHosts[]=new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.virtualHostDirectiveString);
 		boolean exists=false;
 		for(int i=0; i<virtualHosts.length; i++) {
 			if(this.equals(new NameVirtualHost(virtualHosts[i].getValue()))) {
@@ -171,7 +171,7 @@ public class NameVirtualHost extends FactoryDirective {
 		}
 		
 		//Add Listen after first found listener
-		new DirectiveParser(Settings.getSetting(Constants.confFile), Settings.getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).insertDirectiveBeforeOrAfterFirstFound(Constants.listenDirective, toString(), before);
+		new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).insertDirectiveBeforeOrAfterFirstFound(Constants.listenDirective, toString(), before);
 	}
 	
 	@Override

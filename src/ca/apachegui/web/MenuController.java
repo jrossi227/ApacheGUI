@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import apache.conf.global.Utils;
 import ca.apachegui.conf.ConfFiles;
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 import ca.apachegui.docs.DocFiles;
 import ca.apachegui.global.Constants;
 import ca.apachegui.global.SearchTaskExecutor;
@@ -38,8 +38,8 @@ public class MenuController {
 	public void menuRoot(HttpServletResponse response) throws Exception {
 		PrintWriter out = response.getWriter();
 				
-		String confDirectory=Settings.getSetting(Constants.confDirectory);
-		String logDirectory=Settings.getSetting(Constants.logDirectory);
+		String confDirectory=SettingsDao.getInstance().getSetting(Constants.confDirectory);
+		String logDirectory=SettingsDao.getInstance().getSetting(Constants.logDirectory);
 	
 		out.print(
 				"[" +

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ca.apachegui.db.Users;
+import ca.apachegui.db.UsersDao;
 import ca.apachegui.global.Constants;
 
 @RestController
@@ -47,10 +47,10 @@ public class SettingsController {
 		
 		String value="";
 		if(name.equals(Constants.username)) {
-			value=Users.getUsername();
+			value=UsersDao.getInstance().getUsername();
 		}
 		else {
-			value=ca.apachegui.db.Settings.getSetting(name);
+			value=ca.apachegui.db.SettingsDao.getInstance().getSetting(name);
 		}
 		
 		value = (value == null ? "" : value);
@@ -183,16 +183,16 @@ public class SettingsController {
 		}
 		
 		if(name.equals(Constants.username)) {
-			Users.setUsername(value);
+			UsersDao.getInstance().setUsername(value);
 		}
 		else if(name.equals(Constants.password)) {
-			Users.setPassword(value);
+			UsersDao.getInstance().setPassword(value);
 		}
 		else if(name.equals(Constants.confFile)) {
-			ca.apachegui.db.Settings.setSetting(Constants.confFile, value);
+			ca.apachegui.db.SettingsDao.getInstance().setSetting(Constants.confFile, value);
 		}
 		else {
-			ca.apachegui.db.Settings.setSetting(name, value);
+			ca.apachegui.db.SettingsDao.getInstance().setSetting(name, value);
 		}	
 		
 		JSONObject result = new JSONObject();

@@ -11,7 +11,7 @@ import javax.servlet.annotation.WebFilter;
 
 import org.apache.log4j.Logger;
 
-import ca.apachegui.db.Settings;
+import ca.apachegui.db.SettingsDao;
 
 /**
  * Servlet Filter implementation class SharedModuleFilter
@@ -38,7 +38,7 @@ public class SharedModuleFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		try 
 		{
-			if(Settings.getSetting("init") != null) {
+			if(SettingsDao.getInstance().getSetting("init") != null) {
 				SharedModuleHandler.updateSharedModules();
 			}
 		} catch (Exception e) {
