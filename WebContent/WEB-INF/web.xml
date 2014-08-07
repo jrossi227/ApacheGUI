@@ -110,15 +110,6 @@
     <url-pattern>/Modules</url-pattern>
   </servlet-mapping>
   <servlet>
-    <display-name>Networking</display-name>
-    <servlet-name>Networking</servlet-name>
-    <servlet-class>ca.apachegui.web.Networking</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Networking</servlet-name>
-    <url-pattern>/Networking</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <display-name>Mime</display-name>
     <servlet-name>Mime</servlet-name>
     <servlet-class>ca.apachegui.web.Mime</servlet-class>

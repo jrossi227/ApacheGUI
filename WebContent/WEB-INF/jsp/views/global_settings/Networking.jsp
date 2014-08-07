@@ -142,7 +142,7 @@
 			</div> 
 		</h4>
 		
-		<span dojoType="dojo.data.ItemFileWriteStore" jsId="globalListeningStore" url="../Networking?option=listening" urlPreventCache="true"></span>
+		<span dojoType="dojo.data.ItemFileWriteStore" jsId="globalListeningStore" url="../web/Networking?option=listening" urlPreventCache="true"></span>
 		<table id="globalListeningGrid" dojoType="dojox.grid.DataGrid" jsId="globalListeningGrid" store="globalListeningStore" query="{ ip: '*' }" clientSort="false" selectable="true" style="width: 100%;" autoHeight="true" rowSelector="20px">
 			<thead>
 				<tr>
@@ -179,7 +179,7 @@
 			</div> 
 		</h4>
 
-		<span dojoType="dojo.data.ItemFileWriteStore" jsId="globalNameVirtualHostStore" url="../Networking?option=nameVirtualHost" urlPreventCache="true"></span>
+		<span dojoType="dojo.data.ItemFileWriteStore" jsId="globalNameVirtualHostStore" url="../web/Networking?option=nameVirtualHost" urlPreventCache="true"></span>
 		<table id="globalNameVirtualHostGrid" dojoType="dojox.grid.DataGrid" jsId="globalNameVirtualHostGrid" store="globalNameVirtualHostStore" query="{ address: '*' }" clientSort="false" selectable="true" style="width: 100%;" autoHeight="true" rowSelector="20px">
 			<thead>
 				<tr>

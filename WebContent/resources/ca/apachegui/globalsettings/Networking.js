@@ -103,7 +103,7 @@ define([ "dojo/_base/declare",
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Adding', 'Please Wait...');
 			thisdialog.show();
 			
-			request.post("../Networking", {
+			request.post("../web/Networking", {
 				data: 	{
 					option: 'addListen',
 					allIp: allIp,
@@ -111,32 +111,30 @@ define([ "dojo/_base/declare",
 					port: port,
 					protocol: protocol
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = response.data;
-				
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
-				}
-				else {
 					dom.byId('addAllListenIp').checked=false;
 					registry.byId('addListenIp').set('disabled', false);
 					registry.byId('addListenIp').reset();
 					registry.byId('addListenPort').reset();
 					registry.byId('addListenProtocol').reset();
 					registry.byId('addListenDialog').hide();
-					that.resetListenGrid();
-				}	
-				
-				thisdialog.remove();
-			});
+					that.resetListenGrid();		
+					
+					thisdialog.remove();
+				},
+				function(error) {
+					thisdialog.remove();
+					ca.apachegui.Util.alert('Error',error.response.data.message);
+				}
+			);
 		},
 		
 		resetListenGrid: function() {
-			globalListeningStore = new ItemFileWriteStore({url: '../Networking?option=listening', urlPreventCache: true});
+			globalListeningStore = new ItemFileWriteStore({url: '../web/Networking?option=listening', urlPreventCache: true});
 			globalListeningGrid.setStore(globalListeningStore);
 		},
 		
@@ -154,35 +152,33 @@ define([ "dojo/_base/declare",
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Adding', 'Please Wait...');
 			thisdialog.show();
 			
-			request.post("../Networking", {
+			request.post("../web/Networking", {
 				data: 	{
 					option: 'addNameVirtualHost',
 					address: address,
 					port: port
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = response.data;
-				
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
-				}
-				else {
 					registry.byId('addNameVirtualHostAddress').reset();
 					registry.byId('addNameVirtualHostPort').reset();
 					registry.byId('addNameVirtualHostDialog').hide();
 					that.resetNameVirtualHostGrid();
-				}	
-				
-				thisdialog.remove();
-			});
+					
+					thisdialog.remove();
+				},
+				function(error) {
+					thisdialog.remove();
+					ca.apachegui.Util.alert('Error',error.response.data.message);
+				}
+			);
 		},
 		
 		resetNameVirtualHostGrid: function() {
-			globalNameVirtualHostStore = new ItemFileWriteStore({url: '../Networking?option=nameVirtualHost', urlPreventCache: true});
+			globalNameVirtualHostStore = new ItemFileWriteStore({url: '../web/Networking?option=nameVirtualHost', urlPreventCache: true});
 			globalNameVirtualHostGrid.setStore(globalNameVirtualHostStore);
 		},
 		
@@ -300,29 +296,27 @@ define([ "dojo/_base/declare",
 							var thisdialog = ca.apachegui.Util.noCloseDialog('Deleting', 'Please Wait...');
 							thisdialog.show();
 							
-							request.post("../Networking", {
+							request.post("../web/Networking", {
 								data: 	{
 									option: 'deleteListen',
 									ip: ip,
 									port: port,
 									protocol: protocol
 								},
-								handleAs: 'text',
+								handleAs: 'json',
 								sync: false
-							}).response.then(function(response) {
+							}).response.then(
+								function(response) {
 								
-								var data = response.data;
-								
-								var status = response.status;
-								if(status!=200) {
-									ca.apachegui.Util.alert('Error',data);
-								}
-								else {
 									that.resetListenGrid();
-								}	
-								
-								thisdialog.remove();
-							});
+											
+									thisdialog.remove();
+								},
+								function(error) {
+									thisdialog.remove();
+									ca.apachegui.Util.alert('Error',error.response.data.message);
+								}
+							);
 						}
 					});
 			});
@@ -377,28 +371,26 @@ define([ "dojo/_base/declare",
 							var thisdialog = ca.apachegui.Util.noCloseDialog('Deleting', 'Please Wait...');
 							thisdialog.show();
 							
-							request.post("../Networking", {
+							request.post("../web/Networking", {
 								data: 	{
 									option: 'deleteNameVirtualHost',
 									address: address,
 									port: port
 								},
-								handleAs: 'text',
+								handleAs: 'json',
 								sync: false
-							}).response.then(function(response) {
+							}).response.then(
+								function(response) {
 								
-								var data = response.data;
-								
-								var status = response.status;
-								if(status!=200) {
-									ca.apachegui.Util.alert('Error',data);
+									that.resetNameVirtualHostGrid();		
+									
+									thisdialog.remove();
+								},
+								function(error) {
+									thisdialog.remove();
+									ca.apachegui.Util.alert('Error',error.response.data.message);
 								}
-								else {
-									that.resetNameVirtualHostGrid();
-								}	
-								
-								thisdialog.remove();
-							});
+							);
 						}
 					});
 			});
@@ -425,21 +417,16 @@ define([ "dojo/_base/declare",
 				var thisdialog = ca.apachegui.Util.noCloseDialog('Updating', 'Please Wait...');
 				thisdialog.show();
 				
-				request.post("../Networking", {
+				request.post("../web/Networking", {
 					data: 	{
 						option: 'modifyKeepAliveStatus',
 						status: status
 					},
-					handleAs: 'text',
+					handleAs: 'json',
 					sync: false
-				}).response.then(function(response) {
+				}).response.then(
+					function(response) {
 					
-					var data = response.data;
-					
-					if(response.status != 200) {
-						ca.apachegui.Util.alert('Error',data);
-					}
-					else {
 						that.showSuccessfullSave();
 						
 						if(status == 'on') {
@@ -449,10 +436,13 @@ define([ "dojo/_base/declare",
 						}
 						
 						registry.byId('keepAliveStatusButton').set('disabled', true);
-					}	
-					
-					thisdialog.remove();
-				});
+
+						thisdialog.remove();
+					},
+					function(error) {
+						thisdialog.remove();
+						ca.apachegui.Util.alert('Error',error.response.data.message);
+					});
 					
 			});	
 			
@@ -477,28 +467,26 @@ define([ "dojo/_base/declare",
 				var thisdialog = ca.apachegui.Util.noCloseDialog('Updating', 'Please Wait...');
 				thisdialog.show();
 				
-				request.post("../Networking", {
+				request.post("../web/Networking", {
 					data: 	{
 						option: 'modifyKeepAliveTimeout',
 						seconds: seconds
 					},
-					handleAs: 'text',
+					handleAs: 'json',
 					sync: false
-				}).response.then(function(response) {
-					
-					var data = response.data;
-					
-					var status = response.status;
-					if(status!=200) {
-						ca.apachegui.Util.alert('Error',data);
-					}
-					else {
+				}).response.then(
+					function(response) {
+						
 						that.showSuccessfullSave();
-						registry.byId('saveKeepAliveTimeoutButton').set('disabled', true);
-					}	
-					
-					thisdialog.remove();
-				});
+						registry.byId('saveKeepAliveTimeoutButton').set('disabled', true);	
+						
+						thisdialog.remove();
+					},
+					function(error) {
+						thisdialog.remove();
+						ca.apachegui.Util.alert('Error',error.response.data.message);
+					}
+				);
 			});
 			
 			on(dom.byId('requestsPerConnectionUnlimited'), "change", function() {
@@ -539,22 +527,16 @@ define([ "dojo/_base/declare",
 				var thisdialog = ca.apachegui.Util.noCloseDialog('Updating', 'Please Wait...');
 				thisdialog.show();
 				
-				request.post("../Networking", {
+				request.post("../web/Networking", {
 					data: 	{
 						option: 'modifyMaxKeepAliveRequests',
 						numberOfRequests: numberOfRequests
 					},
-					handleAs: 'text',
+					handleAs: 'json',
 					sync: false
-				}).response.then(function(response) {
+				}).response.then(
+					function(response) {
 					
-					var data = response.data;
-					
-					var status = response.status;
-					if(status!=200) {
-						ca.apachegui.Util.alert('Error',data);
-					}
-					else {
 						if(numberOfRequests == '0' ) {
 							dom.byId('requestsPerConnectionNum').value = '';
 							var buttons=query('#requestsPerConnectionContainer input'); 
@@ -567,11 +549,15 @@ define([ "dojo/_base/declare",
 							});
 						}
 						that.showSuccessfullSave();
-						registry.byId('requestsPerConnectionButton').set('disabled', true);
-					}	
-					
-					thisdialog.remove();
-				});
+						registry.byId('requestsPerConnectionButton').set('disabled', true);		
+						
+						thisdialog.remove();
+					},
+					function(error) {
+						thisdialog.remove();
+						ca.apachegui.Util.alert('Error',error.response.data.message);
+					}
+				);
 			});
 			
 			on(registry.byId('requestTimeoutSeconds'), "keyup", function() {
@@ -594,28 +580,26 @@ define([ "dojo/_base/declare",
 				var thisdialog = ca.apachegui.Util.noCloseDialog('Updating', 'Please Wait...');
 				thisdialog.show();
 				
-				request.post("../Networking", {
+				request.post("../web/Networking", {
 					data: 	{
 						option: 'modifyRequestTimeout',
 						seconds: seconds
 					},
-					handleAs: 'text',
+					handleAs: 'json',
 					sync: false
-				}).response.then(function(response) {
+				}).response.then(
+					function(response) {
 					
-					var data = response.data;
-					
-					var status = response.status;
-					if(status!=200) {
-						ca.apachegui.Util.alert('Error',data);
-					}
-					else {
 						that.showSuccessfullSave();
-						registry.byId('requestTimeoutButton').set('disabled', true);
-					}	
-					
-					thisdialog.remove();
-				});
+						registry.byId('requestTimeoutButton').set('disabled', true);	
+						
+						thisdialog.remove();
+					},
+					function(error) {
+						thisdialog.remove();
+						ca.apachegui.Util.alert('Error',error.response.data.message);
+					}
+				);
 				
 			});
 			
@@ -639,28 +623,26 @@ define([ "dojo/_base/declare",
 				var thisdialog = ca.apachegui.Util.noCloseDialog('Updating', 'Please Wait...');
 				thisdialog.show();
 				
-				request.post("../Networking", {
+				request.post("../web/Networking", {
 					data: 	{
 						option: 'modifyListenBackLog',
 						backLogLength: backLogLength
 					},
-					handleAs: 'text',
+					handleAs: 'json',
 					sync: false
-				}).response.then(function(response) {
+				}).response.then(
+					function(response) {
 					
-					var data = response.data;
-					
-					var status = response.status;
-					if(status!=200) {
-						ca.apachegui.Util.alert('Error',data);
-					}
-					else {
 						that.showSuccessfullSave();
-						registry.byId('listenBackLogButton').set('disabled', true);
-					}	
-					
-					thisdialog.remove();
-				});
+						registry.byId('listenBackLogButton').set('disabled', true);	
+						
+						thisdialog.remove();
+					},
+					function(error) {
+						thisdialog.remove();
+						ca.apachegui.Util.alert('Error',error.response.data.message);
+					}
+				);
 				
 			});
 			
@@ -682,28 +664,26 @@ define([ "dojo/_base/declare",
 				var thisdialog = ca.apachegui.Util.noCloseDialog('Updating', 'Please Wait...');
 				thisdialog.show();
 				
-				request.post("../Networking", {
+				request.post("../web/Networking", {
 					data: 	{
 						option: 'modifyServerTokens',
 						serverTokens: serverTokens
 					},
-					handleAs: 'text',
+					handleAs: 'json',
 					sync: false
-				}).response.then(function(response) {
+				}).response.then(
+					function(response) {
 					
-					var data = response.data;
-					
-					var status = response.status;
-					if(status!=200) {
-						ca.apachegui.Util.alert('Error',data);
-					}
-					else {
 						that.showSuccessfullSave();
-						registry.byId('serverTokensButton').set('disabled', true);
-					}	
-					
-					thisdialog.remove();
-				});
+						registry.byId('serverTokensButton').set('disabled', true);	
+						
+						thisdialog.remove();
+					},
+					function(error) {
+						thisdialog.remove();
+						ca.apachegui.Util.alert('Error',error.response.data.message);
+					}
+				);
 			});
 			
 			on(registry.byId('serverSignatureSelector'), "change", function() {
@@ -718,28 +698,26 @@ define([ "dojo/_base/declare",
 				var thisdialog = ca.apachegui.Util.noCloseDialog('Updating', 'Please Wait...');
 				thisdialog.show();
 				
-				request.post("../Networking", {
+				request.post("../web/Networking", {
 					data: 	{
 						option: 'modifyServerSignature',
 						serverSignature: serverSignature
 					},
-					handleAs: 'text',
+					handleAs: 'json',
 					sync: false
-				}).response.then(function(response) {
+				}).response.then(
+					function(response) {
 					
-					var data = response.data;
-					
-					var status = response.status;
-					if(status!=200) {
-						ca.apachegui.Util.alert('Error',data);
-					}
-					else {
 						that.showSuccessfullSave();
 						registry.byId('serverSignatureButton').set('disabled', true);
-					}	
-					
-					thisdialog.remove();
-				});
+						
+						thisdialog.remove();
+					},
+					function(error) {
+						thisdialog.remove();
+						ca.apachegui.Util.alert('Error',error.response.data.message);
+					}
+				);
 			});
 			
 			if(!ca.apachegui.Main.getInstance().isWindows()) {
@@ -760,28 +738,26 @@ define([ "dojo/_base/declare",
 					var thisdialog = ca.apachegui.Util.noCloseDialog('Updating', 'Please Wait...');
 					thisdialog.show();
 					
-					request.post("../Networking", {
+					request.post("../web/Networking", {
 						data: 	{
 							option: 'modifyUser',
 							user: user
 						},
-						handleAs: 'text',
+						handleAs: 'json',
 						sync: false
-					}).response.then(function(response) {
+					}).response.then(
+						function(response) {
 						
-						var data = response.data;
-						
-						var status = response.status;
-						if(status!=200) {
-							ca.apachegui.Util.alert('Error',data);
-						}
-						else {
 							that.showSuccessfullSave();
 							registry.byId('apacheUserButton').set('disabled', true);
-						}	
 						
-						thisdialog.remove();
-					});
+							thisdialog.remove();
+						},
+						function(error) {
+							thisdialog.remove();
+							ca.apachegui.Util.alert('Error',error.response.data.message);
+						}
+					);
 				});
 				
 				on(registry.byId('apacheGroup'), "keyup", function() {
@@ -800,28 +776,26 @@ define([ "dojo/_base/declare",
 					var thisdialog = ca.apachegui.Util.noCloseDialog('Updating', 'Please Wait...');
 					thisdialog.show();
 					
-					request.post("../Networking", {
+					request.post("../web/Networking", {
 						data: 	{
 							option: 'modifyGroup',
 							group: group
 						},
-						handleAs: 'text',
+						handleAs: 'json',
 						sync: false
-					}).response.then(function(response) {
+					}).response.then(
+						function(response) {
 						
-						var data = response.data;
-						
-						var status = response.status;
-						if(status!=200) {
-							ca.apachegui.Util.alert('Error',data);
-						}
-						else {
 							that.showSuccessfullSave();
 							registry.byId('apacheGroupButton').set('disabled', true);
-						}	
-						
-						thisdialog.remove();
-					});
+							
+							thisdialog.remove();
+						},
+						function(error) {
+							thisdialog.remove();
+							ca.apachegui.Util.alert('Error',error.response.data.message);
+						}
+					);
 				});
 			}
 		}
