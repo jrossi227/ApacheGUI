@@ -59,7 +59,7 @@ define([ "dojo/_base/declare",
 			}
 			if(option=='download')
 			{
-				window.open('../DownloadFile?file=' + dom.byId('filePath').innerHTML);
+				window.open('../web/DownloadFile?file=' + dom.byId('filePath').innerHTML);
 			}	
 			if(option=='tail')
 			{
@@ -84,30 +84,31 @@ define([ "dojo/_base/declare",
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Generating', 'Searching Please Wait...');
 			thisdialog.show();
 			
-			request.post("../Logs", {
-				data: 	{
+			request.get("../web/Logs", {
+				query: 	{
 					option: 'search',
 					searchFilter: searchFilter,
 					file: file
 				},
 				handleAs: 'text',
+				preventCache: true,
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = response.data;
-								
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
-				}
-				else {
+					var data = response.data;
+									
 					that.getSearchTextArea().setValue(data);
 					that.getSearchTextArea().setOption('lineNumbers',true);
+					
+					thisdialog.remove();
+					
+				},
+				function(error) {
+					thisdialog.remove();
+					ca.apachegui.Util.alert('Info',error.response.data);
 				}
-				
-				thisdialog.remove();
-				
-			});
+			);
 		},
 		
 		clearSearch: function () {
@@ -142,39 +143,39 @@ define([ "dojo/_base/declare",
 			var that=this;
 			var file=ca.apachegui.Util.getQueryParam('file');
 			
-			request.post("../Logs", {
-				data: 	{
+			request.get("../web/Logs", {
+				query: 	{
 					option: 'tail',
 					currByte: this.currByte,
 					filter: dom.byId('tailFilter').value,
 				    file: file
 				},
 				handleAs: 'text',
-				sync: false
-			}).response.then(function(response) {
+				sync: false,
+				preventCache: true
+			}).response.then(
+				function(response) {
 				
-				if(response.getHeader('currByte')!=null) {
-					that.currByte= response.getHeader('currByte');
-				}
-				
-				var data = response.data;
-								
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
-				}
-				else {
+					if(response.getHeader('currByte')!=null) {
+						that.currByte= response.getHeader('currByte');
+					}
+					
+					var data = response.data;
+									
 					if(data!='')
 					{	
 						that.getTailTextArea().setValue(that.getTailTextArea().getValue() +  data);
 						that.getTailTextArea().setOption('lineNumbers',true);
 						that.getTailTextArea().setCursor(that.getTailTextArea().lineCount(),0);
 					}
+					
+					setTimeout(that.refreshTailInfo.bind(that), 3000);
+					
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Info',error.response.data);
 				}
-				
-				setTimeout(that.refreshTailInfo.bind(that), 3000);
-				
-			});
+			);
 		},
 		
 		clearTail: function () {
@@ -189,28 +190,27 @@ define([ "dojo/_base/declare",
 			var file=ca.apachegui.Util.getQueryParam('file');
 			var searchFilter=dom.byId('searchFilter').value;
 			
-			request.post("../Logs", {
-				data: 	{
+			request.get("../web/Logs", {
+				query: 	{
 					option: 'export',
 					searchFilter: searchFilter,
 					file: file
 				},
-				handleAs: 'text',
-				sync: false
+				handleAs: 'json',
+				sync: false,
+				preventCache: true
 			}).response.then(function(response) {
 				
-				var data = json.fromJson(response.data);
+				var data = response.data;
 								
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data.result);
-				}
-				else {
-					window.location.href='../DownloadFile?file=' + data.file;
-				}
+				window.location.href='../web/DownloadFile?file=' + data.file;
 				
 				thisdialog.remove();
 				
+			},
+			function(error) {
+				thisdialog.remove();
+				ca.apachegui.Util.alert('Info',error.response.data.message);
 			});
 		},
 		

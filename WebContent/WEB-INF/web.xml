@@ -101,15 +101,6 @@
    </context-param>
 
   <servlet>
-    <display-name>Logs</display-name>
-    <servlet-name>Logs</servlet-name>
-    <servlet-class>ca.apachegui.web.Logs</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Logs</servlet-name>
-    <url-pattern>/Logs</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <display-name>Modules</display-name>
     <servlet-name>Modules</servlet-name>
     <servlet-class>ca.apachegui.web.Modules</servlet-class>
