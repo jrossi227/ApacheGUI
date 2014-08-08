@@ -99,15 +99,5 @@
 	 <param-name>contextConfigLocation</param-name>
 	 <param-value>/WEB-INF/spring-servlet.xml</param-value>
    </context-param>
-
-  <servlet>
-    <display-name>Modules</display-name>
-    <servlet-name>Modules</servlet-name>
-    <servlet-class>ca.apachegui.web.Modules</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Modules</servlet-name>
-    <url-pattern>/Modules</url-pattern>
-  </servlet-mapping>
-  
+   
 </web-app>

@@ -78,26 +78,26 @@ define([ "dojo/_base/declare",
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Updating', 'Please Wait...');
 			thisdialog.show();
 			
-			request.post("../Modules", {
+			request.post("../web/Modules", {
 				data: 	mods,
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: false
-			}).response.then(function(response) {
-				
-				var data = response.data;
-				
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
+			}).response.then(
+				function(response) {
+					
+					that.refreshAll();
+					
+					thisdialog.remove();
+				},
+				function(error) {
+					thisdialog.remove();
+					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
-				that.refreshAll();
-				
-				thisdialog.remove();
-			});
+			);
 		},
 		
 		refreshSharedModules: function() {
-			sharedModulesStore = new ItemFileWriteStore({url: '../Modules?option=shared', urlPreventCache: true});
+			sharedModulesStore = new ItemFileWriteStore({url: '../web/Modules?option=shared', urlPreventCache: true});
 			sharedModulesGrid.setStore(sharedModulesStore);
 			this.markedSharedModules=new Array();
 		},
@@ -114,31 +114,31 @@ define([ "dojo/_base/declare",
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Loading', 'Please Wait...');
 			thisdialog.show();
 			
-			request.post("../Modules", {
-				data: {
+			request.get("../web/Modules", {
+				query: {
 					option: 'getLoadDirective',
 					name: this.currentAvailableModulesMenuId
 				},
-				handleAs: 'text',
-				sync: false
+				handleAs: 'json',
+				sync: false,
+				preventCache: true
 			}).response.then(function(response) {
 				
 				var data = response.data;
-				
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
-				} else {
-					ca.apachegui.Util.alert('Load Directive', 'To use this module add the following directive to your apache configuration:<br/>' +
-															  '<span style="font-weight:bold;">' + data + '</span>');
-				}	
+			
+				ca.apachegui.Util.alert('Load Directive', 'To use this module add the following directive to your apache configuration:<br/>' +
+														  '<span style="font-weight:bold;">' + data.directive + '</span>');	
 				
 				thisdialog.remove();
+			},
+			function(error) {
+				thisdialog.remove();
+				ca.apachegui.Util.alert('Error',error.response.data.message);
 			});
 		},
 		
 		refreshAvailableModules: function() {
-			availableModulesStore = new ItemFileWriteStore({url: '../Modules?option=available', urlPreventCache: true});
+			availableModulesStore = new ItemFileWriteStore({url: '../web/Modules?option=available', urlPreventCache: true});
 			availableModulesGrid.setStore(availableModulesStore);
 			this.markedAvailableModules=new Array();
 		},

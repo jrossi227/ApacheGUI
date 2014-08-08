@@ -22,7 +22,7 @@
 <div class="dijitDialogPaneContentArea">
 	<h4>Compiled In</h4>
 </div>
-<span dojoType="dojo.data.ItemFileWriteStore" jsId="staticModulesStore" url="../Modules?option=${staticModulesType}" urlPreventCache="true">
+<span dojoType="dojo.data.ItemFileWriteStore" jsId="staticModulesStore" url="../web/Modules?option=${staticModulesType}" urlPreventCache="true">
 </span>
 <table dojoType="dojox.grid.DataGrid" jsId="staticModulesGrid" store="staticModulesStore" query="{ name: '*' }" clientSort="false" selectable="true" style="width: 100%;" autoHeight="true" rowSelector="20px">
 	<thead>
@@ -51,7 +51,7 @@
 	</div> 
 </div>
 
-<span dojoType="dojo.data.ItemFileWriteStore" jsId="sharedModulesStore" url="../Modules?option=${sharedModulesType}" urlPreventCache="true">
+<span dojoType="dojo.data.ItemFileWriteStore" jsId="sharedModulesStore" url="../web/Modules?option=${sharedModulesType}" urlPreventCache="true">
 </span>
 <table dojoType="dojox.grid.DataGrid" jsId="sharedModulesGrid" store="sharedModulesStore" query="{ name: '*' }" clientSort="false" selectable="true" style="width: 100%;" autoHeight="true" rowSelector="20px">
 	<thead>
@@ -75,7 +75,7 @@
 	<button id="resetAvailableButton" dojoType="dijit.form.Button" type="button">&nbsp;&nbsp;Reset Grid&nbsp;&nbsp;</button>
 </div>
 
-<span dojoType="dojo.data.ItemFileWriteStore" jsId="availableModulesStore" url="../Modules?option=${availableModulesType}" urlPreventCache="true">
+<span dojoType="dojo.data.ItemFileWriteStore" jsId="availableModulesStore" url="../web/Modules?option=${availableModulesType}" urlPreventCache="true">
 </span>
 <table dojoType="dojox.grid.DataGrid" jsId="availableModulesGrid" store="availableModulesStore" query="{ name: '*' }" clientSort="false" selectable="true" style="width: 100%;" autoHeight="true" rowSelector="20px">
 	<thead>
