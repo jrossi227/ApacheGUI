@@ -109,14 +109,5 @@
     <servlet-name>Modules</servlet-name>
     <url-pattern>/Modules</url-pattern>
   </servlet-mapping>
-  <servlet>
-    <display-name>Mime</display-name>
-    <servlet-name>Mime</servlet-name>
-    <servlet-class>ca.apachegui.web.Mime</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Mime</servlet-name>
-    <url-pattern>/Mime</url-pattern>
-  </servlet-mapping>
   
 </web-app>

@@ -31,7 +31,7 @@ define([ "dojo/_base/declare",
 		},
 		
 		resetAddedMimesGrid: function() {
-			globalAddedMimesGridStore = new ItemFileWriteStore({url: '../Mime?option=addedMimes', urlPreventCache: true});
+			globalAddedMimesGridStore = new ItemFileWriteStore({url: '../web/Mime?option=addedMimes', urlPreventCache: true});
 			globalAddedMimesGrid.setStore(globalAddedMimesGridStore);
 		},
 		
@@ -112,31 +112,29 @@ define([ "dojo/_base/declare",
 				var thisdialog = ca.apachegui.Util.noCloseDialog('Adding', 'Please Wait...');
 				thisdialog.show();
 				
-				request.post("../Mime", {
+				request.post("../web/Mime", {
 					data: 	{
 						option: 'addMime',
 						type: type,
 						extensions: extensions
 					},
-					handleAs: 'text',
+					handleAs: 'json',
 					sync: false
-				}).response.then(function(response) {
+				}).response.then(
+					function(response) {
 					
-					var data = response.data;
-					
-					var status = response.status;
-					if(status!=200) {
-						ca.apachegui.Util.alert('Error',data);
-					}
-					else {
 						that.resetAddedMimesGrid();
 						registry.byId('addMimeDialog').hide();
 						registry.byId('addMimeType').reset();
 						registry.byId('addMimeExtensions').reset();
-					}	
-					
-					thisdialog.remove();
-				});
+						
+						thisdialog.remove();
+					},
+					function(error) {
+						thisdialog.remove();
+						ca.apachegui.Util.alert('Error',error.response.data.message);
+					}
+				);
 			});
 			
 			on(registry.byId('editMimeMenuItem'), "click", function() {
@@ -183,29 +181,27 @@ define([ "dojo/_base/declare",
 				var thisdialog = ca.apachegui.Util.noCloseDialog('Updating', 'Please Wait...');
 				thisdialog.show();
 				
-				request.post("../Mime", {
+				request.post("../web/Mime", {
 					data: 	{
 						option: 'editMime',
 						type: type,
 						extensions: extensions
 					},
-					handleAs: 'text',
+					handleAs: 'json',
 					sync: false
-				}).response.then(function(response) {
-					
-					var data = response.data;
-					
-					var status = response.status;
-					if(status!=200) {
-						ca.apachegui.Util.alert('Error',data);
-					}
-					else {
+				}).response.then(
+					function(response) {
+
 						that.resetAddedMimesGrid();
 						registry.byId('editMimeDialog').hide();
-					}	
 					
-					thisdialog.remove();
-				});
+						thisdialog.remove();
+					},
+					function(error) {
+						thisdialog.remove();
+						ca.apachegui.Util.alert('Error',error.response.data.message);
+					}
+				);
 			});
 			
 			on(registry.byId('removeMimeMenuItem'), "click", function() {
@@ -233,28 +229,26 @@ define([ "dojo/_base/declare",
 									var thisdialog = ca.apachegui.Util.noCloseDialog('Deleting', 'Please Wait...');
 									thisdialog.show();
 									
-									request.post("../Mime", {
+									request.post("../web/Mime", {
 										data: 	{
 											option: 'removeMime',
 											type: type,
 											extensions: extensions
 										},
-										handleAs: 'text',
+										handleAs: 'json',
 										sync: false
-									}).response.then(function(response) {
+									}).response.then(
+										function(response) {
 										
-										var data = response.data;
-										
-										var status = response.status;
-										if(status!=200) {
-											ca.apachegui.Util.alert('Error',data);
+											that.resetAddedMimesGrid();		
+											
+											thisdialog.remove();
+										},
+										function(error) {
+											thisdialog.remove();
+											ca.apachegui.Util.alert('Error',error.response.data.message);
 										}
-										else {
-											that.resetAddedMimesGrid();
-										}	
-										
-										thisdialog.remove();
-									});
+									);
 								}
 						});
 			});
