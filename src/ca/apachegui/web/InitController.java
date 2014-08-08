@@ -22,7 +22,7 @@ import ca.apachegui.modules.StaticModuleHandler;
 import ca.apachegui.server.ServerInfo;
 
 @RestController
-@RequestMapping("/Init")
+@RequestMapping("/web/Init")
 public class InitController {
 	private static Logger log = Logger.getLogger(InitController.class);
        

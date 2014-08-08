@@ -27,7 +27,7 @@ import ca.apachegui.global.Utilities;
 public class SearchResultsController {
 	private static Logger log = Logger.getLogger(SearchResultsController.class);
     	
-    @RequestMapping(value="/SearchResults",method=RequestMethod.GET,produces="application/json;charset=UTF-8")
+    @RequestMapping(value="/web/SearchResults",method=RequestMethod.GET,produces="application/json;charset=UTF-8")
 	public String searchResults(
 			@RequestParam(value="option") String option,
 			@RequestParam(value="startDate") String startDate,

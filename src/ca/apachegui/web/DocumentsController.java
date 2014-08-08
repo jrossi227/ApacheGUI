@@ -19,7 +19,7 @@ import ca.apachegui.docs.DocFiles;
 import ca.apachegui.global.Constants;
 
 @RestController
-@RequestMapping("/Documents")
+@RequestMapping("/web/Documents")
 public class DocumentsController {
 	private static Logger log = Logger.getLogger(DocumentsController.class);
        

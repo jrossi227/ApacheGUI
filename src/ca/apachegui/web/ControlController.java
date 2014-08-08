@@ -27,7 +27,7 @@ import ca.apachegui.server.ServerInfo;
 
 
 @RestController
-@RequestMapping("/Control")
+@RequestMapping("/web/Control")
 public class ControlController {
 	private static Logger log = Logger.getLogger(ControlController.class);
        

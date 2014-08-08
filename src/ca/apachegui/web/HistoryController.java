@@ -17,7 +17,7 @@ import ca.apachegui.db.LogDataDao;
 
 
 @RestController
-@RequestMapping("/History")
+@RequestMapping("/web/History")
 public class HistoryController implements ServletContextAware {
 	private static Logger log = Logger.getLogger(HistoryController.class);
     

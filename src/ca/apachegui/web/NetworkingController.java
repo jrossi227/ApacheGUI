@@ -20,7 +20,7 @@ import ca.apachegui.directives.Timeout;
 import ca.apachegui.directives.User;
 
 @RestController
-@RequestMapping("/Networking")
+@RequestMapping("/web/Networking")
 public class NetworkingController {
 	
 	@RequestMapping(method=RequestMethod.GET,params="option=listening",produces="application/json;charset=UTF-8")

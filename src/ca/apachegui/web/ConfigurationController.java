@@ -23,7 +23,7 @@ import ca.apachegui.modules.SharedModuleHandler;
 import ca.apachegui.modules.StaticModuleHandler;
 
 @RestController
-@RequestMapping("/Configuration")
+@RequestMapping("/web/Configuration")
 public class ConfigurationController {
 	private static Logger log = Logger.getLogger(ConfigurationController.class);
        

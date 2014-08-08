@@ -21,7 +21,7 @@ public class DownloadFileController {
 	@Autowired
 	ServletContext servletContext;
 	
-	@RequestMapping(value = "/DownloadFile", method = RequestMethod.GET)
+	@RequestMapping(value = "/web/DownloadFile", method = RequestMethod.GET)
 	public void uploadMultipleFileHandler(@RequestParam("file") String fileName,
 										  HttpServletResponse response) throws IOException {
 		

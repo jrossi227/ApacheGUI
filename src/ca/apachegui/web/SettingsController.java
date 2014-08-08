@@ -13,7 +13,7 @@ import ca.apachegui.db.UsersDao;
 import ca.apachegui.global.Constants;
 
 @RestController
-@RequestMapping("/Settings")
+@RequestMapping("/web/Settings")
 public class SettingsController {
 	private static Logger log = Logger.getLogger(SettingsController.class);
 	

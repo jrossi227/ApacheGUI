@@ -64,6 +64,12 @@ public class GUIViewController {
 		return Constants.restartWarning;
 	}
 	
+	@RequestMapping(value="/")
+	public void indexPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		response.sendRedirect(request.getContextPath() + "/jsp/GUISettings.jsp");
+	}
+	
 	@RequestMapping(value="/{jspName}.jsp")
 	public String renderRootViewJsp(@PathVariable String jspName) {
 		return "views/" + jspName;

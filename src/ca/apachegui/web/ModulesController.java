@@ -19,7 +19,7 @@ import ca.apachegui.modules.ModuleHandler;
 import ca.apachegui.modules.SharedModuleHandler;
 
 @RestController
-@RequestMapping("/Modules")
+@RequestMapping("/web/Modules")
 public class ModulesController {
 	private static Logger log = Logger.getLogger(ModulesController.class);   
 

@@ -31,7 +31,7 @@ public class ReceiveLogDataController {
 		logData=new ArrayList<LogData>();
 	}
 	
-	@RequestMapping(value="/ReceiveLogData")
+	@RequestMapping(value="/pass/ReceiveLogData")
 	public String extendedRunningProcesses(@RequestParam(value="logData") String logData){
 		log.trace("Calling Post");
 		log.trace("Received Log Data " + logData);

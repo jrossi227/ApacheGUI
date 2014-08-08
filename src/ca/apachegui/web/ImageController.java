@@ -21,7 +21,7 @@ public class ImageController {
 	@Autowired
 	ServletContext servletContext;
 	
-	@RequestMapping(value = "/Image", method = RequestMethod.GET)
+	@RequestMapping(value = "/web/Image", method = RequestMethod.GET)
 	public void imageHandler(@RequestParam("file") String fileName,
 							 HttpServletResponse response) throws IOException {
 		

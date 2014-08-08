@@ -24,6 +24,12 @@
 	<mvc:annotation-driven />
 	<context:component-scan base-package="ca.apachegui.web" />
 
+	 <!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+        up static resources in the ${webappRoot}/resources directory -->
+    <mvc:resources mapping="/resources/**" location="/resources/" />
+    <mvc:resources mapping="/HistoryFiles/**" location="/HistoryFiles/" />
+    <mvc:resources mapping="/search/**" location="/search/" />
+
 	<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
 		<property name="prefix">

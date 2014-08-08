@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UploadFileController {
 	private static Logger log = Logger.getLogger(UploadFileController.class);   
     
-    @RequestMapping(value = "/UploadFile", method = RequestMethod.POST,produces="application/json;charset=UTF-8")
+    @RequestMapping(value = "/web/UploadFile", method = RequestMethod.POST,produces="application/json;charset=UTF-8")
     public String uploadMultipleFileHandler(@RequestParam("uploadFiles[]") MultipartFile[] files,
     								 		@RequestParam("uploadDirectoryName") String uploadDirectory) 
     								 		throws Exception {

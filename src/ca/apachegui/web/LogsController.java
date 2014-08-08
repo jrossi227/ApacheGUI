@@ -30,7 +30,7 @@ import ca.apachegui.global.Constants;
 import ca.apachegui.global.Utilities;
 
 @RestController
-@RequestMapping("/Logs")
+@RequestMapping("/web/Logs")
 public class LogsController {
 	private static Logger log = Logger.getLogger(LogsController.class);
 	

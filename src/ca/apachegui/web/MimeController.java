@@ -12,7 +12,7 @@ import ca.apachegui.conf.AddedMime;
 import ca.apachegui.conf.ServerMime;
 
 @RestController
-@RequestMapping("/Mime")
+@RequestMapping("/web/Mime")
 public class MimeController {
 	
 	@RequestMapping(method=RequestMethod.GET,params="option=serverMimes",produces="application/json;charset=UTF-8")

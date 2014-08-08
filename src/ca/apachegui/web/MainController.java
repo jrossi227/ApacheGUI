@@ -13,7 +13,7 @@ import ca.apachegui.global.Constants;
 import ca.apachegui.global.Utilities;
 
 @RestController
-@RequestMapping("/Main")
+@RequestMapping("/web/Main")
 public class MainController {
 	
 	@RequestMapping(method=RequestMethod.GET,params="option=confFilePath",produces="application/json;charset=UTF-8")

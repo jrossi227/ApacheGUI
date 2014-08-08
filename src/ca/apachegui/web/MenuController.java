@@ -27,7 +27,7 @@ import ca.apachegui.global.Utilities;
 import ca.apachegui.logs.LogFiles;
 
 @RestController
-@RequestMapping("/Menu")
+@RequestMapping("/web/Menu")
 public class MenuController {
 	private static Logger log = Logger.getLogger(MenuController.class);
        

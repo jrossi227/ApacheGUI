@@ -17,7 +17,7 @@ import ca.apachegui.global.Constants;
 import ca.apachegui.server.ServerInfo;
 
 @RestController
-@RequestMapping("/GUISettings")
+@RequestMapping("/web/GUISettings")
 public class GUISettingsController {
 	private static Logger log = Logger.getLogger(GUISettingsController.class);
 
