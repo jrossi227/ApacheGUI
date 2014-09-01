@@ -125,12 +125,10 @@ public class ExtendedServerInfo extends ExtendedStatus
 			}
 			catch(Exception e)
 			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
+				log.error(e.getMessage(), e);
 			}
 		}	
-		return (new ExtendedServerInfo("", "", "", "", "", "", "", "", ""));
+		return null;
 
 	}
 	

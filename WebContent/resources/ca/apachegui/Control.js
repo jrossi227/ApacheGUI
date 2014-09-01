@@ -21,6 +21,7 @@ define([ "dojo/_base/declare",
 		serverState:null,
 		processesStore: null,
 		extendedProcessesStore: null,
+		extendedError: false,
 		
 		init: function() {
 			if(this.initialized===false) {
@@ -200,7 +201,10 @@ define([ "dojo/_base/declare",
 					
 					
 				}, function(error) {
-					ca.apachegui.Util.alert('Info',error.response.data.message);
+					if(!that.extendedError) {
+						that.extendedError = true;
+						ca.apachegui.Util.alert('Info',error.response.data.message);
+					}
 				}
 			);
 		},
@@ -238,7 +242,10 @@ define([ "dojo/_base/declare",
 				   }					
 					
 				}, function(error) {
-					ca.apachegui.Util.alert('Info',error.response.data.message);
+					if(!that.extendedError) {
+						that.extendedError = true;
+						ca.apachegui.Util.alert('Info',error.response.data.message);
+					}
 				}
 			);
 		},

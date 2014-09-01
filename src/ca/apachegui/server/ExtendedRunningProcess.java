@@ -135,13 +135,11 @@ public class ExtendedRunningProcess extends ExtendedStatus
 			}
 			catch(Exception e)
 			{
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				log.error(sw.toString());
+				log.error(e.getMessage(), e);
 			}
 		}	
-		ExtendedRunningProcess process[] = {new ExtendedRunningProcess("", "", "", "", "", "", "", "", "")};
-		return process;
+		
+		return null;
 	}
 	
 	private static ExtendedRunningProcess scrapeRow(Element row, boolean numericPid)

@@ -32,7 +32,7 @@ public class ControlController {
 	private static Logger log = Logger.getLogger(ControlController.class);
        
 	@RequestMapping(method=RequestMethod.GET,params="option=extendedRunningProcesses",produces="application/json;charset=UTF-8")
-	public String extendedRunningProcesses(){
+	public String extendedRunningProcesses() throws Exception{
 	
 		boolean running = false;
 		try {
@@ -47,39 +47,38 @@ public class ControlController {
 		result.put("label", "name");
 		
 		JSONArray items = new JSONArray();
-		try 
-		{ 
-			log.trace("getting extended process info");
 		
-			if(SettingsDao.getInstance().getSetting(Constants.extendedStatus).equals("on")  && running)
+		log.trace("getting extended process info");
+	
+		if(SettingsDao.getInstance().getSetting(Constants.extendedStatus).equals("on")  && running)
+		{
+			ExtendedRunningProcess processes[]=ExtendedRunningProcess.getExtendedRunningProcessInfo();
+			
+			if(processes == null) {
+				throw new Exception("Extended running process information is not available. Please make sure the following url is available " + ExtendedStatus.getExtendedStatusURL());
+			}
+			
+			JSONObject item;
+			for(int i=0; i<processes.length; i++)
 			{
-				ExtendedRunningProcess processes[]=ExtendedRunningProcess.getExtendedRunningProcessInfo();
-				
-				JSONObject item;
-				for(int i=0; i<processes.length; i++)
-				{
-					item = new JSONObject();
-					item.put("id", "extended" + i + processes[i].getPid());
-					item.put("extendedPid", processes[i].getPid());
-					item.put("extendedRequests", processes[i].getRequests());
-					if(!Utils.isWindows()) {
-						item.put("extendedCpu", processes[i].getCpu());
-					}
-					item.put("extendedTimeSinceLastRequest", processes[i].getTimeSinceLastRequest());
-					item.put("extendedTimeToProcessLastRequest", processes[i].getTimeToProcessLastRequest());
-					item.put("extendedMegaBytesThisConnection", processes[i].getMegaBytesThisConnection());
-					item.put("extendedClient", processes[i].getClient());
-					item.put("extendedVirtualHost", processes[i].getVirtualHost());
-					item.put("extendedRequest", processes[i].getRequest());
-					
-					items.put(item);
+				item = new JSONObject();
+				item.put("id", "extended" + i + processes[i].getPid());
+				item.put("extendedPid", processes[i].getPid());
+				item.put("extendedRequests", processes[i].getRequests());
+				if(!Utils.isWindows()) {
+					item.put("extendedCpu", processes[i].getCpu());
 				}
+				item.put("extendedTimeSinceLastRequest", processes[i].getTimeSinceLastRequest());
+				item.put("extendedTimeToProcessLastRequest", processes[i].getTimeToProcessLastRequest());
+				item.put("extendedMegaBytesThisConnection", processes[i].getMegaBytesThisConnection());
+				item.put("extendedClient", processes[i].getClient());
+				item.put("extendedVirtualHost", processes[i].getVirtualHost());
+				item.put("extendedRequest", processes[i].getRequest());
+				
+				items.put(item);
 			}
 		}
-		catch(Exception e){
-			log.error(e.getMessage(), e);
-		}
-		
+	
 		result.put("items", items);
 		
 		return result.toString();
@@ -110,27 +109,24 @@ public class ControlController {
 		
 		if(SettingsDao.getInstance().getSetting(Constants.extendedStatus).equals("on") && running)
 		{
-			try
-			{
-				ExtendedServerInfo extendedServerInfo = ExtendedServerInfo.getExtendedServerInfo();
+			ExtendedServerInfo extendedServerInfo = ExtendedServerInfo.getExtendedServerInfo();
 
-				result.put("totalRequests", extendedServerInfo.getTotalRequests());
-				result.put("totalKB", extendedServerInfo.getTotalKB());
-				if(!Utils.isWindows()) {
-					result.put("cpuUsage", extendedServerInfo.getCpuUsage());
-				}
-				
-				result.put("upTime", extendedServerInfo.getUpTime());
-				result.put("requestsPerSecond", extendedServerInfo.getRequestsPerSecond());
-				result.put("bytesPerSecond", extendedServerInfo.getBytesPerSecond());
-				result.put("bytesPerRequest", extendedServerInfo.getBytesPerRequest());
-				result.put("busyWorkers", extendedServerInfo.getBusyWorkers());
-				result.put("idleWorkers", extendedServerInfo.getIdleWorkers());
+			if(extendedServerInfo == null) {
+				throw new Exception("Extended server information is not available. Please make sure the following url is available " + ExtendedStatus.getExtendedStatusURL());
 			}
-			catch(Exception e)
-			{
-				log.error(e.getMessage(), e);
+			
+			result.put("totalRequests", extendedServerInfo.getTotalRequests());
+			result.put("totalKB", extendedServerInfo.getTotalKB());
+			if(!Utils.isWindows()) {
+				result.put("cpuUsage", extendedServerInfo.getCpuUsage());
 			}
+			
+			result.put("upTime", extendedServerInfo.getUpTime());
+			result.put("requestsPerSecond", extendedServerInfo.getRequestsPerSecond());
+			result.put("bytesPerSecond", extendedServerInfo.getBytesPerSecond());
+			result.put("bytesPerRequest", extendedServerInfo.getBytesPerRequest());
+			result.put("busyWorkers", extendedServerInfo.getBusyWorkers());
+			result.put("idleWorkers", extendedServerInfo.getIdleWorkers());	
 		}
 		
 		return result.toString();
