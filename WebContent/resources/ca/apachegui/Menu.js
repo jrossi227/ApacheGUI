@@ -383,8 +383,18 @@ define([ "dojo/_base/declare",
 		submitSearch: function() {
 			var that = this;
 			
-			var searchFilter=dom.byId('searchFileFilter').value;
-			var searchFileList=dom.byId('searchFileList').value;
+			var searchFilter=dom.byId('searchFileFilter').value.trim();
+			if(searchFilter == '') {
+				ca.apachegui.Util.alert('Info','Filter is required.');
+				return;
+			}
+			
+			var searchFileList=dom.byId('searchFileList').value.trim();
+			if(searchFileList == '') {
+				ca.apachegui.Util.alert('Info','File extension list is required.');
+				return;
+			}
+			
 			var searchRecursively=dom.byId('searchRecursively').checked;
 			
 			var searchDirectory = dom.byId('searchDirectoryDisplay').innerHTML.trim();
@@ -526,7 +536,12 @@ define([ "dojo/_base/declare",
 		},
 		
 		submitConfigurationSearch: function() {
-			var filter=dom.byId('searchConfigurationFilter').value;
+			var filter=dom.byId('searchConfigurationFilter').value.trim();
+			if(filter == '') {
+				ca.apachegui.Util.alert('Info','Filter is required.');
+				return;
+			}
+			
 			var activeFilesFilter=dom.byId('searchConfigurationActiveFilesFilter').checked;
 			var commentsFilter=dom.byId('searchConfigurationCommentsFilter').checked;
 			

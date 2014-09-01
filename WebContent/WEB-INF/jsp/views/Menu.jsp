@@ -235,7 +235,7 @@
 									1. All html files<br/> 
 									2. All css files<br/> 
 									3. Files ending with .log.[anything].gz<br/><br/> 
-									.*\.html,.*\.csv,.*\.log\..*\.gz
+									.*\.html,.*\.css,.*\.log\..*\.gz
 								</div>
 							</div>	
 						</div> 
