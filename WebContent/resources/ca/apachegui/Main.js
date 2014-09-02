@@ -12,6 +12,10 @@ define([ "dojo/_base/declare",
 		sessionActive: true,
 		notRunningDialog: null,
 		
+		confDirectoryPath: '',
+		logDirectoryPath: '',
+		docDirectoryPath: '',
+		
 		getCurrentOption: function() {
 			return this.currentOption;
 		},
@@ -36,9 +40,12 @@ define([ "dojo/_base/declare",
 			return this.sessionActive;
 		},
 		
-		getConfDirectoryPath: function()
-		{
-			var confFilePath='';
+		getConfDirectoryPath: function() {			
+			if(this.confDirectoryPath != '') {
+				return this.confDirectoryPath;
+			}
+			
+			var that = this;
 			
 			request.get('../web/Main', {
 				query: 	{
@@ -51,19 +58,23 @@ define([ "dojo/_base/declare",
 				function(response) {
 				
 					var data = response.data;
-					confFilePath=data.file;
+					that.confDirectoryPath=data.file;
 				},
 				function(error) {
 					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
 			);
 			
-			return confFilePath;
+			return this.confDirectoryPath;
 		},
 	
 		getLogDirectoryPath: function()
 		{
-			var logFilePath='';
+			if(this.logDirectoryPath != '') {
+				return this.logDirectoryPath;
+			}
+			
+			var that = this;
 			
 			request.get('../web/Main', {
 				query: 	{
@@ -75,19 +86,23 @@ define([ "dojo/_base/declare",
 			}).response.then(
 				function(response) {
 					var data = response.data;
-					logFilePath=data.file;
+					that.logDirectoryPath=data.file;
 				},
 				function(error) {
 					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
 			);
 			
-			return logFilePath;
+			return this.logDirectoryPath;
 		},
 	
 		getDocDirectoryPath: function()
 		{
-			var docFilePath='';
+			if(this.docDirectoryPath != '') {
+				return this.docDirectoryPath;
+			}
+			
+			var that = this;
 			
 			request.get('../web/Main', {
 				query: 	{
@@ -100,14 +115,14 @@ define([ "dojo/_base/declare",
 				function(response) {
 				
 					var data = response.data;
-					docFilePath=data.file;
+					that.docDirectoryPath = data.file;
 				},
 				function(error) {
 					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
 			);
 			
-			return docFilePath;
+			return this.docDirectoryPath;
 		},
 	
 		validateFileExists: function(file)
