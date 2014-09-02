@@ -314,7 +314,7 @@ define([ "dojo/_base/declare",
 			var file=ca.apachegui.Util.getQueryParam('file').substring(0, ca.apachegui.Util.getQueryParam('file').lastIndexOf("/")) + '/' + dom.byId('editorNewFileFilename').value;
 			
 			var type='file';
-			request.post("../Menu", {
+			request.post("../web/Menu", {
 				data: 	{
 					option: 'newFile',
 					filename: file,

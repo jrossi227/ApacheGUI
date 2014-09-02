@@ -45,7 +45,7 @@ define([ "dojo/_base/declare",
 			}
 			else
 			{	
-				var thisdialog = ca.apachegui.Util.noCloseDialog('Loading', 'Configuring new server, please wait...');
+				var thisdialog = ca.apachegui.Util.noCloseDialog('Loading', 'Configuring a new server, please wait...');
 				thisdialog.show();
 				
 				request.post("../web/GUISettings", {
