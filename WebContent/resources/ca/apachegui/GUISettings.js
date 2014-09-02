@@ -329,26 +329,22 @@ define([ "dojo/_base/declare",
 					data: 	{
 						option: 'getUpdateInfo'
 					},
-					handleAs: 'text',
+					handleAs: 'json',
 					sync: false
-				}).response.then(function(response) {
+				}).response.then(
+					function(response) {
 					
-					var data = json.fromJson(response.data);
-					
-					domClass.remove('updateInfoContainer', 'dijitContentPaneLoading');
-					
-					var status = response.status;
-					if(status!=200) {
-						dom.byId('updateInfoContainer').innerHTML='Update information is not currently available.';
-					}
-					else {
+						var data = response.data;
+						
+						domClass.remove('updateInfoContainer', 'dijitContentPaneLoading');
+						
 						if(!!data.version && that.isUpdateAvailable(data.version)) {
 							dom.byId('updateInfoContainer').innerHTML='Updates are available' +
 																   '<p>version - ' + data.version + '<br>' +
 																   'size - ' + data.size + '</p>' + 
 																   ((!!data.details && data.details != '') ? '<p>Details - ' + data.details + '</p>' : '');
 							
-							if(ca.apachegui.Main.getInstance().getApacheGuiVersion().match(data.compatibility) == null){
+							if(ca.apachegui.Main.getInstance().getApacheGuiVersion().match(new RegExp(data.compatibilitys,"g")) == null){
 								var p = document.createElement('P');
 								var text = document.createTextNode('Unfortunately this version of ApacheGUI is not eligible for automatic updates. You will have to download the new version manually.');
 								p.appendChild(text);
@@ -368,10 +364,13 @@ define([ "dojo/_base/declare",
 						} else {
 							dom.byId('updateInfoContainer').innerHTML='There are no updates available.';
 						}
-					}
 					
-					that.checkingForUpdates=false;
-				});
+						that.checkingForUpdates=false;
+					},
+					function(error) {
+						dom.byId('updateInfoContainer').innerHTML='Update information is not currently available. Please check your internet connection.';
+					}
+				);
 							
 				this.checkingForUpdates=true;
 			}
@@ -389,21 +388,19 @@ define([ "dojo/_base/declare",
 				},
 				handleAs: 'text',
 				sync: false
-			}).response.then(function(response) {
-				
-				var data = response.data;
-				
-				var status = response.status;
-				if(status!=200) {
-					ca.apachegui.Util.alert('Error',data);
-				}
-				else {
+			}).response.then(
+				function(response) {
+			
 					that.clearUpdateTimer();
 					
 					//convert to milliseconds
 					that.updateTimer = ca.apachegui.Interval.setInterval(that.getUpdateStatus.bind(that), 3000);	
-				}	
-			});
+						
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Error',"There was an error starting the update");
+				}
+			);
 		},
 		
 		getUpdateStatus: function() {
@@ -413,77 +410,82 @@ define([ "dojo/_base/declare",
 				data: 	{
 					option: 'getUpdateStatus'
 				},
-				handleAs: 'text',
+				handleAs: 'json',
 				sync: false
-			}).response.then(function(response) {
+			}).response.then(
+				function(response) {
 				
-				var data = json.fromJson(response.data);
-				
-				var status = response.status;
-				var showFinish = function() {
-					that.clearUpdateTimer();
+					var data = response.data;
 					
-					var finishedButton = new Button({
-			            label: "OK",
-			            onClick: function() {
-			            	window.location.reload();
-			            }
-			        });
+					var status = response.status;
+					var showFinish = function() {
+						that.clearUpdateTimer();
+						
+						var finishedButton = new Button({
+				            label: "OK",
+				            onClick: function() {
+				            	window.location.reload();
+				            }
+				        });
+						
+						domClass.remove('updateStatusText', 'dijitContentPaneLoading');
+						domClass.add('finishedContainer','dijitDialogPaneActionBar');
+						dom.byId('finishedContainer').appendChild(finishedButton.domNode);
+						dom.byId('finishedContainer').style.display='block';
+						domConstruct.destroy('updateStatusAdvisory');
+					};
 					
-					domClass.remove('updateStatusText', 'dijitContentPaneLoading');
-					domClass.add('finishedContainer','dijitDialogPaneActionBar');
-					dom.byId('finishedContainer').appendChild(finishedButton.domNode);
-					dom.byId('finishedContainer').style.display='block';
-					domConstruct.destroy('updateStatusAdvisory');
-				};
-				
-				var showError = function() {
-					showFinish();
+					var showError = function() {
+						showFinish();
+						
+						dom.byId('updateStatusText').innerHTML='There was an error with the update, please try again later.';
+						
+						dom.byId('progressContainer').style.display='none';
+					};
 					
-					dom.byId('updateStatusText').innerHTML='There was an error with the update, please try again later.';
-					
-					dom.byId('progressContainer').style.display='none';
-				};
-				
-				if(status!=200) {
-					showError();
-					
-					return;
-				}
-				else
-				{
-					if(data.status=='Error') {
+					if(status!=200) {
 						showError();
 						
 						return;
 					}
-					
-					dom.byId('updateStatusText').innerHTML=data.status;
-				
-					if(data.status=='Downloading') {
-						if(that.downloading==false) {
-							dom.byId('progressContainer').style.display='block';
+					else
+					{
+						if(data.status=='Error') {
+							showError();
+							
+							return;
 						}
-						that.downloading=true;
 						
-						registry.byId('downloadProgress').update({
-				            maximum: 100,
-				            progress: data.progress
-				        });
-					}
+						dom.byId('updateStatusText').innerHTML=data.status;
 					
-					if(data.status=='Installing') {
-						if(that.downloading==true) {
-							dom.byId('progressContainer').style.display='none';
-							that.downloading=false;
+						if(data.status=='Downloading') {
+							if(that.downloading==false) {
+								dom.byId('progressContainer').style.display='block';
+							}
+							that.downloading=true;
+							
+							registry.byId('downloadProgress').update({
+					            maximum: 100,
+					            progress: data.progress
+					        });
 						}
-					}
-					
-					if(data.status=='Finished') {
-						showFinish();
-					}
-				}	
-			});
+						
+						if(data.status=='Installing') {
+							if(that.downloading==true) {
+								dom.byId('progressContainer').style.display='none';
+								that.downloading=false;
+							}
+						}
+						
+						if(data.status=='Finished') {
+							showFinish();
+						}
+					}	
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Error',"There was an error with the update");
+				}
+			);
 		},
 		
 		clearUpdateTimer: function() {
