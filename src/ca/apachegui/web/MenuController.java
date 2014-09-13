@@ -48,6 +48,7 @@ public class MenuController {
 						"{ $ref: '" + Constants.LogsRoot + logDirectory + "', name:'Logs', id:'" + Constants.LogsRoot + logDirectory + "', children:true}," +
 						"{ $ref: 'Control', name:'Control', id:'Control', type:'Control'}," +
 						"{ $ref: 'Global_Settings', name:'Global Settings', id:'Global_Settings', type:'Global_Settings'}," +
+						"{ $ref: 'Virtual_Hosts', name:'Virtual Hosts', id:'Virtual_Hosts', type:'Virtual_Hosts'}," +
 						"{ $ref: 'History', name:'History', id:'History', type:'History'}," +
 						"{ $ref: 'GUISettings', name:'GUISettings', id:'GUISettings', type:'GUISettings'}" +
 				"]");

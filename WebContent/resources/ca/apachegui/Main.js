@@ -227,6 +227,12 @@ define([ "dojo/_base/declare",
 					ca.apachegui.globalsettings.GlobalSettings.getInstance().init();
 				}
 				
+				if(menuInstance.isVirtualHosts(option))
+				{
+					vtree.set('path', ['apacheRoot','Virtual_Hosts']);
+					ca.apachegui.VirtualHosts.getInstance().init();
+				}
+				
 				var pathArray;
 				var subOption;
 				var i;

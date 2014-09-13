@@ -619,6 +619,10 @@ define([ "dojo/_base/declare",
 			 {
 				 window.location.href='GlobalSettings.jsp';
 			 }
+			 if(this.isVirtualHosts(sid))
+			 {
+				 window.location.href='VirtualHosts.jsp';
+			 }
 			 if(this.isLogs(sid))
 			 {
 				 window.location.href='Logs.jsp?file=' + this.extractLogFile(sid);		 
@@ -697,6 +701,10 @@ define([ "dojo/_base/declare",
 		
 		isGUISettings: function(menuOption) {
 			return menuOption == 'GUISettings';
+		},
+		
+		isVirtualHosts: function(menuOption) {
+			return menuOption == 'Virtual_Hosts';
 		},
 		
 		addListeners: function() {
