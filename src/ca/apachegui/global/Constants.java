@@ -50,7 +50,8 @@ public class Constants
 	public final static String shortBinFile=Utils.isWindows() ? "httpd.exe" : "apachectl";
 	
 	//Constants to search for apache directives
-	public final static String documentRootString="DocumentRoot";
+	public final static String documentRootDirectiveString="DocumentRoot";
+	public final static String serverNameDirectiveString="ServerName";
 	public final static String locationDirectiveString="Location";
 	public final static String virtualHostDirectiveString="VirtualHost";
 	public final static String setHandlerDirectiveString="SetHandler";

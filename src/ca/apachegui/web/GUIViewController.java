@@ -33,6 +33,7 @@ import ca.apachegui.directives.Timeout;
 import ca.apachegui.directives.User;
 import ca.apachegui.global.Constants;
 import ca.apachegui.global.Utilities;
+import ca.apachegui.virtualhosts.VirtualHosts;
 import apache.conf.global.Utils;
 import apache.conf.parser.File;
 
@@ -299,6 +300,15 @@ public class GUIViewController {
 		model.addAttribute("mode", mode);
 		
 		return "views/Configuration";
+	}
+	
+	//Catch all view render
+	@RequestMapping(value="/jsp/VirtualHosts.jsp")
+	public String renderVirtualHostsViewJsp() throws Exception {
+		
+		VirtualHosts.getAllVirtualHosts();
+		
+		return "views/VirtualHosts";
 	}
 	
 	//Catch all view render
