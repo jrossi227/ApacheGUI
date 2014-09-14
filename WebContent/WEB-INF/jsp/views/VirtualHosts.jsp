@@ -41,8 +41,18 @@
 		<jsp:include page="/jsp/Menu.jsp" 	flush="true" />
 		
 		<div id="centerPanel" class="centerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'center'">
-			<div class="dijitDialogPaneContentArea"><h3>Virtual Hosts</h3></div>
+			<h3>Virtual Hosts</h3>
+		
+			<h4>Name Virtual Hosts</h4>
+			<div id="name_virtual_host_container">
 			
+			</div>
+			
+			<h4>Other Virtual Hosts</h4>
+			<div id="other_virtual_host_container">
+			
+			</div>
+
 		</div>
 	</div>
 
