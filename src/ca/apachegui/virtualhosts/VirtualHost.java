@@ -102,41 +102,4 @@ public class VirtualHost {
 		return virtualHostBuffer.toString();
 	}
 	
-	@Override
-	public boolean equals(Object o) {
-		
-		VirtualHost host = (VirtualHost)o;
-		
-		boolean found = false;
-		for(NetworkInfo info : host.getNetworkInfo()) {
-        	found = false;
-        	
-        	for(NetworkInfo thisInfo : networkInfo) {
-				if(info.equals(thisInfo)) {
-	        		found = true;
-	        	}
-        	}
-        	
-        	if(!found) {
-        		return false;
-        	}
-        }
-		
-		return true;
-	}
-	
-	@Override
-    public int hashCode() {
-        int hash = 1;
-        hash = hash * 17 + file.hashCode();
-        
-        for(NetworkInfo info : networkInfo) {
-        	hash = hash * 19 + info.hashCode();
-        }
-        
-        hash = hash * 31 + documentRoot.hashCode();
-        hash = hash * 37 + serverName.hashCode();
-        return hash;
-    }
-	
 }

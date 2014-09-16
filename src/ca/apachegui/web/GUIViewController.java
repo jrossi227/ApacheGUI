@@ -313,20 +313,23 @@ public class GUIViewController {
 		//Will move this to asynchronous JSON later
 		VirtualHost hosts[] = VirtualHosts.getAllVirtualHosts();
 		
-		//VirtualHosts are only matched based on network info which is why we use them as keys here
-		//VirtualHost, VirtualHost JSON String[], items first in the array are the default
-		HashMap<VirtualHost, ArrayList<String>> hostBuckets = new HashMap<VirtualHost, ArrayList<String>>();
+		//NetworkInfo, VirtualHost JSON String[], items first in the array are the default
+		HashMap<NetworkInfo, ArrayList<String>> hostBuckets = new HashMap<NetworkInfo, ArrayList<String>>();
 		
 		for(VirtualHost host : hosts) {
 			
-			ArrayList<String> json = hostBuckets.get(host);
-			if(json == null) {
-				json = new ArrayList<String>();
+			for(NetworkInfo info : host.getNetworkInfo()) {
+			
+				ArrayList<String> json = hostBuckets.get(info);
+				if(json == null) {
+					json = new ArrayList<String>();
+				}
+				
+				json.add(host.toJSON());
+				
+				hostBuckets.put(info, json);
+			
 			}
-			
-			json.add(host.toJSON());
-			
-			hostBuckets.put(host, json);
 			
 		}
 		
