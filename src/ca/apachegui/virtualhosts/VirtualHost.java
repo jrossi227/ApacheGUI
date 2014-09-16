@@ -1,8 +1,12 @@
 package ca.apachegui.virtualhosts;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import apache.conf.parser.File;
 
@@ -61,6 +65,27 @@ public class VirtualHost {
 		this.serverName = serverName;
 	}
 	
+	public String toJSON() throws ParseException {
+		
+		JSONObject json = new JSONObject();
+		
+		json.put("file", file.getAbsolutePath());
+		
+		JSONArray networkInfoArray = new JSONArray();
+		
+		for(NetworkInfo info : networkInfo) {
+			networkInfoArray.put(new JSONObject(info.toJSON()));
+		}
+		
+		json.put("NetworkInfo", networkInfoArray.toString());
+		
+		
+		json.put("DocumentRoot", documentRoot);
+		json.put("ServerName", serverName);
+		
+		return json.toString();
+	}
+
 	@Override
 	public String toString() {
 		
@@ -76,4 +101,42 @@ public class VirtualHost {
 		
 		return virtualHostBuffer.toString();
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		
+		VirtualHost host = (VirtualHost)o;
+		
+		boolean found = false;
+		for(NetworkInfo info : host.getNetworkInfo()) {
+        	found = false;
+        	
+        	for(NetworkInfo thisInfo : networkInfo) {
+				if(info.equals(thisInfo)) {
+	        		found = true;
+	        	}
+        	}
+        	
+        	if(!found) {
+        		return false;
+        	}
+        }
+		
+		return true;
+	}
+	
+	@Override
+    public int hashCode() {
+        int hash = 1;
+        hash = hash * 17 + file.hashCode();
+        
+        for(NetworkInfo info : networkInfo) {
+        	hash = hash * 19 + info.hashCode();
+        }
+        
+        hash = hash * 31 + documentRoot.hashCode();
+        hash = hash * 37 + serverName.hashCode();
+        return hash;
+    }
+	
 }

@@ -5,8 +5,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +35,8 @@ import ca.apachegui.directives.Timeout;
 import ca.apachegui.directives.User;
 import ca.apachegui.global.Constants;
 import ca.apachegui.global.Utilities;
+import ca.apachegui.virtualhosts.NetworkInfo;
+import ca.apachegui.virtualhosts.VirtualHost;
 import ca.apachegui.virtualhosts.VirtualHosts;
 import apache.conf.global.Utils;
 import apache.conf.parser.File;
@@ -304,9 +308,56 @@ public class GUIViewController {
 	
 	//Catch all view render
 	@RequestMapping(value="/jsp/VirtualHosts.jsp")
-	public String renderVirtualHostsViewJsp() throws Exception {
+	public String renderVirtualHostsViewJsp(Model model) throws Exception {
 		
-		VirtualHosts.getAllVirtualHosts();
+		//Will move this to asynchronous JSON later
+		VirtualHost hosts[] = VirtualHosts.getAllVirtualHosts();
+		
+		//VirtualHosts are only matched based on network info which is why we use them as keys here
+		//VirtualHost, VirtualHost JSON String[], items first in the array are the default
+		HashMap<VirtualHost, ArrayList<String>> hostBuckets = new HashMap<VirtualHost, ArrayList<String>>();
+		
+		for(VirtualHost host : hosts) {
+			
+			ArrayList<String> json = hostBuckets.get(host);
+			if(json == null) {
+				json = new ArrayList<String>();
+			}
+			
+			json.add(host.toJSON());
+			
+			hostBuckets.put(host, json);
+			
+		}
+		
+		//Expected json format
+		/**
+		  { 
+	  		"*:80" : [{
+		  				"file" : "/usr/local/fake",
+			  			"DocumentRoot" : "/usr/local/fakedocroot",
+			  			"ServerName" : "a.com",
+			  			"NetworkInfo" : [{
+			  				"port" : 80,
+			  				"address" : "*"
+			  			}]
+			  	 	 },
+			  	 	 {
+		  				"file" : "/usr/local/fake3",
+			  			"DocumentRoot" : "/usr/local/fakedocroot2",
+			  			"ServerName" : "ab.com",
+			  			"NetworkInfo" : [{
+			  				"port" : 80,
+			  				"address" : "*"
+			  			}]
+			  	 	 }]
+		  }
+		 * 
+		 **/
+		//TODO Enumerate over map and build JSON OBJECT
+		
+		
+		model.addAttribute("virtualHosts", "");
 		
 		return "views/VirtualHosts";
 	}

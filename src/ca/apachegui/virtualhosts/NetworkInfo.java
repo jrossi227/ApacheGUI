@@ -1,5 +1,7 @@
 package ca.apachegui.virtualhosts;
 
+import org.json.JSONObject;
+
 public class NetworkInfo {
 
 	private int port;
@@ -23,6 +25,16 @@ public class NetworkInfo {
 		this.address = address;
 	}
 	
+	public String toJSON() {
+		
+		JSONObject info = new JSONObject();
+		
+		info.put("port", port);
+		info.put("address", address);
+		
+		return info.toString();
+	}
+	
 	@Override
 	public String toString() {
 		
@@ -44,4 +56,21 @@ public class NetworkInfo {
 		
 		return info;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		
+		NetworkInfo info = (NetworkInfo)o;
+		
+		return (info.getPort() == port && info.getAddress().equals(address));
+	}
+	
+	@Override
+    public int hashCode() {
+        int hash = 1;
+        hash = hash * 17 + port;
+        hash = hash * 31 + address.hashCode();
+        return hash;
+    }
+	
 }
