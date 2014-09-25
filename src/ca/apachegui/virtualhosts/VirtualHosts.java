@@ -2,8 +2,6 @@ package ca.apachegui.virtualhosts;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
-
 import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
 import ca.apachegui.modules.SharedModuleHandler;
@@ -13,8 +11,6 @@ import apache.conf.parser.Enclosure;
 import apache.conf.parser.EnclosureParser;
 
 public class VirtualHosts {
-
-	private static Logger logger = Logger.getLogger(VirtualHost.class);
 	
 	public static VirtualHost[] getAllVirtualHosts() throws Exception {
 		
@@ -50,16 +46,14 @@ public class VirtualHosts {
 					virtualHost.setDocumentRoot(directive.getValues()[0]);
 				}
 			}
-			
-			logger.info(virtualHost.toString());
-			
+						
 			virtualHosts.add(virtualHost);
 		}
 		
 		return virtualHosts.toArray(new VirtualHost[virtualHosts.size()]);
 	}
 	
-	private static NetworkInfo extractNetworkInfo(String value) {
+	public static NetworkInfo extractNetworkInfo(String value) {
 		
 		NetworkInfo networkInfo = new NetworkInfo();
 		

@@ -77,7 +77,7 @@ public class VirtualHost {
 			networkInfoArray.put(new JSONObject(info.toJSON()));
 		}
 		
-		json.put("NetworkInfo", networkInfoArray.toString());
+		json.put("NetworkInfo", networkInfoArray);
 		
 		
 		json.put("DocumentRoot", documentRoot);

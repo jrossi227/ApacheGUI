@@ -9,11 +9,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,6 +33,7 @@ import ca.apachegui.directives.KeepAlive;
 import ca.apachegui.directives.KeepAliveTimeout;
 import ca.apachegui.directives.ListenBackLog;
 import ca.apachegui.directives.MaxKeepAliveRequests;
+import ca.apachegui.directives.ServerName;
 import ca.apachegui.directives.ServerSignature;
 import ca.apachegui.directives.ServerTokens;
 import ca.apachegui.directives.Timeout;
@@ -358,9 +363,35 @@ public class GUIViewController {
 		 * 
 		 **/
 		//TODO Enumerate over map and build JSON OBJECT
+		JSONObject hostJSON = new JSONObject();
+		
+		NetworkInfo currInfo;
+		ArrayList<String> currHosts;
+		JSONArray hostArray;
+		for (Entry<NetworkInfo, ArrayList<String>> entry : hostBuckets.entrySet()) {
+			currInfo = entry.getKey();
+			currHosts = entry.getValue();
+		    
+			hostArray = new JSONArray();
+			JSONObject currHostJSON;
+			for(String currHost : currHosts) {
+			
+				currHostJSON = new JSONObject(currHost);
+				currHostJSON.remove("NetworkInfo");
+				currHostJSON.put("NetworkInfo", new JSONObject(currInfo.toJSON()));
+				
+				hostArray.put(currHostJSON);
+			}
+			
+			hostJSON.put(currInfo.toString(), hostArray);
+		}
+		
+		JSONObject summary = new JSONObject();
+		summary.put("hosts", hostJSON);
+		summary.put("ServerName", ServerName.getServerName().getValue());
 		
 		
-		model.addAttribute("virtualHosts", "");
+		model.addAttribute("virtualHosts", hostJSON.toString());
 		
 		return "views/VirtualHosts";
 	}
