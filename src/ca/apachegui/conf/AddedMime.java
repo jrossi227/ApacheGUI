@@ -2,7 +2,7 @@ package ca.apachegui.conf;
 
 import java.util.ArrayList;
 
-import ca.apachegui.directives.AddType;
+import ca.apachegui.globaldirectives.AddType;
 
 /**
  * Class used to add Mime types to apache configuration. Mimes can take the following format:
@@ -58,7 +58,7 @@ public class AddedMime extends Mime {
 			}
 		}
 		
-		addType.addToConfiguration(true);
+		addType.addToConfiguration(true, false);
 	}
 	
 	/**
@@ -87,7 +87,7 @@ public class AddedMime extends Mime {
 			throw new Exception("The specified MIME type was not found in the configuration.");
 		}
 		
-		addType.addToConfiguration(true);
+		addType.addToConfiguration(true, false);
 	}
 	
 	/**
@@ -99,6 +99,6 @@ public class AddedMime extends Mime {
 	public static void remove(AddedMime mime) throws Exception
 	{
 		AddType addType = new AddType(mime.getType(), mime.getExtensions()); 
-		addType.removeFromConfiguration();
+		addType.removeFromConfiguration(false);
 	}
 }

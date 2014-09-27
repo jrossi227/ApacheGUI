@@ -28,18 +28,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ca.apachegui.conf.ServerMime;
 import ca.apachegui.db.LogDataDao;
 import ca.apachegui.db.UsersDao;
-import ca.apachegui.directives.Group;
-import ca.apachegui.directives.KeepAlive;
-import ca.apachegui.directives.KeepAliveTimeout;
-import ca.apachegui.directives.ListenBackLog;
-import ca.apachegui.directives.MaxKeepAliveRequests;
-import ca.apachegui.directives.ServerName;
-import ca.apachegui.directives.ServerSignature;
-import ca.apachegui.directives.ServerTokens;
-import ca.apachegui.directives.Timeout;
-import ca.apachegui.directives.User;
 import ca.apachegui.global.Constants;
 import ca.apachegui.global.Utilities;
+import ca.apachegui.globaldirectives.Group;
+import ca.apachegui.globaldirectives.KeepAlive;
+import ca.apachegui.globaldirectives.KeepAliveTimeout;
+import ca.apachegui.globaldirectives.ListenBackLog;
+import ca.apachegui.globaldirectives.MaxKeepAliveRequests;
+import ca.apachegui.globaldirectives.ServerName;
+import ca.apachegui.globaldirectives.ServerSignature;
+import ca.apachegui.globaldirectives.ServerTokens;
+import ca.apachegui.globaldirectives.Timeout;
+import ca.apachegui.globaldirectives.User;
 import ca.apachegui.virtualhosts.NetworkInfo;
 import ca.apachegui.virtualhosts.VirtualHost;
 import ca.apachegui.virtualhosts.VirtualHosts;
@@ -390,8 +390,7 @@ public class GUIViewController {
 		summary.put("hosts", hostJSON);
 		summary.put("ServerName", ServerName.getServerName().getValue());
 		
-		
-		model.addAttribute("virtualHosts", hostJSON.toString());
+		model.addAttribute("virtualHosts", summary.toString());
 		
 		return "views/VirtualHosts";
 	}

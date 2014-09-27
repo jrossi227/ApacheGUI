@@ -16,7 +16,7 @@ public class VirtualHosts {
 		
 		EnclosureParser parser = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 		
-		Enclosure virtualHostEnclosures[] = parser.getEnclosure(Constants.virtualHostDirectiveString);
+		Enclosure virtualHostEnclosures[] = parser.getEnclosure(Constants.virtualHostDirectiveString, true);
 		
 		ArrayList<VirtualHost> virtualHosts = new ArrayList<VirtualHost>(); 
 		

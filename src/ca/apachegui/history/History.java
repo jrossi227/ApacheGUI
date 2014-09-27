@@ -53,7 +53,7 @@ public class History
 		
 		//Search for access.log and insert after access.log
 		DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
-		boolean inserted = parser.insertDirectiveBeforeOrAfterFirstFound(Constants.customLogDirectiveString, includeString, "(.*/access.log.*|.*\\access.log.*|.*/access_log.*|.*\\access_log.*)", false);
+		boolean inserted = parser.insertDirectiveBeforeOrAfterFirstFound(Constants.customLogDirectiveString, includeString, "(.*/access.log.*|.*\\access.log.*|.*/access_log.*|.*\\access_log.*)", false, true);
 		
 		if(!inserted) {
 			ConfFiles.appendToGUIConfigFile(includeString);

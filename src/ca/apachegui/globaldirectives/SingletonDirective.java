@@ -1,4 +1,4 @@
-package ca.apachegui.directives;
+package ca.apachegui.globaldirectives;
 
 import apache.conf.parser.DirectiveParser;
 import ca.apachegui.conf.ConfFiles;
@@ -21,14 +21,14 @@ public abstract class SingletonDirective extends BaseDirective {
 	 * 
 	 * @throws Exception
 	 */
-	public void saveToConfiguration() throws Exception {
+	public void saveToConfiguration(boolean includeVHosts) throws Exception {
 		
 		DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 		
-		String keepAliveDirective[]=parser.getDirectiveValue(directiveName);
+		String keepAliveDirective[]=parser.getDirectiveValue(directiveName, includeVHosts);
 		
 		if(keepAliveDirective.length > 0) {
-			String file=parser.getDirectiveFile(directiveName, getReplaceValue());
+			String file=parser.getDirectiveFile(directiveName, getReplaceValue(), includeVHosts);
 		
 			parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), getReplaceValue(), true);
 		} else {

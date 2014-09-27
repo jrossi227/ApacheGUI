@@ -1,4 +1,4 @@
-package ca.apachegui.directives;
+package ca.apachegui.globaldirectives;
 
 import org.apache.log4j.Logger;
 
@@ -76,7 +76,7 @@ public class KeepAliveTimeout extends SingletonDirective {
 	 */ 
 	@Override
 	public KeepAliveTimeout getConfigured() throws Exception {
-		String keepAliveTimeout[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.keepAliveTimeoutDirective);
+		String keepAliveTimeout[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.keepAliveTimeoutDirective, false);
 
 		KeepAliveTimeout keepAliveTimeoutFound=null;
 		

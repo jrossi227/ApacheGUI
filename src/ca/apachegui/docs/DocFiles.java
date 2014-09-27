@@ -37,7 +37,7 @@ public class DocFiles
 	  	
 		String serverRoot=ca.apachegui.db.SettingsDao.getInstance().getSetting(Constants.serverRoot);
 		
-		Enclosure directories[] = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.directoryDirectiveString);
+		Enclosure directories[] = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.directoryDirectiveString, true);
 	  	
 		ArrayList<String> docFiles=new ArrayList<String>();
 	  
@@ -58,7 +58,7 @@ public class DocFiles
 	  	}	
 	  	
 	  	//get DocumentRoot(s) here
-	  	String documentRoot[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.documentRootDirectiveString);
+	  	String documentRoot[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.documentRootDirectiveString, true);
 	  	
 	  	for(int i=0; i<documentRoot.length; i++ ) {
 	  		

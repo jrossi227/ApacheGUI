@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 
 import apache.conf.parser.File;
 import ca.apachegui.db.SettingsDao;
-import ca.apachegui.directives.Listen;
+import ca.apachegui.globaldirectives.Listen;
 
 public class Utilities 
 {

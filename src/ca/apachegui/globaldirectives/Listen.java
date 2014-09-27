@@ -1,4 +1,4 @@
-package ca.apachegui.directives;
+package ca.apachegui.globaldirectives;
 
 import java.util.ArrayList;
 
@@ -163,7 +163,7 @@ public class Listen extends FactoryDirective {
 		
 		ArrayList<Listen> listening = new ArrayList<Listen>();
 		
-		String listeners[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName);
+		String listeners[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 		for(int i=0; i<listeners.length; i++) {
 			listening.add(new Listen(listeners[i]));
 		}

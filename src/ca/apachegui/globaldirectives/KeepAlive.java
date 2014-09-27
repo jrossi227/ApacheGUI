@@ -1,4 +1,4 @@
-package ca.apachegui.directives;
+package ca.apachegui.globaldirectives;
 
 import apache.conf.parser.DirectiveParser;
 import ca.apachegui.db.SettingsDao;
@@ -73,7 +73,7 @@ public class KeepAlive extends SingletonDirective {
 	 */ 
 	@Override
 	public KeepAlive getConfigured() throws Exception {
-		String keepAlive[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName);
+		String keepAlive[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 
 		KeepAlive keepAliveFound=null;
 		

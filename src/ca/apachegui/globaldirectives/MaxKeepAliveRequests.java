@@ -1,4 +1,4 @@
-package ca.apachegui.directives;
+package ca.apachegui.globaldirectives;
 
 import org.apache.log4j.Logger;
 
@@ -75,7 +75,7 @@ public class MaxKeepAliveRequests extends SingletonDirective {
 	 */ 
 	@Override
 	public MaxKeepAliveRequests getConfigured() throws Exception {
-		String maxKeepAliveRequests[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.maxKeepAliveRequestsDirective);
+		String maxKeepAliveRequests[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.maxKeepAliveRequestsDirective, false);
 
 		MaxKeepAliveRequests maxKeepAliveRequestsFound=null;
 		

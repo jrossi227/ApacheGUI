@@ -1,4 +1,4 @@
-package ca.apachegui.directives;
+package ca.apachegui.globaldirectives;
 
 import java.util.ArrayList;
 
@@ -106,7 +106,7 @@ public class AddType extends FactoryDirective {
 	public AddType[] getAllConfigured() throws Exception {
 		ArrayList<AddType> addTypes = new ArrayList<AddType>();
 		
-		String allAddTypes[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName);
+		String allAddTypes[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 		for(int i=0; i<allAddTypes.length; i++) {
 			addTypes.add(new AddType(allAddTypes[i]));
 		}

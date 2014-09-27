@@ -1,4 +1,4 @@
-package ca.apachegui.directives;
+package ca.apachegui.globaldirectives;
 
 import apache.conf.parser.DirectiveParser;
 import ca.apachegui.conf.ConfFiles;
@@ -21,9 +21,10 @@ public abstract class FactoryDirective extends BaseDirective {
 	 * The directive is added directly before or after the first configured Matching directive.
 	 * 
 	 * @param before - A boolean indicating if the directive should be added before the first matching directive.
+	 * @param includeVHosts flag to indicate whether to include directives in VirtualHosts
 	 * @throws Exception
 	 */
-	public void addBeforeOrAfterFirstFoundToConfiguration(boolean before) throws Exception
+	public void addBeforeOrAfterFirstFoundToConfiguration(boolean before, boolean includeVHosts) throws Exception
 	{
 		FactoryDirective all[]=getAllConfigured();
 		
@@ -35,7 +36,7 @@ public abstract class FactoryDirective extends BaseDirective {
 		}
 		
 		//Add Listen after first found listener
-		new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).insertDirectiveBeforeOrAfterFirstFound(directiveName, toString(), before);
+		new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).insertDirectiveBeforeOrAfterFirstFound(directiveName, toString(), before, includeVHosts);
 	}
 	
 	/**
@@ -45,7 +46,7 @@ public abstract class FactoryDirective extends BaseDirective {
 	 * 
 	 * @throws Exception
 	 */
-	public void addToConfiguration(boolean add) throws Exception
+	public void addToConfiguration(boolean add, boolean includeVHosts) throws Exception
 	{
 		FactoryDirective all[]=getAllConfigured();
 				
@@ -57,14 +58,14 @@ public abstract class FactoryDirective extends BaseDirective {
 		
 		DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 
-		String directive[]=parser.getDirectiveValue(directiveName);
+		String directive[]=parser.getDirectiveValue(directiveName, includeVHosts);
 		
 		boolean found=false;
 		for(int i=0; i<directive.length; i++) 
 		{	
 			if(directive[i].contains(getReplaceValue())) 
 			{
-				String file=parser.getDirectiveFile(directiveName, getReplaceValue());
+				String file=parser.getDirectiveFile(directiveName, getReplaceValue(), includeVHosts);
 		
 				parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), getReplaceValue(), add);
 				found=true;
@@ -84,11 +85,11 @@ public abstract class FactoryDirective extends BaseDirective {
 	 * 
 	 * @throws Exception
 	 */
-	public void removeFromConfiguration() throws Exception
+	public void removeFromConfiguration(boolean includeVHosts) throws Exception
 	{
 		DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 		
-		String file=parser.getDirectiveFile(directiveName, getReplaceValue());
+		String file=parser.getDirectiveFile(directiveName, getReplaceValue(), includeVHosts);
 		
 		parser.removeDirectiveFromFile(directiveName, file, getReplaceValue(), false);
 	}

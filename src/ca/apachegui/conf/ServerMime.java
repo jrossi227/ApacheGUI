@@ -40,7 +40,7 @@ public class ServerMime extends Mime {
 	 */
 	public static String getServerMimeFile() throws Exception 
 	{
-		String typesConfig[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.typesConfigDirective);
+		String typesConfig[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.typesConfigDirective, false);
 		
 		if(typesConfig.length > 0) 
 		{

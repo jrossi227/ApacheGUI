@@ -38,7 +38,7 @@ public class SharedModuleHandler extends ModuleHandler{
 	 * @throws Exception
 	 */
 	public static boolean removeModule(String name) throws Exception {
-		String file=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveFile(Constants.loadModuleDirective, name);
+		String file=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveFile(Constants.loadModuleDirective, name, false);
 		
 		if(file!=null)
 		{	

@@ -7,17 +7,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ca.apachegui.directives.Group;
-import ca.apachegui.directives.KeepAlive;
-import ca.apachegui.directives.KeepAliveTimeout;
-import ca.apachegui.directives.Listen;
-import ca.apachegui.directives.ListenBackLog;
-import ca.apachegui.directives.MaxKeepAliveRequests;
-import ca.apachegui.directives.NameVirtualHost;
-import ca.apachegui.directives.ServerSignature;
-import ca.apachegui.directives.ServerTokens;
-import ca.apachegui.directives.Timeout;
-import ca.apachegui.directives.User;
+import ca.apachegui.globaldirectives.Group;
+import ca.apachegui.globaldirectives.KeepAlive;
+import ca.apachegui.globaldirectives.KeepAliveTimeout;
+import ca.apachegui.globaldirectives.Listen;
+import ca.apachegui.globaldirectives.ListenBackLog;
+import ca.apachegui.globaldirectives.MaxKeepAliveRequests;
+import ca.apachegui.globaldirectives.NameVirtualHost;
+import ca.apachegui.globaldirectives.ServerSignature;
+import ca.apachegui.globaldirectives.ServerTokens;
+import ca.apachegui.globaldirectives.Timeout;
+import ca.apachegui.globaldirectives.User;
 
 @RestController
 @RequestMapping("/web/Networking")
@@ -91,7 +91,7 @@ public class NetworkingController {
 		Listen listen=new Listen(ip, port, protocol);
 		
 		//Add to file here 
-		listen.addBeforeOrAfterFirstFoundToConfiguration(false);
+		listen.addBeforeOrAfterFirstFoundToConfiguration(false, false);
 		
 		return printSuccess();
 	}
@@ -107,7 +107,7 @@ public class NetworkingController {
 		Listen listen=new Listen(ip, port, protocol);
 		
 		//Add to file here 
-		listen.removeFromConfiguration();
+		listen.removeFromConfiguration(false);
 		
 		return printSuccess();
 	}
@@ -119,7 +119,7 @@ public class NetworkingController {
 		NameVirtualHost nameVirtualHost=new NameVirtualHost(address, port);
 		
 		//Add to file here 
-		nameVirtualHost.addBeforeOrAfterFirstFoundToConfiguration(true);
+		nameVirtualHost.addBeforeOrAfterFirstFoundToConfiguration(true, false);
 		
 		return printSuccess();
 	}	
@@ -131,7 +131,7 @@ public class NetworkingController {
 	
 		NameVirtualHost nameVirtualHost=new NameVirtualHost(address, port);
 		
-		nameVirtualHost.removeFromConfiguration();
+		nameVirtualHost.removeFromConfiguration(false);
 		
 		return printSuccess();
 	}	
@@ -139,7 +139,7 @@ public class NetworkingController {
 	@RequestMapping(method=RequestMethod.POST,params="option=modifyKeepAliveStatus",produces="application/json;charset=UTF-8")
 	public String modifyKeepAliveStatus(@RequestParam(value="status") String status) throws Exception {
 		
-		new KeepAlive(status.equals("on") ? true : false).saveToConfiguration();
+		new KeepAlive(status.equals("on") ? true : false).saveToConfiguration(false);
 		
 		return printSuccess();
 	}	
@@ -147,7 +147,7 @@ public class NetworkingController {
 	@RequestMapping(method=RequestMethod.POST,params="option=modifyKeepAliveTimeout",produces="application/json;charset=UTF-8")
 	public String modifyKeepAliveTimeout(@RequestParam(value="seconds") int seconds) throws Exception {
 		
-		new KeepAliveTimeout(seconds).saveToConfiguration();
+		new KeepAliveTimeout(seconds).saveToConfiguration(false);
 	
 		return printSuccess();
 	}	
@@ -155,7 +155,7 @@ public class NetworkingController {
 	@RequestMapping(method=RequestMethod.POST,params="option=modifyMaxKeepAliveRequests",produces="application/json;charset=UTF-8")
 	public String modifyMaxKeepAliveRequests(@RequestParam(value="numberOfRequests") int numberOfRequests) throws Exception {
 		
-		new MaxKeepAliveRequests(numberOfRequests).saveToConfiguration();
+		new MaxKeepAliveRequests(numberOfRequests).saveToConfiguration(false);
 	
 		return printSuccess();
 	}	
@@ -164,7 +164,7 @@ public class NetworkingController {
 	@RequestMapping(method=RequestMethod.POST,params="option=modifyRequestTimeout",produces="application/json;charset=UTF-8")
 	public String modifyRequestTimeout(@RequestParam(value="seconds") int seconds) throws Exception {
 		
-		new Timeout(seconds).saveToConfiguration();
+		new Timeout(seconds).saveToConfiguration(false);
 	
 		return printSuccess();
 	}	
@@ -172,7 +172,7 @@ public class NetworkingController {
 	@RequestMapping(method=RequestMethod.POST,params="option=modifyListenBackLog",produces="application/json;charset=UTF-8")
 	public String modifyListenBackLog(@RequestParam(value="backLogLength") int backLogLength) throws Exception {
 		
-		new ListenBackLog(backLogLength).saveToConfiguration();
+		new ListenBackLog(backLogLength).saveToConfiguration(false);
 	
 		return printSuccess();
 	}	
@@ -180,7 +180,7 @@ public class NetworkingController {
 	@RequestMapping(method=RequestMethod.POST,params="option=modifyServerTokens",produces="application/json;charset=UTF-8")
 	public String modifyServerTokens(@RequestParam(value="serverTokens") String serverTokens) throws Exception {
 		
-		new ServerTokens(serverTokens).saveToConfiguration();
+		new ServerTokens(serverTokens).saveToConfiguration(false);
 	
 		return printSuccess();
 	}	
@@ -188,7 +188,7 @@ public class NetworkingController {
 	@RequestMapping(method=RequestMethod.POST,params="option=modifyServerSignature",produces="application/json;charset=UTF-8")
 	public String modifyServerSignature(@RequestParam(value="serverSignature") String serverSignature) throws Exception {
 		
-		new ServerSignature(serverSignature).saveToConfiguration();
+		new ServerSignature(serverSignature).saveToConfiguration(false);
 	
 		return printSuccess();
 	}	
@@ -196,7 +196,7 @@ public class NetworkingController {
 	@RequestMapping(method=RequestMethod.POST,params="option=modifyUser",produces="application/json;charset=UTF-8")
 	public String modifyUser(@RequestParam(value="user") String user) throws Exception {
 		
-		new User(user).saveToConfiguration();
+		new User(user).saveToConfiguration(false);
 	
 		return printSuccess();
 	}	
@@ -204,7 +204,7 @@ public class NetworkingController {
 	@RequestMapping(method=RequestMethod.POST,params="option=modifyGroup",produces="application/json;charset=UTF-8")
 	public String modifyGroup(@RequestParam(value="group") String group) throws Exception {
 		
-		new Group(group).saveToConfiguration();
+		new Group(group).saveToConfiguration(false);
 	
 		return printSuccess();
 	}		

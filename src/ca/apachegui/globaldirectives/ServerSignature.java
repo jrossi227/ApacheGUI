@@ -1,4 +1,4 @@
-package ca.apachegui.directives;
+package ca.apachegui.globaldirectives;
 
 import apache.conf.parser.DirectiveParser;
 import ca.apachegui.db.SettingsDao;
@@ -69,7 +69,7 @@ public class ServerSignature extends SingletonDirective {
 	 */ 
 	@Override
 	public ServerSignature getConfigured() throws Exception {
-		String serverSignature[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName);
+		String serverSignature[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 
 		ServerSignature serverSignatureFound=null;
 		

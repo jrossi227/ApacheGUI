@@ -1,4 +1,4 @@
-package ca.apachegui.directives;
+package ca.apachegui.globaldirectives;
 
 import apache.conf.parser.DirectiveParser;
 import ca.apachegui.db.SettingsDao;
@@ -79,7 +79,7 @@ public class ServerTokens extends SingletonDirective {
 	 */ 
 	@Override
 	public ServerTokens getConfigured() throws Exception {
-		String serverTokens[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName);
+		String serverTokens[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 
 		ServerTokens serverTokensFound=null;
 		

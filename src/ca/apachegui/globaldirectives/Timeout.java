@@ -1,4 +1,4 @@
-package ca.apachegui.directives;
+package ca.apachegui.globaldirectives;
 
 import org.apache.log4j.Logger;
 
@@ -89,7 +89,7 @@ public class Timeout extends SingletonDirective {
 	 */ 
 	@Override
 	public Timeout getConfigured() throws Exception {
-		String timeout[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.timeoutDirective);
+		String timeout[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.timeoutDirective, false);
 
 		Timeout timeoutFound=null;
 		

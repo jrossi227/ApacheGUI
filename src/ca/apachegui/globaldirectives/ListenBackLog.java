@@ -1,4 +1,4 @@
-package ca.apachegui.directives;
+package ca.apachegui.globaldirectives;
 
 import org.apache.log4j.Logger;
 
@@ -76,7 +76,7 @@ public class ListenBackLog extends SingletonDirective {
 	 */ 
 	@Override
 	public ListenBackLog getConfigured() throws Exception {
-		String listenBackLog[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.listenBackLogDirective);
+		String listenBackLog[]=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.listenBackLogDirective, false);
 
 		ListenBackLog listenBackLogFound=null;
 		
