@@ -45,9 +45,7 @@
 		
 			<h4>Name Virtual Hosts</h4>
 			<div id="name_virtual_host_container">
-			
-				${virtualHosts}
-			
+						
 			</div>
 			
 			<h4>Other Virtual Hosts</h4>
