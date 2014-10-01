@@ -9,7 +9,7 @@ define([ "dojo/_base/declare",
 	
 	declare("ca.apachegui.VirtualHosts", null, {
 		
-		currentHostSummary: 0,
+		currentHostSummaryCount: 0,
 		
 		init : function() {
 			this.populateVirtualHosts();
@@ -56,7 +56,7 @@ define([ "dojo/_base/declare",
 				             ]];
 				
 				var grid = new DataGrid({
-					        id: 'grid-' + that.currentHostSummary,
+					        id: 'grid-' + that.currentHostSummaryCount,
 					        store: store,
 					        structure: layout,
 					        selectable: true,
@@ -77,7 +77,7 @@ define([ "dojo/_base/declare",
 				div.innerHTML = '<h5>Virtual Hosts For: ' + name + '</h5>';
 				dom.byId('name_virtual_host_container').appendChild(div);
 			    
-			    that.currentHostSummary ++;
+			    that.currentHostSummaryCount ++;
 			};
 			
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Loading', 'Loading Virtual Hosts...');
