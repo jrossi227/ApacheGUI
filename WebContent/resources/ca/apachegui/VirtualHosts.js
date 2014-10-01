@@ -2,42 +2,82 @@ define([ "dojo/_base/declare",
          "dojo/dom",
          "dojo/request",
          "dijit/registry",
-         "dojo/on"
-], function(declare, dom, request, registry, on){
+         "dojo/on",
+         "dojo/data/ItemFileWriteStore",
+         "dojox/grid/DataGrid"
+], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid){
 	
 	declare("ca.apachegui.VirtualHosts", null, {
+		
+		currentHostSummary: 0,
 		
 		init : function() {
 			this.populateVirtualHosts();
 		},
 		
 		populateVirtualHosts : function() {
+			var that = this;
 			
 			var buildHostSummary = function(name, vhost, globalServerName) {
 				
-				var html = '<h5>Default</h5>';
-				html +=	'<table class="vhost_summary_table">' +
-							'<tbody>' +
-								'<tr>' +
-									'<td>Network:</td>' +
-									'<td>' + name + '</td>' +
-								'</tr>' +
-								'<tr>' +
-									'<td>ServerName:</td>' +
-									'<td>' + (vhost.ServerName == '' ? (globalServerName == '' ? 'unknown' : globalServerName)  : vhost.ServerName) + '</td>' +
-								'</tr>' +
-								'<tr>' +
-									'<td>File:</td>' +
-									'<td>' + vhost.file + '</td>' +
-								'</tr>' +
-							'</tbody>' +
-						'</table>';
+				var data = {
+					      identifier: "id",
+					      label: "name",
+					      items: [{
+					    	  id : 'networkname',
+					    	  name: 'Network:',
+					    	  value: name
+					      },
+					      {
+					    	  id : 'servername',
+					    	  name: 'ServerName:',
+					    	  value: (vhost.ServerName == '' ? (globalServerName == '' ? 'unknown' : globalServerName)  : vhost.ServerName)
+					      },
+					      {
+					    	  id : 'file',
+					    	  name: 'File:',
+					    	  value: vhost.file
+					      }]
+					};
+								
+				var store = new ItemFileWriteStore({data: data});
+								
+				var layout = [[
+				               {
+				            	   name: ' ', 
+				            	   field: 'name', 
+				            	   width: '150px'
+				               },
+				               {
+				            	   name: ' ', 
+				            	   field: 'value', 
+				            	   width: 'auto'
+				               }
+				             ]];
+				
+				var grid = new DataGrid({
+					        id: 'grid-' + that.currentHostSummary,
+					        store: store,
+					        structure: layout,
+					        selectable: true,
+				            style: 'width:100%;',
+				            autoHeight:true,
+				            rowSelector: "20px"
+			        	});
 				
 				var div = document.createElement('div');
-				div.className = 'vhost_summary';
-				div.innerHTML = html;
+				div.innerHTML = '<h5>Default For: ' + name + '</h5>';
+				dom.byId('name_virtual_host_container').appendChild(div);
 				
-				return div;
+			    grid.placeAt("name_virtual_host_container");
+
+			    grid.startup();		
+			    
+			    div = document.createElement('div');
+				div.innerHTML = '<h5>Virtual Hosts For: ' + name + '</h5>';
+				dom.byId('name_virtual_host_container').appendChild(div);
+			    
+			    that.currentHostSummary ++;
 			};
 			
 			var thisdialog = ca.apachegui.Util.noCloseDialog('Loading', 'Loading Virtual Hosts...');
@@ -68,8 +108,7 @@ define([ "dojo/_base/declare",
 							
 							for(var i=0; i<hostArray.length; i++) {
 								if(i==0) {
-									var div = buildHostSummary(host, hostArray[i], serverName);
-									nameVirtualHostContainer.appendChild(div);
+									buildHostSummary(host, hostArray[i], serverName);
 								}
 							}
 							
