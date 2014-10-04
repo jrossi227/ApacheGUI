@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import ca.apachegui.globaldirectives.DocumentRoot;
 import ca.apachegui.globaldirectives.ServerName;
 import ca.apachegui.virtualhosts.NetworkInfo;
 import ca.apachegui.virtualhosts.VirtualHost;
@@ -40,7 +41,8 @@ public class VirtualHostsController {
 	            "ServerName": "test.local2"
 	        }]
 	    },
-	    "ServerName": "localhost"
+	    "ServerName": "localhost",
+	    "DocumentRoot": "\/var\/www\/html"
 	 }
 	 * 
 	 * @return
@@ -99,6 +101,7 @@ public class VirtualHostsController {
 		JSONObject summary = new JSONObject();
 		summary.put("hosts", hostJSON);
 		summary.put("ServerName", ServerName.getServerName().getValue());
+		summary.put("DocumentRoot", DocumentRoot.getDocumentRoot().getValue());
 		
 		return summary.toString();
 	}

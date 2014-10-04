@@ -23,11 +23,11 @@ public class DocFiles
 	private static String[] savedDirectories = null;
 	
 	/**
-	 * Get all Directories defined by the apache Directory and DocumentRoot directive. 
-	 * The directory will be excluded if the directory is equal to / or the directory only allows access on local host.
+	 * Get all Directories defined by the apache Directory Enclosure and DocumentRoot directive. 
+	 * The directory will be excluded if the directory is equal to /
 	 * 
-	 * @return an Array with the path of all Directories defined by the apache Directory and DocumentRoot directive. 
-	 * The directory will be excluded if the directory is equal to / or the directory only allows access on local host.
+	 * @return an Array with the path of all Directories defined by the apache Directory Enclosure and DocumentRoot directive. 
+	 * The directory will be excluded if the directory is equal to /
 	 * @throws Exception 
 	 */
 	public static String[] getDirectories() throws Exception 

@@ -278,3 +278,11 @@ body.editor #filename_container em {
 #GlobalSettingsBody #serverTokenPreviewContainer span.selected {
 	display: inline;
 }
+
+/*Virtual Hosts css rules */
+#virtualHostsBody hr {
+	background-color: #cccccc;
+    border: 0 none;
+    height: 2px;
+    margin: 15px 0;
+}
