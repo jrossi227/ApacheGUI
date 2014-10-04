@@ -23,6 +23,7 @@ public class VirtualHosts {
 		VirtualHost virtualHost;
 		ArrayList <NetworkInfo> networkInfo;
 		Directive directives[];
+		Enclosure enclosures[];
 		for(Enclosure virtualHostEnclosure : virtualHostEnclosures) {
 			
 			virtualHost = new VirtualHost();
@@ -42,11 +43,18 @@ public class VirtualHosts {
 				if(directive.getType().equals(Constants.serverNameDirectiveString)) {
 					virtualHost.setServerName(directive.getValues()[0]);
 				}
-				if(directive.getType().equals(Constants.documentRootDirectiveString)) {
+				else if(directive.getType().equals(Constants.documentRootDirectiveString)) {
 					virtualHost.setDocumentRoot(directive.getValues()[0]);
+				} else {
+					virtualHost.addDirective(directive);
 				}
 			}
-						
+					
+			enclosures = virtualHostEnclosure.getEnclosures();
+			for(Enclosure enclosure: enclosures) {
+				virtualHost.addEnclosure(enclosure);
+			}
+			
 			virtualHosts.add(virtualHost);
 		}
 		

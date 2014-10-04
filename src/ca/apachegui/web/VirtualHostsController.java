@@ -51,7 +51,7 @@ public class VirtualHostsController {
 	 */
 	
 	@RequestMapping(method=RequestMethod.GET,params="option=getAllVirtualHosts",produces="application/json;charset=UTF-8")
-	public String getAllSettingsNames() throws NullPointerException, Exception {
+	public String getAllVirtualHosts() throws NullPointerException, Exception {
 		
 		VirtualHost hosts[] = VirtualHosts.getAllVirtualHosts();
 		

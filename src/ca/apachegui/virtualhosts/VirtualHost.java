@@ -8,6 +8,8 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import apache.conf.parser.Directive;
+import apache.conf.parser.Enclosure;
 import apache.conf.parser.File;
 
 /**
@@ -25,12 +27,16 @@ public class VirtualHost {
 	private List<NetworkInfo> networkInfo;
 	private String documentRoot;
 	private String serverName;
+	private ArrayList<Directive> directives;
+	private ArrayList<Enclosure> enclosures;
 	
 	public VirtualHost() {
 		file = null;
 		networkInfo = new ArrayList<NetworkInfo>();
 		documentRoot = "";
 		serverName = "";
+		directives = new ArrayList<Directive>();
+		enclosures = new ArrayList<Enclosure>();
 	}
 	
 	public File getFile() {
@@ -63,6 +69,22 @@ public class VirtualHost {
 
 	public void setServerName(String serverName) {
 		this.serverName = serverName;
+	}
+	
+	public void addDirective(Directive directive) {
+		directives.add(directive);
+	}
+	
+	public Directive[] getDirectives() {
+		return directives.toArray(new Directive[directives.size()]);
+	}
+	
+	public void addEnclosure(Enclosure enclosure) {
+		enclosures.add(enclosure);
+	}
+	
+	public Enclosure[] getEnclosures() {
+		return enclosures.toArray(new Enclosure[enclosures.size()]);
 	}
 	
 	public String toJSON() throws ParseException {
