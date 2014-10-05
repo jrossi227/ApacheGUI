@@ -121,8 +121,7 @@ define([ "dojo/_base/declare",
 						
 						if(hostArray.length > 1) {
 							
-							dom.byId('name_virtual_host_header').style.display = 'block';
-							dom.byId('name_virtual_host_container').style.display = 'block';
+							dom.byId('name_virtual_host_container_none').style.display = 'none';
 							
 							for(var i=0; i<hostArray.length; i++) {
 								if(i==0) {
@@ -147,8 +146,7 @@ define([ "dojo/_base/declare",
 							}
 														
 						} else {
-							dom.byId('other_virtual_host_header').style.display = 'block';
-							dom.byId('other_virtual_host_container').style.display = 'block';
+							dom.byId('other_virtual_host_container_none').style.display = 'none';
 							
 							var div = document.createElement('div');
 							div.innerHTML = '<h4>' + host + '</h4>';

@@ -303,6 +303,11 @@ define([ "dojo/_base/declare",
 				 window.open('GlobalSettings.jsp');
 			 }
 			 
+			 if(this.isVirtualHosts(this.getCurrentMenuId()))
+			 {
+				 window.open('VirtualHosts.jsp');
+			 }
+			 
 			 if(this.isLogs(this.getCurrentMenuId()))
 			 {
 				 window.open('Logs.jsp?file=' + this.extractLogFile(this.getCurrentMenuId()));		 

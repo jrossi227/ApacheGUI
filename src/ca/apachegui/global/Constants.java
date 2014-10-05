@@ -71,6 +71,7 @@ public class Constants
 	public final static String userDirective="User";
 	public final static String groupDirective="Group";
 	public final static String defineDirective="Define";
+	public final static String customLogDirective="CustomLog";
 	public final static String directoryDirectiveString="Directory";
 	public final static String customLogDirectiveString="CustomLog";
 	public final static String serverRootDirectiveValue="SRVROOT";

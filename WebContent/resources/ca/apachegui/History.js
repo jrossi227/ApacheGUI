@@ -8,20 +8,11 @@ define([ "dojo/_base/declare",
 ], function(declare, dom, registry, on, request, json, Control){
 	
 	declare("ca.apachegui.History", null,{
-		historyEnabled: null,
 		initialized: false,
 		
 		init: function() {
 			if(this.initialized==false) {
 				
-				this.historyEnabled=this.checkIfEnabled();
-				if(this.historyEnabled) {
-					this.showEnabled();
-				}
-				else {
-					this.showDisabled();
-				}
-			
 				this.changeHistoryChoice('search');
 			
 				var historyRetention=this.getHistoryRetention();
@@ -59,147 +50,56 @@ define([ "dojo/_base/declare",
 				dom.byId('endDate').value=day +'/' + month + '/' + year;
 				dom.byId('endTime').value=hours + ':' + minutes + ':' + seconds;
 			
+				this.populateEnabled();
+				this.populateDisabled();
+				
 				this.addListeners();
 				
 				this.initialized=true;
 			}
 		},
 		
-		toggle: function() {
-			if(this.historyEnabled) {
-				this.disable();
-			}
-			else {
-				this.enable();
-			}	
-		},
-		
-		checkIfEnabled: function () {
-			var isHistoryEnabled=false;
+		populateEnabled: function() {
+			dom.byId("history_enabled_hosts_container").innerHTML = '';
 			
 			request.get("../web/History", {
 				query: 	{
-					option: 'checkIfEnabled'
+					option: 'getEnabled'
 				},
 				handleAs: 'json',
-				sync: true,
+				sync: false,
 				preventCache: true
 			}).response.then(
 				function(response) {
-					var data = response.data;
-					isHistoryEnabled=data.enabled;	
+					dom.byId("history_enable_loading_container").style.display = 'none';
+					
 				},
 				function(error) {
 					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
 			);
 			
-			return isHistoryEnabled;
 		},
 		
-		enable: function () {
-			var that=this;
+		populateDisabled: function() {
+			dom.byId("history_disabled_hosts_container").innerHTML = '';
 			
-			var thisdialog;
-			
-			var sendRequest = function() {
-				thisdialog = ca.apachegui.Util.noCloseDialog('Enabling', 'Please wait...');
-				thisdialog.show();
-				
-				request.post("../web/History", {
-					data: 	{
-						option: 'enable'
-					},
-					handleAs: 'json',
-					sync: false
-				}).response.then(
-					function(response) {
+			request.get("../web/History", {
+				query: 	{
+					option: 'getDisabled'
+				},
+				handleAs: 'json',
+				sync: false,
+				preventCache: true
+			}).response.then(
+				function(response) {
+					dom.byId("history_disable_loading_container").style.display = 'none';
 					
-						that.historyEnabled=true;
-						that.showEnabled();	
-						
-						thisdialog.remove();
-					},
-					function(error) {
-						thisdialog.remove();
-						ca.apachegui.Util.alert('Error',error.response.data.message);
-					}
-				);
-			};
-			
-			ca.apachegui.Control.getInstance().isServerRunning(
-				function() {
-					ca.apachegui.Util.confirmDialog(
-						"Please Confirm", 
-						"Are you sure you want to enable history?<br/>The server will be restarted to apply these changes!",
-						function confirm(conf) {
-							if(conf) {
-								sendRequest();
-							}
-						}
-					);
-				}, 
-				function() {
-					sendRequest();
-				}
-			);
-		},
-		
-		showEnabled: function () {
-			registry.byId('toggleHistoryButton').set('label','Disable');
-			dom.byId('statusDisplay').innerHTML='<b>Status</b> (<span style="color:green">On</span>)';
-		},
-		
-		disable: function () {
-			var that=this;
-			
-			var thisdialog;
-			
-			var sendRequest = function() {
-				thisdialog = ca.apachegui.Util.noCloseDialog('Disabling', 'Please wait...');
-				thisdialog.show();
-				
-				request.post("../web/History", {
-					data: 	{
-						option: 'disable'
-					},
-					handleAs: 'json',
-					sync: false
-				}).response.then(function(response) {
-					
-					that.historyEnabled=false;
-					that.showDisabled();	
-					
-					thisdialog.remove();
 				},
 				function(error) {
-					thisdialog.remove();
 					ca.apachegui.Util.alert('Error',error.response.data.message);
-				});
-			};
-				
-			ca.apachegui.Control.getInstance().isServerRunning(
-				function(){
-					ca.apachegui.Util.confirmDialog(
-						"Please Confirm", 
-						"Are you sure you want to disable history?<br/>The server will be restarted to apply these changes!",
-						function confirm(conf) {
-							if(conf){
-								sendRequest();
-							}
-						}
-					);
-				}, 
-				function() {
-					sendRequest();
 				}
 			);
-			
-		},
-		
-		showDisabled: function () {
-			registry.byId('toggleHistoryButton').set('label','Enable');
-			dom.byId('statusDisplay').innerHTML='<b>Status</b> (<span style="color:red">Off</span>)';
 		},
 		
 		search: function () {
@@ -365,10 +265,6 @@ define([ "dojo/_base/declare",
 
 			on(registry.byId('historyGraphButton'), "click", function() {
 				that.graph();
-			});
-			
-			on(registry.byId('toggleHistoryButton'), "click", function() {
-				that.toggle();
 			});
 			
 			on(registry.byId('historyRetentionButton'), "click", function() {

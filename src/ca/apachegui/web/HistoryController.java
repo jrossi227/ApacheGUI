@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.ServletContextAware;
 
 import ca.apachegui.db.LogDataDao;
+import ca.apachegui.virtualhosts.VirtualHost;
 
 
 @RestController
@@ -119,6 +120,61 @@ public class HistoryController implements ServletContextAware {
 		
 	}
 
+	@RequestMapping(method=RequestMethod.GET,params="option=getEnabled",produces="application/json;charset=UTF-8")
+	public String getEnabled() throws Exception {
+		
+		boolean globalEnable = ca.apachegui.history.History.getGlobalEnable();
+		
+		JSONObject result = new JSONObject();
+		
+		VirtualHost enabledVirtualHosts[] = ca.apachegui.history.History.getEnabledHosts();
+		
+		JSONArray allEnabled = new JSONArray();
+		for(VirtualHost virtualHost : enabledVirtualHosts) {
+			allEnabled.put(new JSONObject(virtualHost.toJSON()));
+		}
+		result.put("enabled", allEnabled);
+		
+		JSONArray globalHosts = new JSONArray();
+		if(globalEnable) {
+			VirtualHost globalVirtualHosts[] = ca.apachegui.history.History.getGlobalHosts();
+			
+			for(VirtualHost virtualHost : globalVirtualHosts) {
+				globalHosts.put(new JSONObject(virtualHost.toJSON()));
+			}
+		}
+		result.put("global", globalHosts);
+		
+		return result.toString();
+	}
+	
+	@RequestMapping(method=RequestMethod.GET,params="option=getDisabled",produces="application/json;charset=UTF-8")
+	public String getDisabled() throws Exception {
+		
+		boolean globalEnable = ca.apachegui.history.History.getGlobalEnable();
+		
+		JSONObject result = new JSONObject();
+		
+		VirtualHost disabledVirtualHosts[] = ca.apachegui.history.History.getDisabledHosts();
+		JSONArray allDisabled = new JSONArray();
+		for(VirtualHost virtualHost : disabledVirtualHosts) {
+			allDisabled.put(new JSONObject(virtualHost.toJSON()));
+		}
+		result.put("disabled", allDisabled);
+		
+		JSONArray globalHosts = new JSONArray();
+		if(!globalEnable) {
+			VirtualHost globalVirtualHosts[] = ca.apachegui.history.History.getGlobalHosts();
+
+			for(VirtualHost virtualHost : globalVirtualHosts) {
+				globalHosts.put(new JSONObject(virtualHost.toJSON()));
+			}
+		}
+		result.put("global", globalHosts);
+		
+		return result.toString();
+	}
+	
 	@Override
 	public void setServletContext(ServletContext servletContext) {
 		this.context = servletContext;

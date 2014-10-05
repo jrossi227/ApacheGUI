@@ -20,12 +20,14 @@
 			 		 "dijit/form/DropDownButton",
 			 		 "dijit/TooltipDialog",
 			 		 "dijit/Tooltip",
+			 		 "dijit/TitlePane",
+			 		 "dijit/ProgressBar",
 			 		 "dojox/grid/DataGrid",
 			 		 "dojo/data/ItemFileWriteStore",
 			 		 "dojo/dom",
 			         "dojo/parser",
 			         "dojo/domReady!"
-			], function(History, DateTextBox, TimeTextBox, Select, NumberSpinner, DropDownButton, TooltipDialog, Tooltip, DataGrid, ItemFileWriteStore, dom, parser) {
+			], function(History, DateTextBox, TimeTextBox, Select, NumberSpinner, DropDownButton, TooltipDialog, Tooltip, TitlePane, ProgressBar, DataGrid, ItemFileWriteStore, dom, parser) {
 				 parser.parse();
 				
 				 ca.apachegui.Main.getInstance().init('History');
@@ -67,8 +69,6 @@
         			</tr>
     			</thead>
 			</table>
-			<br/>
-			<div id="statusDisplay"></div>
 			<br/>
 			<div> 
 				<strong>Search</strong>&nbsp;<input type="radio" name="historyChoice" id="historySearchChoice" value="Search">&nbsp;
@@ -192,42 +192,70 @@
             	</tr>								
   			</table>
   			<table id="optionsTable" >
-					<tr>
-						<td colspan="2"><h3>Options</h3></td>
-					</tr>
-					<tr>
-						<td>Enable/Disable Historical Data:</td> 
-						<td><button dojoType="dijit.form.Button" id="toggleHistoryButton" type="button"></button></td>
-  					</tr>
-					<tr>
-						<td>Days To Keep History:</td> 
-						<td>
-							<input data-dojo-type="dijit.form.NumberSpinner" data-dojo-props="constraints:{min:0,max:1000000,places:0,pattern:'#'}" type="text" id="historyRetention" name="historyRetention">
-							&nbsp;
-							<button dojoType="dijit.form.Button" id="historyRetentionButton" type="button">Update</button>
-						</td>
-  					</tr>
-  					<tr>
-						<td>
-							Insert Buffer Size:&nbsp;
-							<span id="bufferWarningTooltip" class="warningTooltip" onmouseover="dijit.Tooltip.defaultPosition=['below', 'above']"></span>
-  							<div class="dijitHidden">
-  								<div data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'bufferWarningTooltip'">
-  									<div class="warningDialog">
-	  									This field controls how many transactions are buffered before being written to the Apache
-										GUI internal database. This field has significant performance
-										impacts and the buffer should be kept as large as possible on
-										high usage servers.
-									</div>
-								</div>	
-							</div> 
-						</td> 
-						<td>
-							<input data-dojo-type="dijit.form.NumberSpinner" data-dojo-props="constraints:{min:0,max:1000000,places:0,pattern:'#'}" type="text" id="historyBuffer" name="historyBuffer">
-							&nbsp;
-							<button dojoType="dijit.form.Button" id="historyBufferButton" type="button">Update</button>
-						</td>
-  					</tr>
+				<tr>
+					<td colspan="2"><h3>Options</h3></td>
+				</tr>
+				<tr>
+					<td>Days To Keep History:</td> 
+					<td>
+						<input data-dojo-type="dijit.form.NumberSpinner" data-dojo-props="constraints:{min:0,max:1000000,places:0,pattern:'#'}" type="text" id="historyRetention" name="historyRetention">
+						&nbsp;
+						<button dojoType="dijit.form.Button" id="historyRetentionButton" type="button">Update</button>
+					</td>
+ 					</tr>
+ 					<tr>
+					<td>
+						Insert Buffer Size:&nbsp;
+						<span id="bufferWarningTooltip" class="warningTooltip" onmouseover="dijit.Tooltip.defaultPosition=['below', 'above']"></span>
+ 							<div class="dijitHidden">
+ 								<div data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'bufferWarningTooltip'">
+ 									<div class="warningDialog">
+  									This field controls how many transactions are buffered before being written to the Apache
+									GUI internal database. This field has significant performance
+									impacts and the buffer should be kept as large as possible on
+									high usage servers.
+								</div>
+							</div>	
+						</div> 
+					</td> 
+					<td>
+						<input data-dojo-type="dijit.form.NumberSpinner" data-dojo-props="constraints:{min:0,max:1000000,places:0,pattern:'#'}" type="text" id="historyBuffer" name="historyBuffer">
+						&nbsp;
+						<button dojoType="dijit.form.Button" id="historyBufferButton" type="button">Update</button>
+					</td>
+ 					</tr>
+				<tr>
+					<td colspan="2">
+						<div id="history_enable_container" data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Enabled', open: false">
+							<div id="history_enable_loading_container">
+								Loading ...
+								<div data-dojo-type="dijit/ProgressBar" data-dojo-props="indeterminate: true" style="width:300px"></div>
+							</div>	
+							<div id="history_enabled_hosts_container">
+							
+							</div>
+							<button id="saveEnableButton" data-dojo-type="dijit/form/Button" type="button">
+               					Save
+           					</button>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div id="history_disable_container" data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Disabled', open: false">
+							<div id="history_disable_loading_container">
+								Loading ...
+								<div data-dojo-type="dijit/ProgressBar" data-dojo-props="indeterminate: true" style="width:300px"></div>
+							</div>
+							<div id="history_disabled_hosts_container">
+							
+							</div>
+							<button id="saveDisableButton" data-dojo-type="dijit/form/Button" type="button">
+               					Save
+           					</button>
+						</div>
+					</td>
+				</tr>
 			</table>		
 		</div>
 	</div>
