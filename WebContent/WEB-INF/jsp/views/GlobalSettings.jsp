@@ -22,12 +22,13 @@
 	    				"dijit/Tooltip",
 	    				"dijit/TooltipDialog",
 	    				"dijit/form/DropDownButton",
+	    				"dijit/TitlePane",
 	    				"ca/apachegui/globalsettings/GlobalSettings",
 						"ca/apachegui/Control",
 	 			        "dojo/dom",
 	 			        "dojo/parser",
 	 			        "dojo/domReady!"
-	 			], function(TabContainer, ItemFileWriteStore, DataGrid, Select, AccordionContainer, Tooltip, TooltipDialog, DropDownButton, GlobalSettings,
+	 			], function(TabContainer, ItemFileWriteStore, DataGrid, Select, AccordionContainer, Tooltip, TooltipDialog, DropDownButton, TitlePane, GlobalSettings,
 	 						Networking, Modules, Mime, Control, dom, parser) {
 	 				dojo.parser.parse();
 	 				

@@ -4,8 +4,9 @@ define([ "dojo/_base/declare",
          "dijit/registry",
          "dojo/on",
          "dojo/data/ItemFileWriteStore",
-         "dojox/grid/DataGrid"
-], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid){
+         "dojox/grid/DataGrid",
+         "dijit/TitlePane"
+], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane){
 	
 	declare("ca.apachegui.VirtualHosts", null, {
 		
@@ -18,7 +19,10 @@ define([ "dojo/_base/declare",
 		populateVirtualHosts : function() {
 			var that = this;
 			
-			var buildVirtualHost = function(name, vhost, container, globalServerName, globalDocumentRoot) {
+			var buildVirtualHost = function(name, vhost, containerId, globalServerName, globalDocumentRoot) {
+				
+				var documentRoot = (vhost.DocumentRoot == '' ? (globalDocumentRoot == '' ? 'unknown' : globalDocumentRoot)  : vhost.DocumentRoot);
+				var serverName = (vhost.ServerName == '' ? (globalServerName == '' ? 'unknown' : globalServerName)  : vhost.ServerName);
 				
 				var data = {
 					      identifier: "id",
@@ -41,17 +45,17 @@ define([ "dojo/_base/declare",
 					      {
 					    	  id : 'file',
 					    	  name: 'File',
-					    	  value: vhost.file
+					    	  value: '<a target="_blank" href="Configuration.jsp?file=' + vhost.file + '">' + vhost.file + '</a>'
 					      },
 					      {
 					    	  id : 'documentroot',
 					    	  name: 'DocumentRoot',
-					    	  value: (vhost.DocumentRoot == '' ? (globalDocumentRoot == '' ? 'unknown' : globalDocumentRoot)  : vhost.DocumentRoot)
+					    	  value: documentRoot
 					      },
 					      {
 					    	  id : 'servername',
 					    	  name: 'ServerName',
-					    	  value: (vhost.ServerName == '' ? (globalServerName == '' ? 'unknown' : globalServerName)  : vhost.ServerName)
+					    	  value: serverName
 					      }]
 					};
 				
@@ -69,7 +73,9 @@ define([ "dojo/_base/declare",
 				            	   width: 'auto'
 				               }
 				             ]];
-								
+						
+				
+				
 				var grid = new DataGrid({
 			        id: 'grid-' + that.currentHostSummaryCount,
 			        store: store,
@@ -77,13 +83,16 @@ define([ "dojo/_base/declare",
 			        selectable: true,
 		            style: 'width:100%;',
 		            autoHeight:true,
+		            escapeHTMLInData:false,
 		            rowSelector: "20px"
 	        	});
 										
-			    grid.placeAt(container);
-		
+			    var tp = new TitlePane({title: serverName, content: grid, open: false});
+			    dom.byId(containerId).appendChild(tp.domNode);
+			    tp.startup();
+			    
 			    grid.startup();		
-			   
+			    
 			    that.currentHostSummaryCount ++;
 				
 			};
@@ -112,33 +121,44 @@ define([ "dojo/_base/declare",
 						
 						if(hostArray.length > 1) {
 							
+							dom.byId('name_virtual_host_header').style.display = 'block';
+							dom.byId('name_virtual_host_container').style.display = 'block';
+							
 							for(var i=0; i<hostArray.length; i++) {
 								if(i==0) {
 									
 									var div = document.createElement('div');
-									div.innerHTML = '<h5>Default For: ' + host + '</h5>';
+									div.innerHTML = '<h4>' + host + '</h4>';
+									dom.byId('name_virtual_host_container').appendChild(div);
+									
+									div = document.createElement('div');
+									div.innerHTML = '<h5>Default</h5>';
 									dom.byId('name_virtual_host_container').appendChild(div);
 									
 									buildVirtualHost(host, hostArray[i], "name_virtual_host_container", globalServerName, globalDocumentRoot);
 									
 								    div = document.createElement('div');
-									div.innerHTML = '<h5>Virtual Hosts For: ' + host + '</h5>';
+									div.innerHTML = '<h5>Other Virtual Hosts</h5>';
 									dom.byId('name_virtual_host_container').appendChild(div);
+								} else {
+								
+									buildVirtualHost(host, hostArray[i], "name_virtual_host_container", globalServerName, globalDocumentRoot);
 								}
-								
-								buildVirtualHost(host, hostArray[i], "name_virtual_host_container", globalServerName, globalDocumentRoot);
-								
-								dom.byId('name_virtual_host_container').appendChild(document.createElement('hr'));
 							}
-							
+														
 						} else {
-							buildVirtualHost(host, hostArray[0], "other_virtual_host_container", globalServerName, globalDocumentRoot);
+							dom.byId('other_virtual_host_header').style.display = 'block';
+							dom.byId('other_virtual_host_container').style.display = 'block';
 							
-							dom.byId('other_virtual_host_container').appendChild(document.createElement('hr'));
+							var div = document.createElement('div');
+							div.innerHTML = '<h4>' + host + '</h4>';
+							dom.byId('other_virtual_host_container').appendChild(div);
+							
+							buildVirtualHost(host, hostArray[0], "other_virtual_host_container", globalServerName, globalDocumentRoot);							
 						}
 						
 					}
-					
+										
 					thisdialog.remove();
 				},
 				function(error) {

@@ -281,8 +281,18 @@ body.editor #filename_container em {
 
 /*Virtual Hosts css rules */
 #virtualHostsBody hr {
-	background-color: #cccccc;
+	background-color: #666666;
     border: 0 none;
-    height: 2px;
+    height: 1px;
     margin: 15px 0;
+}
+
+#virtualHostsBody h4 {
+	border-bottom: 1px solid #666666;
+    padding-bottom: 6px;
+}	
+
+#virtualHostsBody #name_virtual_host_container {
+	
+	margin-bottom: 35px;
 }
