@@ -4,11 +4,28 @@ define([ "dojo/_base/declare",
          "dojo/on",
          "dojo/request",
          "dojo/_base/json",
+         "dojo/data/ItemFileWriteStore",
+         "dojox/grid/DataGrid",
+         "dijit/Tooltip",
+         "dojo/_base/array",
+         "dijit/registry",
          "ca/apachegui/Control"
-], function(declare, dom, registry, on, request, json, Control){
+], function(declare, dom, registry, on, request, json, ItemFileWriteStore, DataGrid, Tooltip, array, registry, Control){
 	
 	declare("ca.apachegui.History", null,{
 		initialized: false,
+		
+		gridCount: 0,
+		
+		hosts : {
+			enabled : [],
+			disabled : []
+		},
+		
+		type : {
+			ENABLE: 'Enable',
+			DISABLE: 'Disable'
+		},
 		
 		init: function() {
 			if(this.initialized==false) {
@@ -59,8 +76,92 @@ define([ "dojo/_base/declare",
 			}
 		},
 		
+		buildGraph: function(hostsArray, container, type, toggle) {
+			
+			var items = [];
+			for(var i=0; i<hostsArray.length; i++) {
+				var obj = {};
+				
+				obj.id = i;
+				
+				var NetworkInfo = hostsArray[i].NetworkInfo;
+				
+				var networkInfoString = '';
+				for(var j=0; j<NetworkInfo.length; j++) {
+					
+					networkInfoString += NetworkInfo[j].address;
+					
+					if(NetworkInfo[j].port != -1) {
+						networkInfoString += ':' + NetworkInfo[j].port;
+					}
+					
+					networkInfoString += ' ';
+				}
+				networkInfoString = networkInfoString.trim();
+				
+				obj.networkinfo = networkInfoString;
+				obj.servername = hostsArray[i].ServerName;
+				
+				if(toggle) {
+					obj.toggle = '<input name="' + type.toLowerCase() + '_' + i + '" type="checkbox"/>';
+				}
+				
+				items.push(obj);
+			}
+			
+			var data = {
+				      identifier: "id",
+				      label: "name",
+				      items: items
+				};
+			
+			
+			var store = new ItemFileWriteStore({data: data});
+			
+			var layoutArray = [];
+			
+			layoutArray.push({
+		         	 name: 'Network Info', 
+		        	 field: 'networkinfo', 
+		        	 width: 'auto'
+		         });
+			
+			layoutArray.push({
+					 name: 'ServerName', 
+	         	     field: 'servername', 
+	         	     width: 'auto'
+		         });
+			
+			if(toggle) {
+				layoutArray.push({
+					 name: type, 
+	         	     field: 'toggle', 
+	         	     width: '60px'
+		         });
+			};
+						
+			var layout = [layoutArray];
+			
+			var grid = new DataGrid({
+		        id: 'grid-' + this.gridCount,
+		        store: store,
+		        structure: layout,
+		        selectable: true,
+	            style: 'width:100%;',
+	            autoHeight:true,
+	            escapeHTMLInData:false,
+	            rowSelector: "20px"
+        	});
+					
+			grid.placeAt(container);
+			
+			this.gridCount ++;
+		},
+		
 		populateEnabled: function() {
-			dom.byId("history_enabled_hosts_container").innerHTML = '';
+			dom.byId("history_enable_loading_container").style.display = 'block';
+			
+			var that = this;
 			
 			request.get("../web/History", {
 				query: 	{
@@ -73,6 +174,17 @@ define([ "dojo/_base/declare",
 				function(response) {
 					dom.byId("history_enable_loading_container").style.display = 'none';
 					
+					var enabledHostsContainer = dom.byId('history_enabled_hosts_container');
+					
+					array.forEach(registry.findWidgets(enabledHostsContainer), function(w) {
+					    w.destroyRecursive();
+					});
+					
+					enabledHostsContainer.innerHTML = '';
+										
+					var global = response.data.global;
+					var enabled = response.data.enabled;
+					
 				},
 				function(error) {
 					ca.apachegui.Util.alert('Error',error.response.data.message);
@@ -82,7 +194,9 @@ define([ "dojo/_base/declare",
 		},
 		
 		populateDisabled: function() {
-			dom.byId("history_disabled_hosts_container").innerHTML = '';
+			dom.byId("history_disable_loading_container").style.display = 'block';			
+			
+			var that = this;
 			
 			request.get("../web/History", {
 				query: 	{
@@ -95,6 +209,42 @@ define([ "dojo/_base/declare",
 				function(response) {
 					dom.byId("history_disable_loading_container").style.display = 'none';
 					
+					var global = response.data.global;
+					var disabled = response.data.disabled;
+					
+					that.hosts.disabled = disabled;
+					
+					var disabledHostsContainer = dom.byId('history_disabled_hosts_container');
+					
+					array.forEach(registry.findWidgets(disabledHostsContainer), function(w) {
+					    w.destroyRecursive();
+					});
+					
+					disabledHostsContainer.innerHTML = '';
+					
+					var div = document.createElement('div');
+					div.innerHTML = '<h4>Global <span class="warningTooltip"></span></h4>';
+					
+					disabledHostsContainer.appendChild(div);
+					
+					new Tooltip({
+				        connectId: [div.getElementsByClassName("warningTooltip")[0]],
+				        label: "the text for the tooltip"
+				    });
+					
+					that.buildGraph(global, 'history_disabled_hosts_container', that.type.ENABLE); 
+					
+					div = document.createElement('div');
+					div.innerHTML = '<h4>Non-Global <span class="warningTooltip"></span></h4>';
+					
+					disabledHostsContainer.appendChild(div);
+					
+					new Tooltip({
+				        connectId: [div.getElementsByClassName("warningTooltip")[0]],
+				        label: "the text for the tooltip"
+				    });
+					
+					that.buildGraph(disabled, 'history_disabled_hosts_container', that.type.ENABLE, true);
 				},
 				function(error) {
 					ca.apachegui.Util.alert('Error',error.response.data.message);

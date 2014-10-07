@@ -35,7 +35,7 @@ define([ "dojo/_base/declare",
 					      {
 					    	  id : 'port',
 					    	  name: 'Port',
-					    	  value: vhost.NetworkInfo.port == -1 ? 'All' : vhost.NetworkInfo.port
+					    	  value: vhost.NetworkInfo.port == -1 ? '' : vhost.NetworkInfo.port
 					      },
 					      {
 					    	  id : 'address',

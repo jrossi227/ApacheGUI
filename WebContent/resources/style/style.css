@@ -183,6 +183,10 @@ h1 {
 	width: 300px;
 }
 
+#historyBody .button_container {
+	margin-top: 10px;
+}
+
 /*GUISettings specific css rules*/
 #guiSettingsBody #guiInfoTable td{
 	padding: 5px;
@@ -295,3 +299,4 @@ body.editor #filename_container em {
 #virtualHostsBody #name_virtual_host_container {
 	margin-bottom: 35px;
 }
+

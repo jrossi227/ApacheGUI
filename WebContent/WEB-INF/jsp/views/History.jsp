@@ -234,9 +234,12 @@
 							<div id="history_enabled_hosts_container">
 							
 							</div>
-							<button id="saveEnableButton" data-dojo-type="dijit/form/Button" type="button">
-               					Save
-           					</button>
+							
+							<div class="button_container">
+								<button id="saveEnableButton" data-dojo-type="dijit/form/Button" type="button">
+	               					Disable
+	           					</button>
+           					</div>
 						</div>
 					</td>
 				</tr>
@@ -250,9 +253,12 @@
 							<div id="history_disabled_hosts_container">
 							
 							</div>
-							<button id="saveDisableButton" data-dojo-type="dijit/form/Button" type="button">
-               					Save
-           					</button>
+							
+							<div class="button_container">
+								<button id="saveDisableButton" data-dojo-type="dijit/form/Button" type="button">
+               						Enable
+           						</button>
+           					</div>
 						</div>
 					</td>
 				</tr>
