@@ -29,9 +29,7 @@ define([ "dojo/_base/declare",
 		
 		init: function() {
 			if(this.initialized==false) {
-				
-				this.changeHistoryChoice('search');
-			
+							
 				var historyRetention=this.getHistoryRetention();
 				dom.byId('historyRetention').value=historyRetention;
 			
@@ -347,19 +345,6 @@ define([ "dojo/_base/declare",
 			);
 		},
 		
-		changeHistoryChoice: function (choice) {
-			if(choice=='search') {
-				dom.byId('searchTable').style.display='block';
-				dom.byId('graphTable').style.display='none';
-				dom.byId('historySearchChoice').checked=true;
-			}
-			if(choice=='graph') {
-				dom.byId('searchTable').style.display='none';
-				dom.byId('graphTable').style.display='block';
-				dom.byId('historyGraphChoice').checked=true;
-			}	
-		},
-		
 		graph: function () {
 			if(dom.byId('graphDate').value == '') {
 				ca.apachegui.Util.alert("Error","Please fill in all required fields");
@@ -423,14 +408,6 @@ define([ "dojo/_base/declare",
 			
 			on(registry.byId('historyBufferButton'), "click", function() {
 				that.updateHistoryBuffer();
-			});
-			
-			on(dom.byId('historySearchChoice'), "click", function() {
-				that.changeHistoryChoice('search');
-			});
-			
-			on(dom.byId('historyGraphChoice'), "click", function () {
-				that.changeHistoryChoice('graph');
 			});
 		}
 	});
