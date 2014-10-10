@@ -196,7 +196,9 @@ h1 {
 	border: none !important;
 }
 
-
+#historyBody .dijitButtonText {
+	font-weight: normal;
+}
 
 /*GUISettings specific css rules*/
 #guiSettingsBody #guiInfoTable td{

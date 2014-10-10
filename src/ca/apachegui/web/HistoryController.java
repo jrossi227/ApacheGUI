@@ -144,6 +144,7 @@ public class HistoryController implements ServletContextAware {
 			}
 		}
 		result.put("global", globalHosts);
+		result.put("globalEnable", globalEnable);
 		
 		return result.toString();
 	}
@@ -171,6 +172,7 @@ public class HistoryController implements ServletContextAware {
 			}
 		}
 		result.put("global", globalHosts);
+		result.put("globalEnable", globalEnable);
 		
 		return result.toString();
 	}
