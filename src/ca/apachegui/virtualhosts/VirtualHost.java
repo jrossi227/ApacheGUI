@@ -24,6 +24,8 @@ import apache.conf.parser.File;
 public class VirtualHost {
 
 	private File file;
+	private int lineOfStart;
+	private int lineOfEnd;
 	private List<NetworkInfo> networkInfo;
 	private String documentRoot;
 	private String serverName;
@@ -32,6 +34,8 @@ public class VirtualHost {
 	
 	public VirtualHost() {
 		file = null;
+		lineOfStart = -1;
+		lineOfEnd = -1;
 		networkInfo = new ArrayList<NetworkInfo>();
 		documentRoot = "";
 		serverName = "";
@@ -45,6 +49,22 @@ public class VirtualHost {
 
 	public void setFile(File file) {
 		this.file = file;
+	}
+	
+	public int getLineOfStart() {
+		return this.lineOfStart;
+	}
+	
+	public void setLineOfStart(int lineOfStart) {
+		this.lineOfStart = lineOfStart;
+	}
+	
+	public int getLineOfEnd() {
+		return this.lineOfEnd;
+	}
+	
+	public void setLineOfEnd(int lineOfEnd) {
+		this.lineOfEnd = lineOfEnd;
 	}
 
 	public NetworkInfo[] getNetworkInfo() {
@@ -92,6 +112,8 @@ public class VirtualHost {
 		JSONObject json = new JSONObject();
 		
 		json.put("file", file.getAbsolutePath());
+		json.put("lineOfStart", lineOfStart);
+		json.put("lineOfEnd", lineOfEnd);
 		
 		JSONArray networkInfoArray = new JSONArray();
 		
@@ -113,6 +135,8 @@ public class VirtualHost {
 		
 		StringBuffer virtualHostBuffer = new StringBuffer();
 		virtualHostBuffer.append( "\nFile: " + file == null ? "" : file.getAbsolutePath() + "\n");
+		virtualHostBuffer.append( "\nLineOfStart: " + lineOfStart + "\n");
+		virtualHostBuffer.append( "\nLineOfEnd: " + lineOfEnd + "\n");
 		
 		for(NetworkInfo info : networkInfo) {
 			virtualHostBuffer.append( "NetworkInfo: " + info.toString() + "\n");
@@ -122,14 +146,6 @@ public class VirtualHost {
 		virtualHostBuffer.append( "ServerName: " + serverName + "\n");
 		
 		return virtualHostBuffer.toString();
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		
-		//check if server name and network info match
-		
-		return false;
 	}
 	
 }

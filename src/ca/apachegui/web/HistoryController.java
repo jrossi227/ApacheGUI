@@ -180,6 +180,13 @@ public class HistoryController implements ServletContextAware {
 	public String updateNonGlobal(@RequestBody String jsonString) throws Exception {
 		
 		JSONObject request = new JSONObject(jsonString);
+		String option = request.getString("option");
+		if(option.equals("enable")) {
+			//TODO check which hosts we need to enable then enable
+		} 
+		if(option.equals("disable")) {
+			//TODO check which hosts we need to disable then disable
+		}
 		
 		JSONObject result = new JSONObject();
 		result.put("result", "success");

@@ -29,7 +29,9 @@ public class VirtualHosts {
 			virtualHost = new VirtualHost();
 			
 			virtualHost.setFile(virtualHostEnclosure.getFile());
-
+			virtualHost.setLineOfStart(virtualHostEnclosure.getLineOfStart());
+			virtualHost.setLineOfEnd(virtualHostEnclosure.getLineOfEnd());
+			
 			networkInfo = new ArrayList<NetworkInfo>();
 			String values[] = virtualHostEnclosure.getValue().split(" ");
 			for(String value : values) {

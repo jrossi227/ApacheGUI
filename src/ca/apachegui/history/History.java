@@ -59,6 +59,16 @@ public class History
 		ConfFiles.appendToGUIConfigFile(includeString);
 	}
 	
+	public static void enable(VirtualHost host, ServletContext context) throws Exception
+	{
+		//TODO get file and line number and add to it
+	}
+	
+	public static void disable(VirtualHost host, ServletContext context) throws Exception
+	{
+		//TODO get file and line number and remove it
+	}
+	
 	/**
 	 * Method used to disable history.
 	 * 
