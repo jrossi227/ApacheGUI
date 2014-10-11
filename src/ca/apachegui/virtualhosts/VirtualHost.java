@@ -124,4 +124,12 @@ public class VirtualHost {
 		return virtualHostBuffer.toString();
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		
+		//check if server name and network info match
+		
+		return false;
+	}
+	
 }

@@ -8,6 +8,7 @@ import javax.servlet.ServletContext;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -150,6 +151,41 @@ public class HistoryController implements ServletContextAware {
 		result.put("result", "success");
 				
 		return result.toString();
+	}
+	
+	/** 
+	{
+	    "option": "enable",
+	    "hosts": [{
+	        "NetworkInfo": [{
+	            "port": 80,
+	            "address": "*"
+	        }],
+	        "DocumentRoot": "/var/www/html",
+	        "file": "/etc/apache2/sites-enabled/000-default.conf",
+	        "ServerName": "test.local"
+	    }, {
+	        "NetworkInfo": [{
+	            "port": 80,
+	            "address": "*"
+	        }],
+	        "DocumentRoot": "/var/www/html",
+	        "file": "/etc/apache2/sites-enabled/000-default.conf",
+	        "ServerName": "test.local2"
+	    }]
+	}
+	**/
+	
+	@RequestMapping(value="/update",method=RequestMethod.POST,produces="application/json;charset=UTF-8") 
+	public String updateNonGlobal(@RequestBody String jsonString) throws Exception {
+		
+		JSONObject request = new JSONObject(jsonString);
+		
+		JSONObject result = new JSONObject();
+		result.put("result", "success");
+		
+		return result.toString();
+		
 	}
 	
 	@Override

@@ -11,8 +11,11 @@ define([ "dojo/_base/declare",
          "dojo/_base/array",
          "dijit/registry",
          'dojo/dom-style',
+         "dojo/query",
+         "dojo/dom-attr",
+         "dojo/_base/xhr",
          "ca/apachegui/Control"
-], function(declare, dom, registry, on, request, json, ItemFileWriteStore, DataGrid, Tooltip, Button, array, registry, domStyle, Control){
+], function(declare, dom, registry, on, request, json, ItemFileWriteStore, DataGrid, Tooltip, Button, array, registry, domStyle, query, domAttr, xhr, Control){
 	
 	declare("ca.apachegui.History", null,{
 		initialized: false,
@@ -103,7 +106,7 @@ define([ "dojo/_base/declare",
 				obj.servername = hostsArray[i].ServerName;
 				
 				if(toggle) {
-					obj.toggle = '<input data-index="' + i + '" name="' + type.toLowerCase() + '_' + i + '" type="checkbox"/>';
+					obj.toggle = '<input class="host_checkbox" data-index="' + i + '" name="' + type.toLowerCase() + '_' + i + '" type="checkbox"/>';
 				}
 				
 				items.push(obj);
@@ -188,18 +191,20 @@ define([ "dojo/_base/declare",
 					
 					that.hosts.enabled = enabled;
 					
-					var div = document.createElement('div');
-					
-					var h4 = document.createElement('h4');
-					h4.innerHTML = 'Global ';
-					
-					div.appendChild(h4);
-					
-					var span = document.createElement('span');
-					span.className = 'warningTooltip';
-					h4.appendChild(span);
-					
+					var div;
 					if(globalEnable) {
+					
+						div = document.createElement('div');
+						
+						var h4 = document.createElement('h4');
+						h4.innerHTML = 'Global ';
+						
+						div.appendChild(h4);
+						
+						var span = document.createElement('span');
+						span.className = 'warningTooltip';
+						h4.appendChild(span);
+						
 						var button = new Button({
 					        label: "Disable",
 					        onClick: function(){
@@ -208,34 +213,44 @@ define([ "dojo/_base/declare",
 					    });
 					
 						h4.appendChild(button.domNode);
+						
+						enabledHostsContainer.appendChild(div);
+						
+						new Tooltip({
+					        connectId: [div.getElementsByClassName("warningTooltip")[0]],
+					        label: "the text for the tooltip"
+					    });
+						
+						that.buildGraph(global, 'history_enabled_hosts_container', that.type.DISABLE); 
+					
 					}
 					
-					enabledHostsContainer.appendChild(div);
-					
-					new Tooltip({
-				        connectId: [div.getElementsByClassName("warningTooltip")[0]],
-				        label: "the text for the tooltip"
-				    });
-					
-					that.buildGraph(global, 'history_enabled_hosts_container', that.type.DISABLE); 
-					
-					div = document.createElement('div');
-					div.innerHTML = '<h4>Non-Global <span class="warningTooltip"></span></h4>';
-					
-					enabledHostsContainer.appendChild(div);
-					
-					new Tooltip({
-				        connectId: [div.getElementsByClassName("warningTooltip")[0]],
-				        label: "the text for the tooltip"
-				    });
-					
-					that.buildGraph(enabled, 'history_enabled_hosts_container', that.type.DISABLE, true);
-					
-					var saveEnableButton = registry.byId('saveEnableButton');
+					var saveDisableButton = registry.byId('saveDisableButton');
 					if(enabled.length == 0) {
-						domStyle.set(saveEnableButton.domNode, 'display', 'none');
+						domStyle.set(saveDisableButton.domNode, 'display', 'none');
+						
+						if(!globalEnable) {
+							var p = document.createElement('p');
+							p.style.textAlign = 'center';
+							p.innerHTML = 'There are no enabled hosts for tracking.';
+							
+							enabledHostsContainer.appendChild(p);
+						}
+						
 					} else {
-						domStyle.set(saveEnableButton.domNode, 'display', 'inline');
+						div = document.createElement('div');
+						div.innerHTML = '<h4>Non-Global <span class="warningTooltip"></span></h4>';
+						
+						enabledHostsContainer.appendChild(div);
+						
+						new Tooltip({
+					        connectId: [div.getElementsByClassName("warningTooltip")[0]],
+					        label: "the text for the tooltip"
+					    });
+						
+						that.buildGraph(enabled, 'history_enabled_hosts_container', that.type.DISABLE, true);
+						
+						domStyle.set(saveDisableButton.domNode, 'display', 'inline');
 					}
 					
 				},
@@ -275,19 +290,20 @@ define([ "dojo/_base/declare",
 					
 					that.hosts.disabled = disabled;
 					
-					var div = document.createElement('div');
-					
-					var h4 = document.createElement('h4');
-					h4.innerHTML = 'Global ';
-					
-					div.appendChild(h4);
-					
-					var span = document.createElement('span');
-					span.className = 'warningTooltip';
-					h4.appendChild(span);
-					
+					var div;
 					if(!globalEnable) {
+					
+						div = document.createElement('div');
 						
+						var h4 = document.createElement('h4');
+						h4.innerHTML = 'Global ';
+						
+						div.appendChild(h4);
+						
+						var span = document.createElement('span');
+						span.className = 'warningTooltip';
+						h4.appendChild(span);
+
 						var button = new Button({
 					        label: "Enable",
 					        onClick: function(){
@@ -296,34 +312,43 @@ define([ "dojo/_base/declare",
 					    });
 						
 						h4.appendChild(button.domNode);
+					
+						disabledHostsContainer.appendChild(div);
+						
+						new Tooltip({
+					        connectId: [div.getElementsByClassName("warningTooltip")[0]],
+					        label: "the text for the tooltip"
+					    });
+						
+						that.buildGraph(global, 'history_disabled_hosts_container', that.type.ENABLE); 
+						
 					}
 					
-					disabledHostsContainer.appendChild(div);
-					
-					new Tooltip({
-				        connectId: [div.getElementsByClassName("warningTooltip")[0]],
-				        label: "the text for the tooltip"
-				    });
-					
-					that.buildGraph(global, 'history_disabled_hosts_container', that.type.ENABLE); 
-					
-					div = document.createElement('div');
-					div.innerHTML = '<h4>Non-Global <span class="warningTooltip"></span></h4>';
-					
-					disabledHostsContainer.appendChild(div);
-					
-					new Tooltip({
-				        connectId: [div.getElementsByClassName("warningTooltip")[0]],
-				        label: "the text for the tooltip"
-				    });
-					
-					that.buildGraph(disabled, 'history_disabled_hosts_container', that.type.ENABLE, true);
-					
-					var saveDisableButton = registry.byId('saveDisableButton');
+					var saveEnableButton = registry.byId('saveEnableButton');
 					if(disabled.length == 0) {
-						domStyle.set(saveDisableButton.domNode, 'display', 'none');
+						domStyle.set(saveEnableButton.domNode, 'display', 'none');
+						
+						if(globalEnable) {
+							var p = document.createElement('p');
+							p.style.textAlign = 'center';
+							p.innerHTML = 'All hosts are currently tracking history.';
+							
+							disabledHostsContainer.appendChild(p);
+						}
 					} else {
-						domStyle.set(saveDisableButton.domNode, 'display', 'inline');
+						div = document.createElement('div');
+						div.innerHTML = '<h4>Non-Global <span class="warningTooltip"></span></h4>';
+						
+						disabledHostsContainer.appendChild(div);
+						
+						new Tooltip({
+					        connectId: [div.getElementsByClassName("warningTooltip")[0]],
+					        label: "the text for the tooltip"
+					    });
+						
+						that.buildGraph(disabled, 'history_disabled_hosts_container', that.type.ENABLE, true);
+						
+						domStyle.set(saveEnableButton.domNode, 'display', 'inline');
 					}
 				},
 				function(error) {
@@ -383,6 +408,40 @@ define([ "dojo/_base/declare",
 		
 		updateNonGlobal: function(type) {
 			
+			var hosts = [];
+			
+			var that = this;
+			if(type == this.type.DISABLE) {
+				query('#history_enabled_hosts_container .host_checkbox').forEach(function(node, index, arr){
+					if(node.checked) {
+						hosts.push(that.hosts.enabled[domAttr.get(node, "data-index")]);
+					}
+				});
+			}
+			
+			if(type == this.type.ENABLE) {
+				query('#history_disabled_hosts_container .host_checkbox').forEach(function(node, index, arr){
+					if(node.checked) {
+						hosts.push(that.hosts.disabled[domAttr.get(node, "data-index")]);
+					}
+				});
+			}
+			
+			xhr.post({
+				   url : "../web/History/update", 
+				   postData : JSON.stringify({'option' : type.toLowerCase(), 'hosts' : hosts}),
+				   headers : {
+				        "Content-Type" : "application/json"
+				   },
+				   load: function(response,ioargs) {
+				        alert('success');
+				        console.log(response);
+				   },
+				   error : function(response,ioargs) {
+				        alert('error');
+				        console.log(response);
+				   }
+				});
 		},
 		
 		search: function () {
@@ -545,12 +604,12 @@ define([ "dojo/_base/declare",
 				that.updateHistoryBuffer();
 			});
 			
-			on(registry.byId('saveDisableButton'), "click", function() {
-			
+			on(registry.byId('saveEnableButton'), "click", function() {
+				that.updateNonGlobal(that.type.ENABLE);
 			});
 			
-			on(registry.byId('saveEnableButton'), "click", function() {
-			
+			on(registry.byId('saveDisableButton'), "click", function() {
+				that.updateNonGlobal(that.type.DISABLE);
 			});
 		}
 	});

@@ -243,7 +243,7 @@
 									</div>
 									
 									<div class="button_container">
-										<button id="saveEnableButton" data-dojo-type="dijit/form/Button" type="button">
+										<button id="saveDisableButton" data-dojo-type="dijit/form/Button" type="button">
 			               					Disable
 			           					</button>
 		           					</div>
@@ -262,7 +262,7 @@
 									</div>
 									
 									<div class="button_container">
-										<button id="saveDisableButton" data-dojo-type="dijit/form/Button" type="button">
+										<button id="saveEnableButton" data-dojo-type="dijit/form/Button" type="button">
 		               						Enable
 		           						</button>
 		           					</div>
