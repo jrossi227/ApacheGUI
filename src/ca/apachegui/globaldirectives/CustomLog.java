@@ -2,6 +2,8 @@ package ca.apachegui.globaldirectives;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import apache.conf.parser.DirectiveParser;
 import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
@@ -19,6 +21,8 @@ import ca.apachegui.modules.StaticModuleHandler;
 
 public class CustomLog extends FactoryDirective {
 
+	Logger log = Logger.getLogger(CustomLog.class);
+	
 	private String fileOrPipe;
 	private String formatOrNickname;
 	
@@ -31,10 +35,9 @@ public class CustomLog extends FactoryDirective {
 	
 	public CustomLog(String directiveValue) {
 		super(Constants.customLogDirective);
-	
-		String parts[] = directiveValue.split(" ");
-		fileOrPipe = parts[0];
-		formatOrNickname = parts[1];
+			
+		fileOrPipe = directiveValue.substring(0, directiveValue.lastIndexOf(" "));
+		formatOrNickname = directiveValue.substring(directiveValue.lastIndexOf(" ") + 1);
 	}
 
 	/**

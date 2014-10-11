@@ -103,7 +103,7 @@ define([ "dojo/_base/declare",
 				obj.servername = hostsArray[i].ServerName;
 				
 				if(toggle) {
-					obj.toggle = '<input name="' + type.toLowerCase() + '_' + i + '" type="checkbox"/>';
+					obj.toggle = '<input data-index="' + i + '" name="' + type.toLowerCase() + '_' + i + '" type="checkbox"/>';
 				}
 				
 				items.push(obj);
@@ -161,6 +161,14 @@ define([ "dojo/_base/declare",
 		populateEnabled: function() {
 			dom.byId("history_enable_loading_container").style.display = 'block';
 			
+			var enabledHostsContainer = dom.byId('history_enabled_hosts_container');
+			
+			array.forEach(registry.findWidgets(enabledHostsContainer), function(w) {
+			    w.destroyRecursive();
+			});
+			
+			enabledHostsContainer.innerHTML = '';
+			
 			var that = this;
 			
 			request.get("../web/History", {
@@ -180,14 +188,6 @@ define([ "dojo/_base/declare",
 					
 					that.hosts.enabled = enabled;
 					
-					var enabledHostsContainer = dom.byId('history_enabled_hosts_container');
-					
-					array.forEach(registry.findWidgets(enabledHostsContainer), function(w) {
-					    w.destroyRecursive();
-					});
-					
-					enabledHostsContainer.innerHTML = '';
-					
 					var div = document.createElement('div');
 					
 					var h4 = document.createElement('h4');
@@ -203,8 +203,7 @@ define([ "dojo/_base/declare",
 						var button = new Button({
 					        label: "Disable",
 					        onClick: function(){
-					            
-					        	//Enable Global Here
+					        	that.updateGlobal(that.type.DISABLE);
 					        }
 					    });
 					
@@ -249,6 +248,13 @@ define([ "dojo/_base/declare",
 		
 		populateDisabled: function() {
 			dom.byId("history_disable_loading_container").style.display = 'block';			
+			var disabledHostsContainer = dom.byId('history_disabled_hosts_container');
+			
+			array.forEach(registry.findWidgets(disabledHostsContainer), function(w) {
+			    w.destroyRecursive();
+			});
+			
+			disabledHostsContainer.innerHTML = '';
 			
 			var that = this;
 			
@@ -269,14 +275,6 @@ define([ "dojo/_base/declare",
 					
 					that.hosts.disabled = disabled;
 					
-					var disabledHostsContainer = dom.byId('history_disabled_hosts_container');
-					
-					array.forEach(registry.findWidgets(disabledHostsContainer), function(w) {
-					    w.destroyRecursive();
-					});
-					
-					disabledHostsContainer.innerHTML = '';
-					
 					var div = document.createElement('div');
 					
 					var h4 = document.createElement('h4');
@@ -289,11 +287,11 @@ define([ "dojo/_base/declare",
 					h4.appendChild(span);
 					
 					if(!globalEnable) {
+						
 						var button = new Button({
 					        label: "Enable",
 					        onClick: function(){
-					            
-					        	//Enable Global Here
+								that.updateGlobal(that.type.ENABLE);
 					        }
 					    });
 						
@@ -332,6 +330,59 @@ define([ "dojo/_base/declare",
 					ca.apachegui.Util.alert('Error',error.response.data.message);
 				}
 			);
+		},
+		
+		refreshHosts: function() {
+			this.populateDisabled();
+			this.populateEnabled();
+		},
+		
+		updateGlobal: function(type) {
+			
+			var that = this;
+			
+			var sendRequest = function() {
+				var thisdialog = ca.apachegui.Util.noCloseDialog('Updating', 'Updating Please Wait...');
+				thisdialog.show();
+				
+				request.post("../web/History", {
+					data: 	{
+						option: 'updateGlobal',
+						type: type.toLowerCase()
+					},
+					handleAs: 'json',
+					sync: false
+				}).response.then(
+					function(response) {
+						that.refreshHosts();
+						thisdialog.remove();
+					}, function(error) {
+						thisdialog.remove();
+						ca.apachegui.Util.alert('Error',error.response.data.message);
+					}
+				);
+			};
+			
+			ca.apachegui.Control.getInstance().isServerRunning(
+					function() {
+						ca.apachegui.Util.confirmDialog(
+							"Please Confirm", 
+							"Are you sure you want to " + type.toLowerCase() + " global history?<br/>The server will be restarted to apply these changes!",
+							function confirm(conf) {
+								if(conf) {
+									sendRequest();
+								}
+							}
+						);
+					}, 
+					function() {
+						sendRequest();
+					}
+				);
+		},
+		
+		updateNonGlobal: function(type) {
+			
 		},
 		
 		search: function () {
@@ -492,6 +543,14 @@ define([ "dojo/_base/declare",
 			
 			on(registry.byId('historyBufferButton'), "click", function() {
 				that.updateHistoryBuffer();
+			});
+			
+			on(registry.byId('saveDisableButton'), "click", function() {
+			
+			});
+			
+			on(registry.byId('saveEnableButton'), "click", function() {
+			
 			});
 		}
 	});

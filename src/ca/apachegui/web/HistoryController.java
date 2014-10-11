@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.ServletContextAware;
 
@@ -50,76 +51,6 @@ public class HistoryController implements ServletContextAware {
 		return result.toString();
 	}
 	
-	@RequestMapping(method=RequestMethod.GET,params="option=checkIfEnabled",produces="application/json;charset=UTF-8")
-	public String checkIfEnabled() throws Exception {
-		
-		boolean enabled=ca.apachegui.history.History.checkIfEnabled();
-		
-		JSONObject result = new JSONObject();
-		result.put("enabled", enabled);
-		
-		return result.toString();
-	}
-	
-	@RequestMapping(method=RequestMethod.POST,params="option=enable",produces="application/json;charset=UTF-8")
-	public String enable() throws Exception {
-	
-		ca.apachegui.history.History.enable(context);
-		if(ca.apachegui.server.Control.isServerRunning())
-		{	
-			String error="";
-			try
-			{
-				error=ca.apachegui.server.Control.restartServer();
-				if(!ca.apachegui.server.Control.isServerRunning())
-				{
-					throw new Exception("The server could not restart");
-				}
-			}
-			catch(Exception e)
-			{
-				log.error(e.getMessage(), e);
-				ca.apachegui.history.History.disable();
-				throw new Exception("There was an error while trying to restart the server, the changes were reverted: " + error + " " + e.getMessage());
-			}
-		}
-		
-		JSONObject result = new JSONObject();
-		result.put("result", "success");
-		
-		return result.toString();
-	}
-	
-	@RequestMapping(method=RequestMethod.POST,params="option=disable",produces="application/json;charset=UTF-8")
-	public String disable() throws Exception {
-		
-		ca.apachegui.history.History.disable();
-		if(ca.apachegui.server.Control.isServerRunning())
-		{	
-			String error="";
-			try
-			{
-				error=ca.apachegui.server.Control.restartServer();
-				if(!ca.apachegui.server.Control.isServerRunning())
-				{
-					throw new Exception("The server could not restart");
-				}
-			}
-			catch(Exception e)
-			{
-				log.error(e.getMessage(), e);
-				ca.apachegui.history.History.enable(context);
-				throw new Exception("There was an error while trying to restart the server, the changes were reverted: " + error + " " + e.getMessage());
-			}
-		}
-		
-		JSONObject result = new JSONObject();
-		result.put("result", "success");
-		
-		return result.toString();
-		
-	}
-
 	@RequestMapping(method=RequestMethod.GET,params="option=getEnabled",produces="application/json;charset=UTF-8")
 	public String getEnabled() throws Exception {
 		
@@ -174,6 +105,50 @@ public class HistoryController implements ServletContextAware {
 		result.put("global", globalHosts);
 		result.put("globalEnable", globalEnable);
 		
+		return result.toString();
+	}
+	
+	@RequestMapping(method=RequestMethod.POST,params="option=updateGlobal",produces="application/json;charset=UTF-8")
+	public String updateGlobal(@RequestParam(value="type") String type) throws Exception {
+		
+		if(type.equals("enable")) {
+			ca.apachegui.history.History.globalEnable(context);
+		}
+		
+		if(type.equals("disable")) {
+			ca.apachegui.history.History.globalDisable();
+		}
+		
+		if(ca.apachegui.server.Control.isServerRunning())
+		{	
+			String error="";
+			try
+			{
+				error=ca.apachegui.server.Control.restartServer();
+				if(!ca.apachegui.server.Control.isServerRunning())
+				{
+					throw new Exception("The server could not restart");
+				}
+			}
+			catch(Exception e)
+			{
+				log.error(e.getMessage(), e);
+				ca.apachegui.history.History.globalEnable(context);
+				if(type.equals("enable")) {
+					ca.apachegui.history.History.globalDisable();
+				}
+				
+				if(type.equals("disable")) {
+					ca.apachegui.history.History.globalEnable(context);
+				}
+				
+				throw new Exception("There was an error while trying to restart the server, the changes were reverted: " + error + " " + e.getMessage());
+			}
+		}
+		
+		JSONObject result = new JSONObject();
+		result.put("result", "success");
+				
 		return result.toString();
 	}
 	

@@ -222,6 +222,7 @@ public class ConfFiles
 					if(!Parser.isCommentMatch(strLine)&&lineMatcher.find())
 					{
 						log.trace(regex + " has been found in " + includedFiles[i]);
+						br.close();
 						return true;
 					}
 				}
