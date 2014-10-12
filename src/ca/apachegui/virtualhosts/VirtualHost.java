@@ -135,8 +135,8 @@ public class VirtualHost {
 		
 		StringBuffer virtualHostBuffer = new StringBuffer();
 		virtualHostBuffer.append( "\nFile: " + file == null ? "" : file.getAbsolutePath() + "\n");
-		virtualHostBuffer.append( "\nLineOfStart: " + lineOfStart + "\n");
-		virtualHostBuffer.append( "\nLineOfEnd: " + lineOfEnd + "\n");
+		virtualHostBuffer.append( "LineOfStart: " + lineOfStart + "\n");
+		virtualHostBuffer.append( "LineOfEnd: " + lineOfEnd + "\n");
 		
 		for(NetworkInfo info : networkInfo) {
 			virtualHostBuffer.append( "NetworkInfo: " + info.toString() + "\n");

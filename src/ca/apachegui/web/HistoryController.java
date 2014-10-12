@@ -2,8 +2,7 @@ package ca.apachegui.web;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-
-import javax.servlet.ServletContext;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -13,19 +12,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.ServletContextAware;
 
 import ca.apachegui.db.LogDataDao;
+import ca.apachegui.virtualhosts.NetworkInfo;
 import ca.apachegui.virtualhosts.VirtualHost;
 
 
 @RestController
 @RequestMapping("/web/History")
-public class HistoryController implements ServletContextAware {
+public class HistoryController {
 	private static Logger log = Logger.getLogger(HistoryController.class);
-    
-	private ServletContext context;
-	
+    	
     @RequestMapping(value="/Current",method=RequestMethod.GET,produces="application/json;charset=UTF-8")
 	public String getHistory() throws IOException, InterruptedException {
 		int numberEntries=LogDataDao.getInstance().getNumberOfEntries();
@@ -113,7 +110,7 @@ public class HistoryController implements ServletContextAware {
 	public String updateGlobal(@RequestParam(value="type") String type) throws Exception {
 		
 		if(type.equals("enable")) {
-			ca.apachegui.history.History.globalEnable(context);
+			ca.apachegui.history.History.globalEnable();
 		}
 		
 		if(type.equals("disable")) {
@@ -134,13 +131,13 @@ public class HistoryController implements ServletContextAware {
 			catch(Exception e)
 			{
 				log.error(e.getMessage(), e);
-				ca.apachegui.history.History.globalEnable(context);
+				ca.apachegui.history.History.globalEnable();
 				if(type.equals("enable")) {
 					ca.apachegui.history.History.globalDisable();
 				}
 				
 				if(type.equals("disable")) {
-					ca.apachegui.history.History.globalEnable(context);
+					ca.apachegui.history.History.globalEnable();
 				}
 				
 				throw new Exception("There was an error while trying to restart the server, the changes were reverted: " + error + " " + e.getMessage());
@@ -181,13 +178,85 @@ public class HistoryController implements ServletContextAware {
 		
 		JSONObject request = new JSONObject(jsonString);
 		String option = request.getString("option");
-		if(option.equals("enable")) {
-			//TODO check which hosts we need to enable then enable
-		} 
-		if(option.equals("disable")) {
-			//TODO check which hosts we need to disable then disable
-		}
 		
+		JSONArray hosts = request.getJSONArray("hosts");
+		VirtualHost serverVirtualHosts[];
+		if(option.equals("enable")) {
+			serverVirtualHosts = ca.apachegui.history.History.getDisabledHosts();
+		} else {
+			serverVirtualHosts = ca.apachegui.history.History.getEnabledHosts();
+		}	
+			
+		ArrayList<VirtualHost> affectedHosts = new ArrayList<VirtualHost>();
+		for(int i=0; i<serverVirtualHosts.length; i++) {
+			for(int j=0; j<hosts.length(); j++) {
+				
+				if(serverVirtualHosts[i].getServerName().equals(hosts.getJSONObject(j).getString("ServerName"))) {
+					
+					NetworkInfo[] serverNetworkInfo = serverVirtualHosts[i].getNetworkInfo(); 
+					JSONArray clientNetworkInfo = hosts.getJSONObject(j).getJSONArray("NetworkInfo");
+					
+					boolean foundNetworkInfo = true;
+					
+					OUTER:
+					for(int k=0; k<serverNetworkInfo.length && foundNetworkInfo; k++) {
+						foundNetworkInfo = false;
+						
+						for(int l=0; l<clientNetworkInfo.length(); l++) {
+							
+							JSONObject currClientNetworkInfo = clientNetworkInfo.getJSONObject(l);
+							NetworkInfo cmpInfo = new NetworkInfo(currClientNetworkInfo.getInt("port"),currClientNetworkInfo.getString("address"));
+							
+							if(serverNetworkInfo[k].equals(cmpInfo)) {
+								foundNetworkInfo = true;
+								continue OUTER;
+							}
+						}
+					}
+					
+					if(foundNetworkInfo) {
+						affectedHosts.add(serverVirtualHosts[i]);
+						
+						if(option.equals("enable")) {
+							ca.apachegui.history.History.enable(serverVirtualHosts[i]);
+						} else {
+							ca.apachegui.history.History.disable(serverVirtualHosts[i]);
+						}
+					}
+					
+				}
+			}
+		}		
+		
+		if(ca.apachegui.server.Control.isServerRunning())
+		{	
+			String error="";
+			try
+			{
+				error=ca.apachegui.server.Control.restartServer();
+				if(!ca.apachegui.server.Control.isServerRunning())
+				{
+					throw new Exception("The server could not restart");
+				}
+			}
+			catch(Exception e)
+			{
+				log.error(e.getMessage(), e);
+				if(option.equals("enable")) {
+					for(int i=0; i<affectedHosts.size(); i++) {
+						ca.apachegui.history.History.disable( affectedHosts.get(i));
+					}
+					
+				} else {
+					for(int i=0; i<affectedHosts.size(); i++) {
+						ca.apachegui.history.History.enable( affectedHosts.get(i));
+					}
+				}
+				
+				throw new Exception("There was an error while trying to restart the server, the changes were reverted: " + error + " " + e.getMessage());
+			}
+		}
+
 		JSONObject result = new JSONObject();
 		result.put("result", "success");
 		
@@ -195,8 +264,4 @@ public class HistoryController implements ServletContextAware {
 		
 	}
 	
-	@Override
-	public void setServletContext(ServletContext servletContext) {
-		this.context = servletContext;
-	}
 }

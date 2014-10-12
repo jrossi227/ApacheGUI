@@ -6,6 +6,7 @@ import apache.conf.parser.File;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -40,7 +41,7 @@ public class SearchResultsController {
 			@RequestParam(value="status") String status,
 			@RequestParam(value="contentSize") String contentSize,
 			@RequestParam(value="maxResults", required=false) String maxResults,
-			Model model) throws ParseException, IOException {
+			Model model) throws ParseException, IOException, SQLException {
 		
     	log.trace("SearchResults.doGet Called");
 		log.trace("option " + option);

@@ -12,6 +12,11 @@ public class NetworkInfo {
 		address = "";
 	}
 	
+	public NetworkInfo(int port, String address) {
+		this.port = port;
+		this.address = address;
+	}
+	
 	public int getPort() {
 		return port;
 	}

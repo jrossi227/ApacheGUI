@@ -2,8 +2,6 @@ package ca.apachegui.history;
 
 import java.util.ArrayList;
 
-import javax.servlet.ServletContext;
-
 import apache.conf.global.Utils;
 import apache.conf.parser.Directive;
 import apache.conf.parser.File;
@@ -37,36 +35,41 @@ public class History
 		return false;
 	}
 	
-	/**
-	 * Method used to enable history.
-	 * 
-	 * @throws Exception
-	 */
-	public static void globalEnable(ServletContext context) throws Exception
-	{
-		if(getGlobalEnable()) {
-			return;
-		}	
+	private static String getIncludeString() {
 		
 		File cat = new File(Utilities.getTomcatInstallDirectory());
 		File java = new File(Utilities.getJavaHome(),"bin/java" + (Utils.isWindows() ? ".exe" : ""));
 		
 		String includeString = "#This section is written by the apache gui do not manually edit " + Constants.historyLogHolder + Constants.newLine +
-							   "LogFormat \"%h\\\",\\\"%{User-agent}i\\\",\\\"%r\\\",\\\"%>s\\\",\\\"%B\" " + Constants.historyLogHolder + Constants.newLine;
-		
+				   "LogFormat \"%h\\\",\\\"%{User-agent}i\\\",\\\"%r\\\",\\\"%>s\\\",\\\"%B\" " + Constants.historyLogHolder + Constants.newLine;
+
 		includeString += "CustomLog \"|\\\"" + java.getAbsolutePath() + "\\\" -jar \\\"" + (new File(cat, "bin/LogParser.jar")).getAbsolutePath() + "\\\" \\\"" + (new File(cat, "conf/server.xml")).getAbsolutePath() + "\\\"\" " + Constants.historyLogHolder + Constants.newLine;
+
+		return includeString;
+	}
+	
+	/**
+	 * Method used to enable history.
+	 * 
+	 * @throws Exception
+	 */
+	public static void globalEnable() throws Exception
+	{
+		if(getGlobalEnable()) {
+			return;
+		}	
 				
-		ConfFiles.appendToGUIConfigFile(includeString);
+		ConfFiles.appendToGUIConfigFile(getIncludeString());
 	}
 	
-	public static void enable(VirtualHost host, ServletContext context) throws Exception
+	public static void enable(VirtualHost host) throws Exception
 	{
-		//TODO get file and line number and add to it
+		ConfFiles.writeToConfigFile(host.getFile(), getIncludeString(), host.getLineOfEnd());
 	}
 	
-	public static void disable(VirtualHost host, ServletContext context) throws Exception
+	public static void disable(VirtualHost host) throws Exception
 	{
-		//TODO get file and line number and remove it
+		ConfFiles.deleteFromConfigFile(".*" + Constants.historyLogHolder + ".*", host.getFile(), host.getLineOfStart(), host.getLineOfEnd(), true);
 	}
 	
 	/**
@@ -110,7 +113,7 @@ public class History
 						if(value.equals(Constants.historyLogHolder)) {
 							enabledVirtualHosts.add(virtualHost);
 							
-							break OUTER;
+							continue OUTER;
 						}
 					}
 				}
@@ -139,6 +142,7 @@ public class History
 		
 		OUTER:
 		for(VirtualHost virtualHost : virtualHosts) {
+			
 			containsCustomLog = false;
 			directives = virtualHost.getDirectives();
 			
@@ -149,7 +153,7 @@ public class History
 					values = directive.getValues();
 					for(String value: values) {
 						if(value.equals(Constants.historyLogHolder)) {
-							break OUTER;
+							continue OUTER;
 						}
 					}
 				}

@@ -1,10 +1,12 @@
 package ca.apachegui.db;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
-
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -75,8 +77,9 @@ public class LogDataDao
 	 * @param contentSize - An integer with the desired contentSize. The supplied contentSize must exactly match the status in the database. Can be left blank if its not required.
 	 * @param maxResults - The maximum amounts of results to return.
 	 * @return an array of LogData results.
+	 * @throws SQLException 
 	 */
-	public LogData[] queryLogData(Timestamp startDate, Timestamp endDate, String host, String userAgent, String requestString, String status, String contentSize, String maxResults)
+	public LogData[] queryLogData(Timestamp startDate, Timestamp endDate, String host, String userAgent, String requestString, String status, String contentSize, String maxResults) throws SQLException
 	{
 		log.trace("Entering queryLogData");
 		log.trace("startDate " + startDate.toString());
@@ -89,8 +92,7 @@ public class LogDataDao
 		log.trace("maxResults " + maxResults);
 		StringBuffer query=new StringBuffer();
 		
-		query.append("SELECT * FROM ( ");
-		query.append("SELECT  ROW_NUMBER() OVER() AS rownum, " + Constants.logDataTable + ".* FROM " + Constants.logDataTable + " WHERE INSERTDATE>TIMESTAMP('" + startDate.toString() + "') AND INSERTDATE<TIMESTAMP('" + endDate.toString() + "')");
+		query.append("SELECT * FROM " + Constants.logDataTable + " WHERE INSERTDATE>TIMESTAMP('" + startDate.toString() + "') AND INSERTDATE<TIMESTAMP('" + endDate.toString() + "')");
 		if(!host.equals(""))
 		{
 			query.append(" AND UPPER(HOST) LIKE '%" + host.toUpperCase() + "%'");
@@ -117,28 +119,45 @@ public class LogDataDao
 		}
 	
 		query.append(" ORDER BY INSERTDATE DESC");
-		query.append(") AS tmp WHERE rownum <= " + maxResults);
 		log.trace("Query: " + query.toString());
 	
-		List<LogData> logData = this.jdbcTemplate.query(
-				query.toString(), 
-				new RowMapper<LogData>() {
-				public LogData mapRow(ResultSet res, int rowNum) throws SQLException {
-					Timestamp insertDateResult=res.getTimestamp("INSERTDATE");
-					log.trace("INSERTDATE " + insertDateResult.toString());
-					String hostResult=res.getString("HOST");
-					log.trace("HOST " + hostResult);
-					String userAgentResult=res.getString("USERAGENT");
-					log.trace("USERAGENT " + userAgentResult);
-					String requestStringResult=res.getString("REQUESTSTRING");
-					log.trace("REQUESTSTRING " + requestStringResult);
-					String statusResult=res.getString("STATUS");
-					log.trace("STATUS " + statusResult);
-					String contentSizeResult=res.getString("CONTENTSIZE");
-					log.trace("CONTENTSIZE " + contentSizeResult);
-					return new LogData(insertDateResult, hostResult, userAgentResult, requestStringResult, statusResult, contentSizeResult);
-	            }
-			});
+		Connection con =  null;
+		Statement stmt = null;
+		ResultSet res = null;
+		
+		ArrayList<LogData> logData = new ArrayList<LogData>();
+		try {
+			con = this.jdbcTemplate.getDataSource().getConnection();
+			stmt = con.createStatement();
+			stmt.setMaxRows(Integer.parseInt(maxResults));
+			res = stmt.executeQuery(query.toString()); 
+			
+			while(res.next()) {
+				Timestamp insertDateResult=res.getTimestamp("INSERTDATE");
+				log.trace("INSERTDATE " + insertDateResult.toString());
+				String hostResult=res.getString("HOST");
+				log.trace("HOST " + hostResult);
+				String userAgentResult=res.getString("USERAGENT");
+				log.trace("USERAGENT " + userAgentResult);
+				String requestStringResult=res.getString("REQUESTSTRING");
+				log.trace("REQUESTSTRING " + requestStringResult);
+				String statusResult=res.getString("STATUS");
+				log.trace("STATUS " + statusResult);
+				String contentSizeResult=res.getString("CONTENTSIZE");
+				log.trace("CONTENTSIZE " + contentSizeResult);
+				logData.add(new LogData(insertDateResult, hostResult, userAgentResult, requestStringResult, statusResult, contentSizeResult));
+	        }
+		} finally {
+			if(res != null) {
+				res.close();
+			}
+			if(stmt != null) {
+				stmt.close();
+			}
+			if(con != null) {
+				con.close();
+			}
+		}
 		
 		return logData.toArray(new LogData[logData.size()]);
 	}

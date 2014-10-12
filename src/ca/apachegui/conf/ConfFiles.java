@@ -167,12 +167,10 @@ public class ConfFiles
 				{
 					cmpLine=Utils.sanitizeLineSpaces(strLine);
 					Matcher lineMatcher = linePattern.matcher(cmpLine); 
-					if(lineMatcher.find())
+					if(lineMatcher.find() && (includeComments || (!includeComments && !Parser.isCommentMatch(cmpLine))))
 					{
-						if(includeComments || (!includeComments && !Parser.isCommentMatch(cmpLine))) {
-							log.trace(regex + " has been found in " + includedFiles[i] + " it will be deleted from the file");
-							found=true;
-						}
+						log.trace(regex + " has been found in " + includedFiles[i] + " it will be deleted from the file");
+						found=true;
 					}
 					else
 					{
@@ -185,10 +183,72 @@ public class ConfFiles
 				if(found)
 				{
 					log.trace("Calling writeStringBufferToFile to rewrite file");
-					Utils.writeStringBufferToFile(new File(includedFiles[i]), file, Charset.defaultCharset());
+					Utils.writeStringBufferToFile(new File(includedFiles[i]), file, Charset.forName("UTF-8"));
 				}
 			}	
 		}
+	}
+	
+	public static void writeToConfigFile(File file, String lines, int startLine) throws IOException {
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
+		
+		StringBuffer fileBuffer = new StringBuffer();
+		
+		String strLine;
+		int lineNum = 1;
+		while ((strLine = br.readLine()) != null)   
+		{
+			if(lineNum == startLine) {
+				fileBuffer.append(lines);
+			}
+			
+			fileBuffer.append(strLine + Constants.newLine);
+			
+			lineNum ++;
+		}
+
+		br.close();
+	
+		Utils.writeStringBufferToFile(new File(file), fileBuffer, Charset.forName("UTF-8"));
+	}
+	
+	public static void deleteFromConfigFile(String regex, File file, int startLineNum, int endLineNum, boolean includeComments) throws Exception
+	{
+		log.trace("ConfFiles.deleteFromConfigFiles called");
+		log.trace("Deleting " + regex + " from configuration files");
+		Pattern linePattern=Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+						
+		boolean found=false;
+		StringBuffer fileBuffer=new StringBuffer();
+	
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
+	
+		String strLine;
+		String cmpLine;
+		int lineNum = 1;
+		while ((strLine = br.readLine()) != null)   
+		{
+			cmpLine=Utils.sanitizeLineSpaces(strLine);
+			Matcher lineMatcher = linePattern.matcher(cmpLine); 
+			if(lineMatcher.find() && lineNum >= startLineNum && lineNum <= endLineNum &&
+			  (includeComments || (!includeComments && !Parser.isCommentMatch(cmpLine)))) {
+				found=true;
+			} else {
+				fileBuffer.append(strLine + Constants.newLine);
+			}
+			
+			lineNum ++;
+		}
+
+		br.close();
+	
+		if(found)
+		{
+			log.trace("Calling writeStringBufferToFile to rewrite file");
+			Utils.writeStringBufferToFile(file, fileBuffer, Charset.forName("UTF-8"));
+		}
+		
 	}
 	
 	/**

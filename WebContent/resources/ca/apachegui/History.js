@@ -408,9 +408,10 @@ define([ "dojo/_base/declare",
 		
 		updateNonGlobal: function(type) {
 			
+			var that = this;
+			
 			var hosts = [];
 			
-			var that = this;
 			if(type == this.type.DISABLE) {
 				query('#history_enabled_hosts_container .host_checkbox').forEach(function(node, index, arr){
 					if(node.checked) {
@@ -427,21 +428,44 @@ define([ "dojo/_base/declare",
 				});
 			}
 			
-			xhr.post({
-				   url : "../web/History/update", 
-				   postData : JSON.stringify({'option' : type.toLowerCase(), 'hosts' : hosts}),
-				   headers : {
-				        "Content-Type" : "application/json"
-				   },
-				   load: function(response,ioargs) {
-				        alert('success');
-				        console.log(response);
-				   },
-				   error : function(response,ioargs) {
-				        alert('error');
-				        console.log(response);
-				   }
-				});
+			if(hosts.length == 0) {
+				ca.apachegui.Util.alert("Error","Please select a host(s)");
+				return;
+			}
+			
+			var sendRequest = function() {
+			
+				xhr.post({
+					   url : "../web/History/update", 
+					   postData : JSON.stringify({'option' : type.toLowerCase(), 'hosts' : hosts}),
+					   headers : {
+					        "Content-Type" : "application/json"
+					   },
+					   load: function(response,ioargs) {
+						   that.refreshHosts();
+					   },
+					   error : function(response,ioargs) {
+						   ca.apachegui.Util.alert('Error',JSON.parse(response.response.data).message);
+					   }
+					});
+			};
+			
+			ca.apachegui.Control.getInstance().isServerRunning(
+					function() {
+						ca.apachegui.Util.confirmDialog(
+							"Please Confirm", 
+							"Are you sure you want to " + type.toLowerCase() + " history for these hosts?<br/>The server will be restarted to apply these changes!",
+							function confirm(conf) {
+								if(conf) {
+									sendRequest();
+								}
+							}
+						);
+					}, 
+					function() {
+						sendRequest();
+					}
+				);
 		},
 		
 		search: function () {
