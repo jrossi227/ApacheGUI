@@ -218,7 +218,7 @@
 		 								<div data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'bufferWarningTooltip'">
 		 									<div class="warningDialog">
 		  									This field controls how many transactions are buffered before being written to the Apache
-											GUI internal database. This field has significant performance
+											GUI internal database. This field has performance
 											impacts and the buffer should be kept as large as possible on
 											high usage servers.
 										</div>

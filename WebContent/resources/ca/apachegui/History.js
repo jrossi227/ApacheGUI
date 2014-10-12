@@ -218,7 +218,10 @@ define([ "dojo/_base/declare",
 						
 						new Tooltip({
 					        connectId: [div.getElementsByClassName("warningTooltip")[0]],
-					        label: "the text for the tooltip"
+					        label: "By disabling history Globally you will be doing the following:<br/><br/>" +
+					        		"1. Disable history for any requests that do not belong to a VirtualHost.<br/>" +
+					        		"2. Disable history for any VirtualHosts that do not implement their own CustomLog.<br/><br/>" +
+					        		"Any hosts shown below do no implement their own CustomLog."
 					    });
 						
 						that.buildGraph(global, 'history_enabled_hosts_container', that.type.DISABLE); 
@@ -245,7 +248,7 @@ define([ "dojo/_base/declare",
 						
 						new Tooltip({
 					        connectId: [div.getElementsByClassName("warningTooltip")[0]],
-					        label: "the text for the tooltip"
+					        label: "The following hosts implement their own CustomLog. They must be disabled individually."
 					    });
 						
 						that.buildGraph(enabled, 'history_enabled_hosts_container', that.type.DISABLE, true);
@@ -317,7 +320,10 @@ define([ "dojo/_base/declare",
 						
 						new Tooltip({
 					        connectId: [div.getElementsByClassName("warningTooltip")[0]],
-					        label: "the text for the tooltip"
+					        label:  "By enabling history Globally you will be doing the following:<br/><br/>" +
+					        		"1. Enable history for any requests that do not belong to a VirtualHost.<br/>" +
+					        		"2. Enable history for any VirtualHosts that do not implement their own CustomLog.<br/><br/>" +
+					        		"Any hosts shown below do no implement their own CustomLog."
 					    });
 						
 						that.buildGraph(global, 'history_disabled_hosts_container', that.type.ENABLE); 
@@ -343,7 +349,7 @@ define([ "dojo/_base/declare",
 						
 						new Tooltip({
 					        connectId: [div.getElementsByClassName("warningTooltip")[0]],
-					        label: "the text for the tooltip"
+					        label: "The following hosts implement their own CustomLog. They must be enabled individually."
 					    });
 						
 						that.buildGraph(disabled, 'history_disabled_hosts_container', that.type.ENABLE, true);

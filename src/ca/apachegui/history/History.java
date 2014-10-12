@@ -62,16 +62,6 @@ public class History
 		ConfFiles.appendToGUIConfigFile(getIncludeString());
 	}
 	
-	public static void enable(VirtualHost host) throws Exception
-	{
-		ConfFiles.writeToConfigFile(host.getFile(), getIncludeString(), host.getLineOfEnd());
-	}
-	
-	public static void disable(VirtualHost host) throws Exception
-	{
-		ConfFiles.deleteFromConfigFile(".*" + Constants.historyLogHolder + ".*", host.getFile(), host.getLineOfStart(), host.getLineOfEnd(), true);
-	}
-	
 	/**
 	 * Method used to disable history.
 	 * 
@@ -85,6 +75,16 @@ public class History
 		
 		ConfFiles.removeFromGUIConfigFile(".*" + Constants.historyLogHolder + ".*");
 		
+	}
+	
+	public static void enable(VirtualHost host) throws Exception
+	{
+		ConfFiles.writeToConfigFile(host.getFile(), getIncludeString(), host.getLineOfEnd());
+	}
+	
+	public static void disable(VirtualHost host) throws Exception
+	{
+		ConfFiles.deleteFromConfigFile(".*" + Constants.historyLogHolder + ".*", host.getFile(), host.getLineOfStart(), host.getLineOfEnd(), true);
 	}
 	
 	/**
