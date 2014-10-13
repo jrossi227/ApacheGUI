@@ -4,7 +4,6 @@ import apache.conf.global.Utils;
 import apache.conf.parser.File;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
@@ -45,7 +44,6 @@ public class ConfigurationController {
 		String rootConfFile = SettingsDao.getInstance().getSetting(Constants.confFile);
 		
 		String activeFileList[]=new Parser(rootConfFile, SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getActiveConfFileList();
-		Arrays.sort(activeFileList);
 		
 		JSONArray files = new JSONArray();
 		for(int i=0; i<activeFileList.length; i++)
