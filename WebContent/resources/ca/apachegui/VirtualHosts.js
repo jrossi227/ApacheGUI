@@ -11,9 +11,13 @@ define([ "dojo/_base/declare",
 	declare("ca.apachegui.VirtualHosts", null, {
 		
 		currentHostSummaryCount: 0,
+		initialized: false,
 		
 		init : function() {
-			this.populateVirtualHosts();
+			if(this.initialized===false) {
+				this.populateVirtualHosts();
+				this.initialized = true;
+			}
 		},
 		
 		populateVirtualHosts : function() {
@@ -45,7 +49,7 @@ define([ "dojo/_base/declare",
 					      {
 					    	  id : 'file',
 					    	  name: 'File',
-					    	  value: '<a target="_blank" href="Configuration.jsp?file=' + vhost.file + '">' + vhost.file + '</a>'
+					    	  value: '<a target="_blank" href="Configuration.jsp?file=' + vhost.file + '">' + vhost.file + '</a> Line: ' + vhost.lineOfStart
 					      },
 					      {
 					    	  id : 'documentroot',

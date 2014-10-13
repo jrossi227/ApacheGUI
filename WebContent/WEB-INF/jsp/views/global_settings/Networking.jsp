@@ -163,8 +163,8 @@
 </div>
 
 
-<div title="Name Based Virtual Hosts" open="false" data-dojo-type="dijit/TitlePane" id="nameVirtualHostContainer">
-
+<div title="Name Based Virtual Hosts" open="false" data-dojo-type="dijit/TitlePane" id="nameVirtualHostContainer" <c:if test="${NameVhostSupport == false}">style="display:none;"</c:if>>
+	
 	<h4>
 		Current Name Based Virtual Hosts:&nbsp;
 		

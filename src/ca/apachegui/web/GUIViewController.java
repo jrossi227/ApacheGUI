@@ -40,6 +40,7 @@ import ca.apachegui.globaldirectives.ServerSignature;
 import ca.apachegui.globaldirectives.ServerTokens;
 import ca.apachegui.globaldirectives.Timeout;
 import ca.apachegui.globaldirectives.User;
+import ca.apachegui.server.ServerInfo;
 import ca.apachegui.virtualhosts.NetworkInfo;
 import ca.apachegui.virtualhosts.VirtualHost;
 import ca.apachegui.virtualhosts.VirtualHosts;
@@ -360,6 +361,8 @@ public class GUIViewController {
 		model.addAttribute("ServerSignature_ON", ServerSignature.ON);
 		model.addAttribute("ServerSignature_OFF", ServerSignature.OFF);
 		model.addAttribute("ServerSignature_EMAIL", ServerSignature.EMAIL);
+		
+		model.addAttribute("NameVhostSupport",ServerInfo.isTwoPointTwo(null));
 		
 		return "views/global_settings/Networking";
 	}

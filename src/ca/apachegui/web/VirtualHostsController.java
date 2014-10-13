@@ -20,30 +20,7 @@ import ca.apachegui.virtualhosts.VirtualHosts;
 @RequestMapping("/web/VirtualHosts")
 public class VirtualHostsController {
 
-	/**
-	 {
-	    "hosts": {
-	        "*:80": [{
-	            "NetworkInfo": {
-	                "port": 80,
-	                "address": "*"
-	            },
-	            "DocumentRoot": "\/var\/www\/html",
-	            "file": "\/etc\/apache2\/sites-enabled\/000-default.conf",
-	            "ServerName": "test.local"
-	        }, {
-	            "NetworkInfo": {
-	                "port": 80,
-	                "address": "*"
-	            },
-	            "DocumentRoot": "\/var\/www\/html",
-	            "file": "\/etc\/apache2\/sites-enabled\/000-default.conf",
-	            "ServerName": "test.local2"
-	        }]
-	    },
-	    "ServerName": "localhost",
-	    "DocumentRoot": "\/var\/www\/html"
-	 }
+	 /**
 	 * 
 	 * @return
 	 * @throws NullPointerException

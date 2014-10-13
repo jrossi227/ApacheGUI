@@ -41,7 +41,7 @@ define([ "dojo/_base/declare",
 		newServer: function() {			
 			var isHistoryEnabled=(ca.apachegui.History.getInstance()).checkIfEnabled();
 			if(isHistoryEnabled) {
-				ca.apachegui.Util.alert('Disable History','You can not start a new server while history is enabled. Please disable history and try again');
+				ca.apachegui.Util.alert('Disable History','You can not start a new server while history is enabled. Please disable all history and try again');
 			}
 			else
 			{	

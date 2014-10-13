@@ -150,29 +150,6 @@ public class HistoryController {
 		return result.toString();
 	}
 	
-	/** 
-	{
-	    "option": "enable",
-	    "hosts": [{
-	        "NetworkInfo": [{
-	            "port": 80,
-	            "address": "*"
-	        }],
-	        "DocumentRoot": "/var/www/html",
-	        "file": "/etc/apache2/sites-enabled/000-default.conf",
-	        "ServerName": "test.local"
-	    }, {
-	        "NetworkInfo": [{
-	            "port": 80,
-	            "address": "*"
-	        }],
-	        "DocumentRoot": "/var/www/html",
-	        "file": "/etc/apache2/sites-enabled/000-default.conf",
-	        "ServerName": "test.local2"
-	    }]
-	}
-	**/
-	
 	@RequestMapping(value="/update",method=RequestMethod.POST,produces="application/json;charset=UTF-8") 
 	public String updateNonGlobal(@RequestBody String jsonString) throws Exception {
 		

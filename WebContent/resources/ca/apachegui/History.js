@@ -90,12 +90,24 @@ define([ "dojo/_base/declare",
 				var NetworkInfo = hostsArray[i].NetworkInfo;
 				
 				var networkInfoString = '';
+				var port, address;
 				for(var j=0; j<NetworkInfo.length; j++) {
 					
-					networkInfoString += NetworkInfo[j].address;
+					port = NetworkInfo[j].port;
+					address = NetworkInfo[j].address;
 					
-					if(NetworkInfo[j].port != -1) {
-						networkInfoString += ':' + NetworkInfo[j].port;
+					if(port == -1) {
+						if(address.indexOf(":") > -1) {
+							networkInfoString += "[" + address + "]";
+						} else {
+							networkInfoString += address;
+						}
+					} else {
+						if(address.indexOf(":") > -1) {
+							networkInfoString += "[" + address + "]:" + port;
+						} else {
+							networkInfoString += address + ":" + port;
+						}
 					}
 					
 					networkInfoString += ' ';
@@ -366,6 +378,32 @@ define([ "dojo/_base/declare",
 		refreshHosts: function() {
 			this.populateDisabled();
 			this.populateEnabled();
+		},
+		
+		checkIfEnabled: function() {
+			
+			isEnabled = false;
+			request.get("../web/History", {
+				query: 	{
+					option: 'getEnabled'
+				},
+				handleAs: 'json',
+				sync: true,
+				preventCache: true
+			}).response.then(
+				function(response) {
+					var enabled = response.data.enabled;
+					var globalEnable = response.data.globalEnable;
+					if(enabled.length > 0 || globalEnable) {
+						isEnabled = true;
+					}
+				},
+				function(error) {
+					ca.apachegui.Util.alert('Error',error.response.data.message);
+				}
+			);
+			
+			return isEnabled;
 		},
 		
 		updateGlobal: function(type) {
