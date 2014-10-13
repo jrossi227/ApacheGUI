@@ -641,6 +641,40 @@ define([ "dojo/_base/declare",
 			on(registry.byId('saveDisableButton'), "click", function() {
 				that.updateNonGlobal(that.type.DISABLE);
 			});
+			
+			var isEnableOpen = false;
+			var enableTitlePane = registry.byId('history_enable_container');
+			on(enableTitlePane, "click", function() {
+				var open = enableTitlePane.get('open');
+				if(!open || (open && isEnableOpen)) {
+					isEnableOpen = open;
+					return;
+				}
+				isEnableOpen = open;
+				
+				array.forEach(registry.findWidgets(dom.byId('history_enabled_hosts_container')), function(w) {
+				    if(w.resize) {
+				    	w.resize();
+				    }
+				});
+			});
+			
+			var isDisableOpen = false;
+			var disableTitlePane = registry.byId('history_disable_container');
+			on(disableTitlePane, "click", function() {
+				var open = disableTitlePane.get('open');
+				if(!open || (open && isDisableOpen)) {
+					isDisableOpen = open;
+					return;
+				}
+				isDisableOpen = open;
+				
+				array.forEach(registry.findWidgets(dom.byId('history_disabled_hosts_container')), function(w) {
+				    if(w.resize) {
+				    	w.resize();
+				    }
+				});
+			});
 		}
 	});
 	
