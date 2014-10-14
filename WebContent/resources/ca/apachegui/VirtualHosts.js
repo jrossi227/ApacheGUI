@@ -5,7 +5,7 @@ define([ "dojo/_base/declare",
          "dojo/on",
          "dojo/data/ItemFileWriteStore",
          "dojox/grid/DataGrid",
-         "dijit/TitlePane"
+         "ca/apachegui/TitlePane"
 ], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane){
 	
 	declare("ca.apachegui.VirtualHosts", null, {

@@ -126,7 +126,7 @@
 </div>	
 		
 						
-<div title="Listening" open="true" data-dojo-type="dijit/TitlePane" id="listeningContainer">
+<div title="Listening" open="true" data-dojo-type="ca/apachegui/TitlePane" id="listeningContainer">
 							
 	<h4>
 		Current Listeners:&nbsp;
@@ -163,7 +163,7 @@
 </div>
 
 
-<div title="Name Based Virtual Hosts" open="false" data-dojo-type="dijit/TitlePane" id="nameVirtualHostContainer" <c:if test="${NameVhostSupport == false}">style="display:none;"</c:if>>
+<div title="Name Based Virtual Hosts" open="false" data-dojo-type="ca/apachegui/TitlePane" id="nameVirtualHostContainer" <c:if test="${NameVhostSupport == false}">style="display:none;"</c:if>>
 	
 	<h4>
 		Current Name Based Virtual Hosts:&nbsp;
@@ -196,7 +196,7 @@
 	
 </div>
 
-<div title="Keep Alive" open="false" data-dojo-type="dijit/TitlePane" id="keepAliveContainer">
+<div title="Keep Alive" open="false" data-dojo-type="ca/apachegui/TitlePane" id="keepAliveContainer">
 	<div id="keepAliveStatusContainer">
 		<h4>
 			Keep Alive:&nbsp;
@@ -248,7 +248,7 @@
 	</div>
 </div>
 
-<div title="Request Settings" open="false" data-dojo-type="dijit/TitlePane" id="requestSettingsContainer">
+<div title="Request Settings" open="false" data-dojo-type="ca/apachegui/TitlePane" id="requestSettingsContainer">
 
 	<div>
 		<h4>
@@ -289,7 +289,7 @@
 
 </div>
 
-<div title="Server Settings" open="false" data-dojo-type="dijit/TitlePane" id="serverSettingsContainer">
+<div title="Server Settings" open="false" data-dojo-type="ca/apachegui/TitlePane" id="serverSettingsContainer">
 
 	<div  class="column_two">
 		<h4>

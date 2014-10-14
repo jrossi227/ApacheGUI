@@ -22,7 +22,7 @@
 	    				"dijit/Tooltip",
 	    				"dijit/TooltipDialog",
 	    				"dijit/form/DropDownButton",
-	    				"dijit/TitlePane",
+	    				"ca/apachegui/TitlePane",
 	    				"ca/apachegui/globalsettings/GlobalSettings",
 						"ca/apachegui/Control",
 	 			        "dojo/dom",
