@@ -196,8 +196,18 @@ public class HistoryController {
 						
 						if(option.equals("enable")) {
 							ca.apachegui.history.History.enable(serverVirtualHosts[i]);
+							for(int k=0; k<serverVirtualHosts.length; k++) {
+								serverVirtualHosts[k].setLineOfStart(serverVirtualHosts[k].getLineOfStart() + 3);
+								serverVirtualHosts[k].setLineOfEnd(serverVirtualHosts[k].getLineOfEnd() + 3);
+							}
+							
 						} else {
 							ca.apachegui.history.History.disable(serverVirtualHosts[i]);
+							
+							for(int k=0; k<serverVirtualHosts.length; k++) {
+								serverVirtualHosts[k].setLineOfStart(serverVirtualHosts[k].getLineOfStart() - 3);
+								serverVirtualHosts[k].setLineOfEnd(serverVirtualHosts[k].getLineOfEnd() - 3);
+							}
 						}
 					}
 					

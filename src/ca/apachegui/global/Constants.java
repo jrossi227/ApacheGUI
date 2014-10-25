@@ -175,7 +175,7 @@ public class Constants
 	public final static String versionSupportedString="Apache 2.2, Apache 2.3, Apache 2.4";
 
 	//Constants used for gui info
-	public final static String version="1.9.4";
+	public final static String version="1.9.5";
 	public final static String supportAddress="apachegui.ca@gmail.com";
 	public final static String supportWebsite="http://forum.apachegui.ca";
 	public final static String website="http://apachegui.ca";

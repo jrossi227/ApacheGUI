@@ -5,19 +5,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -35,15 +29,11 @@ import ca.apachegui.globaldirectives.KeepAlive;
 import ca.apachegui.globaldirectives.KeepAliveTimeout;
 import ca.apachegui.globaldirectives.ListenBackLog;
 import ca.apachegui.globaldirectives.MaxKeepAliveRequests;
-import ca.apachegui.globaldirectives.ServerName;
 import ca.apachegui.globaldirectives.ServerSignature;
 import ca.apachegui.globaldirectives.ServerTokens;
 import ca.apachegui.globaldirectives.Timeout;
 import ca.apachegui.globaldirectives.User;
 import ca.apachegui.server.ServerInfo;
-import ca.apachegui.virtualhosts.NetworkInfo;
-import ca.apachegui.virtualhosts.VirtualHost;
-import ca.apachegui.virtualhosts.VirtualHosts;
 import apache.conf.global.Utils;
 import apache.conf.parser.File;
 
