@@ -1,5 +1,7 @@
 package ca.apachegui.globaldirectives;
 
+import java.util.regex.Pattern;
+
 import apache.conf.parser.DirectiveParser;
 import ca.apachegui.conf.ConfFiles;
 import ca.apachegui.db.SettingsDao;
@@ -65,9 +67,9 @@ public abstract class FactoryDirective extends BaseDirective {
 		{	
 			if(directive[i].contains(getReplaceValue())) 
 			{
-				String file=parser.getDirectiveFile(directiveName, getReplaceValue(), includeVHosts);
+				String file=parser.getDirectiveFile(directiveName, Pattern.compile(getReplaceValue()), includeVHosts);
 		
-				parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), getReplaceValue(), add);
+				parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), Pattern.compile(getReplaceValue()), add, includeVHosts);
 				found=true;
 			}
 		}
@@ -89,9 +91,9 @@ public abstract class FactoryDirective extends BaseDirective {
 	{
 		DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 		
-		String file=parser.getDirectiveFile(directiveName, getReplaceValue(), includeVHosts);
+		String file=parser.getDirectiveFile(directiveName, Pattern.compile(getReplaceValue()), includeVHosts);
 		
-		parser.removeDirectiveFromFile(directiveName, file, getReplaceValue(), false);
+		parser.removeDirectiveFromFile(directiveName, file, Pattern.compile(getReplaceValue()), false, includeVHosts);
 	}
 	
 	/**
@@ -106,7 +108,7 @@ public abstract class FactoryDirective extends BaseDirective {
 	
 	public String getDirectiveValue()
 	{
-		return this.toString().replaceAll(directiveName + " *", "");
+		return this.toString().replaceAll(directiveName + "\\s*", "");
 	}
 	
 }

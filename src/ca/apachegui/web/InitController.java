@@ -1,6 +1,8 @@
 package ca.apachegui.web;
 
 
+import java.util.regex.Pattern;
+
 import apache.conf.global.Utils;
 import apache.conf.parser.DirectiveParser;
 import apache.conf.parser.File;
@@ -288,7 +290,7 @@ public class InitController {
 			//Setting SRVROOT Variable to entered Server Root
 			String files[] = ConfFiles.getFullConfFileList();
 			for(int i=0; i< files.length; i++) {
-				new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).setDirectiveInFile(Constants.defineDirective, files[i], Constants.serverRootDirectiveValue + " \"" + serverRoot + "\"", Constants.serverRootDirectiveValue, false);
+				new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).setDirectiveInFile(Constants.defineDirective, files[i], Constants.serverRootDirectiveValue + " \"" + serverRoot + "\"", Pattern.compile(Constants.serverRootDirectiveValue), false, false);
 			}
 		}
 	}

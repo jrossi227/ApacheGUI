@@ -42,7 +42,7 @@ public class ConfFiles
 		log.trace("Writing " + message + " To the configuration File " + confFile);
 		
 		
-		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(confFile,true)));
+		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(confFile,true), "UTF-8"));
 		out.write(Constants.newLine + message);
         //Close the output stream
         out.close();

@@ -1,5 +1,7 @@
 package ca.apachegui.globaldirectives;
 
+import java.util.regex.Pattern;
+
 import apache.conf.parser.DirectiveParser;
 import ca.apachegui.conf.ConfFiles;
 import ca.apachegui.db.SettingsDao;
@@ -28,9 +30,9 @@ public abstract class SingletonDirective extends BaseDirective {
 		String keepAliveDirective[]=parser.getDirectiveValue(directiveName, includeVHosts);
 		
 		if(keepAliveDirective.length > 0) {
-			String file=parser.getDirectiveFile(directiveName, getReplaceValue(), includeVHosts);
+			String file=parser.getDirectiveFile(directiveName, Pattern.compile(getReplaceValue()), includeVHosts);
 		
-			parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), getReplaceValue(), true);
+			parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), Pattern.compile(getReplaceValue()), true, includeVHosts);
 		} else {
 			ConfFiles.appendToGUIConfigFile(toString());
 		}

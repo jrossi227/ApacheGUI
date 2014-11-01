@@ -2,6 +2,7 @@ package ca.apachegui.web;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -260,7 +261,8 @@ public class ControlController {
 				if(ExtendedStatus.checkExtendedStatusRestart())
 				{
 					//Comment out existing mod_status logic
-					new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).deleteEnclosure("IfModule", "mod_status\\.c");
+                    new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(),
+                            SharedModuleHandler.getSharedModules()).deleteEnclosure("IfModule", Pattern.compile("mod_status\\.c"), true, false);
 					
 					//Load the module if it isn't loaded
 					if(!ExtendedStatus.isExtendedStatusModuleLoaded()) {

@@ -1,12 +1,13 @@
 package ca.apachegui.modules;
 
+import java.util.regex.Pattern;
+
 import org.apache.log4j.Logger;
 
 import apache.conf.modules.SharedModule;
 import apache.conf.modules.SharedModuleParser;
 import apache.conf.parser.DirectiveParser;
 import apache.conf.parser.File;
-
 import ca.apachegui.conf.ConfFiles;
 import ca.apachegui.db.SettingsDao;
 import ca.apachegui.global.Constants;
@@ -38,12 +39,12 @@ public class SharedModuleHandler extends ModuleHandler{
 	 * @throws Exception
 	 */
 	public static boolean removeModule(String name) throws Exception {
-		String file=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveFile(Constants.loadModuleDirective, name, false);
+		String file=new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveFile(Constants.loadModuleDirective, Pattern.compile(name), false);
 		
 		if(file!=null)
 		{	
 			log.trace("Module " + name + " Found in file " + file);
-			new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).removeDirectiveFromFile(Constants.loadModuleDirective, file, name, true);
+			new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).removeDirectiveFromFile(Constants.loadModuleDirective, file, Pattern.compile(name), true, false);
 			return true;
 		}
 		
