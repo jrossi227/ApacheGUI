@@ -14,19 +14,19 @@ import org.springframework.http.HttpStatus;
 @ControllerAdvice
 public class BaseControllerAdvice {
 
-	private static Logger log = Logger.getLogger(BaseControllerAdvice.class);
-	
-	@ExceptionHandler(Exception.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@RequestMapping(produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public String handleError(HttpServletResponse response, Exception exception) {	
-		log.error(exception.getMessage(), exception);
-				
-		JSONObject resultJSON = new JSONObject();
-		resultJSON.put("message", exception.getMessage());
-				
-		return resultJSON.toString();
-	}
-	
+    private static Logger log = Logger.getLogger(BaseControllerAdvice.class);
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @RequestMapping(produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String handleError(HttpServletResponse response, Exception exception) {
+        log.error(exception.getMessage(), exception);
+
+        JSONObject resultJSON = new JSONObject();
+        resultJSON.put("message", exception.getMessage());
+
+        return resultJSON.toString();
+    }
+
 }

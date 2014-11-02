@@ -3,70 +3,69 @@ package ca.apachegui.db;
 import java.sql.Timestamp;
 
 public class LogData {
-	
-	private String host;
-	private Timestamp insertDate;
-	private String userAgent;
-	private String requestString;
-	private String status;
-	private String contentSize;
-	
-	public LogData(Timestamp insertDate, String host, String userAgent, String requestString, String status, String contentSize)
-	{
-		this.host=host;
-		this.insertDate=insertDate;
-		this.userAgent=userAgent;
-		this.requestString=requestString;
-		this.status=status;
-		this.contentSize=contentSize;
-	}
-	
-	public void setHost(String host) {
-		this.host = host;
-	}
 
-	public String getHost() {
-		return host;
-	}
+    private String host;
+    private Timestamp insertDate;
+    private String userAgent;
+    private String requestString;
+    private String status;
+    private String contentSize;
 
-	public void setInsertDate(Timestamp insertDate) {
-		this.insertDate = insertDate;
-	}
+    public LogData(Timestamp insertDate, String host, String userAgent, String requestString, String status, String contentSize) {
+        this.host = host;
+        this.insertDate = insertDate;
+        this.userAgent = userAgent;
+        this.requestString = requestString;
+        this.status = status;
+        this.contentSize = contentSize;
+    }
 
-	public Timestamp getInsertDate() {
-		return insertDate;
-	}
+    public void setHost(String host) {
+        this.host = host;
+    }
 
-	public void setRequestString(String requestString) {
-		this.requestString = requestString;
-	}
+    public String getHost() {
+        return host;
+    }
 
-	public String getRequestString() {
-		return requestString;
-	}
+    public void setInsertDate(Timestamp insertDate) {
+        this.insertDate = insertDate;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public Timestamp getInsertDate() {
+        return insertDate;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public void setRequestString(String requestString) {
+        this.requestString = requestString;
+    }
 
-	public void setUserAgent(String userAgent) {
-		this.userAgent = userAgent;
-	}
+    public String getRequestString() {
+        return requestString;
+    }
 
-	public String getUserAgent() {
-		return userAgent;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public void setContentSize(String contentSize) {
-		this.contentSize = contentSize;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public String getContentSize() {
-		return contentSize;
-	}
-	
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setContentSize(String contentSize) {
+        this.contentSize = contentSize;
+    }
+
+    public String getContentSize() {
+        return contentSize;
+    }
+
 }

@@ -18,39 +18,38 @@ import ca.apachegui.db.SettingsDao;
  */
 @WebFilter("/SharedModuleFilter")
 public class SharedModuleFilter implements Filter {
-	Logger log = Logger.getLogger(SharedModuleFilter.class);
- 	
+    Logger log = Logger.getLogger(SharedModuleFilter.class);
+
     /**
-     * Default constructor. 
+     * Default constructor.
      */
     public SharedModuleFilter() {
     }
 
-	/**
-	 * @see Filter#destroy()
-	 */
-	public void destroy() {
-	}
+    /**
+     * @see Filter#destroy()
+     */
+    public void destroy() {
+    }
 
-	/**
-	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-	 */
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		try 
-		{
-			if(SettingsDao.getInstance().getSetting("init") != null) {
-				SharedModuleHandler.updateSharedModules();
-			}
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
-		chain.doFilter(request, response);
-	}
+    /**
+     * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+     */
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        try {
+            if (SettingsDao.getInstance().getSetting("init") != null) {
+                SharedModuleHandler.updateSharedModules();
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        chain.doFilter(request, response);
+    }
 
-	/**
-	 * @see Filter#init(FilterConfig)
-	 */
-	public void init(FilterConfig fConfig) throws ServletException {
-	}
+    /**
+     * @see Filter#init(FilterConfig)
+     */
+    public void init(FilterConfig fConfig) throws ServletException {
+    }
 
 }

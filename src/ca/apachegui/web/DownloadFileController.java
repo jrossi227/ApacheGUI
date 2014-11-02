@@ -17,28 +17,27 @@ import apache.conf.parser.File;
 
 @RestController
 public class DownloadFileController {
-       
-	@Autowired
-	ServletContext servletContext;
-	
-	@RequestMapping(value = "/web/DownloadFile", method = RequestMethod.GET)
-	public void uploadMultipleFileHandler(@RequestParam("file") String fileName,
-										  HttpServletResponse response) throws IOException {
-		
-		File file = new File(fileName);
-		
-	    String mimeType = servletContext.getMimeType(file.getName());
-	    if(mimeType == null) {
-	    	mimeType = "application/octet-stream";
-	    }
-			    
-	    response.setContentType(mimeType); 
-	    response.setHeader("Content-Disposition", "attachment; filename=" + file.getName()); 
-	    response.setContentLength((int) file.length());
-	    
-	    FileInputStream in = new FileInputStream(file);
-	    IOUtils.copy(in, response.getOutputStream());
-	    response.flushBuffer();
-	}
+
+    @Autowired
+    ServletContext servletContext;
+
+    @RequestMapping(value = "/web/DownloadFile", method = RequestMethod.GET)
+    public void uploadMultipleFileHandler(@RequestParam("file") String fileName, HttpServletResponse response) throws IOException {
+
+        File file = new File(fileName);
+
+        String mimeType = servletContext.getMimeType(file.getName());
+        if (mimeType == null) {
+            mimeType = "application/octet-stream";
+        }
+
+        response.setContentType(mimeType);
+        response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
+        response.setContentLength((int) file.length());
+
+        FileInputStream in = new FileInputStream(file);
+        IOUtils.copy(in, response.getOutputStream());
+        response.flushBuffer();
+    }
 
 }

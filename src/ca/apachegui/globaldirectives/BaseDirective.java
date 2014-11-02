@@ -1,10 +1,9 @@
 package ca.apachegui.globaldirectives;
 
 public class BaseDirective {
-	protected String directiveName;
+    protected String directiveName;
 
-	public BaseDirective(String directiveName) 
-	{
-		this.directiveName=directiveName;
-	}
+    public BaseDirective(String directiveName) {
+        this.directiveName = directiveName;
+    }
 }
