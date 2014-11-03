@@ -1,8 +1,8 @@
 var profile = (function(){
     return {
         basePath: ".",
-        releaseDir: "release",
-        releaseName: "lib",
+        releaseDir: ".",
+        releaseName: "release",
         action: "release",
         layerOptimize: "shrinksafe",
         optimize: "shrinksafe",
@@ -64,9 +64,9 @@ var profile = (function(){
             name: "dojox",
             location: "dojox"
         },{
-	    name: "ca",
-	    location: "ca"
-	}],
+		    name: "ca",
+		    location: "ca"
+        }],
  
         layers: {
             "dojo/dojo": {

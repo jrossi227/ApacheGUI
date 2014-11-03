@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<project name="ApacheConfParser" default="war" basedir=".">
+
+	<!-- ./util/buildscripts/build.sh bin=node profile=apachegui.profile.js action=release-->
+
+	<loadproperties srcFile="build.properties"/> 
+		
+	<property name="resources" value="../WebContent/resources"/>
+	
+	<!-- build js -->
+	<target name="buildjs">
+	
+		<exec dir="${resources}" executable="util/buildscripts/build.sh">
+		       <arg line="bin=node"/>
+		       <arg line="profile=apachegui.profile.js"/>
+		       <arg line="action=release"/>
+		</exec>
+		
+	</target>
+	
+	
+	<!-- remove less and uncompressed -->
+	
+	<!-- build war -->
+	
+	<!-- copy war to webapps -->
+
+	<!-- delete release directory -->
+
+	<target name="war" description="Build the ApacheGUI war file" depends="buildjs">
+		<war destfile="myapp.war" webxml="WebContent/WEB-INF/web.xml">
+		  <fileset dir="src/html/myapp"/>
+		  <fileset dir="src/jsp/myapp"/>
+		  <lib dir="thirdparty/libs">
+		    <exclude name="jdbc1.jar"/>
+		  </lib>
+		  <classes dir="build/main"/>
+		  <zipfileset dir="src/graphics/images/gifs"
+		              prefix="images"/>
+		</war>
+	</target>	
+	
+</project>	
