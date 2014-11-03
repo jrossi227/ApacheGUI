@@ -1,47 +1,62 @@
-//>>built
-define("dojox/app/utils/model",["dojo/_base/lang","dojo/Deferred","dojo/promise/all","dojo/when"],function(_1,_2,_3,_4){
-return function(_5,_6,_7){
-var _8={};
-if(_6.loadedModels){
-_1.mixin(_8,_6.loadedModels);
-}
-if(_5){
-var _9=[];
-for(var _a in _5){
-if(_a.charAt(0)!=="_"){
-_9.push(_b(_5,_a,_7,_8));
-}
-}
-return (_9.length==0)?_8:_3(_9);
-}else{
-return _8;
-}
-};
-function _b(_c,_d,_e,_f){
-var _10=_c[_d].params?_c[_d].params:{};
-var _11=_c[_d].modelLoader?_c[_d].modelLoader:"dojox/app/utils/simpleModel";
-try{
-var _12=require(_11);
-}
-catch(e){
-throw new Error(_11+" must be listed in the dependencies");
-}
-var _13=new _2();
-var _14;
-try{
-_14=_12(_c,_10,_d);
-}
-catch(e){
-throw new Error("Error creating "+_11+" for model named ["+_d+"]: "+e.message);
-}
-_4(_14,_1.hitch(this,function(_15){
-_f[_d]=_15;
-_e.log("in app/model, for item=[",_d,"] loadedModels =",_f);
-_13.resolve(_f);
-return _f;
-}),function(e){
-throw new Error("Error loading model named ["+_d+"]: "+e.message);
-});
-return _13;
-};
+define(["dojo/_base/lang", "dojo/Deferred", "dojo/promise/all", "dojo/when"], function(lang, Deferred, all, when){
+	return function(/*Object*/ config, /*Object*/ parent, /*Object*/ app){
+		// summary:
+		//		model is called to create all of the models for the app, and all models for a view, it will
+		//		create and call the appropriate model utility based upon the modelLoader set in the model in the config
+		// description:
+		//		Called for each view or for the app.  For each model in the config, it will  
+		//		create the model utility based upon the modelLoader and call it to create and load the model. 
+		// config: Object
+		//		The models section of the config for this view or for the app.
+		// parent: Object
+		//		The parent of this view or the app itself, so that models from the parent will be 
+		//		available to the view.
+		// returns: loadedModels 
+		//		 loadedModels is an object holding all of the available loaded models for this view.
+		var loadedModels = {};
+		if(parent.loadedModels){
+			lang.mixin(loadedModels, parent.loadedModels);
+		}
+		if(config){
+			var allDeferred = [];
+			for(var item in config){
+				if(item.charAt(0) !== "_"){
+					allDeferred.push(setupModel(config, item, app, loadedModels));
+				}
+			}
+			return (allDeferred.length == 0) ? loadedModels : all(allDeferred);
+		}else{
+			return loadedModels;
+		}
+	};
+
+	function setupModel(config, item, app, loadedModels){
+		// Here we need to create the modelLoader and call it passing in the item and the config[item].params
+		var params = config[item].params ? config[item].params : {};
+
+		var modelLoader = config[item].modelLoader ? config[item].modelLoader : "dojox/app/utils/simpleModel";
+		// modelLoader must be listed in the dependencies and has thus already been loaded so it _must_ be here
+		// => no need for complex code here
+		try{
+			var modelCtor = require(modelLoader);
+		}catch(e){
+			throw new Error(modelLoader+" must be listed in the dependencies");
+		}
+		var loadModelDeferred = new Deferred();
+		var createModelPromise;
+		try{
+			createModelPromise = modelCtor(config, params, item);
+		}catch(e){
+			throw new Error("Error creating "+modelLoader+" for model named ["+item+"]: "+e.message);
+		}
+		when(createModelPromise, lang.hitch(this, function(newModel){
+			loadedModels[item] = newModel;
+			app.log("in app/model, for item=[",item,"] loadedModels =", loadedModels);
+			loadModelDeferred.resolve(loadedModels);
+			return loadedModels;
+		}), function(e){
+			throw new Error("Error loading model named ["+item+"]: "+e.message);
+		});
+		return loadModelDeferred;
+	}
 });

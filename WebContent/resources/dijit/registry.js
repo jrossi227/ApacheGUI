@@ -1,79 +1,160 @@
-//>>built
-define("dijit/registry",["dojo/_base/array","dojo/sniff","dojo/_base/window","./main"],function(_1,_2,_3,_4){
-var _5={},_6={};
-var _7={length:0,add:function(_8){
-if(_6[_8.id]){
-throw new Error("Tried to register widget with id=="+_8.id+" but that id is already registered");
-}
-_6[_8.id]=_8;
-this.length++;
-},remove:function(id){
-if(_6[id]){
-delete _6[id];
-this.length--;
-}
-},byId:function(id){
-return typeof id=="string"?_6[id]:id;
-},byNode:function(_9){
-return _6[_9.getAttribute("widgetId")];
-},toArray:function(){
-var ar=[];
-for(var id in _6){
-ar.push(_6[id]);
-}
-return ar;
-},getUniqueId:function(_a){
-var id;
-do{
-id=_a+"_"+(_a in _5?++_5[_a]:_5[_a]=0);
-}while(_6[id]);
-return _4._scopeName=="dijit"?id:_4._scopeName+"_"+id;
-},findWidgets:function(_b,_c){
-var _d=[];
-function _e(_f){
-for(var _10=_f.firstChild;_10;_10=_10.nextSibling){
-if(_10.nodeType==1){
-var _11=_10.getAttribute("widgetId");
-if(_11){
-var _12=_6[_11];
-if(_12){
-_d.push(_12);
-}
-}else{
-if(_10!==_c){
-_e(_10);
-}
-}
-}
-}
-};
-_e(_b);
-return _d;
-},_destroyAll:function(){
-_4._curFocus=null;
-_4._prevFocus=null;
-_4._activeStack=[];
-_1.forEach(_7.findWidgets(_3.body()),function(_13){
-if(!_13._destroyed){
-if(_13.destroyRecursive){
-_13.destroyRecursive();
-}else{
-if(_13.destroy){
-_13.destroy();
-}
-}
-}
-});
-},getEnclosingWidget:function(_14){
-while(_14){
-var id=_14.nodeType==1&&_14.getAttribute("widgetId");
-if(id){
-return _6[id];
-}
-_14=_14.parentNode;
-}
-return null;
-},_hash:_6};
-_4.registry=_7;
-return _7;
+define([
+	"dojo/_base/array", // array.forEach array.map
+	"dojo/sniff", // has("ie")
+	"dojo/_base/window", // win.body
+	"./main"	// dijit._scopeName
+], function(array, has, win, dijit){
+
+	// module:
+	//		dijit/registry
+
+	var _widgetTypeCtr = {}, hash = {};
+
+	var registry =  {
+		// summary:
+		//		Registry of existing widget on page, plus some utility methods.
+
+		// length: Number
+		//		Number of registered widgets
+		length: 0,
+
+		add: function(widget){
+			// summary:
+			//		Add a widget to the registry. If a duplicate ID is detected, a error is thrown.
+			// widget: dijit/_WidgetBase
+			//		Any dijit/_WidgetBase subclass.
+			if(hash[widget.id]){
+				throw new Error("Tried to register widget with id==" + widget.id + " but that id is already registered");
+			}
+			hash[widget.id] = widget;
+			this.length++;
+		},
+
+		remove: function(/*String*/ id){
+			// summary:
+			//		Remove a widget from the registry. Does not destroy the widget; simply
+			//		removes the reference.
+			if(hash[id]){
+				delete hash[id];
+				this.length--;
+			}
+		},
+
+		byId: function(/*String|Widget*/ id){
+			// summary:
+			//		Find a widget by it's id.
+			//		If passed a widget then just returns the widget.
+			return typeof id == "string" ? hash[id] : id;	// dijit/_WidgetBase
+		},
+
+		byNode: function(/*DOMNode*/ node){
+			// summary:
+			//		Returns the widget corresponding to the given DOMNode
+			return hash[node.getAttribute("widgetId")]; // dijit/_WidgetBase
+		},
+
+		toArray: function(){
+			// summary:
+			//		Convert registry into a true Array
+			//
+			// example:
+			//		Work with the widget .domNodes in a real Array
+			//		|	array.map(registry.toArray(), function(w){ return w.domNode; });
+
+			var ar = [];
+			for(var id in hash){
+				ar.push(hash[id]);
+			}
+			return ar;	// dijit/_WidgetBase[]
+		},
+
+		getUniqueId: function(/*String*/widgetType){
+			// summary:
+			//		Generates a unique id for a given widgetType
+
+			var id;
+			do{
+				id = widgetType + "_" +
+					(widgetType in _widgetTypeCtr ?
+						++_widgetTypeCtr[widgetType] : _widgetTypeCtr[widgetType] = 0);
+			}while(hash[id]);
+			return dijit._scopeName == "dijit" ? id : dijit._scopeName + "_" + id; // String
+		},
+
+		findWidgets: function(root, skipNode){
+			// summary:
+			//		Search subtree under root returning widgets found.
+			//		Doesn't search for nested widgets (ie, widgets inside other widgets).
+			// root: DOMNode
+			//		Node to search under.
+			// skipNode: DOMNode
+			//		If specified, don't search beneath this node (usually containerNode).
+
+			var outAry = [];
+
+			function getChildrenHelper(root){
+				for(var node = root.firstChild; node; node = node.nextSibling){
+					if(node.nodeType == 1){
+						var widgetId = node.getAttribute("widgetId");
+						if(widgetId){
+							var widget = hash[widgetId];
+							if(widget){	// may be null on page w/multiple dojo's loaded
+								outAry.push(widget);
+							}
+						}else if(node !== skipNode){
+							getChildrenHelper(node);
+						}
+					}
+				}
+			}
+
+			getChildrenHelper(root);
+			return outAry;
+		},
+
+		_destroyAll: function(){
+			// summary:
+			//		Code to destroy all widgets and do other cleanup on page unload
+
+			// Clean up focus manager lingering references to widgets and nodes
+			dijit._curFocus = null;
+			dijit._prevFocus = null;
+			dijit._activeStack = [];
+
+			// Destroy all the widgets, top down
+			array.forEach(registry.findWidgets(win.body()), function(widget){
+				// Avoid double destroy of widgets like Menu that are attached to <body>
+				// even though they are logically children of other widgets.
+				if(!widget._destroyed){
+					if(widget.destroyRecursive){
+						widget.destroyRecursive();
+					}else if(widget.destroy){
+						widget.destroy();
+					}
+				}
+			});
+		},
+
+		getEnclosingWidget: function(/*DOMNode*/ node){
+			// summary:
+			//		Returns the widget whose DOM tree contains the specified DOMNode, or null if
+			//		the node is not contained within the DOM tree of any widget
+			while(node){
+				var id = node.nodeType == 1 && node.getAttribute("widgetId");
+				if(id){
+					return hash[id];
+				}
+				node = node.parentNode;
+			}
+			return null;
+		},
+
+		// In case someone needs to access hash.
+		// Actually, this is accessed from WidgetSet back-compatibility code
+		_hash: hash
+	};
+
+	dijit.registry = registry;
+
+	return registry;
 });

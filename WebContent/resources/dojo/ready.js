@@ -1,77 +1,153 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
+define(["./_base/kernel", "./has", "require", "./has!host-browser?./domReady", "./_base/lang"], function(dojo, has, require, domReady, lang){
+	// module:
+	//		dojo/ready
+	// note:
+	//		This module should be unnecessary in dojo 2.0
 
-//>>built
-define("dojo/ready",["./_base/kernel","./has","require","./domReady","./_base/lang"],function(_1,_2,_3,_4,_5){
-var _6=0,_7=[],_8=0,_9=function(){
-_6=1;
-_1._postLoad=_1.config.afterOnLoad=true;
-_a();
-},_a=function(){
-if(_8){
-return;
-}
-_8=1;
-while(_6&&(!_4||_4._Q.length==0)&&(_3.idle?_3.idle():true)&&_7.length){
-var f=_7.shift();
-try{
-f();
-}
-catch(e){
-e.info=e.message;
-if(_3.signal){
-_3.signal("error",e);
-}else{
-throw e;
-}
-}
-}
-_8=0;
-};
-_3.on&&_3.on("idle",_a);
-if(_4){
-_4._onQEmpty=_a;
-}
-var _b=_1.ready=_1.addOnLoad=function(_c,_d,_e){
-var _f=_5._toArray(arguments);
-if(typeof _c!="number"){
-_e=_d;
-_d=_c;
-_c=1000;
-}else{
-_f.shift();
-}
-_e=_e?_5.hitch.apply(_1,_f):function(){
-_d();
-};
-_e.priority=_c;
-for(var i=0;i<_7.length&&_c>=_7[i].priority;i++){
-}
-_7.splice(i,0,_e);
-_a();
-};
-1||_2.add("dojo-config-addOnLoad",1);
-if(1){
-var dca=_1.config.addOnLoad;
-if(dca){
-_b[(_5.isArray(dca)?"apply":"call")](_1,dca);
-}
-}
-if(1&&_1.config.parseOnLoad&&!_1.isAsync){
-_b(99,function(){
-if(!_1.parser){
-_1.deprecated("Add explicit require(['dojo/parser']);","","2.0");
-_3(["dojo/parser"]);
-}
-});
-}
-if(_4){
-_4(_9);
-}else{
-_9();
-}
-return _b;
+	var
+		// truthy if DOMContentLoaded or better (e.g., window.onload fired) has been achieved
+		isDomReady = 0,
+
+		// The queue of functions waiting to execute as soon as dojo.ready conditions satisfied
+		loadQ = [],
+
+		// prevent recursion in onLoad
+		onLoadRecursiveGuard = 0,
+
+		handleDomReady = function(){
+			isDomReady = 1;
+			dojo._postLoad = dojo.config.afterOnLoad = true;
+			onEvent();
+		},
+
+		onEvent = function(){
+			// Called when some state changes:
+			//		- dom ready
+			//		- dojo/domReady has finished processing everything in its queue
+			//		- task added to loadQ
+			//		- require() has finished loading all currently requested modules
+			//
+			// Run the functions queued with dojo.ready if appropriate.
+
+
+			//guard against recursions into this function
+			if(onLoadRecursiveGuard){
+				return;
+			}
+			onLoadRecursiveGuard = 1;
+
+			// Run tasks in queue if require() is finished loading modules, the dom is ready, and there are no
+			// pending tasks registered via domReady().
+			// The last step is necessary so that a user defined dojo.ready() callback is delayed until after the
+			// domReady() calls inside of dojo.	  Failure can be seen on dijit/tests/robot/Dialog_ally.html on IE8
+			// because the dijit/focus.js domReady() callback doesn't execute until after the test starts running.
+			while(isDomReady && (!domReady || domReady._Q.length == 0) && (require.idle ? require.idle() : true) && loadQ.length){
+				var f = loadQ.shift();
+				try{
+					f();
+				}catch(e){
+					// force the dojo.js on("error") handler do display the message
+					e.info = e.message;
+					if(require.signal){
+						require.signal("error", e);
+					}else{
+						throw e;
+					}
+				}
+			}
+
+			onLoadRecursiveGuard = 0;
+		};
+
+	// Check if we should run the next queue operation whenever require() finishes loading modules or domReady
+	// finishes processing it's queue.
+	require.on && require.on("idle", onEvent);
+	if(domReady){
+		domReady._onQEmpty = onEvent;
+	}
+
+	var ready = dojo.ready = dojo.addOnLoad = function(priority, context, callback){
+		// summary:
+		//		Add a function to execute on DOM content loaded and all requested modules have arrived and been evaluated.
+		//		In most cases, the `domReady` plug-in should suffice and this method should not be needed.
+		//
+		//		When called in a non-browser environment, just checks that all requested modules have arrived and been
+		//		evaluated.
+		// priority: Integer?
+		//		The order in which to exec this callback relative to other callbacks, defaults to 1000
+		// context: Object?|Function
+		//		The context in which to run execute callback, or a callback if not using context
+		// callback: Function?
+		//		The function to execute.
+		//
+		// example:
+		//	Simple DOM and Modules ready syntax
+		//	|	require(["dojo/ready"], function(ready){
+		//	|		ready(function(){ alert("Dom ready!"); });
+		//	|	});
+		//
+		// example:
+		//	Using a priority
+		//	|	require(["dojo/ready"], function(ready){
+		//	|		ready(2, function(){ alert("low priority ready!"); })
+		//	|	});
+		//
+		// example:
+		//	Using context
+		//	|	require(["dojo/ready"], function(ready){
+		//	|		ready(foo, function(){
+		//	|			// in here, this == foo
+		//	|		});
+		//	|	});
+		//
+		// example:
+		//	Using dojo/hitch style args:
+		//	|	require(["dojo/ready"], function(ready){
+		//	|		var foo = { dojoReady: function(){ console.warn(this, "dojo dom and modules ready."); } };
+		//	|		ready(foo, "dojoReady");
+		//	|	});
+
+		var hitchArgs = lang._toArray(arguments);
+		if(typeof priority != "number"){
+			callback = context;
+			context = priority;
+			priority = 1000;
+		}else{
+			hitchArgs.shift();
+		}
+		callback = callback ?
+			lang.hitch.apply(dojo, hitchArgs) :
+			function(){
+				context();
+			};
+		callback.priority = priority;
+		for(var i = 0; i < loadQ.length && priority >= loadQ[i].priority; i++){}
+		loadQ.splice(i, 0, callback);
+		onEvent();
+	};
+
+	has.add("dojo-config-addOnLoad", 1);
+	if(has("dojo-config-addOnLoad")){
+		var dca = dojo.config.addOnLoad;
+		if(dca){
+			ready[(lang.isArray(dca) ? "apply" : "call")](dojo, dca);
+		}
+	}
+
+	if(has("dojo-sync-loader") && dojo.config.parseOnLoad && !dojo.isAsync){
+		ready(99, function(){
+			if(!dojo.parser){
+				dojo.deprecated("Add explicit require(['dojo/parser']);", "", "2.0");
+				require(["dojo/parser"]);
+			}
+		});
+	}
+
+	if(domReady){
+		domReady(handleDomReady);
+	}else{
+		handleDomReady();
+	}
+
+	return ready;
 });

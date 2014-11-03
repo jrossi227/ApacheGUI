@@ -1,2 +1,5 @@
-//>>built
-define("dojox/editor/plugins/nls/uk/Preview",({"preview":"Попередній перегляд"}));
+define(
+({
+	"preview": "Попередній перегляд"
+})
+);

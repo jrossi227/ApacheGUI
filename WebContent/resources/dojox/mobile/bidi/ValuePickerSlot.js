@@ -1,21 +1,43 @@
-//>>built
-define("dojox/mobile/bidi/ValuePickerSlot",["dojo/_base/declare","./common"],function(_1,_2){
-return _1(null,{postCreate:function(){
-if(!this.textDir&&this.getParent()&&this.getParent().get("textDir")){
-this.textDir=this.getParent().get("textDir");
-}
-},_getValueAttr:function(){
-return _2.removeUCCFromText(this.inputNode.value);
-},_setValueAttr:function(_3){
-this.inherited(arguments);
-this._applyTextDirToValueNode();
-},_setTextDirAttr:function(_4){
-if(_4&&this.textDir!==_4){
-this.textDir=_4;
-this._applyTextDirToValueNode();
-}
-},_applyTextDirToValueNode:function(){
-this.inputNode.value=_2.removeUCCFromText(this.inputNode.value);
-this.inputNode.value=_2.enforceTextDirWithUcc(this.inputNode.value,this.textDir);
-}});
+define([
+	"dojo/_base/declare",
+	"./common"   
+], function(declare, common){
+
+	// module:
+	//		dojox/mobile/bidi/ValuePickerSlot
+
+	return declare(null, {
+		// summary:
+		//		Support for control over text direction for mobile ValuePickerSlot widget, using Unicode Chontrol Characters to control text direction.
+		// description:
+		//		Implementation for text direction support for Value.
+		//		This class should not be used directly.
+		//		Mobile ValuePickerSlot widget loads this module when user sets "has: {'dojo-bidi': true }" in data-dojo-config.
+		postCreate: function(){
+			if(!this.textDir && this.getParent() && this.getParent().get("textDir")){
+				this.textDir = this.getParent().get("textDir");
+			}
+		},
+
+		_getValueAttr: function(){
+			return common.removeUCCFromText(this.inputNode.value);
+		},
+
+		_setValueAttr: function(value){
+			this.inherited(arguments);
+			this._applyTextDirToValueNode();
+		},
+
+		_setTextDirAttr: function(textDir){
+			if(textDir && this.textDir !== textDir){
+				this.textDir = textDir;
+				this._applyTextDirToValueNode();
+			}
+		},
+
+		_applyTextDirToValueNode: function(){
+			this.inputNode.value = common.removeUCCFromText(this.inputNode.value);
+			this.inputNode.value = common.enforceTextDirWithUcc(this.inputNode.value, this.textDir);
+		}
+	});
 });

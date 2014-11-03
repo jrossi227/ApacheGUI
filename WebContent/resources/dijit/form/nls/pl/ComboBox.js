@@ -1,2 +1,6 @@
-//>>built
-define("dijit/form/nls/pl/ComboBox",({previousMessage:"Poprzednie wybory",nextMessage:"Więcej wyborów"}));
+define(
+({
+		previousMessage: "Poprzednie wybory",
+		nextMessage: "Więcej wyborów"
+})
+);

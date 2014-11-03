@@ -1,59 +1,182 @@
-//>>built
-require({cache:{"url:dijit/layout/templates/_TabButton.html":"<div role=\"presentation\" data-dojo-attach-point=\"titleNode,innerDiv,tabContent\" class=\"dijitTabInner dijitTabContent\">\n\t<span role=\"presentation\" class=\"dijitInline dijitIcon dijitTabButtonIcon\" data-dojo-attach-point=\"iconNode\"></span>\n\t<span data-dojo-attach-point='containerNode,focusNode' class='tabLabel'></span>\n\t<span class=\"dijitInline dijitTabCloseButton dijitTabCloseIcon\" data-dojo-attach-point='closeNode'\n\t\t  role=\"presentation\">\n\t\t<span data-dojo-attach-point='closeText' class='dijitTabCloseText'>[x]</span\n\t\t\t\t></span>\n</div>\n"}});
-define("dijit/layout/TabController",["dojo/_base/declare","dojo/dom","dojo/dom-attr","dojo/dom-class","dojo/has","dojo/i18n","dojo/_base/lang","./StackController","../registry","../Menu","../MenuItem","dojo/text!./templates/_TabButton.html","dojo/i18n!../nls/common"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a,_b,_c){
-var _d=_1("dijit.layout._TabButton"+(_5("dojo-bidi")?"_NoBidi":""),_8.StackButton,{baseClass:"dijitTab",cssStateNodes:{closeNode:"dijitTabCloseButton"},templateString:_c,_setNameAttr:"focusNode",scrollOnFocus:false,buildRendering:function(){
-this.inherited(arguments);
-_2.setSelectable(this.containerNode,false);
-},startup:function(){
-this.inherited(arguments);
-var n=this.domNode;
-this.defer(function(){
-n.className=n.className;
-},1);
-},_setCloseButtonAttr:function(_e){
-this._set("closeButton",_e);
-_4.toggle(this.domNode,"dijitClosable",_e);
-this.closeNode.style.display=_e?"":"none";
-if(_e){
-var _f=_6.getLocalization("dijit","common");
-if(this.closeNode){
-_3.set(this.closeNode,"title",_f.itemClose);
-}
-}
-},_setDisabledAttr:function(_10){
-this.inherited(arguments);
-if(this.closeNode){
-if(_10){
-_3.remove(this.closeNode,"title");
-}else{
-var _11=_6.getLocalization("dijit","common");
-_3.set(this.closeNode,"title",_11.itemClose);
-}
-}
-},_setLabelAttr:function(_12){
-this.inherited(arguments);
-if(!this.showLabel&&!this.params.title){
-this.iconNode.alt=_7.trim(this.containerNode.innerText||this.containerNode.textContent||"");
-}
-}});
-if(_5("dojo-bidi")){
-_d=_1("dijit.layout._TabButton",_d,{_setLabelAttr:function(_13){
-this.inherited(arguments);
-this.applyTextDir(this.iconNode,this.iconNode.alt);
-}});
-}
-var _14=_1("dijit.layout.TabController",_8,{baseClass:"dijitTabController",templateString:"<div role='tablist' data-dojo-attach-event='onkeydown:onkeydown'></div>",tabPosition:"top",buttonWidget:_d,buttonWidgetCloseClass:"dijitTabCloseButton",postCreate:function(){
-this.inherited(arguments);
-var _15=new _a({id:this.id+"_Menu",ownerDocument:this.ownerDocument,dir:this.dir,lang:this.lang,textDir:this.textDir,targetNodeIds:[this.domNode],selector:function(_16){
-return _4.contains(_16,"dijitClosable")&&!_4.contains(_16,"dijitTabDisabled");
-}});
-this.own(_15);
-var _17=_6.getLocalization("dijit","common"),_18=this;
-_15.addChild(new _b({label:_17.itemClose,ownerDocument:this.ownerDocument,dir:this.dir,lang:this.lang,textDir:this.textDir,onClick:function(evt){
-var _19=_9.byNode(this.getParent().currentTarget);
-_18.onCloseButtonClick(_19.page);
-}}));
-}});
-_14.TabButton=_d;
-return _14;
+define([
+	"dojo/_base/declare", // declare
+	"dojo/dom", // dom.setSelectable
+	"dojo/dom-attr", // domAttr.attr
+	"dojo/dom-class", // domClass.toggle
+	"dojo/has",
+	"dojo/i18n", // i18n.getLocalization
+	"dojo/_base/lang", // lang.hitch lang.trim
+	"./StackController",
+	"../registry",
+	"../Menu",
+	"../MenuItem",
+	"dojo/text!./templates/_TabButton.html",
+	"dojo/i18n!../nls/common"
+], function(declare, dom, domAttr, domClass, has, i18n, lang, StackController, registry, Menu, MenuItem, template){
+
+	// module:
+	//		dijit/layout/TabController
+
+	var TabButton = declare("dijit.layout._TabButton" + (has("dojo-bidi") ? "_NoBidi" : ""), StackController.StackButton, {
+		// summary:
+		//		A tab (the thing you click to select a pane).
+		// description:
+		//		Contains the title of the pane, and optionally a close-button to destroy the pane.
+		//		This is an internal widget and should not be instantiated directly.
+		// tags:
+		//		private
+
+		// baseClass: String
+		//		The CSS class applied to the domNode.
+		baseClass: "dijitTab",
+
+		// Apply dijitTabCloseButtonHover when close button is hovered
+		cssStateNodes: {
+			closeNode: "dijitTabCloseButton"
+		},
+
+		templateString: template,
+
+		// Button superclass maps name to a this.valueNode, but we don't have a this.valueNode attach point
+		_setNameAttr: "focusNode",
+
+		// Override _FormWidget.scrollOnFocus.
+		// Don't scroll the whole tab container into view when the button is focused.
+		scrollOnFocus: false,
+
+		buildRendering: function(){
+			this.inherited(arguments);
+
+			dom.setSelectable(this.containerNode, false);
+		},
+
+		startup: function(){
+			this.inherited(arguments);
+			var n = this.domNode;
+
+			// Required to give IE6 a kick, as it initially hides the
+			// tabs until they are focused on.
+			this.defer(function(){
+				n.className = n.className;
+			}, 1);
+		},
+
+		_setCloseButtonAttr: function(/*Boolean*/ disp){
+			// summary:
+			//		Hide/show close button
+			this._set("closeButton", disp);
+			domClass.toggle(this.domNode, "dijitClosable", disp);
+			this.closeNode.style.display = disp ? "" : "none";
+			if(disp){
+				var _nlsResources = i18n.getLocalization("dijit", "common");
+				if(this.closeNode){
+					domAttr.set(this.closeNode, "title", _nlsResources.itemClose);
+				}
+			}
+		},
+
+		_setDisabledAttr: function(/*Boolean*/ disabled){
+			// summary:
+			//		Make tab selected/unselectable
+
+			this.inherited(arguments);
+
+			// Don't show tooltip for close button when tab is disabled
+			if(this.closeNode){
+				if(disabled){
+					domAttr.remove(this.closeNode, "title");
+				}else{
+					var _nlsResources = i18n.getLocalization("dijit", "common");
+					domAttr.set(this.closeNode, "title", _nlsResources.itemClose);
+				}
+			}
+		},
+
+		_setLabelAttr: function(/*String*/ content){
+			// summary:
+			//		Hook for set('label', ...) to work.
+			// description:
+			//		takes an HTML string.
+			//		Inherited ToggleButton implementation will Set the label (text) of the button;
+			//		Need to set the alt attribute of icon on tab buttons if no label displayed
+			this.inherited(arguments);
+			if(!this.showLabel && !this.params.title){
+				this.iconNode.alt = lang.trim(this.containerNode.innerText || this.containerNode.textContent || '');
+			}
+		}
+	});
+
+	if(has("dojo-bidi")){
+		TabButton = declare("dijit.layout._TabButton", TabButton, {
+			_setLabelAttr: function(/*String*/ content){
+				this.inherited(arguments);
+				this.applyTextDir(this.iconNode, this.iconNode.alt);
+			}
+		});
+	}
+
+	var TabController = declare("dijit.layout.TabController", StackController, {
+		// summary:
+		//		Set of tabs (the things with titles and a close button, that you click to show a tab panel).
+		//		Used internally by `dijit/layout/TabContainer`.
+		// description:
+		//		Lets the user select the currently shown pane in a TabContainer or StackContainer.
+		//		TabController also monitors the TabContainer, and whenever a pane is
+		//		added or deleted updates itself accordingly.
+		// tags:
+		//		private
+
+		baseClass: "dijitTabController",
+
+		templateString: "<div role='tablist' data-dojo-attach-event='onkeydown:onkeydown'></div>",
+
+		// tabPosition: String
+		//		Defines where tabs go relative to the content.
+		//		"top", "bottom", "left-h", "right-h"
+		tabPosition: "top",
+
+		// buttonWidget: Constructor
+		//		The tab widget to create to correspond to each page
+		buttonWidget: TabButton,
+
+		// buttonWidgetCloseClass: String
+		//		Class of [x] close icon, used by event delegation code to tell when close button was clicked
+		buttonWidgetCloseClass: "dijitTabCloseButton",
+
+		postCreate: function(){
+			this.inherited(arguments);
+
+			// Setup a close menu to be shared between all the closable tabs (excluding disabled tabs)
+			var closeMenu = new Menu({
+				id: this.id + "_Menu",
+				ownerDocument: this.ownerDocument,
+				dir: this.dir,
+				lang: this.lang,
+				textDir: this.textDir,
+				targetNodeIds: [this.domNode],
+				selector: function(node){
+					return domClass.contains(node, "dijitClosable") && !domClass.contains(node, "dijitTabDisabled");
+				}
+			});
+			this.own(closeMenu);
+
+			var _nlsResources = i18n.getLocalization("dijit", "common"),
+				controller = this;
+			closeMenu.addChild(new MenuItem({
+				label: _nlsResources.itemClose,
+				ownerDocument: this.ownerDocument,
+				dir: this.dir,
+				lang: this.lang,
+				textDir: this.textDir,
+				onClick: function(evt){
+					var button = registry.byNode(this.getParent().currentTarget);
+					controller.onCloseButtonClick(button.page);
+				}
+			}));
+		}
+	});
+
+	TabController.TabButton = TabButton;	// for monkey patching
+
+	return TabController;
 });

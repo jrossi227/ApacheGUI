@@ -1,38 +1,68 @@
-//>>built
-define("dojox/editor/plugins/_SpellCheckParser",["dojo","dojox","dojo/_base/connect","dojo/_base/declare"],function(_1,_2){
-var _3=_1.declare("dojox.editor.plugins._SpellCheckParser",null,{lang:"english",parseIntoWords:function(_4){
-function _5(c){
-var ch=c.charCodeAt(0);
-return 48<=ch&&ch<=57||65<=ch&&ch<=90||97<=ch&&ch<=122;
-};
-var _6=this.words=[],_7=this.indices=[],_8=0,_9=_4&&_4.length,_a=0;
-while(_8<_9){
-var ch;
-while(_8<_9&&!_5(ch=_4.charAt(_8))&&ch!="&"){
-_8++;
-}
-if(ch=="&"){
-while(++_8<_9&&(ch=_4.charAt(_8))!=";"&&_5(ch)){
-}
-}else{
-_a=_8;
-while(++_8<_9&&_5(_4.charAt(_8))){
-}
-if(_a<_9){
-_6.push(_4.substring(_a,_8));
-_7.push(_a);
-}
-}
-}
-return _6;
-},getIndices:function(){
-return this.indices;
-}});
-_1.subscribe(dijit._scopeName+".Editor.plugin.SpellCheck.getParser",null,function(sp){
-if(sp.parser){
-return;
-}
-sp.parser=new _3();
+define([
+	"dojo",
+	"dojox",
+	"dojo/_base/connect",
+	"dojo/_base/declare"
+], function(dojo, dojox) {
+
+var SpellCheckParser = dojo.declare("dojox.editor.plugins._SpellCheckParser", null, {
+	lang: "english",
+	
+	parseIntoWords: function(/*String*/ text){
+		// summary:
+		//		Parse the text into words
+		// text:
+		//		Plain text without html tags
+		// tags:
+		//		public
+		// returns:
+		//		Array holding all the words
+		function isCharExt(c){
+			var ch = c.charCodeAt(0);
+			return 48 <= ch && ch <= 57 || 65 <= ch && ch <= 90 || 97 <= ch && ch <= 122;
+		}
+		var words = this.words = [],
+			indices = this.indices = [],
+			index = 0,
+			length = text && text.length,
+			start = 0;
+		
+		while(index < length){
+			var ch;
+			// Skip the white character and need to treat HTML entity respectively
+			while(index < length && !isCharExt(ch = text.charAt(index)) && ch != "&"){ index++; }
+			if(ch == "&"){ // An HTML entity, skip it
+				while(++index < length && (ch = text.charAt(index)) != ";" && isCharExt(ch)){}
+			}else{ // A word
+				start = index;
+				while(++index < length && isCharExt(text.charAt(index))){}
+				if(start < length){
+					words.push(text.substring(start, index));
+					indices.push(start);
+				}
+			}
+		}
+		
+		return words;
+	},
+	
+	getIndices: function(){
+		// summary:
+		//		Get the indices of the words. They are in one-to-one correspondence
+		// tags:
+		//		public
+		// returns:
+		//		Index array
+		return this.indices;
+	}
 });
-return _3;
+
+// Register this parser in the SpellCheck plugin.
+dojo.subscribe(dijit._scopeName + ".Editor.plugin.SpellCheck.getParser", null, function(sp){
+	if(sp.parser){ return; }
+	sp.parser = new SpellCheckParser();
+});
+
+return SpellCheckParser;
+
 });

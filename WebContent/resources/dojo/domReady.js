@@ -1,110 +1,124 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
+define(['./has'], function(has){
+	var global = (function () { return this; })(),
+		doc = document,
+		readyStates = { 'loaded': 1, 'complete': 1 },
+		fixReadyState = typeof doc.readyState != "string",
+		ready = !!readyStates[doc.readyState],
+		readyQ = [],
+		recursiveGuard;
 
-//>>built
-define("dojo/domReady",["./has"],function(_1){
-var _2=this,_3=document,_4={"loaded":1,"complete":1},_5=typeof _3.readyState!="string",_6=!!_4[_3.readyState],_7=[],_8;
-function _9(_a){
-_7.push(_a);
-if(_6){
-_b();
-}
-};
-_9.load=function(id,_c,_d){
-_9(_d);
-};
-_9._Q=_7;
-_9._onQEmpty=function(){
-};
-if(_5){
-_3.readyState="loading";
-}
-function _b(){
-if(_8){
-return;
-}
-_8=true;
-while(_7.length){
-try{
-(_7.shift())(_3);
-}
-catch(err){
-}
-}
-_8=false;
-_9._onQEmpty();
-};
-if(!_6){
-var _e=[],_f=function(evt){
-evt=evt||_2.event;
-if(_6||(evt.type=="readystatechange"&&!_4[_3.readyState])){
-return;
-}
-if(_5){
-_3.readyState="complete";
-}
-_6=1;
-_b();
-},on=function(_10,_11){
-_10.addEventListener(_11,_f,false);
-_7.push(function(){
-_10.removeEventListener(_11,_f,false);
-});
-};
-if(!_1("dom-addeventlistener")){
-on=function(_12,_13){
-_13="on"+_13;
-_12.attachEvent(_13,_f);
-_7.push(function(){
-_12.detachEvent(_13,_f);
-});
-};
-var div=_3.createElement("div");
-try{
-if(div.doScroll&&_2.frameElement===null){
-_e.push(function(){
-try{
-div.doScroll("left");
-return 1;
-}
-catch(e){
-}
-});
-}
-}
-catch(e){
-}
-}
-on(_3,"DOMContentLoaded");
-on(_2,"load");
-if("onreadystatechange" in _3){
-on(_3,"readystatechange");
-}else{
-if(!_5){
-_e.push(function(){
-return _4[_3.readyState];
-});
-}
-}
-if(_e.length){
-var _14=function(){
-if(_6){
-return;
-}
-var i=_e.length;
-while(i--){
-if(_e[i]()){
-_f("poller");
-return;
-}
-}
-setTimeout(_14,30);
-};
-_14();
-}
-}
-return _9;
+	function domReady(callback){
+		// summary:
+		//		Plugin to delay require()/define() callback from firing until the DOM has finished loading.
+		readyQ.push(callback);
+		if(ready){ processQ(); }
+	}
+	domReady.load = function(id, req, load){
+		domReady(load);
+	};
+
+	// Export queue so that ready() can check if it's empty or not.
+	domReady._Q = readyQ;
+	domReady._onQEmpty = function(){
+		// summary:
+		//		Private method overridden by dojo/ready, to notify when everything in the
+		//		domReady queue has been processed.  Do not use directly.
+		//		Will be removed in 2.0, along with domReady._Q.
+	};
+
+	// For FF <= 3.5
+	if(fixReadyState){ doc.readyState = "loading"; }
+
+	function processQ(){
+		// Calls all functions in the queue in order, unless processQ() is already running, in which case just return
+
+		if(recursiveGuard){ return; }
+		recursiveGuard = true;
+
+		while(readyQ.length){
+			try{
+				(readyQ.shift())(doc);
+			}catch(err){
+				console.error(err, "in domReady callback", err.stack);
+			}
+		}
+
+		recursiveGuard = false;
+
+		// Notification for dojo/ready.  Remove for 2.0.
+		// Note that this could add more tasks to the ready queue.
+		domReady._onQEmpty();
+	}
+
+	if(!ready){
+		var tests = [],
+			detectReady = function(evt){
+				evt = evt || global.event;
+				if(ready || (evt.type == "readystatechange" && !readyStates[doc.readyState])){ return; }
+
+				// For FF <= 3.5
+				if(fixReadyState){ doc.readyState = "complete"; }
+
+				ready = 1;
+				processQ();
+			},
+			on = function(node, event){
+				node.addEventListener(event, detectReady, false);
+				readyQ.push(function(){ node.removeEventListener(event, detectReady, false); });
+			};
+
+		if(!has("dom-addeventlistener")){
+			on = function(node, event){
+				event = "on" + event;
+				node.attachEvent(event, detectReady);
+				readyQ.push(function(){ node.detachEvent(event, detectReady); });
+			};
+
+			var div = doc.createElement("div");
+			try{
+				if(div.doScroll && global.frameElement === null){
+					// the doScroll test is only useful if we're in the top-most frame
+					tests.push(function(){
+						// Derived with permission from Diego Perini's IEContentLoaded
+						// http://javascript.nwbox.com/IEContentLoaded/
+						try{
+							div.doScroll("left");
+							return 1;
+						}catch(e){}
+					});
+				}
+			}catch(e){}
+		}
+
+		on(doc, "DOMContentLoaded");
+		on(global, "load");
+
+		if("onreadystatechange" in doc){
+			on(doc, "readystatechange");
+		}else if(!fixReadyState){
+			// if the ready state property exists and there's
+			// no readystatechange event, poll for the state
+			// to change
+			tests.push(function(){
+				return readyStates[doc.readyState];
+			});
+		}
+
+		if(tests.length){
+			var poller = function(){
+				if(ready){ return; }
+				var i = tests.length;
+				while(i--){
+					if(tests[i]()){
+						detectReady("poller");
+						return;
+					}
+				}
+				setTimeout(poller, 30);
+			};
+			poller();
+		}
+	}
+
+	return domReady;
 });

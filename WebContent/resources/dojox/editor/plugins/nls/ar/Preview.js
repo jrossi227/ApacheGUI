@@ -1,2 +1,5 @@
-//>>built
-define("dojox/editor/plugins/nls/ar/Preview",({"preview":"معاينة"}));
+define(
+({
+	"preview": "معاينة"
+})
+);

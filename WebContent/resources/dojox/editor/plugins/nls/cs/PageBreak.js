@@ -1,2 +1,5 @@
-//>>built
-define("dojox/editor/plugins/nls/cs/PageBreak",({"pageBreak":"Zalomení stránky"}));
+define(
+({
+	"pageBreak": "Zalomení stránky"
+})
+);

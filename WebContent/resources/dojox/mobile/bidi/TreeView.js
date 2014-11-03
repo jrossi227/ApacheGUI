@@ -1,6 +1,20 @@
-//>>built
-define("dojox/mobile/bidi/TreeView",["dojo/_base/declare"],function(_1){
-return _1(null,{_customizeListItem:function(_2){
-_2.textDir=this.textDir;
-}});
+define([
+	"dojo/_base/declare"
+], function(declare){
+
+	// module:
+	//		dojox/mobile/bidi/TreeView
+
+	return declare(null, {
+		// summary:
+		//		Support for control over text direction for mobile TreeView widget, using Unicode Control Characters to control text direction.
+		// description:
+		//		Text direction attribute of the Tree is set to ListItem.
+		//		This class should not be used directly.
+		//		Mobile TreeView widget loads this module when user sets "has: {'dojo-bidi': true }" in data-dojo-config.
+		_customizeListItem: function(listItemArgs){
+			listItemArgs.textDir = this.textDir;
+		}
+
+	});
 });

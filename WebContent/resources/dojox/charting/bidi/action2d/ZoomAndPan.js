@@ -1,7 +1,11 @@
-//>>built
-define("dojox/charting/bidi/action2d/ZoomAndPan",["dojo/_base/declare"],function(_1){
-return _1(null,{_getDelta:function(_2){
-var _3=this.inherited(arguments);
-return _3*(this.chart.isRightToLeft()?-1:1);
-}});
+define(["dojo/_base/declare"],
+	function(declare){
+	// module:
+	//		dojox/charting/bidi/action2d/ZoomAndPan	
+	return declare(null, {
+		_getDelta: function(event){
+			var delta = this.inherited(arguments);
+			return delta * (this.chart.isRightToLeft()? -1 : 1);				
+		}
+	});
 });

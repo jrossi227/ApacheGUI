@@ -1,51 +1,112 @@
-//>>built
-define("dojox/mobile/Tooltip",["dojo/_base/array","dijit/registry","dojo/_base/declare","dojo/_base/lang","dojo/dom-class","dojo/dom-construct","dojo/dom-geometry","dojo/dom-style","dijit/place","dijit/_WidgetBase","dojo/has","dojo/has!dojo-bidi?dojox/mobile/bidi/Tooltip"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a,_b,_c){
-var _d=_3(_b("dojo-bidi")?"dojox.mobile.NonBidiTooltip":"dojox.mobile.Tooltip",_a,{baseClass:"mblTooltip mblTooltipHidden",buildRendering:function(){
-this.inherited(arguments);
-this.anchor=_6.create("div",{"class":"mblTooltipAnchor"},this.domNode,"first");
-this.arrow=_6.create("div",{"class":"mblTooltipArrow"},this.anchor);
-this.innerArrow=_6.create("div",{"class":"mblTooltipInnerArrow"},this.anchor);
-if(!this.containerNode){
-this.containerNode=this.domNode;
-}
-},show:function(_e,_f){
-var _10=this.domNode;
-var _11={"MRM":"mblTooltipAfter","MLM":"mblTooltipBefore","BMT":"mblTooltipBelow","TMB":"mblTooltipAbove","BLT":"mblTooltipBelow","TLB":"mblTooltipAbove","BRT":"mblTooltipBelow","TRB":"mblTooltipAbove","TLT":"mblTooltipBefore","TRT":"mblTooltipAfter","BRB":"mblTooltipAfter","BLB":"mblTooltipBefore"};
-_5.remove(_10,["mblTooltipAfter","mblTooltipBefore","mblTooltipBelow","mblTooltipAbove"]);
-_1.forEach(_2.findWidgets(_10),function(_12){
-if(_12.height=="auto"&&typeof _12.resize=="function"){
-if(!_12._parentPadBorderExtentsBottom){
-_12._parentPadBorderExtentsBottom=_7.getPadBorderExtents(_10).b;
-}
-_12.resize();
-}
-});
-if(_f){
-_f=_1.map(_f,function(pos){
-return {after:"after-centered",before:"before-centered"}[pos]||pos;
-});
-}
-var _13=_9.around(_10,_e,_f||["below-centered","above-centered","after-centered","before-centered"],this.isLeftToRight());
-var _14=_11[_13.corner+_13.aroundCorner.charAt(0)]||"";
-_5.add(_10,_14);
-var pos=_7.position(_e,true);
-_8.set(this.anchor,(_14=="mblTooltipAbove"||_14=="mblTooltipBelow")?{top:"",left:Math.max(0,pos.x-_13.x+(pos.w>>1)-(this.arrow.offsetWidth>>1))+"px"}:{left:"",top:Math.max(0,pos.y-_13.y+(pos.h>>1)-(this.arrow.offsetHeight>>1))+"px"});
-_5.replace(_10,"mblTooltipVisible","mblTooltipHidden");
-this.resize=_4.hitch(this,"show",_e,_f);
-return _13;
-},hide:function(){
-this.resize=undefined;
-_5.replace(this.domNode,"mblTooltipHidden","mblTooltipVisible");
-},onBlur:function(e){
-return true;
-},destroy:function(){
-if(this.anchor){
-this.anchor.removeChild(this.innerArrow);
-this.anchor.removeChild(this.arrow);
-this.domNode.removeChild(this.anchor);
-this.anchor=this.arrow=this.innerArrow=undefined;
-}
-this.inherited(arguments);
-}});
-return _b("dojo-bidi")?_3("dojox.mobile.Tooltip",[_d,_c]):_d;
+define([
+	"dojo/_base/array", // array.forEach
+	"dijit/registry",
+	"dojo/_base/declare",
+	"dojo/_base/lang",
+	"dojo/dom-class",
+	"dojo/dom-construct",
+	"dojo/dom-geometry",
+	"dojo/dom-style",
+	"dijit/place",
+	"dijit/_WidgetBase",
+	"dojo/has",
+	"dojo/has!dojo-bidi?dojox/mobile/bidi/Tooltip"
+], function(array, registry, declare, lang, domClass, domConstruct, domGeometry, domStyle, place, WidgetBase, has, BidiTooltip){
+
+	var Tooltip = declare(has("dojo-bidi") ? "dojox.mobile.NonBidiTooltip" : "dojox.mobile.Tooltip", WidgetBase, {
+		// summary:
+		//		A non-templated popup bubble widget
+
+		baseClass: "mblTooltip mblTooltipHidden",
+
+		buildRendering: function(){
+			// create the helper nodes here in case the user overwrote domNode.innerHTML
+			this.inherited(arguments);
+			this.anchor = domConstruct.create("div", {"class":"mblTooltipAnchor"}, this.domNode, "first");
+			this.arrow = domConstruct.create("div", {"class":"mblTooltipArrow"}, this.anchor);
+			this.innerArrow = domConstruct.create("div", {"class":"mblTooltipInnerArrow"}, this.anchor);
+			if(!this.containerNode){
+				// set containerNode so that getChildren() works
+				this.containerNode = this.domNode;
+			}
+		},
+
+		show: function(/*DomNode*/ aroundNode, /*Array*/positions){
+			// summary:
+			//		Pop up the tooltip and point to aroundNode using the best position
+			// positions:
+			//		Ordered list of positions to try matching up.
+			//
+			//		- before-centered: places drop down before the aroundNode
+			//		- after-centered: places drop down after the aroundNode
+			//		- above-centered: drop down goes above aroundNode
+			//		- below-centered: drop down goes below aroundNode
+
+			var domNode = this.domNode;
+			var connectorClasses = {
+				"MRM": "mblTooltipAfter",
+				"MLM": "mblTooltipBefore",
+				"BMT": "mblTooltipBelow",
+				"TMB": "mblTooltipAbove",
+				"BLT": "mblTooltipBelow",
+				"TLB": "mblTooltipAbove",
+				"BRT": "mblTooltipBelow",
+				"TRB": "mblTooltipAbove",
+				"TLT": "mblTooltipBefore",
+				"TRT": "mblTooltipAfter",
+				"BRB": "mblTooltipAfter",
+				"BLB": "mblTooltipBefore"
+			};
+			domClass.remove(domNode, ["mblTooltipAfter","mblTooltipBefore","mblTooltipBelow","mblTooltipAbove"]);
+			array.forEach(registry.findWidgets(domNode), function(widget){
+				if(widget.height == "auto" && typeof widget.resize == "function"){
+					if(!widget._parentPadBorderExtentsBottom){
+						widget._parentPadBorderExtentsBottom = domGeometry.getPadBorderExtents(domNode).b;
+					}
+					widget.resize();
+				}
+			});
+			// Convert before/after to before-centered/after-centered for compatibility
+			// TODO remove this 1.7->1.8 compatibility code in 2.0
+			if(positions){
+				positions = array.map(positions, function(pos){
+					return {after: "after-centered", before: "before-centered"}[pos] || pos;
+				});
+			}
+			var best = place.around(domNode, aroundNode, positions || ["below-centered", "above-centered", "after-centered", "before-centered"], this.isLeftToRight());
+			var connectorClass = connectorClasses[best.corner + best.aroundCorner.charAt(0)] || "";
+			domClass.add(domNode, connectorClass);
+			var pos = domGeometry.position(aroundNode, true);
+			domStyle.set(this.anchor, (connectorClass == "mblTooltipAbove" || connectorClass == "mblTooltipBelow")
+				? { top: "", left: Math.max(0, pos.x - best.x + (pos.w >> 1) - (this.arrow.offsetWidth >> 1)) + "px" }
+				: { left: "", top: Math.max(0, pos.y - best.y + (pos.h >> 1) - (this.arrow.offsetHeight >> 1)) + "px" }
+			);
+			domClass.replace(domNode, "mblTooltipVisible", "mblTooltipHidden");
+			this.resize = lang.hitch(this, "show", aroundNode, positions); // orientation changes
+			return best;
+		},
+
+		hide: function(){
+			// summary:
+			//		Pop down the tooltip
+			this.resize = undefined;
+			domClass.replace(this.domNode, "mblTooltipHidden", "mblTooltipVisible");
+		},
+
+		onBlur: function(/*Event*/e){
+			return true; // touching outside the overlay area does call hide() by default
+		},
+
+		destroy: function(){
+			if(this.anchor){
+				this.anchor.removeChild(this.innerArrow);
+				this.anchor.removeChild(this.arrow);
+				this.domNode.removeChild(this.anchor);
+				this.anchor = this.arrow = this.innerArrow = undefined;
+			}
+			this.inherited(arguments);
+		}
+	});
+	
+	return has("dojo-bidi") ? declare("dojox.mobile.Tooltip", [Tooltip, BidiTooltip]) : Tooltip;		
 });

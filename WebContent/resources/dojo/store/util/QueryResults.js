@@ -1,39 +1,71 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
+define(["../../_base/array", "../../_base/lang", "../../when"
+], function(array, lang, when){
 
-//>>built
-define("dojo/store/util/QueryResults",["../../_base/array","../../_base/lang","../../when"],function(_1,_2,_3){
-var _4=function(_5){
-if(!_5){
-return _5;
-}
-if(_5.then){
-_5=_2.delegate(_5);
-}
-function _6(_7){
-if(!_5[_7]){
-_5[_7]=function(){
-var _8=arguments;
-return _3(_5,function(_9){
-Array.prototype.unshift.call(_8,_9);
-return _4(_1[_7].apply(_1,_8));
-});
+// module:
+//		dojo/store/util/QueryResults
+
+var QueryResults = function(results){
+	// summary:
+	//		A function that wraps the results of a store query with additional
+	//		methods.
+	// description:
+	//		QueryResults is a basic wrapper that allows for array-like iteration
+	//		over any kind of returned data from a query.  While the simplest store
+	//		will return a plain array of data, other stores may return deferreds or
+	//		promises; this wrapper makes sure that *all* results can be treated
+	//		the same.
+	//
+	//		Additional methods include `forEach`, `filter` and `map`.
+	// results: Array|dojo/promise/Promise
+	//		The result set as an array, or a promise for an array.
+	// returns:
+	//		An array-like object that can be used for iterating over.
+	// example:
+	//		Query a store and iterate over the results.
+	//
+	//	|	store.query({ prime: true }).forEach(function(item){
+	//	|		//	do something
+	//	|	});
+
+	if(!results){
+		return results;
+	}
+
+	var isPromise = !!results.then;
+	// if it is a promise it may be frozen
+	if(isPromise){
+		results = lang.delegate(results);
+	}
+	function addIterativeMethod(method){
+		// Always add the iterative methods so a QueryResults is
+		// returned whether the environment is ES3 or ES5
+		results[method] = function(){
+			var args = arguments;
+			var result = when(results, function(results){
+				Array.prototype.unshift.call(args, results);
+				return QueryResults(array[method].apply(array, args));
+			});
+			// forEach should only return the result of when()
+			// when we're wrapping a promise
+			if(method !== "forEach" || isPromise){
+				return result;
+			}
+		};
+	}
+
+	addIterativeMethod("forEach");
+	addIterativeMethod("filter");
+	addIterativeMethod("map");
+	if(results.total == null){
+		results.total = when(results, function(results){
+			return results.length;
+		});
+	}
+	return results; // Object
 };
-}
-};
-_6("forEach");
-_6("filter");
-_6("map");
-if(!_5.total){
-_5.total=_3(_5,function(_a){
-return _a.length;
-});
-}
-return _5;
-};
-_2.setObject("dojo.store.util.QueryResults",_4);
-return _4;
+
+lang.setObject("dojo.store.util.QueryResults", QueryResults);
+
+return QueryResults;
+
 });

@@ -43,7 +43,11 @@
   position: relative;
   margin: 0;
   padding: 0;
-  
+  /* 
+		 * The dojoxCalendarToday & dojoxCalendarWeekend classes is added by the 
+		 * ColumnView.styleGridColumn method that can be subclassed to add/remove css classes
+		 */
+
 }
 .claro .dojoxCalendarMonthColumnView .dojoxCalendarGridTable td {
   border-top: dotted 1px #B5BCC7;

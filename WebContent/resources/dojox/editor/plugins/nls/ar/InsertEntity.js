@@ -1,2 +1,5 @@
-//>>built
-define("dojox/editor/plugins/nls/ar/InsertEntity",({insertEntity:"ادراج رمز"}));
+define(
+({
+	insertEntity: "ادراج رمز"
+})
+);

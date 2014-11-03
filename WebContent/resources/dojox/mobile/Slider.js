@@ -1,135 +1,207 @@
-//>>built
-define("dojox/mobile/Slider",["dojo/_base/array","dojo/_base/connect","dojo/_base/declare","dojo/_base/lang","dojo/_base/window","dojo/sniff","dojo/dom-class","dojo/dom-construct","dojo/dom-geometry","dojo/dom-style","dojo/keys","dojo/touch","dijit/_WidgetBase","dijit/form/_FormValueMixin"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a,_b,_c,_d,_e){
-return _3("dojox.mobile.Slider",[_d,_e],{value:0,min:0,max:100,step:1,baseClass:"mblSlider",flip:false,orientation:"auto",halo:"8pt",buildRendering:function(){
-if(!this.templateString){
-this.focusNode=this.domNode=_8.create("div",{});
-this.valueNode=_8.create("input",(this.srcNodeRef&&this.srcNodeRef.name)?{type:"hidden",name:this.srcNodeRef.name}:{type:"hidden"},this.domNode,"last");
-var _f=_8.create("div",{style:{position:"relative",height:"100%",width:"100%"}},this.domNode,"last");
-this.progressBar=_8.create("div",{style:{position:"absolute"},"class":"mblSliderProgressBar"},_f,"last");
-this.touchBox=_8.create("div",{style:{position:"absolute"},"class":"mblSliderTouchBox"},_f,"last");
-this.handle=_8.create("div",{style:{position:"absolute"},"class":"mblSliderHandle"},_f,"last");
-}
-this.inherited(arguments);
-if(typeof this.domNode.style.msTouchAction!="undefined"){
-this.domNode.style.msTouchAction="none";
-}
-},_setValueAttr:function(_10,_11){
-_10=Math.max(Math.min(_10,this.max),this.min);
-var _12=(this.value-this.min)*100/(this.max-this.min);
-this.valueNode.value=_10;
-this.inherited(arguments);
-if(!this._started){
-return;
-}
-this.focusNode.setAttribute("aria-valuenow",_10);
-var _13=(_10-this.min)*100/(this.max-this.min);
-var _14=this.orientation!="V";
-if(_11===true){
-_7.add(this.handle,"mblSliderTransition");
-_7.add(this.progressBar,"mblSliderTransition");
-}else{
-_7.remove(this.handle,"mblSliderTransition");
-_7.remove(this.progressBar,"mblSliderTransition");
-}
-_a.set(this.handle,this._attrs.handleLeft,(this._reversed?(100-_13):_13)+"%");
-_a.set(this.progressBar,this._attrs.width,_13+"%");
-},postCreate:function(){
-this.inherited(arguments);
-function _15(e){
-function _16(e){
-_2b=_17?e[this._attrs.pageX]:(e.touches?e.touches[0][this._attrs.pageX]:e[this._attrs.clientX]);
-_2c=_2b-_18;
-_2c=Math.min(Math.max(_2c,0),_19);
-var _1a=this.step?((this.max-this.min)/this.step):_19;
-if(_1a<=1||_1a==Infinity){
-_1a=_19;
-}
-var _1b=Math.round(_2c*_1a/_19);
-_22=(this.max-this.min)*_1b/_1a;
-_22=this._reversed?(this.max-_22):(this.min+_22);
-};
-function _1c(e){
-e.preventDefault();
-_4.hitch(this,_16)(e);
-this.set("value",_22,false);
-};
-function _1d(e){
-e.preventDefault();
-_1.forEach(_1e,_4.hitch(this,"disconnect"));
-_1e=[];
-this.set("value",this.value,true);
-};
-e.preventDefault();
-var _17=e.type=="mousedown";
-var box=_9.position(_1f,false);
-var _20=(_6("ie")||_6("trident")>6)?1:(_a.get(_5.body(),"zoom")||1);
-if(isNaN(_20)){
-_20=1;
-}
-var _21=(_6("ie")||_6("trident")>6)?1:(_a.get(_1f,"zoom")||1);
-if(isNaN(_21)){
-_21=1;
-}
-var _18=box[this._attrs.x]*_21*_20+_9.docScroll()[this._attrs.x];
-var _19=box[this._attrs.w]*_21*_20;
-_4.hitch(this,_16)(e);
-if(e.target==this.touchBox){
-this.set("value",_22,true);
-}
-_1.forEach(_1e,_2.disconnect);
-var _23=_5.doc.documentElement;
-var _1e=[this.connect(_23,_c.move,_1c),this.connect(_23,_c.release,_1d)];
-};
-function _24(e){
-if(this.disabled||this.readOnly||e.altKey||e.ctrlKey||e.metaKey){
-return;
-}
-var _25=this.step,_26=1,_27;
-switch(e.keyCode){
-case _b.HOME:
-_27=this.min;
-break;
-case _b.END:
-_27=this.max;
-break;
-case _b.RIGHT_ARROW:
-_26=-1;
-case _b.LEFT_ARROW:
-_27=this.value+_26*((_28&&_29)?_25:-_25);
-break;
-case _b.DOWN_ARROW:
-_26=-1;
-case _b.UP_ARROW:
-_27=this.value+_26*((!_28||_29)?_25:-_25);
-break;
-default:
-return;
-}
-e.preventDefault();
-this._setValueAttr(_27,false);
-};
-function _2a(e){
-if(this.disabled||this.readOnly||e.altKey||e.ctrlKey||e.metaKey){
-return;
-}
-this._setValueAttr(this.value,true);
-};
-var _2b,_2c,_22,_1f=this.domNode;
-if(this.orientation=="auto"){
-this.orientation=_1f.offsetHeight<=_1f.offsetWidth?"H":"V";
-}
-_7.add(this.domNode,_1.map(this.baseClass.split(" "),_4.hitch(this,function(c){
-return c+this.orientation;
-})));
-var _29=this.orientation!="V",ltr=_29?this.isLeftToRight():false,_28=!!this.flip;
-this._reversed=!((_29&&((ltr&&!_28)||(!ltr&&_28)))||(!_29&&_28));
-this._attrs=_29?{x:"x",w:"w",l:"l",r:"r",pageX:"pageX",clientX:"clientX",handleLeft:"left",left:this._reversed?"right":"left",width:"width"}:{x:"y",w:"h",l:"t",r:"b",pageX:"pageY",clientX:"clientY",handleLeft:"top",left:this._reversed?"bottom":"top",width:"height"};
-this.progressBar.style[this._attrs.left]="0px";
-this.connect(this.touchBox,_c.press,_15);
-this.connect(this.handle,_c.press,_15);
-this.connect(this.domNode,"onkeypress",_24);
-this.connect(this.domNode,"onkeyup",_2a);
-this.startup();
-this.set("value",this.value);
-}});
+define([
+	"dojo/_base/array",
+	"dojo/_base/connect",
+	"dojo/_base/declare",
+	"dojo/_base/lang",
+	"dojo/_base/window",
+	"dojo/sniff",
+	"dojo/dom-class",
+	"dojo/dom-construct",
+	"dojo/dom-geometry",
+	"dojo/dom-style",
+	"dojo/keys",
+	"dojo/touch",
+	"dijit/_WidgetBase",
+	"dijit/form/_FormValueMixin"
+],
+	function(array, connect, declare, lang, win, has, domClass, domConstruct, domGeometry, domStyle, keys, touch, WidgetBase, FormValueMixin){
+
+	return declare("dojox.mobile.Slider", [WidgetBase, FormValueMixin], {
+		// summary:
+		//		A non-templated Slider widget similar to the HTML5 INPUT type=range.
+
+		// value: [const] Number
+		//		The current slider value.
+		value: 0,
+
+		// min: [const] Number
+		//		The first value the slider can be set to.
+		min: 0,
+
+		// max: [const] Number
+		//		The last value the slider can be set to.
+		max: 100,
+
+		// step: [const] Number
+		//		The delta from 1 value to another.
+		//		This causes the slider handle to snap/jump to the closest possible value.
+		//		A value of 0 means continuous (as much as allowed by pixel resolution).
+		step: 1,
+
+		// baseClass: String
+		//		The name of the CSS class of this widget.
+		baseClass: "mblSlider",
+
+		// flip: [const] Boolean
+		//		Specifies if the slider should change its default: ascending <--> descending.
+		flip: false,
+
+		// orientation: [const] String
+		//		The slider direction.
+		//
+		//		- "H": horizontal
+		//		- "V": vertical
+		//		- "auto": use width/height comparison at instantiation time (default is "H" if width/height are 0)
+		orientation: "auto",
+
+		// halo: Number
+		//		Size of the boundary that extends beyond the edges of the slider
+		//		to make it easier to touch.
+		halo: "8pt",
+
+		buildRendering: function(){
+			if(!this.templateString){ // true if this widget is not templated
+				this.focusNode = this.domNode = domConstruct.create("div", {});
+				this.valueNode = domConstruct.create("input", (this.srcNodeRef && this.srcNodeRef.name) ? { type: "hidden", name: this.srcNodeRef.name } : { type: "hidden" }, this.domNode, "last");
+				var relativeParent = domConstruct.create("div", { style: { position:"relative", height:"100%", width:"100%" } }, this.domNode, "last");
+				this.progressBar = domConstruct.create("div", { style:{ position:"absolute" }, "class":"mblSliderProgressBar" }, relativeParent, "last");
+				this.touchBox = domConstruct.create("div", { style:{ position:"absolute" }, "class":"mblSliderTouchBox" }, relativeParent, "last");
+				this.handle = domConstruct.create("div", { style:{ position:"absolute" }, "class":"mblSliderHandle" }, relativeParent, "last");
+			}
+			this.inherited(arguments);
+			// prevent browser scrolling on IE10 (evt.preventDefault() is not enough)
+			if(typeof this.domNode.style.msTouchAction != "undefined"){
+				this.domNode.style.msTouchAction = "none";
+			}
+		},
+
+		_setValueAttr: function(/*Number*/ value, /*Boolean?*/ priorityChange){
+			// summary:
+			//		Hook such that set('value', value) works.
+			// tags:
+			//		private
+			value = Math.max(Math.min(value, this.max), this.min);
+			var fromPercent = (this.value - this.min) * 100 / (this.max - this.min);
+			this.valueNode.value = value;
+			this.inherited(arguments);
+			if(!this._started){ return; } // don't move images until all the properties are set
+			this.focusNode.setAttribute("aria-valuenow", value);
+			var toPercent = (value - this.min) * 100 / (this.max - this.min);
+			// now perform visual slide
+			var horizontal = this.orientation != "V";
+			if(priorityChange === true){
+				domClass.add(this.handle, "mblSliderTransition");
+				domClass.add(this.progressBar, "mblSliderTransition");
+			}else{
+				domClass.remove(this.handle, "mblSliderTransition");
+				domClass.remove(this.progressBar, "mblSliderTransition");
+			}
+			domStyle.set(this.handle, this._attrs.handleLeft, (this._reversed ? (100-toPercent) : toPercent) + "%");
+			domStyle.set(this.progressBar, this._attrs.width, toPercent + "%");
+		},
+
+		postCreate: function(){
+			this.inherited(arguments);
+
+			function beginDrag(e){
+				function getEventData(e){
+					point = isMouse ? e[this._attrs.pageX] : (e.touches ? e.touches[0][this._attrs.pageX] : e[this._attrs.clientX]);
+					pixelValue = point - startPixel;
+					pixelValue = Math.min(Math.max(pixelValue, 0), maxPixels);
+					var discreteValues = this.step ? ((this.max - this.min) / this.step) : maxPixels;
+					if(discreteValues <= 1 || discreteValues == Infinity ){ discreteValues = maxPixels; }
+					var wholeIncrements = Math.round(pixelValue * discreteValues / maxPixels);
+					value = (this.max - this.min) * wholeIncrements / discreteValues;
+					value = this._reversed ? (this.max - value) : (this.min + value);
+				}
+				function continueDrag(e){
+					e.preventDefault();
+					lang.hitch(this, getEventData)(e);
+					this.set('value', value, false);
+				}
+		
+				function endDrag(e){
+					e.preventDefault();
+					array.forEach(actionHandles, lang.hitch(this, "disconnect"));
+					actionHandles = [];
+					this.set('value', this.value, true);
+				}
+
+				e.preventDefault();
+				var isMouse = e.type == "mousedown";
+				var box = domGeometry.position(node, false); // can't use true since the added docScroll and the returned x are body-zoom incompatibile
+				var bodyZoom = (has("ie") || has("trident") > 6) ? 1 : (domStyle.get(win.body(), "zoom") || 1);
+				if(isNaN(bodyZoom)){ bodyZoom = 1; }
+				var nodeZoom = (has("ie") || has("trident") > 6) ? 1 : (domStyle.get(node, "zoom") || 1);
+				if(isNaN(nodeZoom)){ nodeZoom = 1; }
+				var startPixel = box[this._attrs.x] * nodeZoom * bodyZoom + domGeometry.docScroll()[this._attrs.x];
+				var maxPixels = box[this._attrs.w] * nodeZoom * bodyZoom;
+				lang.hitch(this, getEventData)(e);
+				if(e.target == this.touchBox){
+					this.set('value', value, true);
+				}
+				array.forEach(actionHandles, connect.disconnect);
+				var root = win.doc.documentElement;
+				var actionHandles = [
+					this.connect(root, touch.move, continueDrag),
+					this.connect(root, touch.release, endDrag)
+				];
+			}
+
+			function keyPress(/*Event*/ e){
+				if(this.disabled || this.readOnly || e.altKey || e.ctrlKey || e.metaKey){ return; }
+				var	step = this.step,
+					multiplier = 1,
+					newValue;
+				switch(e.keyCode){
+					case keys.HOME:
+						newValue = this.min;
+						break;
+					case keys.END:
+						newValue = this.max;
+						break;
+					case keys.RIGHT_ARROW:
+						multiplier = -1;
+					case keys.LEFT_ARROW:
+						newValue = this.value + multiplier * ((flip && horizontal) ? step : -step);
+						break;
+					case keys.DOWN_ARROW:
+						multiplier = -1;
+					case keys.UP_ARROW:
+						newValue = this.value + multiplier * ((!flip || horizontal) ? step : -step);
+						break;
+					default:
+						return;
+				}
+				e.preventDefault();
+				this._setValueAttr(newValue, false);
+			}
+
+			function keyUp(/*Event*/ e){
+				if(this.disabled || this.readOnly || e.altKey || e.ctrlKey || e.metaKey){ return; }
+				this._setValueAttr(this.value, true);
+			}
+
+			var	point, pixelValue, value,
+				node = this.domNode;
+			if(this.orientation == "auto"){
+				 this.orientation = node.offsetHeight <= node.offsetWidth ? "H" : "V";
+			}
+			// add V or H suffix to baseClass for styling purposes
+			domClass.add(this.domNode, array.map(this.baseClass.split(" "), lang.hitch(this, function(c){ return c+this.orientation; })));
+			var	horizontal = this.orientation != "V",
+				ltr = horizontal ? this.isLeftToRight() : false,
+				flip = !!this.flip;
+			// _reversed is complicated since you can have flipped right-to-left and vertical is upside down by default
+			this._reversed = !((horizontal && ((ltr && !flip) || (!ltr && flip))) || (!horizontal && flip));
+			this._attrs = horizontal ? { x:'x', w:'w', l:'l', r:'r', pageX:'pageX', clientX:'clientX', handleLeft:"left", left:this._reversed ? "right" : "left", width:"width" } : { x:'y', w:'h', l:'t', r:'b', pageX:'pageY', clientX:'clientY', handleLeft:"top", left:this._reversed ? "bottom" : "top", width:"height" };
+			this.progressBar.style[this._attrs.left] = "0px";
+			this.connect(this.touchBox, touch.press, beginDrag);
+			this.connect(this.handle, touch.press, beginDrag);
+			this.connect(this.domNode, "onkeypress", keyPress); // for desktop a11y
+			this.connect(this.domNode, "onkeyup", keyUp); // fire onChange on desktop
+			this.startup();
+			this.set('value', this.value);
+		}
+	});
 });

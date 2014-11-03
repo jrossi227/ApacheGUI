@@ -1,4 +1,4 @@
-
+/* dojox.mobile.RoundRect */
 .mblRoundRect.mblShadow {
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 }
@@ -8,6 +8,7 @@
 .dj_ff3 .mblRoundRect.mblShadow {
   -moz-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 }
+/* Round Corner */
 .dj_ie .mblRoundCorner {
   background-color: #ffffff;
   height: 1px;

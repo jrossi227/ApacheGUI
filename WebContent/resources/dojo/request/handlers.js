@@ -1,53 +1,74 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
+define([
+	'../json',
+	'../_base/kernel',
+	'../_base/array',
+	'../has',
+	'../has!dom?../selector/_loader' // only included for has() qsa tests
+], function(JSON, kernel, array, has){
+	has.add('activex', typeof ActiveXObject !== 'undefined');
+	has.add('dom-parser', function(global){
+		return 'DOMParser' in global;
+	});
 
-//>>built
-define("dojo/request/handlers",["../json","../_base/kernel","../_base/array","../has","../selector/_loader"],function(_1,_2,_3,_4){
-_4.add("activex",typeof ActiveXObject!=="undefined");
-_4.add("dom-parser",function(_5){
-return "DOMParser" in _5;
-});
-var _6;
-if(_4("activex")){
-var dp=["Msxml2.DOMDocument.6.0","Msxml2.DOMDocument.4.0","MSXML2.DOMDocument.3.0","MSXML.DOMDocument"];
-_6=function(_7){
-var _8=_7.data;
-if(_8&&_4("dom-qsa2.1")&&!_8.querySelectorAll&&_4("dom-parser")){
-_8=new DOMParser().parseFromString(_7.text,"application/xml");
-}
-if(!_8||!_8.documentElement){
-var _9=_7.text;
-_3.some(dp,function(p){
-try{
-var _a=new ActiveXObject(p);
-_a.async=false;
-_a.loadXML(_9);
-_8=_a;
-}
-catch(e){
-return false;
-}
-return true;
-});
-}
-return _8;
-};
-}
-var _b={"javascript":function(_c){
-return _2.eval(_c.text||"");
-},"json":function(_d){
-return _1.parse(_d.text||null);
-},"xml":_6};
-function _e(_f){
-var _10=_b[_f.options.handleAs];
-_f.data=_10?_10(_f):(_f.data||_f.text);
-return _f;
-};
-_e.register=function(_11,_12){
-_b[_11]=_12;
-};
-return _e;
+	var handleXML;
+	if(has('activex')){
+		// GUIDs obtained from http://msdn.microsoft.com/en-us/library/ms757837(VS.85).aspx
+		var dp = [
+			'Msxml2.DOMDocument.6.0',
+			'Msxml2.DOMDocument.4.0',
+			'MSXML2.DOMDocument.3.0',
+			'MSXML.DOMDocument' // 2.0
+		];
+
+		handleXML = function(response){
+			var result = response.data;
+
+			if(result && has('dom-qsa2.1') && !result.querySelectorAll && has('dom-parser')){
+				// http://bugs.dojotoolkit.org/ticket/15631
+				// IE9 supports a CSS3 querySelectorAll implementation, but the DOM implementation 
+				// returned by IE9 xhr.responseXML does not. Manually create the XML DOM to gain 
+				// the fuller-featured implementation and avoid bugs caused by the inconsistency
+				result = new DOMParser().parseFromString(response.text, 'application/xml');
+			}
+
+			if(!result || !result.documentElement){
+				var text = response.text;
+				array.some(dp, function(p){
+					try{
+						var dom = new ActiveXObject(p);
+						dom.async = false;
+						dom.loadXML(text);
+						result = dom;
+					}catch(e){ return false; }
+					return true;
+				});
+			}
+
+			return result;
+		};
+	}
+
+	var handlers = {
+		'javascript': function(response){
+			return kernel.eval(response.text || '');
+		},
+		'json': function(response){
+			return JSON.parse(response.text || null);
+		},
+		'xml': handleXML
+	};
+
+	function handle(response){
+		var handler = handlers[response.options.handleAs];
+
+		response.data = handler ? handler(response) : (response.data || response.text);
+
+		return response;
+	}
+
+	handle.register = function(name, handler){
+		handlers[name] = handler;
+	};
+
+	return handle;
 });

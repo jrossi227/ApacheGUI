@@ -1,2 +1,7 @@
-//>>built
-define("dojox/atom/widget/nls/fi/PeopleEditor",({add:"Lisää",addAuthor:"Lisää tekijä",addContributor:"Lisää lisääjä"}));
+define(
+({
+	add: "Lisää",
+	addAuthor: "Lisää tekijä",
+	addContributor: "Lisää lisääjä"
+})
+);

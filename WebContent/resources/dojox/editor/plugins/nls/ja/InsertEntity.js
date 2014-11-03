@@ -1,2 +1,5 @@
-//>>built
-define("dojox/editor/plugins/nls/ja/InsertEntity",({insertEntity:"記号の挿入"}));
+define(
+({
+	insertEntity: "記号の挿入"
+})
+);

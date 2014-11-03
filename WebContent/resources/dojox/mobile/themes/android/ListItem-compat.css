@@ -1,18 +1,7 @@
+@import url("../common/domButtons/DomButtonGrayArrow-compat.css");
 
-.mblDomButtonGrayArrow, .mblDomButtonArrow {
-	background-image: url("../common/domButtons/compat/mblDomButtonGrayArrow.png");
-	background-repeat: no-repeat;
-}
-.mblDomButtonGrayArrow div, .mblDomButtonArrow div {
-	display: none;
-}
-.mblDomButtonWhiteCheck, .mblDomButtonCheck {
-	background-image: url("../common/domButtons/compat/mblDomButtonWhiteCheck.png");
-	background-repeat: no-repeat;
-}
-.mblDomButtonWhiteCheck div, .mblDomButtonCheck div {
-	display: none;
-}
+@import url("../common/domButtons/DomButtonWhiteCheck-compat.css");
+/* dojox.mobile.ListItem */
 .mblListItemSelected {
   background-color: #3578b1;
 }

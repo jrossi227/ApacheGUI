@@ -1,10 +1,13 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
+define(["../../_base/declare"], function(declare){
 
-//>>built
-define("dojo/data/api/Item",["../../_base/declare"],function(_1){
-return _1(null,{});
+	// module:
+	//		dojo/data/api/Item
+
+	return declare(null, {
+		// summary:
+		//		An item in a dojo/data store
+		//		Class for documentation purposes only. An item can take any form, so no 
+		// 		properties or methods are defined here.
+	});
+
 });

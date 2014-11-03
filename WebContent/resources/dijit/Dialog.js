@@ -1,278 +1,657 @@
-//>>built
-require({cache:{"url:dijit/templates/Dialog.html":"<div class=\"dijitDialog\" role=\"dialog\" aria-labelledby=\"${id}_title\">\n\t<div data-dojo-attach-point=\"titleBar\" class=\"dijitDialogTitleBar\">\n\t\t<span data-dojo-attach-point=\"titleNode\" class=\"dijitDialogTitle\" id=\"${id}_title\"\n\t\t\t\trole=\"heading\" level=\"1\"></span>\n\t\t<span data-dojo-attach-point=\"closeButtonNode\" class=\"dijitDialogCloseIcon\" data-dojo-attach-event=\"ondijitclick: onCancel\" title=\"${buttonCancel}\" role=\"button\" tabindex=\"0\">\n\t\t\t<span data-dojo-attach-point=\"closeText\" class=\"closeText\" title=\"${buttonCancel}\">x</span>\n\t\t</span>\n\t</div>\n\t<div data-dojo-attach-point=\"containerNode\" class=\"dijitDialogPaneContent\"></div>\n</div>\n"}});
-define("dijit/Dialog",["require","dojo/_base/array","dojo/aspect","dojo/_base/declare","dojo/Deferred","dojo/dom","dojo/dom-class","dojo/dom-geometry","dojo/dom-style","dojo/_base/fx","dojo/i18n","dojo/keys","dojo/_base/lang","dojo/on","dojo/ready","dojo/sniff","dojo/window","dojo/dnd/Moveable","dojo/dnd/TimedMoveable","./focus","./_base/manager","./_Widget","./_TemplatedMixin","./_CssStateMixin","./form/_FormMixin","./_DialogMixin","./DialogUnderlay","./layout/ContentPane","dojo/text!./templates/Dialog.html","dojo/i18n!./nls/common"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,fx,_a,_b,_c,on,_d,_e,_f,_10,_11,_12,_13,_14,_15,_16,_17,_18,_19,_1a,_1b){
-var _1c=_4("dijit._DialogBase"+(_e("dojo-bidi")?"_NoBidi":""),[_15,_17,_18,_16],{templateString:_1b,baseClass:"dijitDialog",cssStateNodes:{closeButtonNode:"dijitDialogCloseIcon"},_setTitleAttr:{node:"titleNode",type:"innerHTML"},open:false,duration:_13.defaultDuration,refocus:true,autofocus:true,_firstFocusItem:null,_lastFocusItem:null,doLayout:false,draggable:true,_setDraggableAttr:function(val){
-this._set("draggable",val);
-},maxRatio:0.9,closable:true,_setClosableAttr:function(val){
-this.closeButtonNode.style.display=val?"":"none";
-this._set("closable",val);
-},postMixInProperties:function(){
-var _1d=_a.getLocalization("dijit","common");
-_c.mixin(this,_1d);
-this.inherited(arguments);
-},postCreate:function(){
-_9.set(this.domNode,{display:"none",position:"absolute"});
-this.ownerDocumentBody.appendChild(this.domNode);
-this.inherited(arguments);
-_3.after(this,"onExecute",_c.hitch(this,"hide"),true);
-_3.after(this,"onCancel",_c.hitch(this,"hide"),true);
-this._modalconnects=[];
-},onLoad:function(){
-this._size();
-this._position();
-if(this.autofocus&&_1e.isTop(this)){
-this._getFocusItems(this.domNode);
-_12.focus(this._firstFocusItem);
-}
-this.inherited(arguments);
-},focus:function(){
-this._getFocusItems(this.domNode);
-_12.focus(this._firstFocusItem);
-},_endDrag:function(){
-var _1f=_8.position(this.domNode),_20=_f.getBox(this.ownerDocument);
-_1f.y=Math.min(Math.max(_1f.y,0),(_20.h-_1f.h));
-_1f.x=Math.min(Math.max(_1f.x,0),(_20.w-_1f.w));
-this._relativePosition=_1f;
-this._position();
-},_setup:function(){
-var _21=this.domNode;
-if(this.titleBar&&this.draggable){
-this._moveable=new ((_e("ie")==6)?_11:_10)(_21,{handle:this.titleBar});
-_3.after(this._moveable,"onMoveStop",_c.hitch(this,"_endDrag"),true);
-}else{
-_7.add(_21,"dijitDialogFixed");
-}
-this.underlayAttrs={dialogId:this.id,"class":_2.map(this["class"].split(/\s/),function(s){
-return s+"_underlay";
-}).join(" "),_onKeyDown:_c.hitch(this,"_onKey"),ownerDocument:this.ownerDocument};
-},_size:function(){
-this._checkIfSingleChild();
-if(this._singleChild){
-if(typeof this._singleChildOriginalStyle!="undefined"){
-this._singleChild.domNode.style.cssText=this._singleChildOriginalStyle;
-delete this._singleChildOriginalStyle;
-}
-}else{
-_9.set(this.containerNode,{width:"auto",height:"auto"});
-}
-var bb=_8.position(this.domNode);
-var _22=_f.getBox(this.ownerDocument);
-_22.w*=this.maxRatio;
-_22.h*=this.maxRatio;
-if(bb.w>=_22.w||bb.h>=_22.h){
-var _23=_8.position(this.containerNode),w=Math.min(bb.w,_22.w)-(bb.w-_23.w),h=Math.min(bb.h,_22.h)-(bb.h-_23.h);
-if(this._singleChild&&this._singleChild.resize){
-if(typeof this._singleChildOriginalStyle=="undefined"){
-this._singleChildOriginalStyle=this._singleChild.domNode.style.cssText;
-}
-this._singleChild.resize({w:w,h:h});
-}else{
-_9.set(this.containerNode,{width:w+"px",height:h+"px",overflow:"auto",position:"relative"});
-}
-}else{
-if(this._singleChild&&this._singleChild.resize){
-this._singleChild.resize();
-}
-}
-},_position:function(){
-if(!_7.contains(this.ownerDocumentBody,"dojoMove")){
-var _24=this.domNode,_25=_f.getBox(this.ownerDocument),p=this._relativePosition,bb=p?null:_8.position(_24),l=Math.floor(_25.l+(p?p.x:(_25.w-bb.w)/2)),t=Math.floor(_25.t+(p?p.y:(_25.h-bb.h)/2));
-_9.set(_24,{left:l+"px",top:t+"px"});
-}
-},_onKey:function(evt){
-if(evt.keyCode==_b.TAB){
-this._getFocusItems(this.domNode);
-var _26=evt.target;
-if(this._firstFocusItem==this._lastFocusItem){
-evt.stopPropagation();
-evt.preventDefault();
-}else{
-if(_26==this._firstFocusItem&&evt.shiftKey){
-_12.focus(this._lastFocusItem);
-evt.stopPropagation();
-evt.preventDefault();
-}else{
-if(_26==this._lastFocusItem&&!evt.shiftKey){
-_12.focus(this._firstFocusItem);
-evt.stopPropagation();
-evt.preventDefault();
-}
-}
-}
-}else{
-if(this.closable&&evt.keyCode==_b.ESCAPE){
-this.onCancel();
-evt.stopPropagation();
-evt.preventDefault();
-}
-}
-},show:function(){
-if(this.open){
-return;
-}
-if(!this._started){
-this.startup();
-}
-if(!this._alreadyInitialized){
-this._setup();
-this._alreadyInitialized=true;
-}
-if(this._fadeOutDeferred){
-this._fadeOutDeferred.cancel();
-_1e.hide(this);
-}
-var win=_f.get(this.ownerDocument);
-this._modalconnects.push(on(win,"scroll",_c.hitch(this,"resize")));
-this._modalconnects.push(on(this.domNode,"keydown",_c.hitch(this,"_onKey")));
-_9.set(this.domNode,{opacity:0,display:""});
-this._set("open",true);
-this._onShow();
-this._size();
-this._position();
-var _27;
-this._fadeInDeferred=new _5(_c.hitch(this,function(){
-_27.stop();
-delete this._fadeInDeferred;
-}));
-var _28=this._fadeInDeferred.promise;
-_27=fx.fadeIn({node:this.domNode,duration:this.duration,beforeBegin:_c.hitch(this,function(){
-_1e.show(this,this.underlayAttrs);
-}),onEnd:_c.hitch(this,function(){
-if(this.autofocus&&_1e.isTop(this)){
-this._getFocusItems(this.domNode);
-_12.focus(this._firstFocusItem);
-}
-this._fadeInDeferred.resolve(true);
-delete this._fadeInDeferred;
-})}).play();
-return _28;
-},hide:function(){
-if(!this._alreadyInitialized||!this.open){
-return;
-}
-if(this._fadeInDeferred){
-this._fadeInDeferred.cancel();
-}
-var _29;
-this._fadeOutDeferred=new _5(_c.hitch(this,function(){
-_29.stop();
-delete this._fadeOutDeferred;
-}));
-this._fadeOutDeferred.then(_c.hitch(this,"onHide"));
-var _2a=this._fadeOutDeferred.promise;
-_29=fx.fadeOut({node:this.domNode,duration:this.duration,onEnd:_c.hitch(this,function(){
-this.domNode.style.display="none";
-_1e.hide(this);
-this._fadeOutDeferred.resolve(true);
-delete this._fadeOutDeferred;
-})}).play();
-if(this._scrollConnected){
-this._scrollConnected=false;
-}
-var h;
-while(h=this._modalconnects.pop()){
-h.remove();
-}
-if(this._relativePosition){
-delete this._relativePosition;
-}
-this._set("open",false);
-return _2a;
-},resize:function(){
-if(this.domNode.style.display!="none"){
-this._size();
-if(!_e("touch")){
-this._position();
-}
-}
-},destroy:function(){
-if(this._fadeInDeferred){
-this._fadeInDeferred.cancel();
-}
-if(this._fadeOutDeferred){
-this._fadeOutDeferred.cancel();
-}
-if(this._moveable){
-this._moveable.destroy();
-}
-var h;
-while(h=this._modalconnects.pop()){
-h.remove();
-}
-_1e.hide(this);
-this.inherited(arguments);
-}});
-if(_e("dojo-bidi")){
-_1c=_4("dijit._DialogBase",_1c,{_setTitleAttr:function(_2b){
-this._set("title",_2b);
-this.titleNode.innerHTML=_2b;
-this.applyTextDir(this.titleNode);
-},_setTextDirAttr:function(_2c){
-if(this._created&&this.textDir!=_2c){
-this._set("textDir",_2c);
-this.set("title",this.title);
-}
-}});
-}
-var _2d=_4("dijit.Dialog",[_1a,_1c],{});
-_2d._DialogBase=_1c;
-var _1e=_2d._DialogLevelManager={_beginZIndex:950,show:function(_2e,_2f){
-ds[ds.length-1].focus=_12.curNode;
-var _30=ds[ds.length-1].dialog?ds[ds.length-1].zIndex+2:_2d._DialogLevelManager._beginZIndex;
-_9.set(_2e.domNode,"zIndex",_30);
-_19.show(_2f,_30-1);
-ds.push({dialog:_2e,underlayAttrs:_2f,zIndex:_30});
-},hide:function(_31){
-if(ds[ds.length-1].dialog==_31){
-ds.pop();
-var pd=ds[ds.length-1];
-if(ds.length==1){
-_19.hide();
-}else{
-_19.show(pd.underlayAttrs,pd.zIndex-1);
-}
-if(_31.refocus){
-var _32=pd.focus;
-if(pd.dialog&&(!_32||!_6.isDescendant(_32,pd.dialog.domNode))){
-pd.dialog._getFocusItems(pd.dialog.domNode);
-_32=pd.dialog._firstFocusItem;
-}
-if(_32){
-try{
-_32.focus();
-}
-catch(e){
-}
-}
-}
-}else{
-var idx=_2.indexOf(_2.map(ds,function(_33){
-return _33.dialog;
-}),_31);
-if(idx!=-1){
-ds.splice(idx,1);
-}
-}
-},isTop:function(_34){
-return ds[ds.length-1].dialog==_34;
-}};
-var ds=_2d._dialogStack=[{dialog:null,focus:null,underlayAttrs:null}];
-_12.watch("curNode",function(_35,_36,_37){
-var _38=ds[ds.length-1].dialog;
-if(_37&&_38&&!_38._fadeOutDeferred&&_37.ownerDocument==_38.ownerDocument){
-do{
-if(_37==_38.domNode||_7.contains(_37,"dijitPopup")){
-return;
-}
-}while(_37=_37.parentNode);
-_38.focus();
-}
-});
-if(_e("dijit-legacy-requires")){
-_d(0,function(){
-var _39=["dijit/TooltipDialog"];
-_1(_39);
-});
-}
-return _2d;
+define([
+	"require",
+	"dojo/_base/array", // array.forEach array.indexOf array.map
+	"dojo/aspect",
+	"dojo/_base/declare", // declare
+	"dojo/Deferred", // Deferred
+	"dojo/dom", // dom.isDescendant
+	"dojo/dom-class", // domClass.add domClass.contains
+	"dojo/dom-geometry", // domGeometry.position
+	"dojo/dom-style", // domStyle.set
+	"dojo/_base/fx", // fx.fadeIn fx.fadeOut
+	"dojo/i18n", // i18n.getLocalization
+	"dojo/keys",
+	"dojo/_base/lang", // lang.mixin lang.hitch
+	"dojo/on",
+	"dojo/ready",
+	"dojo/sniff", // has("ie") has("opera") has("dijit-legacy-requires")
+	"dojo/window", // winUtils.getBox, winUtils.get
+	"dojo/dnd/Moveable", // Moveable
+	"dojo/dnd/TimedMoveable", // TimedMoveable
+	"./focus",
+	"./_base/manager", // manager.defaultDuration
+	"./_Widget",
+	"./_TemplatedMixin",
+	"./_CssStateMixin",
+	"./form/_FormMixin",
+	"./_DialogMixin",
+	"./DialogUnderlay",
+	"./layout/ContentPane",
+	"dojo/text!./templates/Dialog.html",
+	"dojo/i18n!./nls/common"
+], function(require, array, aspect, declare, Deferred,
+			dom, domClass, domGeometry, domStyle, fx, i18n, keys, lang, on, ready, has, winUtils,
+			Moveable, TimedMoveable, focus, manager, _Widget, _TemplatedMixin, _CssStateMixin, _FormMixin, _DialogMixin,
+			DialogUnderlay, ContentPane, template){
+
+	// module:
+	//		dijit/Dialog
+
+	var _DialogBase = declare("dijit._DialogBase" + (has("dojo-bidi") ? "_NoBidi" : ""), [_TemplatedMixin, _FormMixin, _DialogMixin, _CssStateMixin], {
+		templateString: template,
+
+		baseClass: "dijitDialog",
+
+		cssStateNodes: {
+			closeButtonNode: "dijitDialogCloseIcon"
+		},
+
+		// Map widget attributes to DOMNode attributes.
+		_setTitleAttr: { node: "titleNode", type: "innerHTML" },
+
+		// open: [readonly] Boolean
+		//		True if Dialog is currently displayed on screen.
+		open: false,
+
+		// duration: Integer
+		//		The time in milliseconds it takes the dialog to fade in and out
+		duration: manager.defaultDuration,
+
+		// refocus: Boolean
+		//		A Toggle to modify the default focus behavior of a Dialog, which
+		//		is to re-focus the element which had focus before being opened.
+		//		False will disable refocusing. Default: true
+		refocus: true,
+
+		// autofocus: Boolean
+		//		A Toggle to modify the default focus behavior of a Dialog, which
+		//		is to focus on the first dialog element after opening the dialog.
+		//		False will disable autofocusing. Default: true
+		autofocus: true,
+
+		// _firstFocusItem: [private readonly] DomNode
+		//		The pointer to the first focusable node in the dialog.
+		//		Set by `dijit/_DialogMixin._getFocusItems()`.
+		_firstFocusItem: null,
+
+		// _lastFocusItem: [private readonly] DomNode
+		//		The pointer to which node has focus prior to our dialog.
+		//		Set by `dijit/_DialogMixin._getFocusItems()`.
+		_lastFocusItem: null,
+
+		// doLayout: [protected] Boolean
+		//		Don't change this parameter from the default value.
+		//		This ContentPane parameter doesn't make sense for Dialog, since Dialog
+		//		is never a child of a layout container, nor can you specify the size of
+		//		Dialog in order to control the size of an inner widget.
+		doLayout: false,
+
+		// draggable: Boolean
+		//		Toggles the movable aspect of the Dialog. If true, Dialog
+		//		can be dragged by it's title. If false it will remain centered
+		//		in the viewport.
+		draggable: true,
+		_setDraggableAttr: function(/*Boolean*/ val){
+			// Avoid _WidgetBase behavior of copying draggable attribute to this.domNode,
+			// as that prevents text select on modern browsers (#14452)
+			this._set("draggable", val);
+		},
+
+		// maxRatio: Number
+		//		Maximum size to allow the dialog to expand to, relative to viewport size
+		maxRatio: 0.9,
+
+		// closable: Boolean
+		//		Dialog show [x] icon to close itself, and ESC key will close the dialog.
+		closable: true,
+		_setClosableAttr: function(val){
+			this.closeButtonNode.style.display = val ? "" : "none";
+			this._set("closable", val);
+		},
+
+		postMixInProperties: function(){
+			var _nlsResources = i18n.getLocalization("dijit", "common");
+			lang.mixin(this, _nlsResources);
+			this.inherited(arguments);
+		},
+
+		postCreate: function(){
+			domStyle.set(this.domNode, {
+				display: "none",
+				position: "absolute"
+			});
+			this.ownerDocumentBody.appendChild(this.domNode);
+
+			this.inherited(arguments);
+
+			aspect.after(this, "onExecute", lang.hitch(this, "hide"), true);
+			aspect.after(this, "onCancel", lang.hitch(this, "hide"), true);
+
+			this._modalconnects = [];
+		},
+
+		onLoad: function(){
+			// summary:
+			//		Called when data has been loaded from an href.
+			//		Unlike most other callbacks, this function can be connected to (via `dojo.connect`)
+			//		but should *not* be overridden.
+			// tags:
+			//		callback
+
+			// when href is specified we need to reposition the dialog after the data is loaded
+			// and find the focusable elements
+			this._size();
+			this._position();
+
+			if(this.autofocus && DialogLevelManager.isTop(this)){
+				this._getFocusItems(this.domNode);
+				focus.focus(this._firstFocusItem);
+			}
+
+			this.inherited(arguments);
+		},
+
+		focus: function(){
+			this._getFocusItems(this.domNode);
+			focus.focus(this._firstFocusItem);
+		},
+
+		_endDrag: function(){
+			// summary:
+			//		Called after dragging the Dialog. Saves the position of the dialog in the viewport,
+			//		and also adjust position to be fully within the viewport, so user doesn't lose access to handle
+			var nodePosition = domGeometry.position(this.domNode),
+				viewport = winUtils.getBox(this.ownerDocument);
+			nodePosition.y = Math.min(Math.max(nodePosition.y, 0), (viewport.h - nodePosition.h));
+			nodePosition.x = Math.min(Math.max(nodePosition.x, 0), (viewport.w - nodePosition.w));
+			this._relativePosition = nodePosition;
+			this._position();
+		},
+
+		_setup: function(){
+			// summary:
+			//		Stuff we need to do before showing the Dialog for the first
+			//		time (but we defer it until right beforehand, for
+			//		performance reasons).
+			// tags:
+			//		private
+
+			var node = this.domNode;
+
+			if(this.titleBar && this.draggable){
+				this._moveable = new ((has("ie") == 6) ? TimedMoveable // prevent overload, see #5285
+					: Moveable)(node, { handle: this.titleBar });
+				aspect.after(this._moveable, "onMoveStop", lang.hitch(this, "_endDrag"), true);
+			}else{
+				domClass.add(node, "dijitDialogFixed");
+			}
+
+			this.underlayAttrs = {
+				dialogId: this.id,
+				"class": array.map(this["class"].split(/\s/),function(s){
+					return s + "_underlay";
+				}).join(" "),
+				_onKeyDown: lang.hitch(this, "_onKey"),
+				ownerDocument: this.ownerDocument
+			};
+		},
+
+		_size: function(){
+			// summary:
+			//		If necessary, shrink dialog contents so dialog fits in viewport.
+			// tags:
+			//		private
+
+			this._checkIfSingleChild();
+
+			// If we resized the dialog contents earlier, reset them back to original size, so
+			// that if the user later increases the viewport size, the dialog can display w/out a scrollbar.
+			// Need to do this before the domGeometry.position(this.domNode) call below.
+			if(this._singleChild){
+				if(typeof this._singleChildOriginalStyle != "undefined"){
+					this._singleChild.domNode.style.cssText = this._singleChildOriginalStyle;
+					delete this._singleChildOriginalStyle;
+				}
+			}else{
+				domStyle.set(this.containerNode, {
+					width: "auto",
+					height: "auto"
+				});
+			}
+
+			var bb = domGeometry.position(this.domNode);
+
+			// Get viewport size but then reduce it by a bit; Dialog should always have some space around it
+			// to indicate that it's a popup.  This will also compensate for possible scrollbars on viewport.
+			var viewport = winUtils.getBox(this.ownerDocument);
+			viewport.w *= this.maxRatio;
+			viewport.h *= this.maxRatio;
+
+			if(bb.w >= viewport.w || bb.h >= viewport.h){
+				// Reduce size of dialog contents so that dialog fits in viewport
+
+				var containerSize = domGeometry.position(this.containerNode),
+					w = Math.min(bb.w, viewport.w) - (bb.w - containerSize.w),
+					h = Math.min(bb.h, viewport.h) - (bb.h - containerSize.h);
+
+				if(this._singleChild && this._singleChild.resize){
+					if(typeof this._singleChildOriginalStyle == "undefined"){
+						this._singleChildOriginalStyle = this._singleChild.domNode.style.cssText;
+					}
+					this._singleChild.resize({w: w, h: h});
+				}else{
+					domStyle.set(this.containerNode, {
+						width: w + "px",
+						height: h + "px",
+						overflow: "auto",
+						position: "relative"    // workaround IE bug moving scrollbar or dragging dialog
+					});
+				}
+			}else{
+				if(this._singleChild && this._singleChild.resize){
+					this._singleChild.resize();
+				}
+			}
+		},
+
+		_position: function(){
+			// summary:
+			//		Position the dialog in the viewport.  If no relative offset
+			//		in the viewport has been determined (by dragging, for instance),
+			//		center the dialog.  Otherwise, use the Dialog's stored relative offset,
+			//		adjusted by the viewport's scroll.
+			if(!domClass.contains(this.ownerDocumentBody, "dojoMove")){    // don't do anything if called during auto-scroll
+				var node = this.domNode,
+					viewport = winUtils.getBox(this.ownerDocument),
+					p = this._relativePosition,
+					bb = p ? null : domGeometry.position(node),
+					l = Math.floor(viewport.l + (p ? p.x : (viewport.w - bb.w) / 2)),
+					t = Math.floor(viewport.t + (p ? p.y : (viewport.h - bb.h) / 2))
+					;
+				domStyle.set(node, {
+					left: l + "px",
+					top: t + "px"
+				});
+			}
+		},
+
+		_onKey: function(/*Event*/ evt){
+			// summary:
+			//		Handles the keyboard events for accessibility reasons
+			// tags:
+			//		private
+
+			if(evt.keyCode == keys.TAB){
+				this._getFocusItems(this.domNode);
+				var node = evt.target;
+				if(this._firstFocusItem == this._lastFocusItem){
+					// don't move focus anywhere, but don't allow browser to move focus off of dialog either
+					evt.stopPropagation();
+					evt.preventDefault();
+				}else if(node == this._firstFocusItem && evt.shiftKey){
+					// if we are shift-tabbing from first focusable item in dialog, send focus to last item
+					focus.focus(this._lastFocusItem);
+					evt.stopPropagation();
+					evt.preventDefault();
+				}else if(node == this._lastFocusItem && !evt.shiftKey){
+					// if we are tabbing from last focusable item in dialog, send focus to first item
+					focus.focus(this._firstFocusItem);
+					evt.stopPropagation();
+					evt.preventDefault();
+				}
+			}else if(this.closable && evt.keyCode == keys.ESCAPE){
+				this.onCancel();
+				evt.stopPropagation();
+				evt.preventDefault();
+			}
+		},
+
+		show: function(){
+			// summary:
+			//		Display the dialog
+			// returns: dojo/promise/Promise
+			//		Promise object that resolves when the display animation is complete
+
+			if(this.open){
+				return;
+			}
+
+			if(!this._started){
+				this.startup();
+			}
+
+			// first time we show the dialog, there's some initialization stuff to do
+			if(!this._alreadyInitialized){
+				this._setup();
+				this._alreadyInitialized = true;
+			}
+
+			if(this._fadeOutDeferred){
+				// There's a hide() operation in progress, so cancel it, but still call DialogLevelManager.hide()
+				// as though the hide() completed, in preparation for the DialogLevelManager.show() call below.
+				this._fadeOutDeferred.cancel();
+				DialogLevelManager.hide(this);
+			}
+
+			// Recenter Dialog if user scrolls browser.  Connecting to document doesn't work on IE, need to use window.
+			var win = winUtils.get(this.ownerDocument);
+			this._modalconnects.push(on(win, "scroll", lang.hitch(this, "resize")));
+
+			this._modalconnects.push(on(this.domNode, "keydown", lang.hitch(this, "_onKey")));
+
+			domStyle.set(this.domNode, {
+				opacity: 0,
+				display: ""
+			});
+
+			this._set("open", true);
+			this._onShow(); // lazy load trigger
+
+			this._size();
+			this._position();
+
+			// fade-in Animation object, setup below
+			var fadeIn;
+
+			this._fadeInDeferred = new Deferred(lang.hitch(this, function(){
+				fadeIn.stop();
+				delete this._fadeInDeferred;
+			}));
+
+			// If delay is 0, code below will delete this._fadeInDeferred instantly, so grab promise while we can.
+			var promise = this._fadeInDeferred.promise;
+
+			fadeIn = fx.fadeIn({
+				node: this.domNode,
+				duration: this.duration,
+				beforeBegin: lang.hitch(this, function(){
+					DialogLevelManager.show(this, this.underlayAttrs);
+				}),
+				onEnd: lang.hitch(this, function(){
+					if(this.autofocus && DialogLevelManager.isTop(this)){
+						// find focusable items each time dialog is shown since if dialog contains a widget the
+						// first focusable items can change
+						this._getFocusItems(this.domNode);
+						focus.focus(this._firstFocusItem);
+					}
+					this._fadeInDeferred.resolve(true);
+					delete this._fadeInDeferred;
+				})
+			}).play();
+
+			return promise;
+		},
+
+		hide: function(){
+			// summary:
+			//		Hide the dialog
+			// returns: dojo/promise/Promise
+			//		Promise object that resolves when the display animation is complete
+
+			// If we haven't been initialized yet then we aren't showing and we can just return.
+			// Likewise if we are already hidden, or are currently fading out.
+			if(!this._alreadyInitialized || !this.open){
+				return;
+			}
+			if(this._fadeInDeferred){
+				this._fadeInDeferred.cancel();
+			}
+
+			// fade-in Animation object, setup below
+			var fadeOut;
+
+			this._fadeOutDeferred = new Deferred(lang.hitch(this, function(){
+				fadeOut.stop();
+				delete this._fadeOutDeferred;
+			}));
+
+			// fire onHide when the promise resolves.
+			this._fadeOutDeferred.then(lang.hitch(this, 'onHide'));
+
+			// If delay is 0, code below will delete this._fadeOutDeferred instantly, so grab promise while we can.
+			var promise = this._fadeOutDeferred.promise;
+
+			fadeOut = fx.fadeOut({
+				node: this.domNode,
+				duration: this.duration,
+				onEnd: lang.hitch(this, function(){
+					this.domNode.style.display = "none";
+					DialogLevelManager.hide(this);
+					this._fadeOutDeferred.resolve(true);
+					delete this._fadeOutDeferred;
+				})
+			}).play();
+
+			if(this._scrollConnected){
+				this._scrollConnected = false;
+			}
+			var h;
+			while(h = this._modalconnects.pop()){
+				h.remove();
+			}
+
+			if(this._relativePosition){
+				delete this._relativePosition;
+			}
+			this._set("open", false);
+
+			return promise;
+		},
+
+		resize: function(){
+			// summary:
+			//		Called when viewport scrolled or size changed.  Adjust Dialog as necessary to keep it visible.
+			// tags:
+			//		private
+			if(this.domNode.style.display != "none"){
+				this._size();
+				if(!has("touch")){
+					// If the user has scrolled the display then reposition the Dialog.  But don't do it for touch
+					// devices, because it will counteract when a keyboard pops up and then the browser auto-scrolls
+					// the focused node into view.
+					this._position();
+				}
+			}
+		},
+
+		destroy: function(){
+			if(this._fadeInDeferred){
+				this._fadeInDeferred.cancel();
+			}
+			if(this._fadeOutDeferred){
+				this._fadeOutDeferred.cancel();
+			}
+			if(this._moveable){
+				this._moveable.destroy();
+			}
+			var h;
+			while(h = this._modalconnects.pop()){
+				h.remove();
+			}
+
+			DialogLevelManager.hide(this);
+
+			this.inherited(arguments);
+		}
+	});
+
+	if(has("dojo-bidi")){
+		_DialogBase = declare("dijit._DialogBase", _DialogBase, {
+			_setTitleAttr: function(/*String*/ title){
+				this._set("title", title);
+				this.titleNode.innerHTML = title;
+				this.applyTextDir(this.titleNode);
+			},
+
+			_setTextDirAttr: function(textDir){
+				if(this._created && this.textDir != textDir){
+					this._set("textDir", textDir);
+					this.set("title", this.title);
+				}
+			}
+		});
+	}
+
+	var Dialog = declare("dijit.Dialog", [ContentPane, _DialogBase], {
+		// summary:
+		//		A modal dialog Widget.
+		// description:
+		//		Pops up a modal dialog window, blocking access to the screen
+		//		and also graying out the screen Dialog is extended from
+		//		ContentPane so it supports all the same parameters (href, etc.).
+		// example:
+		// |	<div data-dojo-type="dijit/Dialog" data-dojo-props="href: 'test.html'"></div>
+		// example:
+		// |	var foo = new Dialog({ title: "test dialog", content: "test content" });
+		// |	foo.placeAt(win.body());
+		// |	foo.startup();
+	});
+	Dialog._DialogBase = _DialogBase;	// for monkey patching and dojox/widget/DialogSimple
+
+	var DialogLevelManager = Dialog._DialogLevelManager = {
+		// summary:
+		//		Controls the various active "levels" on the page, starting with the
+		//		stuff initially visible on the page (at z-index 0), and then having an entry for
+		//		each Dialog shown.
+
+		_beginZIndex: 950,
+
+		show: function(/*dijit/_WidgetBase*/ dialog, /*Object*/ underlayAttrs){
+			// summary:
+			//		Call right before fade-in animation for new dialog.
+			//		Saves current focus, displays/adjusts underlay for new dialog,
+			//		and sets the z-index of the dialog itself.
+			//
+			//		New dialog will be displayed on top of all currently displayed dialogs.
+			//
+			//		Caller is responsible for setting focus in new dialog after the fade-in
+			//		animation completes.
+
+			// Save current focus
+			ds[ds.length - 1].focus = focus.curNode;
+
+			// Set z-index a bit above previous dialog
+			var zIndex = ds[ds.length - 1].dialog ? ds[ds.length - 1].zIndex + 2 : Dialog._DialogLevelManager._beginZIndex;
+			domStyle.set(dialog.domNode, 'zIndex', zIndex);
+
+			// Display the underlay, or if already displayed then adjust for this new dialog
+			DialogUnderlay.show(underlayAttrs, zIndex - 1);
+
+			ds.push({dialog: dialog, underlayAttrs: underlayAttrs, zIndex: zIndex});
+		},
+
+		hide: function(/*dijit/_WidgetBase*/ dialog){
+			// summary:
+			//		Called when the specified dialog is hidden/destroyed, after the fade-out
+			//		animation ends, in order to reset page focus, fix the underlay, etc.
+			//		If the specified dialog isn't open then does nothing.
+			//
+			//		Caller is responsible for either setting display:none on the dialog domNode,
+			//		or calling dijit/popup.hide(), or removing it from the page DOM.
+
+			if(ds[ds.length - 1].dialog == dialog){
+				// Removing the top (or only) dialog in the stack, return focus
+				// to previous dialog
+
+				ds.pop();
+
+				var pd = ds[ds.length - 1];	// the new active dialog (or the base page itself)
+
+				// Adjust underlay
+				if(ds.length == 1){
+					// Returning to original page.  Hide the underlay.
+					DialogUnderlay.hide();
+				}else{
+					// Popping back to previous dialog, adjust underlay.
+					DialogUnderlay.show(pd.underlayAttrs, pd.zIndex - 1);
+				}
+
+				// Adjust focus.
+				// TODO: regardless of setting of dialog.refocus, if the exeucte() method set focus somewhere,
+				// don't shift focus back to button.  Note that execute() runs at the start of the fade-out but
+				// this code runs later, at the end of the fade-out.  Menu has code like this.
+				if(dialog.refocus){
+					// If we are returning control to a previous dialog but for some reason
+					// that dialog didn't have a focused field, set focus to first focusable item.
+					// This situation could happen if two dialogs appeared at nearly the same time,
+					// since a dialog doesn't set it's focus until the fade-in is finished.
+					var focus = pd.focus;
+					if(pd.dialog && (!focus || !dom.isDescendant(focus, pd.dialog.domNode))){
+						pd.dialog._getFocusItems(pd.dialog.domNode);
+						focus = pd.dialog._firstFocusItem;
+					}
+
+					if(focus){
+						// Refocus the button that spawned the Dialog.   This will fail in corner cases including
+						// page unload on IE, because the dijit/form/Button that launched the Dialog may get destroyed
+						// before this code runs.  (#15058)
+						try{
+							focus.focus();
+						}catch(e){
+						}
+					}
+				}
+			}else{
+				// Removing a dialog out of order (#9944, #10705).
+				// Don't need to mess with underlay or z-index or anything.
+				var idx = array.indexOf(array.map(ds, function(elem){
+					return elem.dialog;
+				}), dialog);
+				if(idx != -1){
+					ds.splice(idx, 1);
+				}
+			}
+		},
+
+		isTop: function(/*dijit/_WidgetBase*/ dialog){
+			// summary:
+			//		Returns true if specified Dialog is the top in the task
+			return ds[ds.length - 1].dialog == dialog;
+		}
+	};
+
+	// Stack representing the various active "levels" on the page, starting with the
+	// stuff initially visible on the page (at z-index 0), and then having an entry for
+	// each Dialog shown.
+	// Each element in stack has form {
+	//		dialog: dialogWidget,
+	//		focus: returnFromGetFocus(),
+	//		underlayAttrs: attributes to set on underlay (when this widget is active)
+	// }
+	var ds = Dialog._dialogStack = [
+		{dialog: null, focus: null, underlayAttrs: null}    // entry for stuff at z-index: 0
+	];
+
+	// If focus was accidentally removed from the dialog, such as if the user clicked a blank
+	// area of the screen, or clicked the browser's address bar and then tabbed into the page,
+	// then refocus.   Won't do anything if focus was removed because the Dialog was closed, or
+	// because a new Dialog popped up on top of the old one, or when focus moves to popups
+	focus.watch("curNode", function(attr, oldNode, node){
+ 		// Note: if no dialogs, ds.length==1 but ds[ds.length-1].dialog is null
+		var topDialog = ds[ds.length - 1].dialog;
+
+		// If a node was focused, and there's a Dialog currently showing, and not in the process of fading out...
+		// Ignore focus events on other document though because it's likely an Editor inside of the Dialog.
+		if(node && topDialog && !topDialog._fadeOutDeferred && node.ownerDocument == topDialog.ownerDocument){
+			// If the node that was focused is inside the dialog or in a popup, even a context menu that isn't
+			// technically a descendant of the the dialog, don't do anything.
+			do{
+				if(node == topDialog.domNode || domClass.contains(node, "dijitPopup")){ return; }
+			}while(node = node.parentNode);
+
+			// Otherwise, return focus to the dialog.  Use a delay to avoid confusing dijit/focus code's
+			// own tracking of focus.
+			topDialog.focus();
+		}
+	});
+
+	// Back compat w/1.6, remove for 2.0
+	if(has("dijit-legacy-requires")){
+		ready(0, function(){
+			var requires = ["dijit/TooltipDialog"];
+			require(requires);	// use indirection so modules not rolled into a build
+		});
+	}
+
+	return Dialog;
 });

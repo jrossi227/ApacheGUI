@@ -1,128 +1,286 @@
-//>>built
-define("dojox/mvc/WidgetList",["require","dojo/_base/array","dojo/_base/lang","dojo/_base/declare","dijit/_Container","dijit/_WidgetBase","./Templated"],function(_1,_2,_3,_4,_5,_6,_7){
-var _8="data-mvc-child-type",_9="data-mvc-child-mixins",_a="data-mvc-child-props",_b="data-mvc-child-bindings",_c;
-function _d(_e){
-return eval("({"+_e+"})");
-};
-function _f(w){
-for(var h=null;h=(w._handles||[]).pop();){
-h.unwatch();
-}
-};
-function _10(a){
-var _11=[];
-_2.forEach(a,function(_12){
-[].push.apply(_11,_12);
-});
-return _11;
-};
-function _13(_14,_15){
-if(this.childClz){
-_15(this.childClz);
-}else{
-if(this.childType){
-var _16=!_3.isFunction(this.childType)&&!_3.isFunction(this.childMixins)?[[this.childType].concat(this.childMixins&&this.childMixins.split(",")||[])]:_2.map(_14,function(_17){
-var _18=_3.isFunction(this.childType)?this.childType.call(_17,this):this.childType,_19=_3.isFunction(this.childMixins)?this.childMixins.call(_17,this):this.childMixins;
-return _18?[_18].concat(_3.isArray(_19)?_19:_19?_19.split(","):[]):["dojox/mvc/Templated"];
-},this);
-_1(_2.filter(_2.map(_10(_16),function(_1a){
-return _3.getObject(_1a)?_c:_1a;
-}),function(_1b){
-return _1b!==_c;
-}),function(){
-_15.apply(this,_2.map(_16,function(_1c){
-var _1d=_2.map(_1c,function(_1e){
-return _3.getObject(_1e)||_1(_1e);
-});
-return _1d.length>1?_4(_1d,{}):_1d[0];
-}));
-});
-}else{
-_15(_7);
-}
-}
-};
-var _1f=_4("dojox.mvc.WidgetList",[_6,_5],{childClz:null,childType:"",childMixins:"",childParams:null,childBindings:null,children:null,partialRebuild:false,_relTargetProp:"children",postMixInProperties:function(){
-this.inherited(arguments);
-if(this[_8]){
-this.childType=this[_8];
-}
-if(this[_9]){
-this.childMixins=this[_9];
-}
-},startup:function(){
-this.inherited(arguments);
-this._setChildrenAttr(this.children);
-},_setChildrenAttr:function(_20){
-var _21=this.children;
-this._set("children",_20);
-if(this._started&&(!this._builtOnce||_21!=_20)){
-this._builtOnce=true;
-this._buildChildren(_20);
-if(_3.isArray(_20)){
-var _22=this;
-_20.watch!=={}.watch&&(this._handles=this._handles||[]).push(_20.watch(function(_23,old,_24){
-if(!isNaN(_23)){
-var w=_22.getChildren()[_23-0];
-w&&w.set(w._relTargetProp||"target",_24);
-}
-}));
-}
-}
-},_buildChildren:function(_25){
-_f(this);
-for(var cw=this.getChildren(),w=null;w=cw.pop();){
-this.removeChild(w);
-w.destroy();
-}
-if(!_3.isArray(_25)){
-return;
-}
-var _26=this,seq=this._buildChildrenSeq=(this._buildChildrenSeq||0)+1,_27={idx:0,removals:[],adds:[].concat(_25)},_28=[_27];
-function _29(_2a){
-if(this._beingDestroyed||this._buildChildrenSeq>seq){
-return;
-}
-var _2b=[].slice.call(arguments,1);
-_2a.clz=_3.isFunction(this.childType)||_3.isFunction(this.childMixins)?_2b:_2b[0];
-for(var _2c=null;_2c=_28.shift();){
-if(!_2c.clz){
-_28.unshift(_2c);
-break;
-}
-for(var i=0,l=(_2c.removals||[]).length;i<l;++i){
-this.removeChild(_2c.idx);
-}
-_2.forEach(_2.map(_2c.adds,function(_2d,idx){
-var _2e={ownerDocument:this.ownerDocument,parent:this,indexAtStartup:_2c.idx+idx},_2f=_3.isArray(_2c.clz)?_2c.clz[idx]:_2c.clz;
-_2e[(_3.isFunction(this.childParams)&&this.childParams.call(_2e,this)||this.childParams||this[_a]&&_d.call(_2e,this[_a])||{})._relTargetProp||_2f.prototype._relTargetProp||"target"]=_2d;
-var _30=this.childParams||this[_a]&&_d.call(_2e,this[_a]),_31=this.childBindings||this[_b]&&_d.call(_2e,this[_b]);
-if(this.templateString&&!_2e.templateString&&!_2f.prototype.templateString){
-_2e.templateString=this.templateString;
-}
-if(_31&&!_2e.bindings&&!_2f.prototype.bindings){
-_2e.bindings=_31;
-}
-return new _2f(_3.delegate(_3.isFunction(_30)?_30.call(_2e,this):_30,_2e));
-},this),function(_32,idx){
-this.addChild(_32,_2c.idx+idx);
-},this);
-}
-};
-_3.isFunction(_25.watchElements)&&(this._handles=this._handles||[]).push(_25.watchElements(function(idx,_33,_34){
-if(!_33||!_34||!_26.partialRebuild){
-_26._buildChildren(_25);
-}else{
-var _35={idx:idx,removals:_33,adds:_34};
-_28.push(_35);
-_13.call(_26,_34,_3.hitch(_26,_29,_35));
-}
-}));
-_13.call(this,_25,_3.hitch(this,_29,_27));
-},destroy:function(){
-_f(this);
-this.inherited(arguments);
-}});
-_1f.prototype[_8]=_1f.prototype[_9]=_1f.prototype[_a]=_1f.prototype[_b]="";
-return _1f;
+define([
+	"require",
+	"dojo/_base/array",
+	"dojo/_base/lang",
+	"dojo/_base/declare",
+	"dijit/_Container",
+	"dijit/_WidgetBase",
+	"./Templated"
+], function(require, array, lang, declare, _Container, _WidgetBase, Templated){
+	var childTypeAttr = "data-mvc-child-type",
+	 childMixinsAttr = "data-mvc-child-mixins",
+	 childParamsAttr = "data-mvc-child-props",
+	 childBindingsAttr = "data-mvc-child-bindings",
+	 undef;
+
+	function evalParams(params){
+		return eval("({" + params + "})");
+	}
+
+	function unwatchElements(/*dojox/mvc/WidgetList*/ w){
+		for(var h = null; h = (w._handles || []).pop();){
+			h.unwatch();
+		}
+	}
+
+	function flatten(/*String[][]*/ a){
+		var flattened = [];
+		array.forEach(a, function(item){
+			[].push.apply(flattened, item);
+		});
+		return flattened;
+	}
+
+	function loadModules(/*dojo/Stateful[]*/ items, /*Function*/ callback){
+		// summary:
+		//		Load modules associated with an array of data.
+		// items: dojo/Stateful[]
+		//		The array of data.
+		// callback: Function
+		//		Then callback called when the modules have been loaded.
+
+		if(this.childClz){
+			callback(this.childClz);
+		}else if(this.childType){
+			var typesForItems = !lang.isFunction(this.childType) && !lang.isFunction(this.childMixins) ? [[this.childType].concat(this.childMixins && this.childMixins.split(",") || [])] :
+			 array.map(items, function(item){
+				var type = lang.isFunction(this.childType) ? this.childType.call(item, this) : this.childType,
+				 mixins = lang.isFunction(this.childMixins) ? this.childMixins.call(item, this) : this.childMixins;
+				return type ? [type].concat(lang.isArray(mixins) ? mixins : mixins ? mixins.split(",") : []) : ["dojox/mvc/Templated"];
+			}, this);
+			require(array.filter(array.map(flatten(typesForItems), function(type){ return lang.getObject(type) ? undef : type; }), function(type){ return type !== undef; }), function(){
+				callback.apply(this, array.map(typesForItems, function(types){
+					var clzList = array.map(types, function(type){ return lang.getObject(type) || require(type); });
+					return clzList.length > 1 ? declare(clzList, {}) : clzList[0];
+				}));
+			});
+		}else{
+			callback(Templated);
+		}
+	}
+
+	var WidgetList = declare("dojox.mvc.WidgetList", [_WidgetBase, _Container], {
+		// summary:
+		//		A widget that creates child widgets repeatedly based on the children attribute (the repeated data) and childType/childMixins/childParams attributes (determines how to create each child widget).
+		// example:
+		//		Create multiple instances of dijit/TextBox based on the data in array.
+		//		The text box refers to First property in the array item.
+		// |		<div data-dojo-type="dojox/mvc/WidgetList"
+		// |		 data-dojo-props="children: array"
+		// |		 data-mvc-child-type="dijit/form/TextBox"
+		// |		 data-mvc-child-props="value: at(this.target, 'First')"></div>
+		// example:
+		//		Create multiple instances of widgets-in-template based on the HTML written in `<script type="dojox/mvc/InlineTemplate">`.
+		//		The label refers to Serial property in the array item, and the text box refers to First property in the array item.
+		// |		<div data-dojo-type="dojox/mvc/WidgetList"
+		// |		 data-dojo-mixins="dojox/mvc/_InlineTemplateMixin"
+		// |		 data-dojo-props="children: array">
+		// |			<script type="dojox/mvc/InlineTemplate">
+		// |				<div>
+		// |					<span data-dojo-type="dijit/_WidgetBase"
+		// |					 data-dojo-props="_setValueAttr: {node: 'domNode', type: 'innerText'}, value: at('rel:', 'Serial')"></span>: 
+		// |					<span data-dojo-type="dijit/form/TextBox"
+		// |					 data-dojo-props="value: at('rel:', 'First')"></span>
+		// |				</div>
+		// |			</script>
+		// |		</div>
+		// example:
+		//		Programmatically create multiple instances of widgets-in-template based on the HTML stored in childTemplate.
+		//		(childTemplate may come from dojo/text)
+		//		Also programmatically establish data binding at child widget's startup phase.
+		//		The label refers to Serial property in the array item, and the text box refers to First property in the array item.
+		// |		var childTemplate = '<div>'
+		// |		 + '<span data-dojo-type="dijit/_WidgetBase"'
+		// |		 + ' data-dojo-attach-point="labelNode"'
+		// |		 + ' data-dojo-props="_setValueAttr: {node: \'domNode\', type: \'innerText\'}"></span>'
+		// |		 + '<span data-dojo-type="dijit/form/TextBox"'
+		// |		 + ' data-dojo-attach-point="inputNode"></span>'
+		// |		 + '</div>';
+		// |		(new WidgetList({
+		// |			children: array,
+		// |			childParams: {
+		// |				startup: function(){
+		// |					this.labelNode.set("value", at("rel:", "Serial"));
+		// |					this.inputNode.set("value", at("rel:", "First"));
+		// |					this.inherited("startup", arguments);
+		// |				}
+		// |			},
+		// |			templateString: childTemplate
+		// |		}, dom.byId("programmaticRepeat"))).startup();
+		// example:
+		//		Using the same childTemplate above, establish data binding for child widgets based on the declaration in childBindings.
+		//		(childBindings may come from dojo/text, by eval()'ing the text)
+		// |		var childBindings = {
+		// |			labelNode: {value: at("rel:", "Serial")},
+		// |			inputNode: {value: at("rel:", "First")}
+		// |		};
+		// |		(new WidgetList({
+		// |			children: array,
+		// |			templateString: childTemplate,
+		// |			childBindings: childBindings
+		// |		}, dom.byId("programmaticRepeatWithSeparateBindingDeclaration"))).startup();
+
+		// childClz: Function
+		//		The class of the child widget. Takes precedence over childType/childMixins.
+		childClz: null,
+
+		// childType: String|Function
+		//		The module ID of child widget, or a function that takes child data as the argument and returns the module ID of child widget. childClz takes precedence over this/childMixins.
+		//		Can be specified via data-mvc-child-type attribute of widget declaration.
+		childType: "",
+
+		// childMixins: String|String[]|Function
+		//		The list of module IDs (separated by comma), or a functinon that takes child data as the argument and returns it, of the classes that will be mixed into child widget. childClz takes precedence over childType/this.
+		//		Can be specified via data-mvc-child-mixins attribute of widget declaration.
+		childMixins: "",
+
+		// childParams: Object|Function
+		//		The mixin properties for child widget.
+		//		Can be specified via data-mvc-child-props attribute of widget declaration.
+		//		"this" in data-mvc-child-props will have the following properties:
+		//
+		//		- parent - This widget's instance.
+		//		- target - The data item in children.
+		childParams: null,
+
+		// childBindings: Object|Function
+		//		Data bindings for child widget.
+		childBindings: null,
+
+		// children: dojox/mvc/StatefulArray
+		//		The array of data model that is used to render child nodes.
+		children: null,
+
+		/*=====
+		// templateString: String
+		//		The template string for each child items. templateString in child widgets take precedence over this.
+		templateString: "",
+		=====*/
+
+		// partialRebuild: Boolean
+		//		If true, only rebuild repeat items for changed elements. Otherwise, rebuild everything if there is a change in children.
+		partialRebuild: false,
+
+		// _relTargetProp: String
+		//		The name of the property that is used by child widgets for relative data binding.
+		_relTargetProp : "children",
+
+		postMixInProperties: function(){
+			this.inherited(arguments);
+			if(this[childTypeAttr]){
+				this.childType = this[childTypeAttr];
+			}
+			if(this[childMixinsAttr]){
+				this.childMixins = this[childMixinsAttr];
+			}
+		},
+
+		startup: function(){
+			this.inherited(arguments);
+			this._setChildrenAttr(this.children);
+		},
+
+		_setChildrenAttr: function(/*dojo/Stateful*/ value){
+			// summary:
+			//		Handler for calls to set("children", val).
+
+			var children = this.children;
+			this._set("children", value);
+			if(this._started && (!this._builtOnce || children != value)){
+				this._builtOnce = true;
+				this._buildChildren(value);
+				if(lang.isArray(value)){
+					var _self = this;
+					value.watch !== {}.watch && (this._handles = this._handles || []).push(value.watch(function(name, old, current){
+						if(!isNaN(name)){
+							var w = _self.getChildren()[name - 0];
+							w && w.set(w._relTargetProp || "target", current);
+						}
+					}));
+				}
+			}
+		},
+
+		_buildChildren: function(/*dojox/mvc/StatefulArray*/ children){
+			// summary:
+			//		Create child widgets upon children and inserts them into the container node.
+
+			unwatchElements(this);
+			for(var cw = this.getChildren(), w = null; w = cw.pop();){ this.removeChild(w); w.destroy(); }
+			if(!lang.isArray(children)){ return; }
+
+			var _self = this,
+			 seq = this._buildChildrenSeq = (this._buildChildrenSeq || 0) + 1,
+			 initial = {idx: 0, removals: [], adds: [].concat(children)},
+			 changes = [initial];
+
+			function loadedModule(/*Object*/ change){
+				// summary:
+				//		The callback function called when modules associated with an array splice have been loaded.
+				// description:
+				//		Looks through the queued array splices and process queue entries whose modules have been loaded, by removing/adding child widgets upon the array splice.
+
+				if(this._beingDestroyed || this._buildChildrenSeq > seq){ return; } // If this _WidgetList is being destroyed, or newer _buildChildren call comes during lazy loading, bail
+
+				// Associate an object associated with an array splice with the module loaded
+				var list = [].slice.call(arguments, 1);
+				change.clz = lang.isFunction(this.childType) || lang.isFunction(this.childMixins) ? list : list[0];
+
+				// Looks through the queued array splices
+				for(var item = null; item = changes.shift();){
+					// The modules for the array splice have not been loaded, bail
+					if(!item.clz){
+						changes.unshift(item);
+						break;
+					}
+
+					// Remove child widgets upon the array removals
+					for(var i = 0, l = (item.removals || []).length; i < l; ++i){
+						this.removeChild(item.idx);
+					}
+
+					// Create/add child widgets upon the array adds
+					array.forEach(array.map(item.adds, function(child, idx){
+						var params = {
+							ownerDocument: this.ownerDocument,
+							parent: this,
+							indexAtStartup: item.idx + idx // Won't be updated even if there are removals/adds of repeat items after startup
+						}, childClz = lang.isArray(item.clz) ? item.clz[idx] : item.clz;
+						params[(lang.isFunction(this.childParams) && this.childParams.call(params, this) || this.childParams || this[childParamsAttr] && evalParams.call(params, this[childParamsAttr]) || {})._relTargetProp || childClz.prototype._relTargetProp || "target"] = child;
+
+						var childParams = this.childParams || this[childParamsAttr] && evalParams.call(params, this[childParamsAttr]),
+						 childBindings = this.childBindings || this[childBindingsAttr] && evalParams.call(params, this[childBindingsAttr]);
+						if(this.templateString && !params.templateString && !childClz.prototype.templateString){ params.templateString = this.templateString; }
+						if(childBindings && !params.bindings && !childClz.prototype.bindings){ params.bindings = childBindings; }
+						return new childClz(lang.delegate(lang.isFunction(childParams) ? childParams.call(params, this) : childParams, params));
+					}, this), function(child, idx){
+						this.addChild(child, item.idx + idx);
+					}, this);
+				}
+			}
+
+			lang.isFunction(children.watchElements) && (this._handles = this._handles || []).push(children.watchElements(function(idx, removals, adds){
+				if(!removals || !adds || !_self.partialRebuild){
+					// If the entire array is changed, or this WidgetList should rebuild the whole child widgets with every change in array, rebuild the whole
+					_self._buildChildren(children);
+				}else{
+					// Otherwise queue the array splice and load modules associated with the additions
+					var change = {idx: idx, removals: removals, adds: adds};
+					changes.push(change);
+					loadModules.call(_self, adds, lang.hitch(_self, loadedModule, change));
+				}
+			}));
+
+			// Load modules associated with the initial data
+			loadModules.call(this, children, lang.hitch(this, loadedModule, initial));
+		},
+
+		destroy: function(){
+			unwatchElements(this);
+			this.inherited(arguments);
+		}
+	});
+
+	WidgetList.prototype[childTypeAttr] = WidgetList.prototype[childMixinsAttr] = WidgetList.prototype[childParamsAttr] = WidgetList.prototype[childBindingsAttr] = ""; // Let parser treat these attributes as string
+	return WidgetList;
 });

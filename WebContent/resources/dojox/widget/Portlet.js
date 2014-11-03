@@ -1,189 +1,349 @@
-//>>built
-define("dojox/widget/Portlet",["dojo/_base/declare","dojo/_base/kernel","dojo/_base/lang","dojo/_base/array","dojo/_base/event","dojo/_base/connect","dojo/dom-style","dojo/dom-class","dojo/dom-construct","dojo/fx","dijit/registry","dijit/TitlePane","dijit/_Container","./PortletSettings","./PortletDialogSettings"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,fx,_a,_b,_c,_d,_e){
-_2.experimental("dojox.widget.Portlet");
-return _1("dojox.widget.Portlet",[_b,_c],{resizeChildren:true,closable:true,_parents:null,_size:null,dragRestriction:false,buildRendering:function(){
-this.inherited(arguments);
-_7.set(this.domNode,"visibility","hidden");
-},postCreate:function(){
-this.inherited(arguments);
-_8.add(this.domNode,"dojoxPortlet");
-_8.remove(this.arrowNode,"dijitArrowNode");
-_8.add(this.arrowNode,"dojoxPortletIcon dojoxArrowDown");
-_8.add(this.titleBarNode,"dojoxPortletTitle");
-_8.add(this.hideNode,"dojoxPortletContentOuter");
-_8.add(this.domNode,"dojoxPortlet-"+(!this.dragRestriction?"movable":"nonmovable"));
-var _f=this;
-if(this.resizeChildren){
-this.subscribe("/dnd/drop",function(){
-_f._updateSize();
-});
-this.subscribe("/Portlet/sizechange",function(_10){
-_f.onSizeChange(_10);
-});
-this.connect(window,"onresize",function(){
-_f._updateSize();
-});
-var _11=_3.hitch(this,function(id,_12){
-var _13=_a.byId(id);
-if(_13.selectChild){
-var s=this.subscribe(id+"-selectChild",function(_14){
-var n=_f.domNode.parentNode;
-while(n){
-if(n==_14.domNode){
-_f.unsubscribe(s);
-_f._updateSize();
-break;
-}
-n=n.parentNode;
-}
-});
-var _15=_a.byId(_12);
-if(_13&&_15){
-_f._parents.push({parent:_13,child:_15});
-}
-}
-});
-var _16;
-this._parents=[];
-for(var p=this.domNode.parentNode;p!=null;p=p.parentNode){
-var id=p.getAttribute?p.getAttribute("widgetId"):null;
-if(id){
-_11(id,_16);
-_16=id;
-}
-}
-}
-this.connect(this.titleBarNode,"onmousedown",function(evt){
-if(_8.contains(evt.target,"dojoxPortletIcon")){
-_5.stop(evt);
-return false;
-}
-return true;
-});
-this.connect(this._wipeOut,"onEnd",function(){
-_f._publish();
-});
-this.connect(this._wipeIn,"onEnd",function(){
-_f._publish();
-});
-if(this.closable){
-this.closeIcon=this._createIcon("dojoxCloseNode","dojoxCloseNodeHover",_3.hitch(this,"onClose"));
-_7.set(this.closeIcon,"display","");
-}
-},startup:function(){
-if(this._started){
-return;
-}
-var _17=this.getChildren();
-this._placeSettingsWidgets();
-_4.forEach(_17,function(_18){
-try{
-if(!_18.started&&!_18._started){
-_18.startup();
-}
-}
-catch(e){
-}
-});
-this.inherited(arguments);
-_7.set(this.domNode,"visibility","visible");
-},_placeSettingsWidgets:function(){
-_4.forEach(this.getChildren(),_3.hitch(this,function(_19){
-if(_19.portletIconClass&&_19.toggle&&!_19.get("portlet")){
-this._createIcon(_19.portletIconClass,_19.portletIconHoverClass,_3.hitch(_19,"toggle"));
-_9.place(_19.domNode,this.containerNode,"before");
-_19.set("portlet",this);
-this._settingsWidget=_19;
-}
-}));
-},_createIcon:function(_1a,_1b,fn){
-var _1c=_9.create("div",{"class":"dojoxPortletIcon "+_1a,"waiRole":"presentation"});
-_9.place(_1c,this.arrowNode,"before");
-this.connect(_1c,"onclick",fn);
-if(_1b){
-this.connect(_1c,"onmouseover",function(){
-_8.add(_1c,_1b);
-});
-this.connect(_1c,"onmouseout",function(){
-_8.remove(_1c,_1b);
-});
-}
-return _1c;
-},onClose:function(evt){
-_7.set(this.domNode,"display","none");
-},onSizeChange:function(_1d){
-if(_1d==this){
-return;
-}
-this._updateSize();
-},_updateSize:function(){
-if(!this.open||!this._started||!this.resizeChildren){
-return;
-}
-if(this._timer){
-clearTimeout(this._timer);
-}
-this._timer=setTimeout(_3.hitch(this,function(){
-var _1e={w:_7.get(this.domNode,"width"),h:_7.get(this.domNode,"height")};
-for(var i=0;i<this._parents.length;i++){
-var p=this._parents[i];
-var sel=p.parent.selectedChildWidget;
-if(sel&&sel!=p.child){
-return;
-}
-}
-if(this._size){
-if(this._size.w==_1e.w&&this._size.h==_1e.h){
-return;
-}
-}
-this._size=_1e;
-var fns=["resize","layout"];
-this._timer=null;
-var _1f=this.getChildren();
-_4.forEach(_1f,function(_20){
-for(var i=0;i<fns.length;i++){
-if(_3.isFunction(_20[fns[i]])){
-try{
-_20[fns[i]]();
-}
-catch(e){
-}
-break;
-}
-}
-});
-this.onUpdateSize();
-}),100);
-},onUpdateSize:function(){
-},_publish:function(){
-_6.publish("/Portlet/sizechange",[this]);
-},_onTitleClick:function(evt){
-if(evt.target==this.arrowNode){
-this.inherited(arguments);
-}
-},addChild:function(_21){
-this._size=null;
-this.inherited(arguments);
-if(this._started){
-this._placeSettingsWidgets();
-this._updateSize();
-}
-if(this._started&&!_21.started&&!_21._started){
-_21.startup();
-}
-},destroyDescendants:function(_22){
-this.inherited(arguments);
-if(this._settingsWidget){
-this._settingsWidget.destroyRecursive(_22);
-}
-},destroy:function(){
-if(this._timer){
-clearTimeout(this._timer);
-}
-this.inherited(arguments);
-},_setCss:function(){
-this.inherited(arguments);
-_7.set(this.arrowNode,"display",this.toggleable?"":"none");
-}});
+define([
+	"dojo/_base/declare",
+	"dojo/_base/kernel",
+	"dojo/_base/lang",
+	"dojo/_base/array",
+	"dojo/_base/event",
+	"dojo/_base/connect",
+	"dojo/dom-style",
+	"dojo/dom-class",
+	"dojo/dom-construct",
+	"dojo/fx",
+	"dijit/registry",
+	"dijit/TitlePane",
+	"dijit/_Container",
+	"./PortletSettings",
+	"./PortletDialogSettings"
+	], function(declare, kernel, lang, array, event, connect, domStyle, domClass, domConstruct, fx, registry,
+				TitlePane, _Container, PortletSettings, PortletDialogSettings){
+	
+	kernel.experimental("dojox.widget.Portlet");
+	
+	return declare("dojox.widget.Portlet", [TitlePane, _Container],{
+		// summary:
+		//		A container widget that is designed to be contained
+		//		in a dojox.layout.GridContainer. Child widgets can insert
+		//		an icon into the title bar of the Portlet, which when
+		//		clicked, executes the "toggle" method of the child widget.
+		//		A child widget must specify the attribute
+		//		"portletIconClass", and the optional class
+		//		"portletIconHoverClass", as well as the
+		//		"toggle" function.
+
+		// resizeChildren: Boolean
+		//		If true, when the Portlet is resized, any child widgets
+		//		with a 'resize' method have that method called.
+		resizeChildren: true,
+
+		// closable: Boolean
+		//		If true, a close button is placed in the title bar,
+		//		and the Portlet can be hidden. If false, the Portlet
+		//		cannot be closed.
+		closable: true,
+
+		// _parents: Array
+		//		 An array of all the StackContainer widgets that this Portlet
+		//		is contained in.	These are used to determine if the portlet
+		//		is visible or not.
+		_parents: null,
+
+		// _size: Object
+		//		Cache of the previous size of the portlet, used to determine
+		//		if the size has changed and if the child widgets should be
+		//		resized.
+		_size: null,
+
+		// dragRestriction: Boolean
+		//		To remove the drag capability.
+		dragRestriction : false,
+
+		buildRendering: function(){
+			this.inherited(arguments);
+
+			// Hide the portlet until it is fully constructed.
+			domStyle.set(this.domNode, "visibility", "hidden");
+		},
+
+		postCreate: function(){
+			this.inherited(arguments);
+
+			// Add the portlet classes
+			domClass.add(this.domNode, "dojoxPortlet");
+			domClass.remove(this.arrowNode, "dijitArrowNode");
+			domClass.add(this.arrowNode, "dojoxPortletIcon dojoxArrowDown");
+			domClass.add(this.titleBarNode, "dojoxPortletTitle");
+			domClass.add(this.hideNode, "dojoxPortletContentOuter");
+
+			// Choose the class to add depending on if the portlet is draggable or not.
+			domClass.add(this.domNode, "dojoxPortlet-" + (!this.dragRestriction ? "movable" : "nonmovable"));
+
+			var _this = this;
+			if(this.resizeChildren){
+				// If children should be resized	when the portlet size changes,
+				// listen for items being dropped, when the window is resized,
+				// or when another portlet's size changes.
+
+				this.subscribe("/dnd/drop", function(){_this._updateSize();});
+
+				this.subscribe("/Portlet/sizechange", function(widget){_this.onSizeChange(widget);});
+				this.connect(window, "onresize", function(){_this._updateSize();});
+
+				// Subscribe to all possible child-selection events that could affect this
+				// portlet
+				var doSelectSubscribe = lang.hitch(this, function(id, lastId){
+					var widget = registry.byId(id);
+					if(widget.selectChild){
+						var s = this.subscribe(id + "-selectChild", function(child){
+							var n = _this.domNode.parentNode;
+
+							while(n){
+								if(n == child.domNode){
+
+									// Only fire this once, as the widget is now visible
+									// at least once, so child measurements should be accurate.
+									_this.unsubscribe(s);
+									_this._updateSize();
+									break;
+								}
+								n = n.parentNode;
+							}
+						});
+
+						// Record the StackContainer and child widget that this portlet
+						// is in, so it can figure out whether or not it is visible.
+						// If it is not visible, it will not update it's size dynamically.
+						var child = registry.byId(lastId);
+						if(widget && child){
+							_this._parents.push({parent: widget, child: child});
+						}
+					}
+				});
+				var lastId;
+				this._parents = [];
+
+				// Find all parent widgets, and if they are StackContainers,
+				// subscribe to their selectChild method calls.
+				for(var p = this.domNode.parentNode; p != null; p = p.parentNode){
+					var id = p.getAttribute ? p.getAttribute("widgetId") : null;
+					if(id){
+						doSelectSubscribe(id, lastId);
+						lastId = id;
+					}
+				}
+			}
+
+			// Prevent clicks on icons from causing a drag to start.
+			this.connect(this.titleBarNode, "onmousedown", function(evt){
+				if (domClass.contains(evt.target, "dojoxPortletIcon")) {
+					event.stop(evt);
+					return false;
+				}
+				return true;
+			});
+
+			// Inform all portlets that the size of this one has changed,
+			// and therefore perhaps they have too
+			this.connect(this._wipeOut, "onEnd", function(){_this._publish();});
+			this.connect(this._wipeIn, "onEnd", function(){_this._publish();});
+
+			if(this.closable){
+				this.closeIcon = this._createIcon("dojoxCloseNode", "dojoxCloseNodeHover", lang.hitch(this, "onClose"));
+				domStyle.set(this.closeIcon, "display", "");
+			}
+		},
+
+		startup: function(){
+			if(this._started){return;}
+
+			var children = this.getChildren();
+			this._placeSettingsWidgets();
+
+			// Start up the children
+			array.forEach(children, function(child){
+				try{
+					if(!child.started && !child._started){
+						child.startup()
+					}
+				}
+				catch(e){
+					console.log(this.id + ":" + this.declaredClass, e);
+				}
+			});
+
+			this.inherited(arguments);
+
+			//this._updateSize();
+			domStyle.set(this.domNode, "visibility", "visible");
+		},
+
+		_placeSettingsWidgets: function(){
+			// summary:
+			//		Checks all the children to see if they are instances
+			//		of dojox.widget.PortletSettings. If they are,
+			//		create an icon for them in the title bar which when clicked,
+			//		calls their toggle() method.
+
+			array.forEach(this.getChildren(), lang.hitch(this, function(child){
+				if(child.portletIconClass && child.toggle && !child.get("portlet")){
+					this._createIcon(child.portletIconClass, child.portletIconHoverClass, lang.hitch(child, "toggle"));
+					domConstruct.place(child.domNode, this.containerNode, "before");
+					child.set("portlet", this);
+					this._settingsWidget = child;
+				}
+			}));
+		},
+
+		_createIcon: function(clazz, hoverClazz, fn){
+			// summary:
+			//		creates an icon in the title bar.
+
+			var icon = domConstruct.create("div",{
+				"class": "dojoxPortletIcon " + clazz,
+				"waiRole": "presentation"
+			});
+			domConstruct.place(icon, this.arrowNode, "before");
+
+			this.connect(icon, "onclick", fn);
+
+			if(hoverClazz){
+				this.connect(icon, "onmouseover", function(){
+					domClass.add(icon, hoverClazz);
+				});
+				this.connect(icon, "onmouseout", function(){
+					domClass.remove(icon, hoverClazz);
+				});
+			}
+			return icon;
+		},
+
+		onClose: function(evt){
+			// summary:
+			//		Hides the portlet. Note that it does not
+			//		persist this, so it is up to the client to
+			//		listen to this method and persist the closed state
+			//		in their own way.
+			domStyle.set(this.domNode, "display", "none");
+		},
+
+		onSizeChange: function(widget){
+			// summary:
+			//		Updates the Portlet size if any other Portlet
+			//		changes its size.
+			if(widget == this){
+				return;
+			}
+			this._updateSize();
+		},
+
+		_updateSize: function(){
+			// summary:
+			//		Updates the size of all child widgets.
+			if(!this.open || !this._started || !this.resizeChildren){
+				return;
+			}
+
+			if(this._timer){
+				clearTimeout(this._timer);
+			}
+			// Delay applying the size change in case the size
+			// changes very frequently, for performance reasons.
+			this._timer = setTimeout(lang.hitch(this, function(){
+				var size ={
+					w: domStyle.get(this.domNode, "width"),
+					h: domStyle.get(this.domNode, "height")
+				};
+
+				// If the Portlet is in a StackWidget, and it is not
+				// visible, do not update the size, as it could
+				// make child widgets miscalculate.
+				for(var i = 0; i < this._parents.length; i++){
+					var p = this._parents[i];
+					var sel = p.parent.selectedChildWidget
+					if(sel && sel != p.child){
+						return;
+					}
+				}
+
+				if(this._size){
+					// If the size of the portlet hasn't changed, don't
+					// resize the children, as this can be expensive
+					if(this._size.w == size.w && this._size.h == size.h){
+						return;
+					}
+				}
+				this._size = size;
+
+				var fns = ["resize", "layout"];
+				this._timer = null;
+				var kids = this.getChildren();
+
+				array.forEach(kids, function(child){
+					for(var i = 0; i < fns.length; i++){
+						if(lang.isFunction(child[fns[i]])){
+							try{
+								child[fns[i]]();
+							} catch(e){
+								console.log(e);
+							}
+							break;
+						}
+					}
+				});
+				this.onUpdateSize();
+			}), 100);
+		},
+
+		onUpdateSize: function(){
+			// summary:
+			//		Stub function called when the size is changed.
+		},
+
+		_publish: function(){
+			// summary:
+			//		Publishes an event that all other portlets listen to.
+			//		This causes them to update their child widgets if their
+			//		size has changed.
+			connect.publish("/Portlet/sizechange",[this]);
+		},
+
+		_onTitleClick: function(evt){
+			if(evt.target == this.arrowNode){
+				this.inherited(arguments);
+			}
+		},
+
+		addChild: function(child){
+			// summary:
+			//		Adds a child widget to the portlet.
+			this._size = null;
+			this.inherited(arguments);
+
+			if(this._started){
+				this._placeSettingsWidgets();
+				this._updateSize();
+			}
+			if(this._started && !child.started && !child._started){
+				child.startup();
+			}
+		},
+
+		destroyDescendants: function(/*Boolean*/ preserveDom){
+			this.inherited(arguments);
+			if(this._settingsWidget){
+				this._settingsWidget.destroyRecursive(preserveDom);
+			}
+		},
+
+		destroy: function(){
+			if(this._timer){
+				clearTimeout(this._timer);
+			}
+			this.inherited(arguments);
+		},
+
+		_setCss: function(){
+			this.inherited(arguments);
+			domStyle.set(this.arrowNode, "display", this.toggleable ? "":"none");
+		}
+	});
 });

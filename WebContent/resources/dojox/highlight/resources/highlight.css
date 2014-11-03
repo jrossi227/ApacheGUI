@@ -1,3 +1,6 @@
+/*
+You can use this file as is or as a starting point for you own styling
+*/
 
 .string,
 .function .title,
@@ -15,11 +18,13 @@
 .smalltalk .class {
 	color: #800;
 }
+
 .comment,
 .java .annotation,
 .template_comment {
 	color: #888;
 }
+
 .number,
 .regexp,
 .javascript .literal,
@@ -27,6 +32,7 @@
 .smalltalk .char {
 	color: #080;
 }
+
 .javadoc,
 .ruby .string,
 .python .decorator,
@@ -37,6 +43,7 @@
 .xml .pi {
 	color: #88F;
 }
+
 .keyword,
 .css .id,
 .phpdoc,

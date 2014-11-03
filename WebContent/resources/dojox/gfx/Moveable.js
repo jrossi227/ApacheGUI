@@ -1,45 +1,150 @@
-//>>built
-define("dojox/gfx/Moveable",["dojo/_base/lang","dojo/_base/declare","dojo/_base/array","dojo/_base/event","dojo/topic","dojo/touch","dojo/dom-class","dojo/_base/window","./Mover"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9){
-return _2("dojox.gfx.Moveable",null,{constructor:function(_a,_b){
-this.shape=_a;
-this.delay=(_b&&_b.delay>0)?_b.delay:0;
-this.mover=(_b&&_b.mover)?_b.mover:_9;
-this.events=[this.shape.on(_6.press,_1.hitch(this,"onMouseDown"))];
-},destroy:function(){
-_3.forEach(this.events,function(_c){
-_c.remove();
-});
-this.events=this.shape=null;
-},onMouseDown:function(e){
-if(this.delay){
-this.events.push(this.shape.on(_6.move,_1.hitch(this,"onMouseMove")),this.shape.on(_6.release,_1.hitch(this,"onMouseUp")));
-this._lastX=e.clientX;
-this._lastY=e.clientY;
-}else{
-new this.mover(this.shape,e,this);
-}
-_4.stop(e);
-},onMouseMove:function(e){
-var _d=e.clientX,_e=e.clientY;
-if(Math.abs(_d-this._lastX)>this.delay||Math.abs(_e-this._lastY)>this.delay){
-this.onMouseUp(e);
-new this.mover(this.shape,e,this);
-}
-_4.stop(e);
-},onMouseUp:function(e){
-this.events.pop().remove();
-},onMoveStart:function(_f){
-_5.publish("/gfx/move/start",_f);
-_7.add(_8.body(),"dojoMove");
-},onMoveStop:function(_10){
-_5.publish("/gfx/move/stop",_10);
-_7.remove(_8.body(),"dojoMove");
-},onFirstMove:function(_11){
-},onMove:function(_12,_13){
-this.onMoving(_12,_13);
-this.shape.applyLeftTransform(_13);
-this.onMoved(_12,_13);
-},onMoving:function(_14,_15){
-},onMoved:function(_16,_17){
-}});
+define(["dojo/_base/lang","dojo/_base/declare","dojo/_base/array","dojo/_base/event","dojo/topic","dojo/touch",
+	"dojo/dom-class","dojo/_base/window","./Mover"],
+  function(lang,declare,arr,event,topic,touch,domClass,win,Mover){
+
+	/*=====
+	var __MoveableCtorArgs = declare("dojox.gfx.__MoveableCtorArgs", null, {
+		// summary:
+		//		The arguments used for dojox/gfx/Moveable constructor.
+
+		// delay: Number
+		//		delay move by this number of pixels
+		delay:0,
+
+		// mover: Object
+		//		a constructor of custom Mover
+		mover:Mover
+	});
+	=====*/
+
+	return declare("dojox.gfx.Moveable", null, {
+		constructor: function(shape, params){
+			// summary:
+			//		an object, which makes a shape moveable
+			// shape: dojox/gfx.Shape
+			//		a shape object to be moved.
+			// params: __MoveableCtorArgs
+			//		an optional configuration object.
+
+			this.shape = shape;
+			this.delay = (params && params.delay > 0) ? params.delay : 0;
+			this.mover = (params && params.mover) ? params.mover : Mover;
+			this.events = [
+				this.shape.on(touch.press, lang.hitch(this, "onMouseDown"))
+				// cancel text selection and text dragging
+				//, dojo.connect(this.handle, "ondragstart",   dojo, "stopEvent")
+				//, dojo.connect(this.handle, "onselectstart", dojo, "stopEvent")
+			];
+		},
+
+		// methods
+		destroy: function(){
+			// summary:
+			//		stops watching for possible move, deletes all references, so the object can be garbage-collected
+			arr.forEach(this.events, function(handle){
+				handle.remove();
+			});
+			this.events = this.shape = null;
+		},
+
+		// mouse event processors
+		onMouseDown: function(e){
+			// summary:
+			//		event processor for onmousedown, creates a Mover for the shape
+			// e: Event
+			//		mouse event
+			if(this.delay){
+				this.events.push(
+					this.shape.on(touch.move, lang.hitch(this, "onMouseMove")),
+					this.shape.on(touch.release, lang.hitch(this, "onMouseUp")));
+				this._lastX = e.clientX;
+				this._lastY = e.clientY;
+			}else{
+				new this.mover(this.shape, e, this);
+			}
+			event.stop(e);
+		},
+		onMouseMove: function(e){
+			// summary:
+			//		event processor for onmousemove, used only for delayed drags
+			// e: Event
+			//		mouse event
+			var clientX = e.clientX,
+				clientY = e.clientY;
+
+			if(Math.abs(clientX - this._lastX) > this.delay || Math.abs(clientY - this._lastY) > this.delay){
+				this.onMouseUp(e);
+				new this.mover(this.shape, e, this);
+			}
+			event.stop(e);
+		},
+		onMouseUp: function(e){
+			// summary:
+			//		event processor for onmouseup, used only for delayed delayed drags
+			// e: Event
+			//		mouse event
+			this.events.pop().remove();
+		},
+
+		// local events
+		onMoveStart: function(/* dojox/gfx/Mover */ mover){
+			// summary:
+			//		called before every move operation
+			// mover:
+			//		A Mover instance that fired the event.
+			topic.publish("/gfx/move/start", mover);
+			domClass.add(win.body(), "dojoMove");
+		},
+		onMoveStop: function(/* dojox/gfx/Mover */ mover){
+			// summary:
+			//		called after every move operation
+			// mover:
+			//		A Mover instance that fired the event.
+			topic.publish("/gfx/move/stop", mover);
+			domClass.remove(win.body(), "dojoMove");
+		},
+		onFirstMove: function(/* dojox/gfx/Mover */ mover){
+			// summary:
+			//		called during the very first move notification,
+			//		can be used to initialize coordinates, can be overwritten.
+			// mover:
+			//		A Mover instance that fired the event.
+
+			// default implementation does nothing
+		},
+		onMove: function(/* dojox/gfx/Mover */ mover, /* Object */ shift){
+			// summary:
+			//		called during every move notification,
+			//		should actually move the node, can be overwritten.
+			// mover:
+			//		A Mover instance that fired the event.
+			// shift:
+			//		An object as {dx,dy} that represents the shift.
+			this.onMoving(mover, shift);
+			this.shape.applyLeftTransform(shift);
+			this.onMoved(mover, shift);
+		},
+		onMoving: function(/* dojox/gfx/Mover */ mover, /* Object */ shift){
+			// summary:
+			//		called before every incremental move,
+			//		can be overwritten.
+			// mover:
+			//		A Mover instance that fired the event.
+			// shift:
+			//		An object as {dx,dy} that represents the shift.
+
+			// default implementation does nothing
+		},
+		onMoved: function(/* dojox/gfx/Mover */ mover, /* Object */ shift){
+			// summary:
+			//		called after every incremental move,
+			//		can be overwritten.
+			// mover:
+			//		A Mover instance that fired the event.
+			// shift:
+			//		An object as {dx,dy} that represents the shift.
+
+			// default implementation does nothing
+		}
+	});
 });

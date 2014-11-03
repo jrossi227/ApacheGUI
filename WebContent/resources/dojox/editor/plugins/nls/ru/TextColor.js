@@ -1,2 +1,6 @@
-//>>built
-define("dojox/editor/plugins/nls/ru/TextColor",({"setButtonText":"Задать","cancelButtonText":"Отмена"}));
+define(
+({
+	"setButtonText": "Задать",
+	"cancelButtonText": "Отмена"
+})
+);

@@ -1,185 +1,297 @@
-//>>built
-define("dojox/editor/plugins/ResizeTableColumn",["dojo","dijit","dojox","./TablePlugins"],function(_1,_2,_3,_4){
-var _5=_1.declare("dojox.editor.plugins.ResizeTableColumn",_4,{constructor:function(){
-this.isLtr=this.dir?(this.dir=="ltr"):_1._isBodyLtr();
-this.ruleDiv=_1.create("div",{style:"top: -10000px; z-index: 10001"},_1.body(),"last");
-},setEditor:function(_6){
-var _7=this.ruleDiv;
-this.editor=_6;
-this.editor.customUndo=true;
-this.onEditorLoaded();
-_6.onLoadDeferred.addCallback(_1.hitch(this,function(){
-this.connect(this.editor.editNode,"onmousemove",function(_8){
-var _9=_1.position(_6.iframe,true),ex=_9.x,cx=_8.clientX;
-if(!this.isDragging){
-var _a=_8.target;
-if(_a.tagName&&_a.tagName.toLowerCase()=="td"){
-var _b=_1.position(_a),ox=_b.x,ow=_b.w,_c=ex+_b.x-2;
-if(this.isLtr){
-_7.headerColumn=true;
-if(!_23(_a,"first")||cx>ox+ow/2){
-_c+=ow;
-_7.headerColumn=false;
-}
-}else{
-_7.headerColumn=false;
-if(_23(_a,"first")&&cx>ox+ow/2){
-_c+=ow;
-_7.headerColumn=true;
-}
-}
-_1.style(_7,{position:"absolute",cursor:"col-resize",display:"block",width:"4px",backgroundColor:"transparent",top:_9.y+_b.y+"px",left:_c+"px",height:_b.h+"px"});
-this.activeCell=_a;
-}else{
-_1.style(_7,{display:"none",top:"-10000px"});
-}
-}else{
-var _d=this.activeCell,_e=_1.position(_d),ax=_e.x,aw=_e.w,_f=_17(_d),_10,sx,sw,_11=_1.position(_1b(_d).parentNode),ctx=_11.x,ctw=_11.w;
-if(_f){
-_10=_1.position(_f);
-sx=_10.x;
-sw=_10.w;
-}
-if(this.isLtr&&((_7.headerColumn&&_f&&ctx<cx&&cx<ax+aw)||((!_f&&ax<cx&&cx<ctx+ctw)||(_f&&ax<cx&&cx<sx+sw)))||!this.isLtr&&((_7.headerColumn&&_f&&ctx>cx&&cx>ax)||((!_f&&ax+aw>cx&&cx>ctx)||(_f&&ax+aw>cx&&cx>sx)))){
-_1.style(_7,{left:ex+cx+"px"});
-}
-}
-});
-this.connect(_7,"onmousedown",function(evt){
-var _12=_1.position(_6.iframe,true),_13=_1.position(_1b(this.activeCell));
-this.isDragging=true;
-_1.style(_6.editNode,{cursor:"col-resize"});
-_1.style(_7,{width:"1px",left:evt.clientX+"px",top:_12.y+_13.y+"px",height:_13.h+"px",backgroundColor:"#777"});
-});
-this.connect(_7,"onmouseup",function(evt){
-var _14=this.activeCell,_15=_1.position(_14),aw=_15.w,ax=_15.x,_16=_17(_14),_18,sx,sw,_19=_1.position(_6.iframe),ex=_19.x,_1a=_1b(_14),_1c=_1.position(_1a),cs=_1a.getAttribute("cellspacing"),cx=evt.clientX,_1d=_1e(_14),_1f,_20,_21;
-if(!cs||(cs=parseInt(cs,10))<0){
-cs=2;
-}
-if(_16){
-_18=_1.position(_16);
-sx=_18.x;
-sw=_18.w;
-_1f=_1e(_16);
-}
-if(this.isLtr){
-if(_7.headerColumn){
-_20=ex+ax+aw-cx;
-}else{
-_20=cx-ex-ax;
-if(_16){
-_21=ex+sx+sw-cx-cs;
-}
-}
-}else{
-if(_7.headerColumn){
-_20=cx-ex-ax;
-}else{
-_20=ex+ax+aw-cx;
-if(_16){
-_21=cx-ex-sx-cs;
-}
-}
-}
-this.isDragging=false;
-_22(_1d,_20);
-if(_16){
-if(!_7.headerColumn){
-_22(_1f,_21);
-}
-}
-if(_7.headerColumn&&_23(_14,"first")||_23(_14,"last")){
-_1.marginBox(_1a,{w:_1c.w+_20-aw});
-}
-_22(_1d,_1.position(_14).w);
-if(_16){
-_22(_1f,_1.position(_16).w);
-}
-_1.style(_6.editNode,{cursor:"auto"});
-_1.style(_7,{display:"none",top:"-10000px"});
-this.activeCell=null;
-});
-}));
-function _23(n,b){
-var _24=_1.query("> td",n.parentNode);
-switch(b){
-case "first":
-return _24[0]==n;
-case "last":
-return _24[_24.length-1]==n;
-default:
-return false;
-}
-};
-function _17(_25){
-_25=_25.nextSibling;
-while(_25){
-if(_25.tagName&&_25.tagName.toLowerCase()=="td"){
-break;
-}
-_25=_25.nextSibling;
-}
-return _25;
-};
-function _1b(t){
-while((t=t.parentNode)&&t.tagName.toLowerCase()!="table"){
-}
-return t;
-};
-function _1e(t){
-var tds=_1.query("td",_1b(t)),len=tds.length;
-for(var i=0;i<len;i++){
-if(_1.position(tds[i]).x==_1.position(t).x){
-return tds[i];
-}
-}
-return null;
-};
-function _22(_26,_27){
-if(_1.isIE){
-var s=_26.currentStyle,bl=px(_26,s.borderLeftWidth),br=px(_26,s.borderRightWidth),pl=px(_26,s.paddingLeft),pr=px(_26,s.paddingRight);
-_26.style.width=_27-bl-br-pl-pr;
-}else{
-_1.marginBox(_26,{w:_27});
-}
-function px(_28,_29){
-if(!_29){
-return 0;
-}
-if(_29=="medium"){
-return 1;
-}
-if(_29.slice&&_29.slice(-2)=="px"){
-return parseFloat(_29);
-}
-with(_28){
-var _2a=style.left;
-var _2b=runtimeStyle.left;
-runtimeStyle.left=currentStyle.left;
-try{
-style.left=_29;
-_29=style.pixelLeft;
-}
-catch(e){
-_29=0;
-}
-style.left=_2a;
-runtimeStyle.left=_2b;
-}
-return _29;
-};
-};
-}});
-_1.subscribe(_2._scopeName+".Editor.getPlugin",null,function(o){
-if(o.plugin){
-return;
-}
-if(o.args&&o.args.command){
-var cmd=o.args.command.charAt(0).toLowerCase()+o.args.command.substring(1,o.args.command.length);
-if(cmd=="resizeTableColumn"){
-o.plugin=new _5({commandName:cmd});
-}
-}
-});
-return _5;
+define([
+	"dojo",
+	"dijit",
+	"dojox",
+	"./TablePlugins"
+], function(dojo, dijit, dojox, TablePlugins) {
+
+
+	var ResizeTableColumn = dojo.declare("dojox.editor.plugins.ResizeTableColumn",	TablePlugins, {
+
+		constructor: function(){
+			// summary:
+			//		Because IE will ignore the cursor style when the editMode of the document is on,
+			//		we need to create a div within the outer document to mimic the behavior of drag&drop
+			this.isLtr = this.dir ? (this.dir == "ltr") : dojo._isBodyLtr();
+			this.ruleDiv = dojo.create("div",
+				{style: "top: -10000px; z-index: 10001"},
+				dojo.body(), "last");
+		},
+		
+		setEditor: function(editor){
+			// summary:
+			//		Handle the drag&drop events
+			// editor:
+			//		The editor which this plugin belongs to
+			// tags:
+			//		protected
+			var ruleDiv = this.ruleDiv;
+			
+			this.editor = editor;
+			this.editor.customUndo = true;
+			this.onEditorLoaded();
+			
+			// The content of the editor is loaded asynchronously, so the function
+			// should be called when it is loaded.
+			editor.onLoadDeferred.addCallback(dojo.hitch(this, function(){
+				this.connect(this.editor.editNode, "onmousemove", function(evt){
+					var editorCoords = dojo.position(editor.iframe, true),
+						ex = editorCoords.x, cx = evt.clientX;
+					
+					if(!this.isDragging){
+						// If it is just a movement, put the div at the edge of the
+						// target cell so that when the cursor hover on it, it will
+						// change to the col-resize style.
+						var obj = evt.target;
+						
+						if(obj.tagName && obj.tagName.toLowerCase() == "td"){
+							var objCoords = dojo.position(obj), ox = objCoords.x, ow = objCoords.w,
+								pos = ex + objCoords.x - 2;
+							if(this.isLtr){
+								ruleDiv.headerColumn = true;
+								if(!isBoundary(obj, "first") || cx > ox + ow / 2){
+									pos += ow;
+									ruleDiv.headerColumn = false;
+								}
+							}else{
+								ruleDiv.headerColumn = false;
+								if(isBoundary(obj, "first") && cx > ox + ow / 2){
+									pos += ow;
+									ruleDiv.headerColumn = true;
+								}
+							}
+							dojo.style(ruleDiv, {
+								position: "absolute",
+								cursor: "col-resize",
+								display: "block",
+								width: "4px",
+								backgroundColor: "transparent",
+								top: editorCoords.y + objCoords.y + "px",
+								left: pos + "px",
+								height: objCoords.h + "px"
+							});
+							this.activeCell = obj;
+						}else{
+							dojo.style(ruleDiv, {display: "none", top: "-10000px"});
+						}
+					}else{
+						// Begin to drag&drop
+						var activeCell = this.activeCell,
+							activeCoords = dojo.position(activeCell), ax = activeCoords.x, aw = activeCoords.w,
+							sibling = nextSibling(activeCell), siblingCoords, sx, sw,
+							containerCoords = dojo.position(getTable(activeCell).parentNode),
+							ctx = containerCoords.x, ctw = containerCoords.w;
+						
+						if(sibling){
+							siblingCoords = dojo.position(sibling);
+							sx = siblingCoords.x;
+							sw = siblingCoords.w;
+						}
+						
+						// The leading and trailing columns can only be sized to the extent of the containing div.
+						if(this.isLtr &&
+								((ruleDiv.headerColumn && sibling && ctx < cx && cx < ax + aw) ||
+									((!sibling && ax < cx && cx < ctx + ctw) || (sibling && ax < cx && cx < sx + sw))) ||
+							!this.isLtr &&
+								((ruleDiv.headerColumn && sibling && ctx > cx && cx > ax) ||
+									((!sibling && ax + aw > cx && cx > ctx) || (sibling && ax + aw > cx && cx > sx)))){
+							dojo.style(ruleDiv, {left: ex + cx + "px"});
+						}
+					}
+				});
+				
+				this.connect(ruleDiv, "onmousedown", function(evt){
+					var editorCoords = dojo.position(editor.iframe, true),
+						tableCoords = dojo.position(getTable(this.activeCell));
+					
+					this.isDragging = true;
+					dojo.style(editor.editNode, {cursor: "col-resize"});
+					dojo.style(ruleDiv, {
+						width: "1px",
+						left: evt.clientX + "px",
+						top: editorCoords.y + tableCoords.y + "px",
+						height: tableCoords.h + "px",
+						backgroundColor: "#777"
+					});
+				});
+				
+				this.connect(ruleDiv, "onmouseup", function(evt){
+					var activeCell = this.activeCell,
+						activeCoords = dojo.position(activeCell), aw = activeCoords.w, ax = activeCoords.x,
+						sibling = nextSibling(activeCell), siblingCoords, sx, sw,
+						editorCoords = dojo.position(editor.iframe), ex = editorCoords.x,
+						table = getTable(activeCell), tableCoords = dojo.position(table),
+						cs = table.getAttribute("cellspacing"),
+						cx = evt.clientX,
+						headerCell = getHeaderCell(activeCell), headerSibling,
+						newWidth, newSiblingWidth;
+					
+					if(!cs || (cs = parseInt(cs, 10)) < 0){ cs = 2; }
+					
+					if(sibling){
+						siblingCoords = dojo.position(sibling);
+						sx = siblingCoords.x;
+						sw = siblingCoords.w;
+						headerSibling = getHeaderCell(sibling);
+					}
+					
+					// The delta width is either taken from or added to the adjacent column on the trailing edge.
+					// Sizing the rightmost or leftmost columns affects only those columns.
+					if(this.isLtr){
+						if(ruleDiv.headerColumn){
+							newWidth = ex + ax + aw - cx;
+						}else{
+							newWidth = cx - ex - ax;
+							if(sibling) { newSiblingWidth = ex + sx + sw - cx - cs; }
+						}
+					}else{
+						if(ruleDiv.headerColumn){
+							newWidth = cx - ex - ax;
+						}else{
+							newWidth = ex + ax + aw - cx;
+							if(sibling) { newSiblingWidth = cx - ex - sx - cs; }
+						}
+					}
+					
+					this.isDragging = false;
+					marginBox(headerCell, newWidth);
+					if(sibling){
+						if(!ruleDiv.headerColumn){
+							marginBox(headerSibling, newSiblingWidth);
+						}
+					}
+					if(ruleDiv.headerColumn && isBoundary(activeCell, "first") || isBoundary(activeCell, "last")){
+						dojo.marginBox(table, {w: tableCoords.w + newWidth - aw});
+					}
+					// Do it again to consolidate the result,
+					// because maybe the cell cannot be so narrow as you specified.
+					marginBox(headerCell, dojo.position(activeCell).w);
+					if(sibling){
+						marginBox(headerSibling, dojo.position(sibling).w);
+					}
+					dojo.style(editor.editNode, {cursor: "auto"});
+					dojo.style(ruleDiv, {display: "none", top: "-10000px"});
+					this.activeCell = null;
+				});
+			}));
+			
+			function isBoundary(/*DomNode*/ n, /*String*/ b){
+				// summary:
+				//		Check if the current cell is in the first column or
+				//		in the last column.
+				// n:
+				//		The node of a table cell
+				// b:
+				//		Indicate if the cell node is compared with the first coluln
+				//		or the last column
+				var nodes = dojo.query("> td", n.parentNode);
+				switch(b){
+					case "first":
+						return nodes[0] == n;
+					case "last":
+						return nodes[nodes.length - 1] == n;
+					default:
+						return false;
+				}
+			}
+			
+			function nextSibling(/*DomNode*/ node){
+				// summary:
+				//		Get the next cell in row
+				// node:
+				//		The table cell
+				node = node.nextSibling
+				while(node){
+					if(node.tagName && node.tagName.toLowerCase() == "td"){
+						break;
+					}
+					node = node.nextSibling
+				}
+				return node;
+			}
+			
+			function getTable(/*DomNode*/ t){
+				// summary:
+				//		Get the table that this cell belongs to.
+				// t:
+				//		The table cell
+				while((t = t.parentNode) && t.tagName.toLowerCase() != "table"){}
+				return t;
+			}
+			
+			function getHeaderCell(/*DomNode*/ t){
+				// summary:
+				//		Get the table cell in the first row that shares the same
+				//		column with the node t.
+				// t:
+				//		The node of the table cell
+				var tds = dojo.query("td", getTable(t)),
+					len = tds.length;
+				for(var i = 0; i < len; i++){
+					if(dojo.position(tds[i]).x == dojo.position(t).x){
+						return tds[i];
+					}
+				}
+				return null;
+			}
+			
+			function marginBox(/*DomNode*/ node, /*Number*/ width){
+				// summary:
+				//		In IE, if the border width of the td is not specified in table, the default value is 1px,
+				//		though it is marked "medium".
+				// node:
+				//		The node to be set width
+				// width:
+				//		The new width of the node
+				if(dojo.isIE){
+					var s = node.currentStyle,
+						bl = px(node, s.borderLeftWidth), br = px(node, s.borderRightWidth),
+						pl = px(node, s.paddingLeft), pr = px(node, s.paddingRight);
+					
+					node.style.width = width - bl - br - pl - pr;
+				}else{
+					dojo.marginBox(node, {w: width});
+				}
+				
+				function px(element, avalue){
+					if(!avalue){ return 0; }
+					if(avalue == "medium"){ return 1; }
+					// style values can be floats, client code may
+					// want to round this value for integer pixels.
+					if(avalue.slice && avalue.slice(-2) == 'px'){ return parseFloat(avalue); }
+					with(element){
+						var sLeft = style.left;
+						var rsLeft = runtimeStyle.left;
+						runtimeStyle.left = currentStyle.left;
+						try{
+							// 'avalue' may be incompatible with style.left, which can cause IE to throw
+							// this has been observed for border widths using "thin", "medium", "thick" constants
+							// those particular constants could be trapped by a lookup
+							// but perhaps there are more
+							style.left = avalue;
+							avalue = style.pixelLeft;
+						}catch(e){
+							avalue = 0;
+						}
+						style.left = sLeft;
+						runtimeStyle.left = rsLeft;
+					}
+					return avalue;
+				}
+			}
+		}
+	});
+
+	dojo.subscribe(dijit._scopeName + ".Editor.getPlugin",null,function(o){
+		if(o.plugin){ return; }
+		// make first character lower case
+		if(o.args && o.args.command){
+			var cmd = o.args.command.charAt(0).toLowerCase() + o.args.command.substring(1, o.args.command.length);
+			if(cmd == "resizeTableColumn"){
+				o.plugin = new ResizeTableColumn({commandName: cmd});
+			}
+		}
+	});
+
+	return ResizeTableColumn;
 });

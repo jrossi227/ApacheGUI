@@ -1,4 +1,4 @@
-
+/* DnD hovered and selected node(s) */
 .soria .dojoDndItemOver {
 	background-image: url(images/treeHover.png);
 }
@@ -6,6 +6,11 @@
 .soria .dojoDndItemSelected {
 	background-color: #B8CBEC;
 }
+
+
+/* DnD avatar-specific settings */
+/* For now it uses a default set of rules. Some other DnD classes can be modified as well. */
+
 .soria table.dojoDndAvatar { -moz-border-radius: 0; border: 1px solid #ccc; border-collapse: collapse; background-color: #fff; font-size: 75%; color: black;}
 .soria .dojoDndAvatar td	{ border: none; }
 .soria .dojoDndAvatar tr	{ border: none; }

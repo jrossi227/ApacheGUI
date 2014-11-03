@@ -1,2 +1,5 @@
-//>>built
-define("dojox/editor/plugins/nls/sk/Blockquote",({"blockquote":"Blok citátu"}));
+define(
+({
+	"blockquote": "Blok citátu"
+})
+);

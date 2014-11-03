@@ -1,2 +1,5 @@
-//>>built
-define("dojox/editor/plugins/nls/nb/Preview",({"preview":"Forhåndsvis"}));
+define(
+({
+	"preview": "Forhåndsvis"
+})
+);

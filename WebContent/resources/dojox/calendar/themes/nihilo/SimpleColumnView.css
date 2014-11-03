@@ -62,6 +62,10 @@
   color: #293a4b;
   background-color: #ffffff;
 }
+/* 
+ * The dojoxCalendarToday & dojoxCalendarWeekend classes is added by the 
+ * ColumnView.styleGridColumn method that can be subclassed to add/remove css classes
+ */
 .nihilo .dojoxCalendarSimpleColumnView .dojoxCalendarGridTable .dojoxCalendarToday {
   background-color: #fff2d2;
 }
@@ -180,6 +184,10 @@
 .nihilo .dojoxCalendarSimpleColumnView .dojoxCalendarColumnHeaderTable td.last-child {
   border-right: 1px solid #cccccc;
 }
+/* 
+ * The dojoxCalendarToday & dojoxCalendarWeekend classes is added by the 
+ * ColumnView.styleColumnHeaderCell method that can be subclassed to add/remove css classes
+ */
 .nihilo .dojoxCalendarSimpleColumnView .dojoxCalendarColumnHeaderTable .dojoxCalendarToday {
   font-weight: bold;
   color: #ff2200;
@@ -231,6 +239,9 @@
 .nihilo .dojoxCalendarSimpleColumnView .dojoxCalendarRowHeaderTable td.dummy {
   border-top: 1px solid #ffffff;
 }
+/* 
+ * The ColumnView.styleRowHeaderCell method that can be subclassed to add/remove css classes per hour.
+ */
 .nihilo .dojoxCalendarSimpleColumnView .dojoxCalendarRowHeaderTable td {
   vertical-align: top;
   text-align: right;

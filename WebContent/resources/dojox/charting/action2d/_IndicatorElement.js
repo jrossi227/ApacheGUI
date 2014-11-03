@@ -1,229 +1,296 @@
-//>>built
-define("dojox/charting/action2d/_IndicatorElement",["dojo/_base/lang","dojo/_base/array","dojo/_base/declare","../plot2d/Indicator","dojo/has","../plot2d/common","../axis2d/common","dojox/gfx"],function(_1,_2,_3,_4,_5){
-var _6=function(v,_7,_8){
-var c2,c1=v?{x:_7[0],y:_8[0][0]}:{x:_8[0][0],y:_7[0]};
-if(_7.length>1){
-c2=v?{x:_7[1],y:_8[1][0]}:{x:_8[1][0],y:_7[1]};
-}
-return [c1,c2];
-};
-var _9=_3("dojox.charting.action2d._IndicatorElement",_4,{constructor:function(_a,_b){
-if(!_b){
-_b={};
-}
-this.inter=_b.inter;
-},_updateVisibility:function(cp,_c,_d){
-var _e=_d=="x"?this._hAxis:this._vAxis;
-var _f=_e.getWindowScale();
-this.chart.setAxisWindow(_e.name,_f,_e.getWindowOffset()+(cp[_d]-_c[_d])/_f);
-this._noDirty=true;
-this.chart.render();
-this._noDirty=false;
-this._initTrack();
-},_trackMove:function(){
-this._updateIndicator(this.pageCoord);
-this._tracker=setTimeout(_1.hitch(this,this._trackMove),100);
-},_initTrack:function(){
-if(!this._tracker){
-this._tracker=setTimeout(_1.hitch(this,this._trackMove),500);
-}
-},stopTrack:function(){
-if(this._tracker){
-clearTimeout(this._tracker);
-this._tracker=null;
-}
-},render:function(){
-if(!this.isDirty()){
-return;
-}
-var _10=this.inter,_11=_10.plot,v=_10.opt.vertical;
-this.opt.offset=_10.opt.offset||(v?{x:0,y:5}:{x:5,y:0});
-if(_10.opt.labelFunc){
-this.opt.labelFunc=function(_12,_13,_14,_15,_16){
-var _17=_6(v,_13,_14);
-return _10.opt.labelFunc(_17[0],_17[1],_15,_16);
-};
-}
-if(_10.opt.fillFunc){
-this.opt.fillFunc=function(_18,_19,_1a){
-var _1b=_6(v,_19,_1a);
-return _10.opt.fillFunc(_1b[0],_1b[1]);
-};
-}
-this.opt=_1.delegate(_10.opt,this.opt);
-if(!this.pageCoord){
-this.opt.values=null;
-this.inter.onChange({});
-}else{
-this.opt.values=[];
-this.opt.labels=this.secondCoord?"trend":"markers";
-}
-this.hAxis=_11.hAxis;
-this.vAxis=_11.vAxis;
-this.inherited(arguments);
-},_updateIndicator:function(){
-var _1c=this._updateCoordinates(this.pageCoord,this.secondCoord);
-if(_1c.length>1){
-var v=this.opt.vertical;
-this._data=[];
-this.opt.values=[];
-_2.forEach(_1c,function(_1d){
-if(_1d){
-this.opt.values.push(v?_1d.x:_1d.y);
-this._data.push([v?_1d.y:_1d.x]);
-}
-},this);
-}else{
-this.inter.onChange({});
-return;
-}
-this.inherited(arguments);
-},_renderText:function(g,_1e,t,x,y,_1f,_20,_21){
-if(this.inter.opt.labels){
-this.inherited(arguments);
-}
-var _22=_6(this.opt.vertical,_20,_21);
-this.inter.onChange({start:_22[0],end:_22[1],label:_1e});
-},_updateCoordinates:function(cp1,cp2){
-if(_5("dojo-bidi")){
-this._checkXCoords(cp1,cp2);
-}
-var _23=this.inter,_24=_23.plot,v=_23.opt.vertical;
-var _25=this.chart.getAxis(_24.hAxis),_26=this.chart.getAxis(_24.vAxis);
-var hn=_25.name,vn=_26.name,hb=_25.getScaler().bounds,vb=_26.getScaler().bounds;
-var _27=v?"x":"y",n=v?hn:vn,_28=v?hb:vb;
-if(cp2){
-var tmp;
-if(v){
-if(cp1.x>cp2.x){
-tmp=cp2;
-cp2=cp1;
-cp1=tmp;
-}
-}else{
-if(cp1.y>cp2.y){
-tmp=cp2;
-cp2=cp1;
-cp1=tmp;
-}
-}
-}
-var cd1=_24.toData(cp1),cd2;
-if(cp2){
-cd2=_24.toData(cp2);
-}
-var o={};
-o[hn]=hb.from;
-o[vn]=vb.from;
-var min=_24.toPage(o);
-o[hn]=hb.to;
-o[vn]=vb.to;
-var max=_24.toPage(o);
-if(cd1[n]<_28.from){
-if(!cd2&&_23.opt.autoScroll&&!_23.opt.mouseOver){
-this._updateVisibility(cp1,min,_27);
-return [];
-}else{
-if(_23.opt.mouseOver){
-return [];
-}
-cp1[_27]=min[_27];
-}
-cd1=_24.toData(cp1);
-}else{
-if(cd1[n]>_28.to){
-if(!cd2&&_23.opt.autoScroll&&!_23.opt.mouseOver){
-this._updateVisibility(cp1,max,_27);
-return [];
-}else{
-if(_23.opt.mouseOver){
-return [];
-}
-cp1[_27]=max[_27];
-}
-cd1=_24.toData(cp1);
-}
-}
-var c1=this._snapData(cd1,_27,v),c2;
-if(c1.y==null){
-return [];
-}
-if(cp2){
-if(cd2[n]<_28.from){
-cp2[_27]=min[_27];
-cd2=_24.toData(cp2);
-}else{
-if(cd2[n]>_28.to){
-cp2[_27]=max[_27];
-cd2=_24.toData(cp2);
-}
-}
-c2=this._snapData(cd2,_27,v);
-if(c2.y==null){
-c2=null;
-}
-}
-return [c1,c2];
-},_snapData:function(cd,_29,v){
-var _2a=this.chart.getSeries(this.inter.opt.series).data;
-var i,r,l=_2a.length;
-for(i=0;i<l;++i){
-r=_2a[i];
-if(r==null){
-}else{
-if(typeof r=="number"){
-if(i+1>cd[_29]){
-break;
-}
-}else{
-if(r[_29]>cd[_29]){
-break;
-}
-}
-}
-}
-var x,y,px,py;
-if(typeof r=="number"){
-x=i+1;
-y=r;
-if(i>0){
-px=i;
-py=_2a[i-1];
-}
-}else{
-x=r.x;
-y=r.y;
-if(i>0){
-px=_2a[i-1].x;
-py=_2a[i-1].y;
-}
-}
-if(i>0){
-var m=v?(x+px)/2:(y+py)/2;
-if(cd[_29]<=m){
-x=px;
-y=py;
-}
-}
-return {x:x,y:y};
-},cleanGroup:function(_2b){
-this.inherited(arguments);
-this.group.moveToFront();
-return this;
-},isDirty:function(){
-return !this._noDirty&&(this.dirty||this.inter.plot.isDirty());
-}});
-if(_5("dojo-bidi")){
-_9.extend({_checkXCoords:function(cp1,cp2){
-if(this.chart.isRightToLeft()){
-if(cp1){
-cp1.x=this.chart.dim.width+(this.chart.offsets.l-this.chart.offsets.r)-cp1.x;
-}
-if(cp2){
-cp2.x=this.chart.dim.width+(this.chart.offsets.l-this.chart.offsets.r)-cp2.x;
-}
-}
-}});
-}
-return _9;
+define(["dojo/_base/lang", "dojo/_base/array", "dojo/_base/declare", "../plot2d/Indicator",
+        "dojo/has", "../plot2d/common", "../axis2d/common", "dojox/gfx"], 
+	function(lang, array, declare, Indicator, has){
+
+	var getXYCoordinates = function(v, values, data){
+		var c2, c1 = v?{ x: values[0], y : data[0][0] } :
+					   { x : data[0][0], y : values[0] };
+		if(values.length > 1){
+			c2 = v?{ x: values[1], y : data[1][0] } :
+				   { x : data[1][0], y : values[1] };
+		}
+		return [c1, c2];
+	};
+
+	var _IndicatorElement = declare("dojox.charting.action2d._IndicatorElement", Indicator, {
+		// summary:
+		//		Internal element used by indicator actions.
+		// tags:
+		//		private
+		constructor: function(chart, kwArgs){
+			if(!kwArgs){ kwArgs = {}; }
+			this.inter = kwArgs.inter;
+		},
+		_updateVisibility: function(cp, limit, attr){
+			var axis = attr=="x"?this._hAxis:this._vAxis;
+			var scale = axis.getWindowScale();
+			this.chart.setAxisWindow(axis.name, scale, axis.getWindowOffset() + (cp[attr] - limit[attr]) / scale);
+			this._noDirty = true;
+			this.chart.render();
+			this._noDirty = false;
+			this._initTrack();
+		},
+		_trackMove: function(){
+			// let's update the selector
+			this._updateIndicator(this.pageCoord);
+			// if we reached that point once, then we don't stop until mouse up
+ 			// use a recursive setTimeout to avoid intervals that might get backed up
+			this._tracker = setTimeout(lang.hitch(this, this._trackMove), 100);
+		},
+		_initTrack: function(){
+			if(!this._tracker){
+				this._tracker = setTimeout(lang.hitch(this, this._trackMove), 500);
+			}
+		},
+		stopTrack: function(){
+			if(this._tracker){
+				clearTimeout(this._tracker);
+				this._tracker = null;
+			}
+		},
+		render: function(){
+			if(!this.isDirty()){
+				return;
+			}
+
+			var inter = this.inter, plot = inter.plot, v = inter.opt.vertical;
+
+			this.opt.offset = inter.opt.offset || (v?{ x:0 , y: 5}: { x: 5, y: 0});
+
+			if(inter.opt.labelFunc){
+				// adapt to indicator labelFunc format
+				this.opt.labelFunc = function(index, values, data, fixed, precision){
+					var coords = getXYCoordinates(v, values, data);
+					return inter.opt.labelFunc(coords[0], coords[1], fixed, precision);
+				};
+			}
+			if(inter.opt.fillFunc){
+				// adapt to indicator fillFunc format
+				this.opt.fillFunc = function(index, values, data){
+					var coords = getXYCoordinates(v, values, data);
+					return inter.opt.fillFunc(coords[0], coords[1]);
+				};
+			}
+
+			this.opt = lang.delegate(inter.opt, this.opt);
+
+			if(!this.pageCoord){
+				this.opt.values = null;
+				this.inter.onChange({});
+			}else{
+				// let's create a fake coordinate to not block parent render method
+				// actual coordinate will be computed in _updateCoordinates
+				this.opt.values = [];
+				this.opt.labels = this.secondCoord?"trend":"markers";
+			}
+
+			// take axis on the interactor plot and forward them onto the indicator plot
+			this.hAxis = plot.hAxis;
+			this.vAxis = plot.vAxis;
+
+			this.inherited(arguments);
+		},
+		_updateIndicator: function(){
+			var coordinates = this._updateCoordinates(this.pageCoord, this.secondCoord);
+			if(coordinates.length > 1){
+				var v = this.opt.vertical;
+				this._data= [];
+				this.opt.values = [];
+				array.forEach(coordinates, function(value){
+					if(value){
+						this.opt.values.push(v?value.x:value.y);
+						this._data.push([v?value.y:value.x]);
+					}
+				}, this);
+			}else{
+				this.inter.onChange({});
+				return;
+			}
+			this.inherited(arguments);
+		},
+		_renderText: function(g, text, t, x, y, index, values, data){
+			// render only if labels is true
+			if(this.inter.opt.labels){
+				this.inherited(arguments);
+			}
+			// send the event in all cases
+			var coords = getXYCoordinates(this.opt.vertical, values, data);
+			this.inter.onChange({
+				start: coords[0],
+				end: coords[1],
+				label: text
+			});
+		},
+		_updateCoordinates: function(cp1, cp2){
+			// chart mirroring starts
+			if(has("dojo-bidi")){
+				this._checkXCoords(cp1, cp2);
+			}
+			// chart mirroring ends
+			var inter = this.inter, plot = inter.plot, v = inter.opt.vertical;
+			var hAxis = this.chart.getAxis(plot.hAxis), vAxis = this.chart.getAxis(plot.vAxis);
+			var hn = hAxis.name, vn = vAxis.name, hb = hAxis.getScaler().bounds, vb = vAxis.getScaler().bounds;
+			var attr = v?"x":"y", n = v?hn:vn, bounds = v?hb:vb;
+
+			// sort data point
+			if(cp2){
+				var tmp;
+				if(v){
+					if(cp1.x > cp2.x){
+						tmp = cp2;
+						cp2 = cp1;
+						cp1 = tmp;
+					}
+				}else{
+					if(cp1.y > cp2.y){
+						tmp = cp2;
+						cp2 = cp1;
+						cp1 = tmp;
+					}
+				}
+			}
+
+			var cd1 = plot.toData(cp1), cd2;
+			if(cp2){
+				cd2 = plot.toData(cp2);
+			}
+
+			var o = {};
+			o[hn] = hb.from;
+			o[vn] = vb.from;
+			var min = plot.toPage(o);
+			o[hn] = hb.to;
+			o[vn] = vb.to;
+			var max = plot.toPage(o);
+
+			if(cd1[n] < bounds.from){
+				// do not autoscroll if dual indicator
+				if(!cd2 && inter.opt.autoScroll && !inter.opt.mouseOver){
+					this._updateVisibility(cp1, min, attr);
+					return [];
+				}else{
+					if(inter.opt.mouseOver){
+						return[];
+					}
+					cp1[attr] = min[attr];
+				}
+				// cp1 might have changed, let's update cd1
+				cd1 = plot.toData(cp1);
+			}else if(cd1[n] > bounds.to){
+				if(!cd2 && inter.opt.autoScroll && !inter.opt.mouseOver){
+					this._updateVisibility(cp1, max, attr);
+					return [];
+				}else{
+					if(inter.opt.mouseOver){
+						return[];
+					}
+					cp1[attr] = max[attr];
+				}
+				// cp1 might have changed, let's update cd1
+				cd1 = plot.toData(cp1);
+			}
+
+			var c1 = this._snapData(cd1, attr, v), c2;
+
+			if(c1.y == null){
+				// we have no data for that point let's just return
+				return [];
+			}
+
+			if(cp2){
+				if(cd2[n] < bounds.from){
+					cp2[attr] = min[attr];
+					cd2 = plot.toData(cp2);
+				}else if(cd2[n] > bounds.to){
+					cp2[attr] = max[attr];
+					cd2 = plot.toData(cp2);
+				}
+				c2 = this._snapData(cd2, attr, v);
+				if(c2.y == null){
+					// we have no data for that point let's pretend we have a single touch point
+					c2 = null;
+				}
+			}
+
+			return [c1, c2];
+		},
+		_snapData: function(cd, attr, v){
+			// we need to find which actual data point is "close" to the data value
+			var data = this.chart.getSeries(this.inter.opt.series).data;
+			// let's consider data are sorted because anyway rendering will be "weird" with unsorted data
+			// i is an index in the array, which is different from a x-axis value even for index based data
+			var i, r, l = data.length;
+			// first let's find which data index we are in
+			for (i = 0; i < l; ++i){
+				r = data[i];
+				if(r == null){
+					// move to next item
+				}else if(typeof r == "number"){
+					if(i + 1 > cd[attr]){
+						break;
+					}
+				}else if(r[attr] > cd[attr]){
+					break;
+				}
+			}
+			var x, y, px, py;
+			if(typeof r == "number"){
+				x = i+1;
+				y = r;
+				if(i > 0){
+					px = i;
+					py = data[i-1];
+				}
+			}else{
+				x = r.x;
+				y = r.y;
+				if(i > 0){
+					px = data[i-1].x;
+					py = data[i-1].y;
+				}
+			}
+			if(i > 0){
+				var m = v?(x+px)/2:(y+py)/2;
+				if(cd[attr]<=m){
+					x = px;
+					y = py;
+				}
+			}
+			return {x: x, y: y};
+		},
+		cleanGroup: function(creator){
+			// summary:
+			//		Clean any elements (HTML or GFX-based) out of our group, and create a new one.
+			// creator: dojox/gfx/Surface?
+			//		An optional surface to work with.
+			// returns: dojox/charting/Element
+			//		A reference to this object for functional chaining.
+			this.inherited(arguments);
+			// we always want to be above regular plots and not clipped
+			this.group.moveToFront();
+			return this;	//	dojox/charting/Element
+		},
+		isDirty: function(){
+			// summary:
+			//		Return whether or not this plot needs to be redrawn.
+			// returns: Boolean
+			//		If this plot needs to be rendered, this will return true.
+			return !this._noDirty && (this.dirty || this.inter.plot.isDirty());
+		}
+	});
+	if(has("dojo-bidi")){
+		_IndicatorElement.extend({
+			_checkXCoords: function(cp1, cp2){
+				if(this.chart.isRightToLeft()){
+					if(cp1){
+						cp1.x = this.chart.dim.width + (this.chart.offsets.l - this.chart.offsets.r) - cp1.x;
+					}
+					if(cp2){
+						cp2.x = this.chart.dim.width + (this.chart.offsets.l - this.chart.offsets.r) - cp2.x;
+					}
+				}			
+			}			
+		});
+	}
+	return _IndicatorElement;
 });

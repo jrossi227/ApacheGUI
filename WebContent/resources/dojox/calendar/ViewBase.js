@@ -1,1266 +1,2881 @@
-//>>built
-define("dojox/calendar/ViewBase",["dojo/_base/declare","dojo/_base/lang","dojo/_base/array","dojo/_base/window","dojo/_base/event","dojo/_base/html","dojo/sniff","dojo/query","dojo/dom","dojo/dom-style","dojo/dom-class","dojo/dom-construct","dojo/dom-geometry","dojo/on","dojo/date","dojo/date/locale","dojo/when","dijit/_WidgetBase","dojox/widget/_Invalidating","dojox/widget/Selection","dojox/calendar/time","./StoreMixin"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a,_b,_c,_d,on,_e,_f,_10,_11,_12,_13,_14,_15){
-return _1("dojox.calendar.ViewBase",[_11,_15,_12,_13],{datePackage:_e,_calendar:"gregorian",viewKind:null,_layoutStep:1,_layoutUnit:"day",resizeCursor:"n-resize",formatItemTimeFunc:null,_cssDays:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],_getFormatItemTimeFuncAttr:function(){
-if(this.owner!=null){
-return this.owner.get("formatItemTimeFunc");
-}
-return this.formatItemTimeFunc;
-},_viewHandles:null,doubleTapDelay:300,constructor:function(_16){
-_16=_16||{};
-this._calendar=_16.datePackage?_16.datePackage.substr(_16.datePackage.lastIndexOf(".")+1):this._calendar;
-this.dateModule=_16.datePackage?_2.getObject(_16.datePackage,false):_e;
-this.dateClassObj=this.dateModule.Date||Date;
-this.dateLocaleModule=_16.datePackage?_2.getObject(_16.datePackage+".locale",false):_f;
-this.rendererPool=[];
-this.rendererList=[];
-this.itemToRenderer={};
-this._viewHandles=[];
-},destroy:function(_17){
-while(this.rendererList.length>0){
-this._destroyRenderer(this.rendererList.pop());
-}
-for(var _18 in this._rendererPool){
-var _19=this._rendererPool[_18];
-if(_19){
-while(_19.length>0){
-this._destroyRenderer(_19.pop());
-}
-}
-}
-while(this._viewHandles.length>0){
-this._viewHandles.pop().remove();
-}
-this.inherited(arguments);
-},resize:function(_1a){
-if(_1a){
-_d.setMarginBox(this.domNode,_1a);
-}
-},_getTopOwner:function(){
-var p=this;
-while(p.owner!=undefined){
-p=p.owner;
-}
-return p;
-},_createRenderData:function(){
-},_validateProperties:function(){
-},_setText:function(_1b,_1c,_1d){
-if(_1c!=null){
-if(!_1d&&_1b.hasChildNodes()){
-_1b.childNodes[0].childNodes[0].nodeValue=_1c;
-}else{
-while(_1b.hasChildNodes()){
-_1b.removeChild(_1b.lastChild);
-}
-var _1e=_4.doc.createElement("span");
-if(_7("dojo-bidi")){
-this.applyTextDir(_1e,_1c);
-}
-if(_1d){
-_1e.innerHTML=_1c;
-}else{
-_1e.appendChild(_4.doc.createTextNode(_1c));
-}
-_1b.appendChild(_1e);
-}
-}
-},isAscendantHasClass:function(_1f,_20,_21){
-while(_1f!=_20&&_1f!=document){
-if(_b.contains(_1f,_21)){
-return true;
-}
-_1f=_1f.parentNode;
-}
-return false;
-},isWeekEnd:function(_22){
-return _f.isWeekend(_22);
-},getWeekNumberLabel:function(_23){
-if(_23.toGregorian){
-_23=_23.toGregorian();
-}
-return _f.format(_23,{selector:"date",datePattern:"w"});
-},floorToDay:function(_24,_25){
-return _14.floorToDay(_24,_25,this.dateClassObj);
-},floorToMonth:function(_26,_27){
-return _14.floorToMonth(_26,_27,this.dateClassObj);
-},floorDate:function(_28,_29,_2a,_2b){
-return _14.floor(_28,_29,_2a,_2b,this.dateClassObj);
-},isToday:function(_2c){
-return _14.isToday(_2c,this.dateClassObj);
-},isStartOfDay:function(d){
-return _14.isStartOfDay(d,this.dateClassObj,this.dateModule);
-},isOverlapping:function(_2d,_2e,_2f,_30,_31,_32){
-if(_2e==null||_30==null||_2f==null||_31==null){
-return false;
-}
-var cal=_2d.dateModule;
-if(_32){
-if(cal.compare(_2e,_31)==1||cal.compare(_30,_2f)==1){
-return false;
-}
-}else{
-if(cal.compare(_2e,_31)!=-1||cal.compare(_30,_2f)!=-1){
-return false;
-}
-}
-return true;
-},computeRangeOverlap:function(_33,_34,_35,_36,_37,_38){
-var cal=_33.dateModule;
-if(_34==null||_36==null||_35==null||_37==null){
-return null;
-}
-var _39=cal.compare(_34,_37);
-var _3a=cal.compare(_36,_35);
-if(_38){
-if(_39==0||_39==1||_3a==0||_3a==1){
-return null;
-}
-}else{
-if(_39==1||_3a==1){
-return null;
-}
-}
-return [this.newDate(cal.compare(_34,_36)>0?_34:_36,_33),this.newDate(cal.compare(_35,_37)>0?_37:_35,_33)];
-},isSameDay:function(_3b,_3c){
-if(_3b==null||_3c==null){
-return false;
-}
-return _3b.getFullYear()==_3c.getFullYear()&&_3b.getMonth()==_3c.getMonth()&&_3b.getDate()==_3c.getDate();
-},computeProjectionOnDate:function(_3d,_3e,_3f,max){
-var cal=_3d.dateModule;
-if(max<=0||cal.compare(_3f,_3e)==-1){
-return 0;
-}
-var _40=this.floorToDay(_3e,false,_3d);
-if(_3f.getDate()!=_40.getDate()){
-if(_3f.getMonth()==_40.getMonth()){
-if(_3f.getDate()<_40.getDate()){
-return 0;
-}else{
-if(_3f.getDate()>_40.getDate()){
-return max;
-}
-}
-}else{
-if(_3f.getFullYear()==_40.getFullYear()){
-if(_3f.getMonth()<_40.getMonth()){
-return 0;
-}else{
-if(_3f.getMonth()>_40.getMonth()){
-return max;
-}
-}
-}else{
-if(_3f.getFullYear()<_40.getFullYear()){
-return 0;
-}else{
-if(_3f.getFullYear()>_40.getFullYear()){
-return max;
-}
-}
-}
-}
-}
-var res;
-if(this.isSameDay(_3e,_3f)){
-var d=_2.clone(_3e);
-var _41=0;
-if(_3d.minHours!=null&&_3d.minHours!=0){
-d.setHours(_3d.minHours);
-_41=d.getHours()*3600+d.getMinutes()*60+d.getSeconds();
-}
-d=_2.clone(_3e);
-var _42;
-if(_3d.maxHours==null||_3d.maxHours==24){
-_42=86400;
-}else{
-d.setHours(_3d.maxHours);
-_42=d.getHours()*3600+d.getMinutes()*60+d.getSeconds();
-}
-var _43=_3f.getHours()*3600+_3f.getMinutes()*60+_3f.getSeconds()-_41;
-if(_43<0){
-return 0;
-}
-if(_43>_42){
-return max;
-}
-res=(max*_43)/(_42-_41);
-}else{
-if(_3f.getDate()<_3e.getDate()&&_3f.getMonth()==_3e.getMonth()){
-return 0;
-}
-var d2=this.floorToDay(_3f);
-var dp1=_3d.dateModule.add(_3e,"day",1);
-dp1=this.floorToDay(dp1,false,_3d);
-if(cal.compare(d2,_3e)==1&&cal.compare(d2,dp1)==0||cal.compare(d2,dp1)==1){
-res=max;
-}else{
-res=0;
-}
-}
-return res;
-},getTime:function(e,x,y,_44){
-return null;
-},newDate:function(obj){
-return _14.newDate(obj,this.dateClassObj);
-},_isItemInView:function(_45){
-var rd=this.renderData;
-var cal=rd.dateModule;
-if(cal.compare(_45.startTime,rd.startTime)==-1){
-return false;
-}
-return cal.compare(_45.endTime,rd.endTime)!=1;
-},_ensureItemInView:function(_46){
-var rd=this.renderData;
-var cal=rd.dateModule;
-var _47=Math.abs(cal.difference(_46.startTime,_46.endTime,"millisecond"));
-var _48=false;
-if(cal.compare(_46.startTime,rd.startTime)==-1){
-_46.startTime=rd.startTime;
-_46.endTime=cal.add(_46.startTime,"millisecond",_47);
-_48=true;
-}else{
-if(cal.compare(_46.endTime,rd.endTime)==1){
-_46.endTime=rd.endTime;
-_46.startTime=cal.add(_46.endTime,"millisecond",-_47);
-_48=true;
-}
-}
-return _48;
-},scrollable:true,autoScroll:true,_autoScroll:function(gx,gy,_49){
-return false;
-},scrollMethod:"auto",_setScrollMethodAttr:function(_4a){
-if(this.scrollMethod!=_4a){
-this.scrollMethod=_4a;
-if(this._domScroll!==undefined){
-if(this._domScroll){
-_a.set(this.sheetContainer,this._cssPrefix+"transform","translateY(0px)");
-}else{
-this.scrollContainer.scrollTop=0;
-}
-}
-delete this._domScroll;
-var pos=this._getScrollPosition();
-delete this._scrollPos;
-this._setScrollPosition(pos);
-}
-},_startAutoScroll:function(_4b){
-var sp=this._scrollProps;
-if(!sp){
-sp=this._scrollProps={};
-}
-sp.scrollStep=_4b;
-if(!sp.isScrolling){
-sp.isScrolling=true;
-sp.scrollTimer=setInterval(_2.hitch(this,this._onScrollTimer_tick),10);
-}
-},_stopAutoScroll:function(){
-var sp=this._scrollProps;
-if(sp&&sp.isScrolling){
-clearInterval(sp.scrollTimer);
-sp.scrollTimer=null;
-}
-this._scrollProps=null;
-},_onScrollTimer_tick:function(pos){
-},_scrollPos:0,getCSSPrefix:function(){
-if(_7("ie")){
-return "-ms-";
-}
-if(_7("webkit")){
-return "-webkit-";
-}
-if(_7("mozilla")){
-return "-moz-";
-}
-if(_7("opera")){
-return "-o-";
-}
-return "";
-},_setScrollPosition:function(pos){
-if(this._scrollPos==pos){
-return;
-}
-if(this._domScroll===undefined){
-var sm=this.get("scrollMethod");
-if(sm==="auto"){
-this._domScroll=!_7("ios")&&!_7("android")&&!_7("webkit");
-}else{
-this._domScroll=sm==="dom";
-}
-}
-var _4c=_d.getMarginBox(this.scrollContainer);
-var _4d=_d.getMarginBox(this.sheetContainer);
-var max=_4d.h-_4c.h;
-if(pos<0){
-pos=0;
-}else{
-if(pos>max){
-pos=max;
-}
-}
-this._scrollPos=pos;
-if(this._domScroll){
-this.scrollContainer.scrollTop=pos;
-}else{
-if(!this._cssPrefix){
-this._cssPrefix=this.getCSSPrefix();
-}
-_a.set(this.sheetContainer,this._cssPrefix+"transform","translateY(-"+pos+"px)");
-}
-},_getScrollPosition:function(){
-return this._scrollPos;
-},scrollView:function(dir){
-},ensureVisibility:function(_4e,end,_4f,_50,_51){
-},_getStoreAttr:function(){
-if(this.owner){
-return this.owner.get("store");
-}
-return this.store;
-},_setItemsAttr:function(_52){
-this._set("items",_52);
-this.displayedItemsInvalidated=true;
-},_refreshItemsRendering:function(){
-var rd=this.renderData;
-this._computeVisibleItems(rd);
-this._layoutRenderers(rd);
-},invalidateLayout:function(){
-this._layoutRenderers(this.renderData);
-},computeOverlapping:function(_53,_54){
-if(_53.length==0){
-return {numLanes:0,addedPassRes:[1]};
-}
-var _55=[];
-for(var i=0;i<_53.length;i++){
-var _56=_53[i];
-this._layoutPass1(_56,_55);
-}
-var _57=null;
-if(_54){
-_57=_2.hitch(this,_54)(_55);
-}
-return {numLanes:_55.length,addedPassRes:_57};
-},_layoutPass1:function(_58,_59){
-var _5a=true;
-for(var i=0;i<_59.length;i++){
-var _5b=_59[i];
-_5a=false;
-for(var j=0;j<_5b.length&&!_5a;j++){
-if(_5b[j].start<_58.end&&_58.start<_5b[j].end){
-_5a=true;
-_5b[j].extent=1;
-}
-}
-if(!_5a){
-_58.lane=i;
-_58.extent=-1;
-_5b.push(_58);
-return;
-}
-}
-_59.push([_58]);
-_58.lane=_59.length-1;
-_58.extent=-1;
-},_layoutInterval:function(_5c,_5d,_5e,end,_5f){
-},layoutPriorityFunction:null,_sortItemsFunction:function(a,b){
-var res=this.dateModule.compare(a.startTime,b.startTime);
-if(res==0){
-res=-1*this.dateModule.compare(a.endTime,b.endTime);
-}
-return res;
-},_layoutRenderers:function(_60){
-if(!_60.items){
-return;
-}
-this._recycleItemRenderers();
-var cal=_60.dateModule;
-var _61=this.newDate(_60.startTime);
-var _62=_2.clone(_61);
-var _63;
-var _64=_60.items.concat();
-var _65=[],_66;
-var _67=0;
-while(cal.compare(_61,_60.endTime)==-1&&_64.length>0){
-_63=cal.add(_61,this._layoutUnit,this._layoutStep);
-_63=this.floorToDay(_63,true,_60);
-var _68=_2.clone(_63);
-if(_60.minHours){
-_62.setHours(_60.minHours);
-}
-if(_60.maxHours&&_60.maxHours!=24){
-_68=cal.add(_63,"day",-1);
-_68=this.floorToDay(_68,true,_60);
-_68.setHours(_60.maxHours);
-}
-_66=_3.filter(_64,function(_69){
-var r=this.isOverlapping(_60,_69.startTime,_69.endTime,_62,_68);
-if(r){
-if(cal.compare(_69.endTime,_68)==1){
-_65.push(_69);
-}
-}else{
-_65.push(_69);
-}
-return r;
-},this);
-_64=_65;
-_65=[];
-if(_66.length>0){
-_66.sort(_2.hitch(this,this.layoutPriorityFunction?this.layoutPriorityFunction:this._sortItemsFunction));
-this._layoutInterval(_60,_67,_62,_68,_66);
-}
-_61=_63;
-_62=_2.clone(_61);
-_67++;
-}
-this._onRenderersLayoutDone(this);
-},_recycleItemRenderers:function(_6a){
-while(this.rendererList.length>0){
-this._recycleRenderer(this.rendererList.pop(),_6a);
-}
-this.itemToRenderer={};
-},rendererPool:null,rendererList:null,itemToRenderer:null,getRenderers:function(_6b){
-if(_6b==null||_6b.id==null){
-return null;
-}
-var _6c=this.itemToRenderer[_6b.id];
-return _6c==null?null:_6c.concat();
-},_rendererHandles:{},itemToRendererKindFunc:null,_itemToRendererKind:function(_6d){
-if(this.itemToRendererKindFunc){
-return this.itemToRendererKindFunc(_6d);
-}
-return this._defaultItemToRendererKindFunc(_6d);
-},_defaultItemToRendererKindFunc:function(_6e){
-return null;
-},_createRenderer:function(_6f,_70,_71,_72){
-if(_6f!=null&&_70!=null&&_71!=null){
-var res=null,_73=null;
-var _74=this.rendererPool[_70];
-if(_74!=null){
-res=_74.shift();
-}
-if(res==null){
-_73=new _71;
-res={renderer:_73,container:_73.domNode,kind:_70};
-this._onRendererCreated({renderer:res,source:this,item:_6f});
-}else{
-_73=res.renderer;
-this._onRendererReused({renderer:_73,source:this,item:_6f});
-}
-_73.owner=this;
-_73.set("rendererKind",_70);
-_73.set("item",_6f);
-var _75=this.itemToRenderer[_6f.id];
-if(_75==null){
-this.itemToRenderer[_6f.id]=_75=[];
-}
-_75.push(res);
-this.rendererList.push(res);
-return res;
-}
-return null;
-},_onRendererCreated:function(e){
-if(e.source==this){
-this.onRendererCreated(e);
-}
-if(this.owner!=null){
-this.owner._onRendererCreated(e);
-}
-},onRendererCreated:function(e){
-},_onRendererRecycled:function(e){
-if(e.source==this){
-this.onRendererRecycled(e);
-}
-if(this.owner!=null){
-this.owner._onRendererRecycled(e);
-}
-},onRendererRecycled:function(e){
-},_onRendererReused:function(e){
-if(e.source==this){
-this.onRendererReused(e);
-}
-if(this.owner!=null){
-this.owner._onRendererReused(e);
-}
-},onRendererReused:function(e){
-},_onRendererDestroyed:function(e){
-if(e.source==this){
-this.onRendererDestroyed(e);
-}
-if(this.owner!=null){
-this.owner._onRendererDestroyed(e);
-}
-},onRendererDestroyed:function(e){
-},_onRenderersLayoutDone:function(_76){
-this.onRenderersLayoutDone(_76);
-if(this.owner!=null){
-this.owner._onRenderersLayoutDone(_76);
-}
-},onRenderersLayoutDone:function(_77){
-},_recycleRenderer:function(_78,_79){
-this._onRendererRecycled({renderer:_78,source:this});
-var _7a=this.rendererPool[_78.kind];
-if(_7a==null){
-this.rendererPool[_78.kind]=[_78];
-}else{
-_7a.push(_78);
-}
-if(_79){
-_78.container.parentNode.removeChild(_78.container);
-}
-_a.set(_78.container,"display","none");
-_78.renderer.owner=null;
-_78.renderer.set("item",null);
-},_destroyRenderer:function(_7b){
-this._onRendererDestroyed({renderer:_7b,source:this});
-var ir=_7b.renderer;
-if(ir["destroy"]){
-ir.destroy();
-}
-_6.destroy(_7b.container);
-},_destroyRenderersByKind:function(_7c){
-var _7d=[];
-for(var i=0;i<this.rendererList.length;i++){
-var ir=this.rendererList[i];
-if(ir.kind==_7c){
-this._destroyRenderer(ir);
-}else{
-_7d.push(ir);
-}
-}
-this.rendererList=_7d;
-var _7e=this.rendererPool[_7c];
-if(_7e){
-while(_7e.length>0){
-this._destroyRenderer(_7e.pop());
-}
-}
-},_updateEditingCapabilities:function(_7f,_80){
-var _81=this.isItemMoveEnabled(_7f,_80.rendererKind);
-var _82=this.isItemResizeEnabled(_7f,_80.rendererKind);
-var _83=false;
-if(_81!=_80.get("moveEnabled")){
-_80.set("moveEnabled",_81);
-_83=true;
-}
-if(_82!=_80.get("resizeEnabled")){
-_80.set("resizeEnabled",_82);
-_83=true;
-}
-if(_83){
-_80.updateRendering();
-}
-},updateRenderers:function(obj,_84){
-if(obj==null){
-return;
-}
-var _85=_2.isArray(obj)?obj:[obj];
-for(var i=0;i<_85.length;i++){
-var _86=_85[i];
-if(_86==null||_86.id==null){
-continue;
-}
-var _87=this.itemToRenderer[_86.id];
-if(_87==null){
-continue;
-}
-var _88=this.isItemSelected(_86);
-var _89=this.isItemHovered(_86);
-var _8a=this.isItemBeingEdited(_86);
-var _8b=this.showFocus?this.isItemFocused(_86):false;
-for(var j=0;j<_87.length;j++){
-var _8c=_87[j].renderer;
-_8c.set("hovered",_89);
-_8c.set("selected",_88);
-_8c.set("edited",_8a);
-_8c.set("focused",_8b);
-_8c.set("storeState",this.getItemStoreState(_86));
-this.applyRendererZIndex(_86,_87[j],_89,_88,_8a,_8b);
-if(!_84){
-_8c.set("item",_86);
-if(_8c.updateRendering){
-_8c.updateRendering();
-}
-}
-}
-}
-},applyRendererZIndex:function(_8d,_8e,_8f,_90,_91,_92){
-_a.set(_8e.container,{"zIndex":_91||_90?20:_8d.lane==undefined?0:_8d.lane});
-},getIdentity:function(_93){
-return this.owner?this.owner.getIdentity(_93):_93.id;
-},_setHoveredItem:function(_94,_95){
-if(this.owner){
-this.owner._setHoveredItem(_94,_95);
-return;
-}
-if(this.hoveredItem&&_94&&this.hoveredItem.id!=_94.id||_94==null||this.hoveredItem==null){
-var old=this.hoveredItem;
-this.hoveredItem=_94;
-this.updateRenderers([old,this.hoveredItem],true);
-if(_94&&_95){
-this._updateEditingCapabilities(_94._item?_94._item:_94,_95);
-}
-}
-},hoveredItem:null,isItemHovered:function(_96){
-if(this._isEditing&&this._edProps){
-return _96.id==this._edProps.editedItem.id;
-}
-return this.owner?this.owner.isItemHovered(_96):this.hoveredItem!=null&&this.hoveredItem.id==_96.id;
-},isItemFocused:function(_97){
-return this._isItemFocused?this._isItemFocused(_97):false;
-},_setSelectionModeAttr:function(_98){
-if(this.owner){
-this.owner.set("selectionMode",_98);
-}else{
-this.inherited(arguments);
-}
-},_getSelectionModeAttr:function(_99){
-if(this.owner){
-return this.owner.get("selectionMode");
-}
-return this.inherited(arguments);
-},_setSelectedItemAttr:function(_9a){
-if(this.owner){
-this.owner.set("selectedItem",_9a);
-}else{
-this.inherited(arguments);
-}
-},_getSelectedItemAttr:function(_9b){
-if(this.owner){
-return this.owner.get("selectedItem");
-}
-return this.selectedItem;
-},_setSelectedItemsAttr:function(_9c){
-if(this.owner){
-this.owner.set("selectedItems",_9c);
-}else{
-this.inherited(arguments);
-}
-},_getSelectedItemsAttr:function(){
-if(this.owner){
-return this.owner.get("selectedItems");
-}
-return this.inherited(arguments);
-},isItemSelected:function(_9d){
-if(this.owner){
-return this.owner.isItemSelected(_9d);
-}
-return this.inherited(arguments);
-},selectFromEvent:function(e,_9e,_9f,_a0){
-if(this.owner){
-this.owner.selectFromEvent(e,_9e,_9f,_a0);
-}else{
-this.inherited(arguments);
-}
-},setItemSelected:function(_a1,_a2){
-if(this.owner){
-this.owner.setItemSelected(_a1,_a2);
-}else{
-this.inherited(arguments);
-}
-},createItemFunc:null,_getCreateItemFuncAttr:function(){
-if(this.owner){
-return this.owner.get("createItemFunc");
-}
-return this.createItemFunc;
-},createOnGridClick:false,_getCreateOnGridClickAttr:function(){
-if(this.owner){
-return this.owner.get("createOnGridClick");
-}
-return this.createOnGridClick;
-},_gridMouseDown:false,_tempIdCount:0,_tempItemsMap:null,_onGridMouseDown:function(e){
-this._gridMouseDown=true;
-this.showFocus=false;
-if(this._isEditing){
-this._endItemEditing("mouse",false);
-}
-this._doEndItemEditing(this.owner,"mouse");
-this.set("focusedItem",null);
-this.selectFromEvent(e,null,null,true);
-if(this._setTabIndexAttr){
-this[this._setTabIndexAttr].focus();
-}
-if(this._onRendererHandleMouseDown){
-var f=this.get("createItemFunc");
-if(!f){
-return;
-}
-var _a3=this._createdEvent=f(this,this.getTime(e),e);
-var _a4=this.get("store");
-if(!_a3||_a4==null){
-return;
-}
-if(_a4.getIdentity(_a3)==undefined){
-var id="_tempId_"+(this._tempIdCount++);
-_a3[_a4.idProperty]=id;
-if(this._tempItemsMap==null){
-this._tempItemsMap={};
-}
-this._tempItemsMap[id]=true;
-}
-var _a5=this.itemToRenderItem(_a3,_a4);
-_a5._item=_a3;
-this._setItemStoreState(_a3,"unstored");
-var _a6=this._getTopOwner();
-var _a7=_a6.get("items");
-_a6.set("items",_a7?_a7.concat([_a5]):[_a5]);
-this._refreshItemsRendering();
-var _a8=this.getRenderers(_a3);
-if(_a8&&_a8.length>0){
-var _a9=_a8[0];
-if(_a9){
-this._onRendererHandleMouseDown(e,_a9.renderer,"resizeEnd");
-this._startItemEditing(_a5,"mouse");
-}
-}
-}
-},_onGridMouseMove:function(e){
-},_onGridMouseUp:function(e){
-},_onGridTouchStart:function(e){
-var p=this._edProps;
-this._gridProps={event:e,fromItem:this.isAscendantHasClass(e.target,this.eventContainer,"dojoxCalendarEvent")};
-if(this._isEditing){
-if(this._gridProps){
-this._gridProps.editingOnStart=true;
-}
-_2.mixin(p,this._getTouchesOnRenderers(e,p.editedItem));
-if(p.touchesLen==0){
-if(p&&p.endEditingTimer){
-clearTimeout(p.endEditingTimer);
-p.endEditingTimer=null;
-}
-this._endItemEditing("touch",false);
-}
-}
-this._doEndItemEditing(this.owner,"touch");
-_5.stop(e);
-},_doEndItemEditing:function(obj,_aa){
-if(obj&&obj._isEditing){
-var p=obj._edProps;
-if(p&&p.endEditingTimer){
-clearTimeout(p.endEditingTimer);
-p.endEditingTimer=null;
-}
-obj._endItemEditing(_aa,false);
-}
-},_onGridTouchEnd:function(e){
-},_onGridTouchMove:function(e){
-},__fixEvt:function(e){
-return e;
-},_dispatchCalendarEvt:function(e,_ab){
-e=this.__fixEvt(e);
-this[_ab](e);
-if(this.owner){
-this.owner[_ab](e);
-}
-return e;
-},_onGridClick:function(e){
-if(!e.triggerEvent){
-e={date:this.getTime(e),triggerEvent:e};
-}
-this._dispatchCalendarEvt(e,"onGridClick");
-},onGridClick:function(e){
-},_onGridDoubleClick:function(e){
-if(!e.triggerEvent){
-e={date:this.getTime(e),triggerEvent:e};
-}
-this._dispatchCalendarEvt(e,"onGridDoubleClick");
-},onGridDoubleClick:function(e){
-},_onItemClick:function(e){
-this._dispatchCalendarEvt(e,"onItemClick");
-},onItemClick:function(e){
-},_onItemDoubleClick:function(e){
-this._dispatchCalendarEvt(e,"onItemDoubleClick");
-},onItemDoubleClick:function(e){
-},_onItemContextMenu:function(e){
-this._dispatchCalendarEvt(e,"onItemContextMenu");
-},onItemContextMenu:function(e){
-},_getStartEndRenderers:function(_ac){
-var _ad=this.itemToRenderer[_ac.id];
-if(_ad==null){
-return null;
-}
-if(_ad.length==1){
-var _ae=_ad[0].renderer;
-return [_ae,_ae];
-}
-var rd=this.renderData;
-var _af=false;
-var _b0=false;
-var res=[];
-for(var i=0;i<_ad.length;i++){
-var ir=_ad[i].renderer;
-if(!_af){
-_af=rd.dateModule.compare(ir.item.range[0],ir.item.startTime)==0;
-res[0]=ir;
-}
-if(!_b0){
-_b0=rd.dateModule.compare(ir.item.range[1],ir.item.endTime)==0;
-res[1]=ir;
-}
-if(_af&&_b0){
-break;
-}
-}
-return res;
-},editable:true,moveEnabled:true,resizeEnabled:true,isItemEditable:function(_b1,_b2){
-return this.getItemStoreState(_b1)!="storing"&&this.editable&&(this.owner?this.owner.isItemEditable(_b1,_b2):true);
-},isItemMoveEnabled:function(_b3,_b4){
-return this.isItemEditable(_b3,_b4)&&this.moveEnabled&&(this.owner?this.owner.isItemMoveEnabled(_b3,_b4):true);
-},isItemResizeEnabled:function(_b5,_b6){
-return this.isItemEditable(_b5,_b6)&&this.resizeEnabled&&(this.owner?this.owner.isItemResizeEnabled(_b5,_b6):true);
-},_isEditing:false,isItemBeingEdited:function(_b7){
-return this._isEditing&&this._edProps&&this._edProps.editedItem&&this._edProps.editedItem.id==_b7.id;
-},_setEditingProperties:function(_b8){
-this._edProps=_b8;
-},_startItemEditing:function(_b9,_ba){
-this._isEditing=true;
-this._getTopOwner()._isEditing=true;
-var p=this._edProps;
-p.editedItem=_b9;
-p.storeItem=_b9._item;
-p.eventSource=_ba;
-p.secItem=this._secondarySheet?this._findRenderItem(_b9.id,this._secondarySheet.renderData.items):null;
-p.ownerItem=this.owner?this._findRenderItem(_b9.id,this.items):null;
-if(!p.liveLayout){
-p.editSaveStartTime=_b9.startTime;
-p.editSaveEndTime=_b9.endTime;
-p.editItemToRenderer=this.itemToRenderer;
-p.editItems=this.renderData.items;
-p.editRendererList=this.rendererList;
-this.renderData.items=[p.editedItem];
-var id=p.editedItem.id;
-this.itemToRenderer={};
-this.rendererList=[];
-var _bb=p.editItemToRenderer[id];
-p.editRendererIndices=[];
-_3.forEach(_bb,_2.hitch(this,function(ir,i){
-if(this.itemToRenderer[id]==null){
-this.itemToRenderer[id]=[ir];
-}else{
-this.itemToRenderer[id].push(ir);
-}
-this.rendererList.push(ir);
-}));
-p.editRendererList=_3.filter(p.editRendererList,function(ir){
-return ir!=null&&ir.renderer.item.id!=id;
-});
-delete p.editItemToRenderer[id];
-}
-this._layoutRenderers(this.renderData);
-this._onItemEditBegin({item:_b9,storeItem:p.storeItem,eventSource:_ba});
-},_onItemEditBegin:function(e){
-this._editStartTimeSave=this.newDate(e.item.startTime);
-this._editEndTimeSave=this.newDate(e.item.endTime);
-this._dispatchCalendarEvt(e,"onItemEditBegin");
-},onItemEditBegin:function(e){
-},_endItemEditing:function(_bc,_bd){
-this._isEditing=false;
-this._getTopOwner()._isEditing=false;
-var p=this._edProps;
-_3.forEach(p.handles,function(_be){
-_be.remove();
-});
-if(!p.liveLayout){
-this.renderData.items=p.editItems;
-this.rendererList=p.editRendererList.concat(this.rendererList);
-_2.mixin(this.itemToRenderer,p.editItemToRenderer);
-}
-this._onItemEditEnd(_2.mixin(this._createItemEditEvent(),{item:p.editedItem,storeItem:p.storeItem,eventSource:_bc,completed:!_bd}));
-this._layoutRenderers(this.renderData);
-this._edProps=null;
-},_onItemEditEnd:function(e){
-this._dispatchCalendarEvt(e,"onItemEditEnd");
-if(!e.isDefaultPrevented()){
-var _bf=this.get("store");
-var _c0=this.renderItemToItem(e.item,_bf);
-var s=this._getItemStoreStateObj(e.item);
-if(s!=null&&s.state=="unstored"){
-if(e.completed){
-_c0=_2.mixin(s.item,_c0);
-this._setItemStoreState(_c0,"storing");
-var _c1=_bf.getIdentity(_c0);
-var _c2=null;
-if(this._tempItemsMap&&this._tempItemsMap[_c1]){
-_c2={temporaryId:_c1};
-delete this._tempItemsMap[_c1];
-delete _c0[_bf.idProperty];
-}
-_10(_bf.add(_c0,_c2),_2.hitch(this,function(res){
-var id;
-if(_2.isObject(res)){
-id=_bf.getIdentity(res);
-}else{
-id=res;
-}
-if(id!=_c1){
-this._removeRenderItem(_c1);
-}
-}));
-}else{
-this.removeRenderItem(s.id);
-}
-}else{
-if(e.completed){
-this._setItemStoreState(_c0,"storing");
-_bf.put(_c0);
-}else{
-e.item.startTime=this._editStartTimeSave;
-e.item.endTime=this._editEndTimeSave;
-}
-}
-}
-},_removeRenderItem:function(id){
-var _c3=this._getTopOwner();
-var _c4=_c3.get("items");
-var l=_c4.length;
-var _c5=false;
-for(var i=l-1;i>=0;i--){
-if(_c4[i].id==id){
-_c4.splice(i,1);
-_c5=true;
-break;
-}
-}
-this._cleanItemStoreState(id);
-if(_c5){
-_c3.set("items",_c4);
-this.invalidateLayout();
-}
-},onItemEditEnd:function(e){
-},_createItemEditEvent:function(){
-var e={cancelable:true,bubbles:false,__defaultPrevent:false};
-e.preventDefault=function(){
-this.__defaultPrevented=true;
-};
-e.isDefaultPrevented=function(){
-return this.__defaultPrevented;
-};
-return e;
-},_startItemEditingGesture:function(_c6,_c7,_c8,e){
-var p=this._edProps;
-if(!p||p.editedItem==null){
-return;
-}
-this._editingGesture=true;
-var _c9=p.editedItem;
-p.editKind=_c7;
-this._onItemEditBeginGesture(this.__fixEvt(_2.mixin(this._createItemEditEvent(),{item:_c9,storeItem:p.storeItem,startTime:_c9.startTime,endTime:_c9.endTime,editKind:_c7,rendererKind:p.rendererKind,triggerEvent:e,dates:_c6,eventSource:_c8})));
-p.itemBeginDispatched=true;
-},_onItemEditBeginGesture:function(e){
-var p=this._edProps;
-var _ca=p.editedItem;
-var _cb=e.dates;
-p.editingTimeFrom=[];
-p.editingTimeFrom[0]=_cb[0];
-p.editingItemRefTime=[];
-p.editingItemRefTime[0]=this.newDate(p.editKind=="resizeEnd"?_ca.endTime:_ca.startTime);
-if(p.editKind=="resizeBoth"){
-p.editingTimeFrom[1]=_cb[1];
-p.editingItemRefTime[1]=this.newDate(_ca.endTime);
-}
-var cal=this.renderData.dateModule;
-p.inViewOnce=this._isItemInView(_ca);
-if(p.rendererKind=="label"||this.roundToDay){
-p._itemEditBeginSave=this.newDate(_ca.startTime);
-p._itemEditEndSave=this.newDate(_ca.endTime);
-}
-p._initDuration=cal.difference(_ca.startTime,_ca.endTime,_ca.allDay?"day":"millisecond");
-this._dispatchCalendarEvt(e,"onItemEditBeginGesture");
-if(!e.isDefaultPrevented()){
-if(e.eventSource=="mouse"){
-var _cc=e.editKind=="move"?"move":this.resizeCursor;
-p.editLayer=_c.create("div",{style:"position: absolute; left:0; right:0; bottom:0; top:0; z-index:30; tabIndex:-1; background-image:url('"+this._blankGif+"'); cursor: "+_cc,onresizestart:function(e){
-return false;
-},onselectstart:function(e){
-return false;
-}},this.domNode);
-p.editLayer.focus();
-}
-}
-},onItemEditBeginGesture:function(e){
-},_waDojoxAddIssue:function(d,_cd,_ce){
-var cal=this.renderData.dateModule;
-if(this._calendar!="gregorian"&&_ce<0){
-var gd=d.toGregorian();
-gd=_e.add(gd,_cd,_ce);
-return new this.renderData.dateClassObj(gd);
-}else{
-return cal.add(d,_cd,_ce);
-}
-},_computeItemEditingTimes:function(_cf,_d0,_d1,_d2,_d3){
-var cal=this.renderData.dateModule;
-var p=this._edProps;
-var _d4=cal.difference(p.editingTimeFrom[0],_d2[0],"millisecond");
-_d2[0]=this._waDojoxAddIssue(p.editingItemRefTime[0],"millisecond",_d4);
-if(_d0=="resizeBoth"){
-_d4=cal.difference(p.editingTimeFrom[1],_d2[1],"millisecond");
-_d2[1]=this._waDojoxAddIssue(p.editingItemRefTime[1],"millisecond",_d4);
-}
-return _d2;
-},_moveOrResizeItemGesture:function(_d5,_d6,e){
-if(!this._isEditing||_d5[0]==null){
-return;
-}
-var p=this._edProps;
-var _d7=p.editedItem;
-var rd=this.renderData;
-var cal=rd.dateModule;
-var _d8=p.editKind;
-var _d9=[_d5[0]];
-if(_d8=="resizeBoth"){
-_d9[1]=_d5[1];
-}
-_d9=this._computeItemEditingTimes(_d7,p.editKind,p.rendererKind,_d9,_d6);
-var _da=_d9[0];
-var _db=false;
-var _dc=_2.clone(_d7.startTime);
-var _dd=_2.clone(_d7.endTime);
-var _de=p.eventSource=="keyboard"?false:this.allowStartEndSwap;
-if(_d8=="move"){
-if(cal.compare(_d7.startTime,_da)!=0){
-var _df=cal.difference(_d7.startTime,_d7.endTime,"millisecond");
-_d7.startTime=this.newDate(_da);
-_d7.endTime=cal.add(_d7.startTime,"millisecond",_df);
-_db=true;
-}
-}else{
-if(_d8=="resizeStart"){
-if(cal.compare(_d7.startTime,_da)!=0){
-if(cal.compare(_d7.endTime,_da)!=-1){
-_d7.startTime=this.newDate(_da);
-}else{
-if(_de){
-_d7.startTime=this.newDate(_d7.endTime);
-_d7.endTime=this.newDate(_da);
-p.editKind=_d8="resizeEnd";
-if(_d6=="touch"){
-p.resizeEndTouchIndex=p.resizeStartTouchIndex;
-p.resizeStartTouchIndex=-1;
-}
-}else{
-_d7.startTime=this.newDate(_d7.endTime);
-_d7.startTime.setHours(_da.getHours());
-_d7.startTime.setMinutes(_da.getMinutes());
-_d7.startTime.setSeconds(_da.getSeconds());
-}
-}
-_db=true;
-}
-}else{
-if(_d8=="resizeEnd"){
-if(cal.compare(_d7.endTime,_da)!=0){
-if(cal.compare(_d7.startTime,_da)!=1){
-_d7.endTime=this.newDate(_da);
-}else{
-if(_de){
-_d7.endTime=this.newDate(_d7.startTime);
-_d7.startTime=this.newDate(_da);
-p.editKind=_d8="resizeStart";
-if(_d6=="touch"){
-p.resizeStartTouchIndex=p.resizeEndTouchIndex;
-p.resizeEndTouchIndex=-1;
-}
-}else{
-_d7.endTime=this.newDate(_d7.startTime);
-_d7.endTime.setHours(_da.getHours());
-_d7.endTime.setMinutes(_da.getMinutes());
-_d7.endTime.setSeconds(_da.getSeconds());
-}
-}
-_db=true;
-}
-}else{
-if(_d8=="resizeBoth"){
-_db=true;
-var _e0=this.newDate(_da);
-var end=this.newDate(_d9[1]);
-if(cal.compare(_e0,end)!=-1){
-if(_de){
-var t=_e0;
-_e0=end;
-end=t;
-}else{
-_db=false;
-}
-}
-if(_db){
-_d7.startTime=_e0;
-_d7.endTime=end;
-}
-}else{
-return false;
-}
-}
-}
-}
-if(!_db){
-return false;
-}
-var evt=_2.mixin(this._createItemEditEvent(),{item:_d7,storeItem:p.storeItem,startTime:_d7.startTime,endTime:_d7.endTime,editKind:_d8,rendererKind:p.rendererKind,triggerEvent:e,eventSource:_d6});
-if(_d8=="move"){
-this._onItemEditMoveGesture(evt);
-}else{
-this._onItemEditResizeGesture(evt);
-}
-if(cal.compare(_d7.startTime,_d7.endTime)==1){
-var tmp=_d7.startTime;
-_d7.startTime=_d7.endTime;
-_d7.endTime=tmp;
-}
-_db=cal.compare(_dc,_d7.startTime)!=0||cal.compare(_dd,_d7.endTime)!=0;
-if(!_db){
-return false;
-}
-this._layoutRenderers(this.renderData);
-if(p.liveLayout&&p.secItem!=null){
-p.secItem.startTime=_d7.startTime;
-p.secItem.endTime=_d7.endTime;
-this._secondarySheet._layoutRenderers(this._secondarySheet.renderData);
-}else{
-if(p.ownerItem!=null&&this.owner.liveLayout){
-p.ownerItem.startTime=_d7.startTime;
-p.ownerItem.endTime=_d7.endTime;
-this.owner._layoutRenderers(this.owner.renderData);
-}
-}
-return true;
-},_findRenderItem:function(id,_e1){
-_e1=_e1||this.renderData.items;
-for(var i=0;i<_e1.length;i++){
-if(_e1[i].id==id){
-return _e1[i];
-}
-}
-return null;
-},_onItemEditMoveGesture:function(e){
-this._dispatchCalendarEvt(e,"onItemEditMoveGesture");
-if(!e.isDefaultPrevented()){
-var p=e.source._edProps;
-var rd=this.renderData;
-var cal=rd.dateModule;
-var _e2,_e3;
-if(p.rendererKind=="label"||(this.roundToDay&&!e.item.allDay)){
-_e2=this.floorToDay(e.item.startTime,false,rd);
-_e2.setHours(p._itemEditBeginSave.getHours());
-_e2.setMinutes(p._itemEditBeginSave.getMinutes());
-_e3=cal.add(_e2,"millisecond",p._initDuration);
-}else{
-if(e.item.allDay){
-_e2=this.floorToDay(e.item.startTime,true);
-_e3=cal.add(_e2,"day",p._initDuration);
-}else{
-_e2=this.floorDate(e.item.startTime,this.snapUnit,this.snapSteps);
-_e3=cal.add(_e2,"millisecond",p._initDuration);
-}
-}
-e.item.startTime=_e2;
-e.item.endTime=_e3;
-if(!p.inViewOnce){
-p.inViewOnce=this._isItemInView(e.item);
-}
-if(p.inViewOnce&&this.stayInView){
-this._ensureItemInView(e.item);
-}
-}
-},_DAY_IN_MILLISECONDS:24*60*60*1000,onItemEditMoveGesture:function(e){
-},_onItemEditResizeGesture:function(e){
-this._dispatchCalendarEvt(e,"onItemEditResizeGesture");
-if(!e.isDefaultPrevented()){
-var p=e.source._edProps;
-var rd=this.renderData;
-var cal=rd.dateModule;
-var _e4=e.item.startTime;
-var _e5=e.item.endTime;
-if(e.editKind=="resizeStart"){
-if(e.item.allDay){
-_e4=this.floorToDay(e.item.startTime,false,this.renderData);
-}else{
-if(this.roundToDay){
-_e4=this.floorToDay(e.item.startTime,false,rd);
-_e4.setHours(p._itemEditBeginSave.getHours());
-_e4.setMinutes(p._itemEditBeginSave.getMinutes());
-}else{
-_e4=this.floorDate(e.item.startTime,this.snapUnit,this.snapSteps);
-}
-}
-}else{
-if(e.editKind=="resizeEnd"){
-if(e.item.allDay){
-if(!this.isStartOfDay(e.item.endTime)){
-_e5=this.floorToDay(e.item.endTime,false,this.renderData);
-_e5=cal.add(_e5,"day",1);
-}
-}else{
-if(this.roundToDay){
-_e5=this.floorToDay(e.item.endTime,false,rd);
-_e5.setHours(p._itemEditEndSave.getHours());
-_e5.setMinutes(p._itemEditEndSave.getMinutes());
-}else{
-_e5=this.floorDate(e.item.endTime,this.snapUnit,this.snapSteps);
-if(e.eventSource=="mouse"){
-_e5=cal.add(_e5,this.snapUnit,this.snapSteps);
-}
-}
-}
-}else{
-_e4=this.floorDate(e.item.startTime,this.snapUnit,this.snapSteps);
-_e5=this.floorDate(e.item.endTime,this.snapUnit,this.snapSteps);
-_e5=cal.add(_e5,this.snapUnit,this.snapSteps);
-}
-}
-e.item.startTime=_e4;
-e.item.endTime=_e5;
-var _e6=e.item.allDay||p._initDuration>=this._DAY_IN_MILLISECONDS&&!this.allowResizeLessThan24H;
-this.ensureMinimalDuration(this.renderData,e.item,_e6?"day":this.minDurationUnit,_e6?1:this.minDurationSteps,e.editKind);
-if(!p.inViewOnce){
-p.inViewOnce=this._isItemInView(e.item);
-}
-if(p.inViewOnce&&this.stayInView){
-this._ensureItemInView(e.item);
-}
-}
-},onItemEditResizeGesture:function(e){
-},_endItemEditingGesture:function(_e7,e){
-if(!this._isEditing){
-return;
-}
-this._editingGesture=false;
-var p=this._edProps;
-var _e8=p.editedItem;
-p.itemBeginDispatched=false;
-this._onItemEditEndGesture(_2.mixin(this._createItemEditEvent(),{item:_e8,storeItem:p.storeItem,startTime:_e8.startTime,endTime:_e8.endTime,editKind:p.editKind,rendererKind:p.rendererKind,triggerEvent:e,eventSource:_e7}));
-},_onItemEditEndGesture:function(e){
-var p=this._edProps;
-delete p._itemEditBeginSave;
-delete p._itemEditEndSave;
-this._dispatchCalendarEvt(e,"onItemEditEndGesture");
-if(!e.isDefaultPrevented()){
-if(p.editLayer){
-if(_7("ie")){
-p.editLayer.style.cursor="default";
-}
-setTimeout(_2.hitch(this,function(){
-if(this.domNode){
-this.domNode.focus();
-p.editLayer.parentNode.removeChild(p.editLayer);
-p.editLayer=null;
-}
-}),10);
-}
-}
-},onItemEditEndGesture:function(e){
-},ensureMinimalDuration:function(_e9,_ea,_eb,_ec,_ed){
-var _ee;
-var cal=_e9.dateModule;
-if(_ed=="resizeStart"){
-_ee=cal.add(_ea.endTime,_eb,-_ec);
-if(cal.compare(_ea.startTime,_ee)==1){
-_ea.startTime=_ee;
-}
-}else{
-_ee=cal.add(_ea.startTime,_eb,_ec);
-if(cal.compare(_ea.endTime,_ee)==-1){
-_ea.endTime=_ee;
-}
-}
-},doubleTapDelay:300,snapUnit:"minute",snapSteps:15,minDurationUnit:"hour",minDurationSteps:1,liveLayout:false,stayInView:true,allowStartEndSwap:true,allowResizeLessThan24H:false});
+define([
+	"dojo/_base/declare",
+	"dojo/_base/lang",
+	"dojo/_base/array",
+	"dojo/_base/window",
+	"dojo/_base/event",
+	"dojo/_base/html",
+	"dojo/sniff",
+	"dojo/query",
+	"dojo/dom",
+	"dojo/dom-style",
+	"dojo/dom-class",
+	"dojo/dom-construct",
+	"dojo/dom-geometry",
+	"dojo/on",
+	"dojo/date",
+	"dojo/date/locale",
+	"dojo/when",
+	"dijit/_WidgetBase",
+	"dojox/widget/_Invalidating",
+	"dojox/widget/Selection",
+	"dojox/calendar/time",
+	"./StoreMixin"],
+
+	function(
+		declare,
+		lang,
+		arr,
+		win,
+		event,
+		html,
+		has,
+		query,
+		dom,
+		domStyle,
+		domClass,
+		domConstruct,
+		domGeometry,
+		on,
+		date,
+		locale,
+		when,
+		_WidgetBase,
+		_Invalidating,
+		Selection,
+		timeUtil,
+		StoreMixin){
+	
+	/*=====
+	var __GridClickEventArgs = {
+		// summary:
+		//		The event dispatched when the grid is clicked or double-clicked.
+		// date: Date
+		//		The start of the previously displayed time interval, if any. 
+		// triggerEvent: Event
+		//		The event at the origin of this event.
+	};
+	=====*/
+	
+	/*=====
+	var __ItemMouseEventArgs = {
+		// summary:
+		//		The event dispatched when an item is clicked, double-clicked or context-clicked.
+		// item: Object
+		//		The item clicked.
+		// renderer: dojox/calendar/_RendererMixin
+		//		The item renderer clicked.
+		// triggerEvent: Event
+		//		The event at the origin of this event.
+	};
+	=====*/
+	
+	/*=====
+	var __itemEditingEventArgs = {
+		// summary:
+		//		An item editing event.
+		// item: Object
+		//		The render item that is being edited. Set/get the startTime and/or endTime properties to customize editing behavior.
+		// storeItem: Object
+		//		The real data from the store. DO NOT change properties, but you may use properties of this item in the editing behavior logic.
+		// editKind: String
+		//		Kind of edit: "resizeBoth", "resizeStart", "resizeEnd" or "move".
+		// dates: Date[]
+		//		The computed date/time of the during the event editing. One entry per edited date (touch use case).
+		// startTime: Date?
+		//		The start time of data item.
+		// endTime: Date?
+		//		The end time of data item.
+		// sheet: String
+		//		For views with several sheets (columns view for example), the sheet when the event occurred.
+		// source: dojox/calendar/ViewBase
+		//		The view where the event occurred.
+		// eventSource: String
+		//		The device that triggered the event. This property can take the following values:
+		//
+		//		- "mouse", 
+		//		- "keyboard", 
+		//		- "touch"		
+		// triggerEvent: Event
+		//		The event at the origin of this event.
+	};
+	=====*/
+	
+	/*=====
+	var __rendererLifecycleEventArgs = {
+		// summary:
+		//		An renderer lifecycle event.
+		// renderer: Object
+		//		The renderer.		
+		// source: dojox/calendar/ViewBase
+		//		The view where the event occurred.
+		// item:Object?
+		//		The item that will be displayed by the renderer for the "rendererCreated" and "rendererReused" events. 
+	};
+	=====*/
+
+	return declare("dojox.calendar.ViewBase", [_WidgetBase, StoreMixin, _Invalidating, Selection], {
+		
+		// summary:
+		//		The dojox.calendar.ViewBase widget is the base of calendar view widgets
+		
+		// datePackage: Object
+		//		JavaScript namespace to find Calendar routines. Uses Gregorian Calendar routines at dojo.date by default.
+		datePackage: date,
+		
+		_calendar: "gregorian",
+		
+		// viewKind: String
+		//		Kind of the view. Used by the calendar widget to determine how to configure the view.
+		viewKind: null,
+		
+		// _layoutStep: [protected] Integer
+		//		The number of units displayed by a visual layout unit (i.e. a column or a row)
+		_layoutStep: 1,
+		
+		// _layoutStep: [protected] Integer
+		//		The unit displayed by a visual layout unit (i.e. a column or a row)
+		_layoutUnit: "day",
+		
+		// resizeCursor: String
+		//		CSS value to apply to the cursor while resizing an item renderer. 
+		resizeCursor: "n-resize",
+		
+		// formatItemTimeFunc: Function
+		//		Optional function to format the time of day of the item renderers.
+		//		The function takes the date and render data object as arguments and returns a String.
+		formatItemTimeFunc: null,
+		
+		_cssDays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+				
+		_getFormatItemTimeFuncAttr: function(){
+			if(this.owner != null){
+				return this.owner.get("formatItemTimeFunc");
+			}
+			return this.formatItemTimeFunc;			
+		},
+		
+		// The listeners added by the view itself.
+		_viewHandles: null,
+		
+		// doubleTapDelay: Integer
+		//		The maximum time amount in milliseconds between to touchstart events that trigger a double-tap event.  
+		doubleTapDelay: 300,
+		
+		constructor: function(/*Object*/ args){
+			args = args || {};
+			
+			this._calendar = args.datePackage ? args.datePackage.substr(args.datePackage.lastIndexOf(".")+1) : this._calendar; 
+			this.dateModule = args.datePackage ? lang.getObject(args.datePackage, false) : date; 
+			this.dateClassObj = this.dateModule.Date || Date; 
+			this.dateLocaleModule = args.datePackage ? lang.getObject(args.datePackage+".locale", false) : locale; 
+			
+			this.rendererPool = [];
+			this.rendererList = [];
+			this.itemToRenderer = {};
+			this._viewHandles = [];
+		},
+		
+		destroy: function(preserveDom){
+			// renderers
+			while(this.rendererList.length > 0){
+				this._destroyRenderer(this.rendererList.pop());
+			}			
+			for(var kind in this._rendererPool){
+				var pool = this._rendererPool[kind];
+				if(pool){
+					while(pool.length > 0){
+						this._destroyRenderer(pool.pop());
+					}
+				}
+			}
+			
+			while(this._viewHandles.length > 0){
+				this._viewHandles.pop().remove();
+			}
+		
+			this.inherited(arguments);
+		},
+		
+		
+		resize: function(changeSize){
+			// summary:
+			//		Function to call when the view is resized. 
+			//		If the view is in a Dijit container or in a Dojo mobile container, it will be automatically called.
+			//		On other use cases, this method must called when the window is resized and/or when the orientation has changed.
+			if(changeSize){
+				domGeometry.setMarginBox(this.domNode, changeSize);
+			}
+		},
+		
+		_getTopOwner: function(){
+			// summary:
+			//		Returns the top owner: the calendar or the parent view.
+			var p = this;
+			while(p.owner != undefined){
+				p = p.owner;
+			}
+			return p;
+		},
+		
+		_createRenderData: function(){
+			// summary:
+			//		Creates the object that contains all the data needed to render this widget.
+			// tags:
+			//		protected
+		},
+		
+		_validateProperties: function(){
+			// summary:
+			//		Validates the widget properties before the rendering pass.
+			// tags:
+			//		protected
+		},
+
+		_setText: function(node, text, allowHTML){
+			// summary:
+			//		Creates a text node under the parent node after having removed children nodes if any.
+			// node: Node
+			//		The node that will contain the text node.
+			// text: String
+			//		The text to set to the text node.
+			if(text != null){			
+				if(!allowHTML && node.hasChildNodes()){
+					// span > textNode
+					node.childNodes[0].childNodes[0].nodeValue = text;
+				}else{												
+			
+					while(node.hasChildNodes()){
+						node.removeChild(node.lastChild);
+					}				
+			
+					var tNode = win.doc.createElement("span");
+					if(has("dojo-bidi")){
+						this.applyTextDir(tNode, text);
+					}
+					
+					if(allowHTML){
+						tNode.innerHTML = text;
+					}else{
+						tNode.appendChild(win.doc.createTextNode(text));
+					}
+					node.appendChild(tNode);
+				}
+			}
+		},
+		
+		isAscendantHasClass: function(node, ancestor, className){
+			// summary:
+			//		Determines if a node has an ascendant node that has the css class specified.
+			// node: Node
+			//		The DOM node.
+			// ancestor: Node
+			//		The ancestor node used to limit the search in hierarchy.
+			// className: String
+			//		The css class name.
+			// returns: Boolean
+			
+			while(node != ancestor && node != document){
+				
+				if(domClass.contains(node, className)){
+					return true;
+				}
+				
+				node = node.parentNode;
+			}
+			return false;
+		},
+		
+		isWeekEnd: function(date){
+			// summary:
+			//		Determines whether the specified date is a week-end.
+			//		This method is using dojo.date.locale.isWeekend() method as
+			//		dojox.date.XXXX calendars are not supporting this method.
+			// date: Date
+			//		The date to test.  
+			return locale.isWeekend(date);
+		},
+		
+		getWeekNumberLabel: function(date){
+			// summary:
+			//		Returns the week number string from dojo.date.locale.format() method as
+			//		dojox.date.XXXX calendar are not supporting the "w" pattern.
+			// date: Date
+			//		The date to format.
+			if(date.toGregorian){
+				date = date.toGregorian();
+			}
+			return locale.format(date, {
+				selector: "date", 
+				datePattern: "w"});
+		},
+		
+		floorToDay: function(date, reuse){
+			// summary:
+			//		Floors the specified date to the start of day.
+			// date: Date
+			//		The date to floor.
+			// reuse: Boolean
+			//		Whether use the specified instance or create a new one. Default is false.
+			// returns: Date
+			return timeUtil.floorToDay(date, reuse, this.dateClassObj);
+		},
+		
+		floorToMonth: function(date, reuse){
+			// summary:
+			//		Floors the specified date to the start of the date's month.
+			// date: Date
+			//		The date to floor.
+			// reuse: Boolean
+			//		Whether use the specified instance or create a new one. Default is false.
+			// returns: Date
+			return timeUtil.floorToMonth(date, reuse, this.dateClassObj);
+		},
+		
+				
+		floorDate: function(date, unit, steps, reuse){
+			// summary:
+			//		floors the date to the unit.
+			// date: Date
+			//		The date/time to floor.
+			// unit: String
+			//		The unit. Valid values are "minute", "hour", "day".
+			// steps: Integer
+			//		For "day" only 1 is valid.
+			// reuse: Boolean
+			//		Whether use the specified instance or create a new one. Default is false.			
+			// returns: Date
+			return timeUtil.floor(date, unit, steps, reuse, this.dateClassObj);
+		},
+
+		isToday: function(date){
+			// summary:
+			//		Returns whether the specified date is in the current day.
+			// date: Date
+			//		The date to test.
+			// renderData: Object
+			//		The current renderData
+			// returns: Boolean
+			return timeUtil.isToday(date, this.dateClassObj);
+		},
+		
+		isStartOfDay: function(d){
+			// summary:
+			//		Tests if the specified date represents the starts of day. 
+			// d:Date
+			//		The date to test.
+			// returns: Boolean
+			return timeUtil.isStartOfDay(d, this.dateClassObj, this.dateModule);
+		},
+		
+		isOverlapping: function(renderData, start1, end1, start2, end2, includeLimits){
+			// summary:
+			//		Computes if the first time range defined by the start1 and end1 parameters 
+			//		is overlapping the second time range defined by the start2 and end2 parameters.
+			// renderData: Object
+			//		The render data.
+			// start1: Date
+			//		The start time of the first time range.
+			// end1: Date
+			//		The end time of the first time range.
+			// start2: Date
+			//		The start time of the second time range.
+			// end2: Date
+			//		The end time of the second time range.
+			// includeLimits: Boolean
+			//		Whether include the end time or not.
+			// returns: Boolean
+			if(start1 == null || start2 == null || end1 == null || end2 == null){
+				return false;
+			}
+			
+			var cal = renderData.dateModule;
+			
+			if(includeLimits){
+				if(cal.compare(start1, end2) == 1 || cal.compare(start2, end1) == 1){
+					return false;
+				}					
+			}else if(cal.compare(start1, end2) != -1 || cal.compare(start2, end1) != -1){
+				return false;
+			}
+			return true; 
+		},			 
+			 
+		computeRangeOverlap: function(renderData, start1, end1, start2, end2, includeLimits){
+			// summary:
+			//		Computes the overlap time range of the time ranges.
+			//		Returns a vector of Date with at index 0 the start time and at index 1 the end time.
+			// renderData: Object.
+			//		The render data.
+			// start1: Date
+			//		The start time of the first time range.
+			// end1: Date
+			//		The end time of the first time range.
+			// start2: Date
+			//		The start time of the second time range.
+			// end2: Date
+			//		The end time of the second time range.
+			// includeLimits: Boolean
+			//		Whether include the end time or not.
+			// returns: Date[]
+			var cal = renderData.dateModule;
+			
+			if(start1 == null || start2 == null || end1 == null || end2 == null){
+				return null;
+			}
+			
+			var comp1 = cal.compare(start1, end2);
+			var comp2 = cal.compare(start2, end1);
+			
+			if(includeLimits){
+				
+				if(comp1 == 0 || comp1 == 1 || comp2 == 0 || comp2 == 1){
+					return null;
+				}
+			} else if(comp1 == 1 || comp2 == 1){
+				return null;
+			}
+			
+			return [
+				this.newDate(cal.compare(start1, start2)>0 ? start1: start2, renderData),
+				this.newDate(cal.compare(end1, end2)>0 ? end2: end1, renderData)
+			];
+		},
+		
+		isSameDay : function(date1, date2){
+			// summary:
+			//		Tests if the specified dates are in the same day.
+			// date1: Date
+			//		The first date.
+			// date2: Date
+			//		The second date.
+			// returns: Boolean
+			if(date1 == null || date2 == null){
+				return false; 
+			}
+		
+			return date1.getFullYear() == date2.getFullYear() &&
+						 date1.getMonth() == date2.getMonth() &&
+						 date1.getDate() == date2.getDate();
+			 
+		},
+		
+		computeProjectionOnDate: function(renderData, refDate, date, max){
+			// summary:
+			//		Computes the time to pixel projection in a day.
+			// renderData: Object
+			//		The render data.
+			// refDate: Date
+			//		The reference date that defines the destination date.
+			// date: Date
+			//		The date to project.
+			// max: Integer
+			//		The size in pixels of the representation of a day.
+			// tags:
+			//		protected
+			// returns: Number
+
+			var cal = renderData.dateModule;
+			
+			if(max <= 0 || cal.compare(date, refDate) == -1){
+				return 0;
+			}
+			
+			var referenceDate = this.floorToDay(refDate, false, renderData);
+
+			if(date.getDate() != referenceDate.getDate()){
+				if(date.getMonth() == referenceDate.getMonth()){
+					if(date.getDate() < referenceDate.getDate()){
+						return 0;
+					} else if(date.getDate() > referenceDate.getDate()){
+						return max;
+					}
+				}else{
+					if(date.getFullYear() == referenceDate.getFullYear()){
+						if(date.getMonth() < referenceDate.getMonth()){
+							return 0;
+						} else if(date.getMonth() > referenceDate.getMonth()){
+							return max;
+						}						 
+					}else{
+						if(date.getFullYear() < referenceDate.getFullYear()){
+							return 0;
+						} else if(date.getFullYear() > referenceDate.getFullYear()){
+							return max;
+						}
+					}
+				}
+			}
+
+			var res;
+
+			if(this.isSameDay(refDate, date)){
+				
+				var d = lang.clone(refDate);
+				var minTime = 0;
+				
+				if(renderData.minHours != null && renderData.minHours != 0){
+					d.setHours(renderData.minHours);
+					minTime = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+				}
+				
+				d = lang.clone(refDate);
+				
+				var maxTime;
+				if(renderData.maxHours == null || renderData.maxHours == 24){
+					maxTime = 86400; // 24h x 60m x 60s
+				}else{
+					d.setHours(renderData.maxHours);
+					maxTime = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+				}
+				
+				//precision is the second
+				//use this API for daylight time issues.
+				var delta = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() - minTime;
+				
+				if(delta < 0){
+					return 0;
+				}
+				if(delta > maxTime){
+					return max;
+				}
+
+				res = (max * delta)/(maxTime - minTime);
+				
+			}else{
+				
+				if(date.getDate() < refDate.getDate() && 
+						date.getMonth() == refDate.getMonth()){
+					return 0;
+				}
+				
+				var d2 = this.floorToDay(date);
+				var dp1 = renderData.dateModule.add(refDate, "day", 1);
+				dp1 = this.floorToDay(dp1, false, renderData);
+				
+				if(cal.compare(d2, refDate) == 1 && cal.compare(d2, dp1) == 0 || cal.compare(d2, dp1) == 1){
+					res =	max;
+				}else{
+					res = 0;
+				}
+			}
+				
+			return res;
+		},	
+		
+		getTime: function(e, x, y, touchIndex){
+			// summary:
+			//		Returns the time displayed at the specified point by this component.
+			// e: Event
+			//		Optional mouse event.
+			// x: Number
+			//		Position along the x-axis with respect to the sheet container used if event is not defined.
+			// y: Number
+			//		Position along the y-axis with respect to the sheet container (scroll included) used if event is not defined.
+			// touchIndex: Integer
+			//		If parameter 'e' is not null and a touch event, the index of the touch to use.
+			// returns: Date
+			return null;
+		},
+		
+		newDate: function(obj){
+			// summary:
+			//		Creates a new Date object.
+			// obj: Object
+			//		This object can have several values:
+			//
+			//		- the time in milliseconds since gregorian epoch.
+			//		- a Date instance
+			// returns: Date
+			return timeUtil.newDate(obj, this.dateClassObj);			
+		},
+		
+		_isItemInView: function(item){
+			// summary:
+			//		Computes whether the specified item is entirely in the view or not.
+			// item: Object
+			//		The item to test
+			// returns: Boolean	
+			var rd = this.renderData;
+			var cal = rd.dateModule;
+			
+			if(cal.compare(item.startTime, rd.startTime) == -1){
+				return false;
+			} 			
+			
+			return cal.compare(item.endTime, rd.endTime) != 1;
+		},
+		
+		_ensureItemInView: function(item){
+			// summary:
+			//		If needed, moves the item to be entirely in view.
+			// item: Object
+			//		The item to test
+			// returns: Boolean
+			//		Whether the item has been moved to be in view or not.
+			// tags:
+			//		protected
+
+			var rd = this.renderData;
+			var cal = rd.dateModule;
+			
+			var duration = Math.abs(cal.difference(item.startTime, item.endTime, "millisecond"));
+			var fixed = false;
+			
+			if(cal.compare(item.startTime, rd.startTime) == -1){
+				item.startTime = rd.startTime;
+				item.endTime = cal.add(item.startTime, "millisecond", duration);
+				fixed = true;
+			}else if(cal.compare(item.endTime, rd.endTime) == 1){
+				item.endTime = rd.endTime;
+				item.startTime = cal.add(item.endTime, "millisecond", -duration);
+				fixed = true;
+			}			
+			return fixed;
+		},
+		
+		/////////////////////////////////////////////////////////
+		//
+		// Scrollable
+		//
+		/////////////////////////////////////////////////////////
+				
+		// scrollable: Boolean
+		//		Indicates whether the view can be scrolled or not.
+		scrollable: true,
+		
+		// autoScroll: Boolean
+		//		Indicates whether the view can be scrolled automatically. 
+		//		Auto scrolling is used when moving focus to a non visible renderer using keyboard 
+		//		and while editing an item. 
+		autoScroll: true,				
+		
+		_autoScroll: function(gx, gy, orientation){
+			// summary:
+			//		Starts or stops the auto scroll according to the mouse cursor position during an item editing.
+			// gx: Integer
+			//		The position of the mouse cursor along the x-axis.
+			// gy: Integer
+			//		The position of the mouse cursor along the y-axis.			
+			// tags:
+			//		extension
+
+			return false;
+		},
+			
+		// scrollMethod: String
+		//		Method used to scroll the view, for example the scroll of column view.
+		//		Valid value are:
+		//
+		//		- "auto": let the view decide (default),
+		//		- "css": use css 3d transform,
+		//		- "dom": use the scrollTop property.
+		scrollMethod: "auto",
+		
+		_setScrollMethodAttr: function(value){
+			if(this.scrollMethod != value){
+				this.scrollMethod = value;
+				
+				// reset
+				if(this._domScroll !== undefined){
+					if(this._domScroll){
+						domStyle.set(this.sheetContainer, this._cssPrefix+"transform", "translateY(0px)");
+					}else{
+						this.scrollContainer.scrollTop = 0;
+					}
+				}
+				
+				delete this._domScroll;
+				var pos = this._getScrollPosition();
+				delete this._scrollPos;
+				
+				this._setScrollPosition(pos);
+			}
+			
+		},
+		
+		_startAutoScroll: function(step){
+			// summary:
+			//		Starts the auto scroll of the view (if it's scrollable). Used only during editing.
+			// tags:
+			//		protected
+			var sp = this._scrollProps;
+			if(!sp){
+				sp = this._scrollProps = {};
+			}
+				
+			sp.scrollStep = step;
+			
+			if (!sp.isScrolling){
+				sp.isScrolling = true;
+				sp.scrollTimer = setInterval(lang.hitch(this, this._onScrollTimer_tick), 10);
+			}		
+		},
+				
+		_stopAutoScroll: function(){
+			// summary:
+			//		Stops the auto scroll of the view (if it's scrollable). Used only during editing.
+			// tags:
+			//		protected
+			var sp = this._scrollProps;
+			
+			if (sp && sp.isScrolling) {
+				clearInterval(sp.scrollTimer);
+				sp.scrollTimer = null;
+			}
+			this._scrollProps = null;
+		},
+		
+		_onScrollTimer_tick: function(pos){
+		},
+		
+		_scrollPos: 0,
+		
+		getCSSPrefix: function(){
+			// summary:
+			//		Utility method that return the specific CSS prefix
+			//		for non standard CSS properties. Ex: -moz-border-radius.
+			if(has("ie")){
+				return "-ms-";
+			}
+			if(has("webkit")){
+				return "-webkit-";
+			}
+			if(has("mozilla")){
+				return "-moz-";
+			}
+			if(has("opera")){
+				return "-o-";
+			}
+            return "";
+		},				
+		
+		_setScrollPosition: function(pos){
+			// summary:
+			//		Sets the scroll position (if the view is scrollable), using the scroll method defined.
+			// tags:
+			//		protected
+
+			if(this._scrollPos == pos){
+				return;
+			}
+			
+			// determine scroll method once.
+			if(this._domScroll === undefined){
+			
+				var sm = this.get("scrollMethod");
+				if(sm === "auto"){					
+					this._domScroll = !has("ios") && !has("android") && !has("webkit");
+				}else{
+					this._domScroll = sm === "dom";
+				}
+			}
+			
+			var containerSize = domGeometry.getMarginBox(this.scrollContainer);
+			var sheetSize = domGeometry.getMarginBox(this.sheetContainer);
+			var max = sheetSize.h - containerSize.h;
+			
+			if(pos < 0){
+				pos = 0;
+			}else if(pos > max){
+				pos = max;
+			}
+			
+			this._scrollPos = pos;
+												
+			if(this._domScroll){				
+				this.scrollContainer.scrollTop = pos;				
+			}else{			
+				if(!this._cssPrefix){
+					this._cssPrefix =  this.getCSSPrefix();
+				}
+				domStyle.set(this.sheetContainer, this._cssPrefix+"transform", "translateY(-"+pos+"px)");
+			}
+		},
+		
+		_getScrollPosition: function(){
+			// summary:
+			//		Returns the scroll position (if the view is scrollable), using the scroll method defined.
+			// tags:
+			//		protected
+
+			return this._scrollPos; 
+		},
+		
+		scrollView: function(dir){
+			// summary:
+			//		If the view is scrollable, scrolls it to the specified direction.
+			// dir: Integer
+			//		Direction of the scroll. Valid values are -1 and 1.
+			// tags:
+			//		extension
+		},
+		
+		ensureVisibility: function(start, end, margin, visibilityTarget, duration){
+			// summary:
+			//		Scrolls the view if the [start, end] time range is not visible or only partially visible.
+			// start: Date
+			//		Start time of the range of interest.
+			// end: Date
+			//		End time of the range of interest.
+			// margin: int
+			//		Margin in minutes around the time range.
+			// visibilityTarget: String
+			//		The end(s) of the time range to make visible.
+			//		Valid values are: "start", "end", "both".	
+			// duration: Number
+			//		Optional, the maximum duration of the scroll animation.
+			// tags:
+			//		extension
+
+		},
+
+	  	////////////////////////////////////////////////////////
+		//
+		// Store & Items
+		//
+		////////////////////////////////////////////////////////
+		
+		_getStoreAttr: function(){
+			if(this.owner){
+				return this.owner.get("store");
+			}
+			return this.store;
+		},
+
+		_setItemsAttr: function(value){
+			this._set("items", value);
+			this.displayedItemsInvalidated = true;
+		},
+
+		_refreshItemsRendering: function(){
+			var rd = this.renderData;
+			this._computeVisibleItems(rd);
+			this._layoutRenderers(rd);
+		},
+		
+		invalidateLayout: function(){
+			// summary:
+			//		Triggers a re-layout of the renderers.
+			this._layoutRenderers(this.renderData);
+		},
+		
+		////////////////////////////////////////////////////////
+		//
+		// Layout
+		//
+		////////////////////////////////////////////////////////
+				
+		computeOverlapping: function(layoutItems, func){
+			// summary:
+			//		Computes the overlap layout of a list of items. A lane and extent properties are added to each layout item.
+			// layoutItems: Object[]
+			//		List of layout items, each item must have a start and end properties.
+			// addedPass: Function
+			//		Whether computes the extent of each item renderer on free sibling lanes.
+			// returns: Object
+			// tags:
+			//		protected
+
+			
+			if(layoutItems.length == 0){
+				return {
+					numLanes: 0,
+					addedPassRes: [1]
+				};
+			}
+			
+			var lanes = [];
+
+			for(var i=0; i<layoutItems.length; i++){
+				var layoutItem = layoutItems[i];
+				this._layoutPass1(layoutItem, lanes);
+			}
+
+			var addedPassRes = null;
+			if(func){
+				addedPassRes = lang.hitch(this, func)(lanes);
+			}
+			
+			return {
+				numLanes: lanes.length,
+				addedPassRes: addedPassRes
+			};
+		},
+
+		_layoutPass1: function (layoutItem, lanes){
+			// summary:
+			//		First pass of the overlap layout. Find a lane where the item can be placed or create a new one.
+			// layoutItem: Object
+			//		An object that contains a start and end properties at least.
+			// lanes:
+			//		The array of lanes.
+			// tags:
+			//		protected
+			var stop = true;
+			
+			for(var i=0; i<lanes.length; i++){
+				var lane = lanes[i]; 
+				stop = false;
+				for(var j=0; j<lane.length && !stop; j++){
+					if(lane[j].start < layoutItem.end && layoutItem.start < lane[j].end){
+						// one already placed item is overlapping
+						stop = true;
+						lane[j].extent = 1;
+					} 
+				}
+				if(!stop){
+					//we have found a place
+					layoutItem.lane = i;
+					layoutItem.extent = -1;
+					lane.push(layoutItem);
+					return;
+				}
+			}
+			
+			//no place found -> add a lane
+			lanes.push([layoutItem]);
+			layoutItem.lane = lanes.length-1;			 
+			layoutItem.extent = -1;
+		},
+			
+		
+		
+		_layoutInterval: function(renderData, index, start, end, items){
+			// summary:
+			//		For each item in the items list: retrieve a renderer, compute its location and size and add it to the DOM.
+			// renderData: Object
+			//		The render data.
+			// index: Integer
+			//		The index of the interval.
+			// start: Date
+			//		The start time of the displayed date interval.
+			// end: Date
+			//		The end time of the displayed date interval.
+			// items: Object[]
+			//		The list of the items to represent.
+			// tags:
+			//		extension
+		},
+		
+		// layoutPriorityFunction: Function
+		//		An optional comparison function use to determine the order the item will be laid out
+		//		The function is used to sort an array and must, as any sorting function, take two items 
+		//		as argument and must return an integer whose sign define order between arguments.
+		//		By default, a comparison by start time then end time is used.
+		layoutPriorityFunction: null,
+		
+		_sortItemsFunction: function(a, b){
+			var res = this.dateModule.compare(a.startTime, b.startTime);
+			if(res == 0){
+				res = -1 * this.dateModule.compare(a.endTime, b.endTime);
+			}
+			return res;
+		},
+		
+		_layoutRenderers: function(renderData){
+			// summary:
+			//		Renders the data items. This method will call the _layoutInterval() method.
+			// renderData: Object
+			//		The render data.
+			// tags:
+			//		protected
+			if(!renderData.items){
+				return;
+			}
+						
+			// recycle renderers first
+			this._recycleItemRenderers();
+			
+			var cal = renderData.dateModule; 
+			
+			// Date
+			var startDate = this.newDate(renderData.startTime);
+			
+			// Date and time
+			var startTime = lang.clone(startDate);
+			
+			var endDate;
+			
+			var items = renderData.items.concat();
+
+			var itemsTemp = [], events;
+			
+			var index = 0;
+			
+			while(cal.compare(startDate, renderData.endTime) == -1 && items.length > 0){
+			
+				endDate = cal.add(startDate, this._layoutUnit, this._layoutStep);
+				endDate = this.floorToDay(endDate, true, renderData);
+				
+				var endTime = lang.clone(endDate);
+				
+				if(renderData.minHours){
+					startTime.setHours(renderData.minHours);
+				}
+				
+				if(renderData.maxHours && renderData.maxHours != 24){
+					endTime = cal.add(endDate, "day", -1);
+					endTime = this.floorToDay(endTime, true, renderData);
+					endTime.setHours(renderData.maxHours);
+				}
+				
+				// look for events that overlap the current sub interval
+				events = arr.filter(items, function(item){
+					var r = this.isOverlapping(renderData, item.startTime, item.endTime, startTime, endTime);
+					if(r){
+						// item was not fully processed as it overlaps another sub interval
+						if(cal.compare(item.endTime, endTime) == 1){
+							itemsTemp.push(item);
+						}	
+					}else{
+						itemsTemp.push(item);
+					}
+					return r;
+				}, this);
+
+				items = itemsTemp;
+				itemsTemp = [];
+				
+				// if event are in the current sub interval, layout them
+				if(events.length > 0){
+					// Sort the item according a sorting function, by default start time then end time comparison are used.
+					events.sort(lang.hitch(this, this.layoutPriorityFunction ? this.layoutPriorityFunction : this._sortItemsFunction));
+					this._layoutInterval(renderData, index, startTime, endTime, events);
+				}
+
+				startDate = endDate;
+				startTime = lang.clone(startDate);
+
+				index++;
+			}			
+			
+			this._onRenderersLayoutDone(this);
+		},
+	
+		/////////////////////////////////////////////////////////////////
+		//
+		//	Renderers management
+		//
+		////////////////////////////////////////////////////////////////
+		
+		_recycleItemRenderers: function(remove){
+			// summary:
+			//		Recycles all the item renderers.
+			// remove: Boolean
+			//		Whether remove the DOM node from it parent.
+			// tags:
+			//		protected
+			while(this.rendererList.length>0){
+				this._recycleRenderer(this.rendererList.pop(), remove);
+			}
+			this.itemToRenderer = {};
+		},
+				
+		// rendererPool: [protected] Array
+		//		The stack of recycled renderers available.
+		rendererPool: null,
+		
+		// rendererList: [protected] Array
+		//		The list of used renderers
+		rendererList: null,
+		
+		// itemToRenderer: [protected] Object
+		//		The associated array item to renderer list.
+		itemToRenderer: null,
+		
+		getRenderers: function(item){
+			// summary:
+			//		Returns the renderers that are currently used to displayed the speficied item.
+			//		Returns an array of objects that contains two properties:
+			//		- container: The DOM node that contains the renderer.
+			//		- renderer: The dojox.calendar._RendererMixin instance.
+			//		Do not keep references on the renderers are they are recycled and reused for other items.
+			// item: Object
+			//		The data or render item.
+			// returns: Object[]
+			if(item == null || item.id == null){
+				return null;
+			}
+			var list = this.itemToRenderer[item.id];
+			return list == null ? null : list.concat();
+		},
+		
+		_rendererHandles: {},
+		
+		// itemToRendererKindFunc: Function
+		//		An optional function to associate a kind of renderer ("horizontal", "label" or null) with the specified item.
+		//		By default, if an item is lasting more that 24 hours an horizontal item is used, otherwise a label is used.
+		itemToRendererKindFunc: null,
+		
+		_itemToRendererKind: function(item){
+			// summary: 
+			//		Associates a kind of renderer with a data item.
+			// item: Object
+			//		The data item.
+			// returns: String
+			// tags:
+			//		protected			
+			if(this.itemToRendererKindFunc){
+				return this.itemToRendererKindFunc(item);
+			}
+			return this._defaultItemToRendererKindFunc(item); // String
+		},
+		
+		_defaultItemToRendererKindFunc:function(item){
+			// tags:
+			//		private
+			return null;
+		},
+
+		_createRenderer: function(item, kind, rendererClass, cssClass){			
+			// summary: 
+			//		Creates an item renderer of the specified kind. A renderer is an object with the "container" and "instance" properties.
+			// item: Object
+			//		The data item.
+			// kind: String
+			//		The kind of renderer.
+			// rendererClass: Object
+			//		The class to instantiate to create the renderer.
+			// returns: Object
+			// tags:
+			//		protected				
+						
+			if(item != null && kind != null && rendererClass != null){
+				
+				var res=null, renderer=null;
+				
+				var pool = this.rendererPool[kind];
+				
+				if(pool != null){
+					res = pool.shift();
+				}
+
+				if (res == null){
+
+					renderer = new rendererClass;
+									
+					res = {
+						renderer: renderer,
+						container: renderer.domNode,
+						kind: kind
+					};
+
+					this._onRendererCreated({renderer:res, source:this, item:item});
+					
+				} else {
+					renderer = res.renderer; 
+					
+					this._onRendererReused({renderer:renderer, source:this, item:item});
+				}
+				
+				renderer.owner = this;
+				renderer.set("rendererKind", kind);
+				renderer.set("item", item);
+				
+				var list = this.itemToRenderer[item.id];
+				if (list == null) {
+					this.itemToRenderer[item.id] = list = [];
+				}
+				list.push(res);
+				
+				this.rendererList.push(res);
+				return res;	
+			}
+			return null;
+		},
+		
+		_onRendererCreated: function(e){
+			if(e.source == this){
+				this.onRendererCreated(e);
+			}
+			if(this.owner != null){
+				this.owner._onRendererCreated(e);
+			}
+		},
+		
+		onRendererCreated: function(e){
+			// summary:
+			//		Event dispatched when an item renderer has been created.
+			// e: __rendererLifecycleEventArgs
+			//		The renderer lifecycle event.
+			// tags:
+			//		callback
+		},	
+		
+		_onRendererRecycled: function(e){
+			if(e.source == this){
+				this.onRendererRecycled(e);
+			}
+			if(this.owner != null){
+				this.owner._onRendererRecycled(e);
+			}
+		},
+		
+		onRendererRecycled: function(e){
+			// summary:
+			//		Event dispatched when an item renderer has been recycled.
+			// e: __rendererLifecycleEventArgs
+			//		The renderer lifecycle event.
+			// tags:
+			//		callback
+
+		},
+						
+		_onRendererReused: function(e){
+			if(e.source == this){
+				this.onRendererReused(e);
+			}
+			if(this.owner != null){
+				this.owner._onRendererReused(e);
+			}
+		},
+		
+		onRendererReused: function(e){
+			// summary:
+			//		Event dispatched when an item renderer that was recycled is reused.
+			// e: __rendererLifecycleEventArgs
+			//		The renderer lifecycle event.
+			// tags:
+			//		callback
+		},
+		
+		_onRendererDestroyed: function(e){
+			if(e.source == this){
+				this.onRendererDestroyed(e);
+			}
+			if(this.owner != null){
+				this.owner._onRendererDestroyed(e);
+			}
+		},
+		
+		onRendererDestroyed: function(e){
+			// summary:
+			//		Event dispatched when an item renderer is destroyed.
+			// e: __rendererLifecycleEventArgs
+			//		The renderer lifecycle event.
+			// tags:
+			//		callback
+		},
+				
+		_onRenderersLayoutDone: function(view){
+			// tags:
+			//		private
+
+			this.onRenderersLayoutDone(view);
+			if(this.owner != null){
+				this.owner._onRenderersLayoutDone(view);
+			}				
+		},
+									
+		onRenderersLayoutDone: function(view){
+			// summary:
+			//		Event triggered when item renderers layout has been done.
+			// tags:
+			//		callback
+		},
+
+		_recycleRenderer: function(renderer, remove){
+			// summary: 
+			//		Recycles the item renderer to be reused in the future.
+			// renderer: dojox/calendar/_RendererMixin
+			//		The item renderer to recycle.
+			// tags:
+			//		protected			
+								
+			this._onRendererRecycled({renderer:renderer, source:this});
+			
+			var pool = this.rendererPool[renderer.kind];
+			
+			if(pool == null){
+				this.rendererPool[renderer.kind] = [renderer];
+			}else{
+				pool.push(renderer);
+			}
+								
+			if(remove){
+				renderer.container.parentNode.removeChild(renderer.container);
+			}
+
+			domStyle.set(renderer.container, "display", "none");
+
+			renderer.renderer.owner = null;
+			renderer.renderer.set("item", null);
+		},
+							
+		_destroyRenderer: function(renderer){
+			// summary: 
+			//		Destroys the item renderer.
+			// renderer: dojox/calendar/_RendererMixin
+			//		The item renderer to destroy.
+			// tags:
+			//		protected
+			this._onRendererDestroyed({renderer:renderer, source:this});
+			
+			var ir = renderer.renderer;		
+			
+			if(ir["destroy"]){
+				ir.destroy();
+			}
+			
+			html.destroy(renderer.container);	
+		},
+		
+		_destroyRenderersByKind: function(kind){
+			// tags:
+			//		private
+
+			var list = [];
+			for(var i=0;i<this.rendererList.length;i++){
+				var ir = this.rendererList[i];
+				if(ir.kind == kind){
+					this._destroyRenderer(ir);
+				}else{
+					list.push(ir);
+				}
+			}
+			
+			this.rendererList = list;
+			
+			var pool = this.rendererPool[kind];
+			if(pool){
+				while(pool.length > 0){
+					this._destroyRenderer(pool.pop());
+				}
+			}
+			
+		},
+				
+					
+		_updateEditingCapabilities: function(item, renderer){
+			// summary:
+			//		Update the moveEnabled and resizeEnabled properties of a renderer according to its event current editing state.
+			// item: Object
+			//		The store data item.
+			// renderer: dojox/calendar/_RendererMixin
+			//		The item renderer.
+			// tags:
+			//		protected
+
+			var moveEnabled = this.isItemMoveEnabled(item, renderer.rendererKind);
+			var resizeEnabled = this.isItemResizeEnabled(item, renderer.rendererKind);
+			var changed = false;
+			
+			if(moveEnabled != renderer.get("moveEnabled")){
+				renderer.set("moveEnabled", moveEnabled);
+				changed = true;
+			}
+			if(resizeEnabled != renderer.get("resizeEnabled")){
+				renderer.set("resizeEnabled", resizeEnabled);
+				changed = true;
+			}
+			
+			if(changed){
+				renderer.updateRendering();
+			}
+		},
+	
+		updateRenderers: function(obj, stateOnly){
+			// summary:
+			//		Updates all the renderers that represents the specified item(s).
+			// obj: Object
+			//		A render item or an array of render items.
+			// stateOnly: Boolean
+			//		Whether only the state of the item has changed (selected, edited, edited, focused) or a more global change has occured.
+			// tags:
+			//		protected
+
+			if(obj == null){
+				return;
+			}
+			
+			var items = lang.isArray(obj) ? obj : [obj];
+			
+			for(var i=0; i<items.length; i++){
+				
+				var item = items[i];
+				
+				if(item == null || item.id == null){
+					continue;
+				}
+						
+				var list = this.itemToRenderer[item.id];
+				
+				if(list == null){
+					continue;
+				}
+				
+				var selected = this.isItemSelected(item);
+				var hovered = this.isItemHovered(item);
+				var edited = this.isItemBeingEdited(item);
+				var focused = this.showFocus ? this.isItemFocused(item) : false;				
+				
+				for(var j = 0; j < list.length; j++){
+					
+					var renderer = list[j].renderer;
+					renderer.set("hovered", hovered);
+					renderer.set("selected", selected);
+					renderer.set("edited", edited);
+					renderer.set("focused", focused);
+					renderer.set("storeState", this.getItemStoreState(item));
+					
+					this.applyRendererZIndex(item, list[j], hovered, selected, edited, focused);
+					
+					if(!stateOnly){
+						renderer.set("item", item); // force content refresh
+						if(renderer.updateRendering){
+							renderer.updateRendering(); // reuse previously set dimensions	
+						}
+					}
+				}
+				
+			}
+		},
+		
+		applyRendererZIndex: function(item, renderer, hovered, selected, edited, focused){
+			// summary:
+			//		Applies the z-index to the renderer based on the state of the item.
+			//		This methods is setting a z-index of 20 is the item is selected or edited 
+			//		and the current lane value computed by the overlap layout (i.e. the renderers 
+			//		are stacked according to their lane).
+			// item: Object
+			//		The render item.
+			// renderer: Object
+			//		A renderer associated with the render item.
+			// hovered: Boolean
+			//		Whether the item is hovered or not.
+			// selected: Boolean
+			//		Whether the item is selected or not.
+			// edited: Boolean
+			//		Whether the item is being edited not not.
+			// focused: Boolean
+			//		Whether the item is focused not not.
+			// tags:
+			//		protected
+						
+			domStyle.set(renderer.container, {"zIndex": edited || selected ? 20: item.lane == undefined ? 0 : item.lane});
+		},
+		
+		getIdentity: function(item){
+			return this.owner ? this.owner.getIdentity(item) : item.id; 
+		},		
+		
+		/////////////////////////////////////////////////////
+		//
+		// Hovered item
+		//
+		////////////////////////////////////////////////////
+
+		_setHoveredItem: function(item, renderer){
+			// summary:
+			//		Sets the current hovered item.
+			// item: Object
+			//		The data item.
+			// renderer: dojox/calendar/_RendererMixin
+			//		The item renderer.
+			// tags:
+			//		protected
+
+			if(this.owner){
+				this.owner._setHoveredItem(item, renderer);
+				return;
+			}
+			
+			if(this.hoveredItem && item && this.hoveredItem.id != item.id || 
+				item == null || this.hoveredItem == null){
+				var old = this.hoveredItem;
+				this.hoveredItem = item;
+				
+				this.updateRenderers([old, this.hoveredItem], true);
+				
+				if(item && renderer){
+					this._updateEditingCapabilities(item._item ? item._item : item, renderer);
+				}
+			}
+		},
+		
+		// hoveredItem: Object
+		//		The currently hovered data item.
+		hoveredItem: null,
+		
+		isItemHovered: function(item){
+			// summary:
+			//		Returns whether the specified item is hovered or not.
+			// item: Object
+			//		The item.
+			// returns: Boolean
+			if (this._isEditing && this._edProps){
+				return item.id == this._edProps.editedItem.id;
+			}
+			return this.owner ?  
+				this.owner.isItemHovered(item) : 
+				this.hoveredItem != null && this.hoveredItem.id == item.id;
+			
+		},
+		
+		isItemFocused: function(item){
+			// summary:
+			//		Returns whether the specified item is focused or not.
+			// item: Object
+			//		The item.
+			// returns: Boolean
+			return this._isItemFocused ? this._isItemFocused(item) : false;
+		},
+		
+		////////////////////////////////////////////////////////////////////
+		//
+		// Selection delegation
+		//
+		///////////////////////////////////////////////////////////////////
+		
+		_setSelectionModeAttr: function(value){
+			if(this.owner){
+				this.owner.set("selectionMode", value);
+			}else{
+				this.inherited(arguments);
+			}			
+		},					
+		
+		_getSelectionModeAttr: function(value){			
+			if(this.owner){
+				return this.owner.get("selectionMode");
+			}
+			return this.inherited(arguments);			
+		},
+		
+		_setSelectedItemAttr: function(value){			
+			if(this.owner){
+				this.owner.set("selectedItem", value);
+			}else{
+				this.inherited(arguments);
+			}
+		},
+		
+		_getSelectedItemAttr: function(value){			
+			if(this.owner){
+				return this.owner.get("selectedItem");
+			}
+			return this.selectedItem; // no getter on super class (dojox.widget.Selection)			
+		},
+		
+		_setSelectedItemsAttr: function(value){			
+			if(this.owner){
+				this.owner.set("selectedItems", value);
+			}else{
+				this.inherited(arguments);
+			}
+		},
+		
+		_getSelectedItemsAttr: function(){			
+			if(this.owner){
+				return this.owner.get("selectedItems");
+			}
+			return this.inherited(arguments);
+		},
+		
+		isItemSelected: function(item){			
+			if(this.owner){
+				return this.owner.isItemSelected(item);
+			}
+			return this.inherited(arguments);
+		},
+		
+		selectFromEvent: function(e, item, renderer, dispatch){			
+			if(this.owner){
+				this.owner.selectFromEvent(e, item, renderer, dispatch);
+			}else{
+				this.inherited(arguments);
+			}
+		},
+		
+		setItemSelected: function(item, value){
+			if(this.owner){
+				this.owner.setItemSelected(item, value);
+			}else{
+				this.inherited(arguments);
+			}
+		},
+		
+		////////////////////////////////////////////////////////////////////
+		//
+		// Event creation
+		//
+		///////////////////////////////////////////////////////////////////
+		
+		createItemFunc: null,
+		/*=====
+		createItemFunc: function(view, d, e){
+		 	// summary:
+			//		A user supplied function that creates a new event.
+			// view: ViewBase
+			//		the current view,
+			// d: Date
+			//		the date at the clicked location.
+			// e: MouseEvemt
+			//		the mouse event (can be used to return null for example)
+
+		},
+		=====*/
+
+				
+		_getCreateItemFuncAttr: function(){			
+			if(this.owner){
+				return this.owner.get("createItemFunc");
+			}
+			return this.createItemFunc;
+		},
+		
+		// createOnGridClick: Boolean
+		//		Indicates whether the user can create new event by clicking and dragging the grid.
+		//		A createItem function must be defined on the view or the calendar object.
+		createOnGridClick: false,
+		
+		_getCreateOnGridClickAttr: function(){
+			if(this.owner){
+				return this.owner.get("createOnGridClick");
+			}
+			return this.createOnGridClick;			
+		},
+		
+		////////////////////////////////////////////////////////////////////
+		//
+		// Event creation
+		//
+		///////////////////////////////////////////////////////////////////	
+		
+		_gridMouseDown: false,		
+		_tempIdCount: 0,
+		_tempItemsMap: null,
+				
+		_onGridMouseDown: function(e){
+			// tags:
+			//		private
+			this._gridMouseDown = true;
+								
+			this.showFocus = false;
+								
+			if(this._isEditing){	
+				this._endItemEditing("mouse", false);
+			}
+			
+			this._doEndItemEditing(this.owner, "mouse");			
+			
+			this.set("focusedItem", null);
+			this.selectFromEvent(e, null, null, true);
+			
+			if(this._setTabIndexAttr){
+				this[this._setTabIndexAttr].focus();
+			}
+								
+			if(this._onRendererHandleMouseDown){
+				
+				var f = this.get("createItemFunc");
+				
+				if(!f){
+					return;
+				}
+				
+				var newItem = this._createdEvent = f(this, this.getTime(e), e);
+								
+				var store = this.get("store");
+											
+				if(!newItem || store == null){
+					return;
+				}
+								
+				// calendar needs an ID to work with
+				if(store.getIdentity(newItem) == undefined){
+					var id = "_tempId_" + (this._tempIdCount++);
+					newItem[store.idProperty] = id;
+					if(this._tempItemsMap == null){
+						this._tempItemsMap = {};
+					}
+					this._tempItemsMap[id] = true;
+				}
+								
+				var newRenderItem = this.itemToRenderItem(newItem, store);				
+				newRenderItem._item = newItem;
+				this._setItemStoreState(newItem, "unstored");
+				
+				// add the new temporary item to the displayed list and force view refresh
+				var owner = this._getTopOwner();
+				var items = owner.get("items");
+				
+				owner.set("items", items ? items.concat([newRenderItem]) : [newRenderItem]);
+								
+				this._refreshItemsRendering();
+				
+				// renderer created in _refreshItemsRenderering()
+				var renderers = this.getRenderers(newItem);				
+				if(renderers && renderers.length>0){
+					var renderer = renderers[0];					
+					if(renderer){
+						// trigger editing
+						this._onRendererHandleMouseDown(e, renderer.renderer, "resizeEnd");
+						this._startItemEditing(newRenderItem, "mouse");	
+					}					
+				}
+			}
+		},
+		
+		_onGridMouseMove: function(e){
+			// tags:
+			//		private
+		},
+		
+		_onGridMouseUp: function(e){
+			// tags:
+			//		private
+		},
+		
+		_onGridTouchStart: function(e){
+			// tags:
+			//		private
+
+			var p = this._edProps;
+
+			this._gridProps = {
+				event: e,				
+				fromItem: this.isAscendantHasClass(e.target, this.eventContainer, "dojoxCalendarEvent")
+			};			
+	
+			if(this._isEditing){
+				
+				if(this._gridProps){
+					this._gridProps.editingOnStart = true;
+				}
+
+				lang.mixin(p, this._getTouchesOnRenderers(e, p.editedItem));
+				
+				if(p.touchesLen == 0){
+					
+					if(p && p.endEditingTimer){
+						clearTimeout(p.endEditingTimer);
+						p.endEditingTimer = null;
+					}
+					this._endItemEditing("touch", false);
+				}
+			}
+			
+			this._doEndItemEditing(this.owner, "touch");		
+
+			event.stop(e);
+			
+		},
+		
+		_doEndItemEditing: function(obj, eventSource){
+			// tags:
+			//		private
+
+			if(obj && obj._isEditing){
+				var p = obj._edProps;
+				if(p && p.endEditingTimer){
+					clearTimeout(p.endEditingTimer);
+					p.endEditingTimer = null;
+				}
+				obj._endItemEditing(eventSource, false);
+			}	
+		},
+					
+		_onGridTouchEnd: function(e){
+			// tags:
+			//		private
+		},
+		
+		_onGridTouchMove: function(e){
+			// tags:
+			//		private
+		},
+		
+		__fixEvt: function(e){
+			// summary:
+			//		Extension point for a view to add some event properties to a calendar event.
+			// tags:
+			//		callback
+			return e;
+		},
+		
+		_dispatchCalendarEvt: function(e, name){
+			// summary:
+			//		Adds view properties to event and enable bubbling at owner level.
+			// e: Event
+			//		The dispatched event.
+			// name: String
+			//		The event name.
+			// tags:
+			//		protected
+			
+			e = this.__fixEvt(e);
+			this[name](e);
+			if(this.owner){
+				this.owner[name](e);
+			}
+			return e;
+		},
+
+		_onGridClick: function(e){
+			// tags:
+			//		private
+			if(!e.triggerEvent){
+				e = {
+					date: this.getTime(e),
+					triggerEvent: e
+				};
+			}	
+			
+			this._dispatchCalendarEvt(e, "onGridClick");
+		},
+		
+		onGridClick: function(e){
+			// summary:
+			//		Event dispatched when the grid has been clicked.
+			// e: __GridClickEventArgs
+			//		The event dispatched when the grid is clicked.
+			// tags:
+			//		callback
+		},
+		
+		_onGridDoubleClick: function(e){
+			// tags:
+			//		private
+
+			if(!e.triggerEvent){
+				e = {
+					date: this.getTime(e),
+					triggerEvent: e
+				};
+			}
+						
+			this._dispatchCalendarEvt(e, "onGridDoubleClick");
+		},
+				
+		onGridDoubleClick: function(e){
+			// summary:
+			//		Event dispatched when the grid has been double-clicked.
+			// e: __GridClickEventArgs
+			//		The event dispatched when the grid is double-clicked.
+			// tags:
+			//		protected
+
+		},
+		
+		_onItemClick: function(e){
+			// tags:
+			//		private
+
+			this._dispatchCalendarEvt(e, "onItemClick");
+		},
+		
+		onItemClick: function(e){
+			// summary:
+			//		Event dispatched when an item renderer has been clicked.
+			// e: __ItemMouseEventArgs
+			//		The event dispatched when an item is clicked.
+			// tags:
+			//		callback
+
+		},
+		
+		_onItemDoubleClick: function(e){
+			// tags:
+			//		private
+
+			this._dispatchCalendarEvt(e, "onItemDoubleClick");	
+		},
+		
+		onItemDoubleClick: function(e){
+			// summary:
+			//		Event dispatched when an item renderer has been double-clicked.
+			// e: __ItemMouseEventArgs
+			//		The event dispatched when an item is double-clicked.
+			// tags:
+			//		callback
+
+		},
+
+		_onItemContextMenu: function(e){
+			this._dispatchCalendarEvt(e, "onItemContextMenu");
+			// tags:
+			//		private
+
+		},
+		
+		onItemContextMenu: function(e){
+			// summary:
+			//		Event dispatched when an item renderer has been context-clicked.
+			// e: __ItemMouseEventArgs
+			//		The event dispatched when an item is context-clicked.
+			// tags:
+			//		callback
+
+		},
+		
+		//////////////////////////////////////////////////////////
+		//
+		//	Editing
+		//
+		//////////////////////////////////////////////////////////
+
+		_getStartEndRenderers: function(item){
+			// summary:
+			//		Returns an array that contains the first and last renderers of an item 			
+			//		that are currently displayed. They could be the same renderer if only one renderer is used.
+			// item: Object
+			//		The render item.
+			// returns: Object[]
+			// tags:
+			//		protected
+
+
+			var list = this.itemToRenderer[item.id];
+
+			if(list == null){
+				return null;
+			}
+
+			// trivial and most common use case.
+			if(list.length == 1){
+				var node = list[0].renderer;
+				return [node, node];
+			}
+
+			var rd = this.renderData;
+			var resizeStartFound = false;
+			var resizeEndFound = false;
+
+			var res = [];
+
+			for(var i=0; i<list.length; i++){
+
+				var ir = list[i].renderer;
+
+				if (!resizeStartFound){
+					resizeStartFound = rd.dateModule.compare(ir.item.range[0], ir.item.startTime) == 0;
+					res[0] = ir;
+				}
+
+				if (!resizeEndFound){
+					resizeEndFound =  rd.dateModule.compare(ir.item.range[1], ir.item.endTime) == 0;
+					res[1] = ir;
+				}
+
+				if (resizeStartFound && resizeEndFound){
+					break;	
+				}
+			}
+
+			return res;			
+		},
+								
+		// editable: Boolean
+		//		A flag that indicates whether or not the user can edit
+		//		items in the data provider.
+		//		If <code>true</code>, the item renderers in the control are editable.
+		//		The user can click on an item renderer, or use the keyboard or touch devices, to move or resize the associated event.
+		editable: true,
+
+		// moveEnabled: Boolean
+		//		A flag that indicates whether the user can move items displayed.
+		//		If <code>true</code>, the user can move the items.
+		moveEnabled: true,
+
+		// resizeEnabled: Boolean
+		//		A flag that indicates whether the items can be resized.
+		//		If `true`, the control supports resizing of items.
+		resizeEnabled: true,
+		
+		isItemEditable: function(item, rendererKind){
+			// summary:
+			//		Computes whether particular item renderer can be edited or not.
+			//		By default it is using the editable property value.
+			// item: Object
+			//		The item represented by the renderer.
+			// rendererKind: String
+			//		The kind of renderer.
+			// returns: Boolean			
+			return this.getItemStoreState(item) != "storing" && this.editable && (this.owner ? this.owner.isItemEditable(item, rendererKind) : true);
+		},
+
+		isItemMoveEnabled: function(item, rendererKind){
+			// summary:
+			//		Computes whether particular item renderer can be moved.
+			//		By default it is using the moveEnabled property value.
+			// item: Object
+			//		The item represented by the renderer.
+			// rendererKind: String
+			//		The kind of renderer.
+			// returns: Boolean
+			return this.isItemEditable(item, rendererKind) && this.moveEnabled && 
+				(this.owner ? this.owner.isItemMoveEnabled(item, rendererKind): true);
+		},
+		
+		isItemResizeEnabled: function(item, rendererKind){
+			// summary:
+			//		Computes whether particular item renderer can be resized.
+			//		By default it is using the resizedEnabled property value.
+			// item: Object
+			//		The item represented by the renderer.
+			// rendererKind: String
+			//		The kind of renderer.
+			// returns: Boolean
+			
+			return this.isItemEditable(item, rendererKind) && this.resizeEnabled && 
+				(this.owner ? this.owner.isItemResizeEnabled(item, rendererKind): true);
+		},
+
+		// _isEditing: Boolean
+		//		Whether an item is being edited or not.
+		_isEditing: false,
+		
+		isItemBeingEdited: function(item){
+			// summary:
+			//		Returns whether an item is being edited or not.
+			// item: Object
+			//		The item to test.
+			// returns: Boolean
+			return this._isEditing && this._edProps && this._edProps.editedItem && this._edProps.editedItem.id == item.id;
+		},
+		
+		_setEditingProperties: function(props){
+			// summary:
+			//		Registers the editing properties used by the editing functions.
+			//		This method should only be called by editing interaction mixins like Mouse, Keyboard and Touch.
+			// tags:
+			//		protected
+
+			this._edProps = props;
+		},
+		
+		_startItemEditing: function(item, eventSource){
+			// summary:
+			//		Configures the component, renderers to start one (mouse) of several (touch, keyboard) editing gestures.
+			// item: Object
+			//		The item that will be edited.
+			// eventSource: String
+			//		"mouse", "keyboard", "touch"
+			// tags:
+			//		protected
+
+			this._isEditing = true;
+			this._getTopOwner()._isEditing = true;
+			var p = this._edProps;
+			
+			p.editedItem = item;
+			p.storeItem = item._item;
+			p.eventSource = eventSource;
+			
+			p.secItem = this._secondarySheet ? this._findRenderItem(item.id, this._secondarySheet.renderData.items) : null;
+			p.ownerItem = this.owner ? this._findRenderItem(item.id, this.items) : null;
+						
+			if (!p.liveLayout){
+				p.editSaveStartTime = item.startTime;
+				p.editSaveEndTime = item.endTime;
+				
+				p.editItemToRenderer = this.itemToRenderer;
+				p.editItems = this.renderData.items;
+				p.editRendererList = this.rendererList;
+				
+				this.renderData.items = [p.editedItem];
+				var id = p.editedItem.id;
+			
+				this.itemToRenderer = {};
+				this.rendererList = [];
+				var list = p.editItemToRenderer[id];
+				
+				p.editRendererIndices = [];
+				
+				arr.forEach(list, lang.hitch(this, function(ir, i){
+					if(this.itemToRenderer[id] == null){
+						this.itemToRenderer[id] = [ir];
+					}else{
+						this.itemToRenderer[id].push(ir);
+					}
+					this.rendererList.push(ir);
+				}));
+				
+				// remove in old map & list the occurrence used by the edited item
+				p.editRendererList = arr.filter(p.editRendererList, function(ir){
+					return ir != null && ir.renderer.item.id != id;
+				});
+				delete p.editItemToRenderer[id];
+			}
+			
+			// graphic feedback refresh
+			this._layoutRenderers(this.renderData);
+			
+			this._onItemEditBegin({
+				item: item,
+				storeItem: p.storeItem,
+				eventSource: eventSource
+			});
+		},
+		
+		_onItemEditBegin: function(e){
+			// tags:
+			//		private
+
+			this._editStartTimeSave = this.newDate(e.item.startTime);
+			this._editEndTimeSave = this.newDate(e.item.endTime);
+			
+			this._dispatchCalendarEvt(e, "onItemEditBegin");
+		},
+		
+		onItemEditBegin: function(e){
+			// summary:
+			//		Event dispatched when the item is entering the editing mode.
+			// tags:
+			//		callback
+
+		},
+		
+		_endItemEditing: function(/*String*/eventSource, /*Boolean*/canceled){
+			// summary:
+			//		Leaves the item editing mode.
+			// item: Object
+			//		The item that was edited.
+			// eventSource: String
+			//		"mouse", "keyboard", "touch"
+			// tags:
+			//		protected
+
+			this._isEditing = false;
+			this._getTopOwner()._isEditing = false;
+			
+			var p = this._edProps;
+			
+			arr.forEach(p.handles, function(handle){
+				handle.remove();
+			});					
+						
+			if (!p.liveLayout){
+				this.renderData.items = p.editItems;
+				this.rendererList = p.editRendererList.concat(this.rendererList);
+				lang.mixin(this.itemToRenderer, p.editItemToRenderer);
+			}
+
+			this._onItemEditEnd(lang.mixin(this._createItemEditEvent(), {
+				item: p.editedItem,
+				storeItem: p.storeItem,
+				eventSource: eventSource,
+				completed: !canceled
+			}));
+			
+			this._layoutRenderers(this.renderData);				
+			
+			this._edProps = null;
+		},
+		
+		_onItemEditEnd: function(e){
+			// tags:
+			//		private
+								
+			this._dispatchCalendarEvt(e, "onItemEditEnd");
+			
+			if(!e.isDefaultPrevented()){
+				
+				var store = this.get("store");
+				
+				// updated store item
+				var storeItem = this.renderItemToItem(e.item, store);
+				
+				var s = this._getItemStoreStateObj(e.item);
+				
+				if(s != null && s.state == "unstored"){
+														
+					if(e.completed){
+						// renderItemToItem cannot find the original data item
+						// (as it does not exist in the store yet) to mixin with.
+						// so we must do it here.
+						storeItem = lang.mixin(s.item, storeItem);
+						this._setItemStoreState(storeItem, "storing");
+						var oldID = store.getIdentity(storeItem);
+						var options = null;
+						
+						if(this._tempItemsMap && this._tempItemsMap[oldID]){
+							options = {temporaryId: oldID}; 
+							delete this._tempItemsMap[oldID];
+							delete storeItem[store.idProperty];							
+						}
+						
+						// add to the store.
+						when(store.add(storeItem, options), lang.hitch(this, function(res){
+							var id;
+							if(lang.isObject(res)){
+								id = store.getIdentity(res);
+							}else{
+								id = res;
+							}
+							
+							if(id != oldID){							
+								this._removeRenderItem(oldID);
+							}
+						}));
+						
+					}else{ // creation canceled
+						// cleanup items list
+						
+						this._removeRenderItem(s.id);											
+					}									
+					
+				} else if(e.completed){
+					// Inject new properties in data store item				
+					// and apply data changes		
+					this._setItemStoreState(storeItem, "storing");
+					store.put(storeItem);								
+				}else{
+					e.item.startTime = this._editStartTimeSave; 
+					e.item.endTime = this._editEndTimeSave;
+				}
+			}
+		},
+		
+		_removeRenderItem: function(id){
+			
+			var owner = this._getTopOwner();
+			var items = owner.get("items");
+			var l = items.length; 
+			var found = false;
+			for(var i=l-1; i>=0; i--){
+				if(items[i].id == id){
+					items.splice(i, 1);
+					found = true;
+					break;
+				}
+			}
+			this._cleanItemStoreState(id);
+			if(found){
+				owner.set("items", items); //force a complete relayout	
+				this.invalidateLayout();
+			}
+		},
+		
+		onItemEditEnd: function(e){
+			// summary:
+			//		Event dispatched when the item is leaving the editing mode.
+			// tags:
+			//		protected
+
+		},
+		
+		_createItemEditEvent: function(){
+			// tags:
+			//		private
+
+			var e = {
+				cancelable: true,
+				bubbles: false,
+				__defaultPrevent: false
+			};
+			
+			e.preventDefault = function(){
+				this.__defaultPrevented = true;
+			};
+			
+			e.isDefaultPrevented = function(){
+				return this.__defaultPrevented;
+			};
+			
+			return e;
+		},
+
+		
+		_startItemEditingGesture: function(dates, editKind, eventSource, e){
+			// summary:
+			//		Starts the editing gesture.
+			// date: Date[]
+			//		The reference dates (at least one). 
+			// editKind: String
+			//		Kind of edit: "resizeBoth", "resizeStart", "resizeEnd" or "move".
+			// eventSource: String
+			//		"mouse", "keyboard", "touch"
+			// e: Event
+			//		The event at the origin of the editing gesture.
+			// tags:
+			//		protected
+			
+			var p = this._edProps;
+			
+			if(!p || p.editedItem == null){
+				return;
+			}
+			
+			this._editingGesture = true;
+			
+			var item = p.editedItem;
+			
+			p.editKind = editKind; 
+			
+			this._onItemEditBeginGesture(this.__fixEvt(lang.mixin(this._createItemEditEvent(), {
+				item: item,
+				storeItem: p.storeItem,
+				startTime: item.startTime,
+				endTime: item.endTime,
+				editKind: editKind,
+				rendererKind: p.rendererKind,
+				triggerEvent: e,
+				dates: dates,
+				eventSource: eventSource
+			})));
+			
+			p.itemBeginDispatched = true;
+
+		},
+		
+		
+		_onItemEditBeginGesture: function(e){
+			// tags:
+			//		private
+			var p = this._edProps;
+			
+			var item = p.editedItem;
+			var dates = e.dates;
+			
+			p.editingTimeFrom = [];			
+			p.editingTimeFrom[0] = dates[0];			
+			
+			p.editingItemRefTime = [];
+			p.editingItemRefTime[0] = this.newDate(p.editKind == "resizeEnd" ? item.endTime : item.startTime);
+			
+			if (p.editKind == "resizeBoth"){
+				p.editingTimeFrom[1] = dates[1];
+				p.editingItemRefTime[1] = this.newDate(item.endTime);				
+			}		
+			
+			var cal = this.renderData.dateModule;
+			
+			p.inViewOnce = this._isItemInView(item);
+			
+			if(p.rendererKind == "label" || this.roundToDay){
+				p._itemEditBeginSave = this.newDate(item.startTime);
+				p._itemEditEndSave = this.newDate(item.endTime);
+			}
+			
+			p._initDuration = cal.difference(item.startTime, item.endTime, item.allDay?"day":"millisecond");	
+			
+			this._dispatchCalendarEvt(e, "onItemEditBeginGesture");
+
+			if (!e.isDefaultPrevented()){
+				
+				if (e.eventSource == "mouse"){
+					var cursor = e.editKind=="move"?"move":this.resizeCursor;
+					p.editLayer = domConstruct.create("div", {
+						style: "position: absolute; left:0; right:0; bottom:0; top:0; z-index:30; tabIndex:-1; background-image:url('"+this._blankGif+"'); cursor: "+cursor,
+						onresizestart: function(e){return false;},
+						onselectstart: function(e){return false;}
+					}, this.domNode);
+					p.editLayer.focus();
+				}
+			}
+		},
+		
+		onItemEditBeginGesture: function(e){
+			// summary:
+			//		Event dispatched when an editing gesture is beginning.
+			// e: __itemEditingEventArgs
+			//		The editing event.
+			// tags:
+			//		callback
+
+		},
+		
+		_waDojoxAddIssue: function(d, unit, steps){
+			// summary:
+			//		Workaround an issue of dojox.date.XXXXX.date.add() function 
+			//		that does not support the subtraction of time correctly (normalization issues). 
+			// d: Date
+			//		Reference date.
+			// unit: String
+			//		Unit to add.
+			// steps: Integer
+			//		Number of units to add.
+			// tags:
+			//		protected
+
+			var cal = this.renderData.dateModule;
+			if(this._calendar != "gregorian" && steps < 0){
+				var gd = d.toGregorian();
+				gd = date.add(gd, unit, steps);
+				return new this.renderData.dateClassObj(gd);
+			}else{
+				return cal.add(d, unit, steps);
+			}
+		},
+						
+		_computeItemEditingTimes: function(item, editKind, rendererKind, times, eventSource){
+			// tags:
+			//		private
+
+			var cal = this.renderData.dateModule;
+			var p = this._edProps;
+			var diff = cal.difference(p.editingTimeFrom[0], times[0], "millisecond");
+			times[0] = this._waDojoxAddIssue(p.editingItemRefTime[0], "millisecond", diff);
+			
+			if(editKind == "resizeBoth"){
+				diff = cal.difference(p.editingTimeFrom[1], times[1], "millisecond");
+				times[1] = this._waDojoxAddIssue(p.editingItemRefTime[1], "millisecond", diff); 
+			}
+			return times;
+		},
+		
+		_moveOrResizeItemGesture: function(dates, eventSource, e){
+			// summary:
+			//		Moves or resizes an item.
+			// dates: Date[]
+			//		The reference dates.
+			// editKind: String
+			//		Kind of edit: "resizeStart", "resizeEnd", "resizeBoth" or "move".
+			// eventSource: String
+			//		"mouse", "keyboard", "touch"
+			// e: Event
+			//		The event at the origin of the editing gesture.
+			// tags:
+			//		private
+
+			if(!this._isEditing || dates[0] == null){
+				return;
+			}
+			
+			var p = this._edProps;
+			var item = p.editedItem;
+			var rd = this.renderData;
+			var cal = rd.dateModule;
+			var editKind = p.editKind;
+					
+			var newTimes = [dates[0]];
+			
+			if(editKind == "resizeBoth"){
+				newTimes[1] = dates[1];
+			}
+			
+			newTimes = this._computeItemEditingTimes(item, p.editKind, p.rendererKind, newTimes, eventSource);
+							
+			var newTime = newTimes[0]; // usual use case
+					
+			var moveOrResizeDone = false;
+			
+			var oldStart = lang.clone(item.startTime);
+			var oldEnd = lang.clone(item.endTime);
+			
+			// swap cannot used using keyboard as a gesture is made of one single change (loss of start/end context).
+			var allowSwap = p.eventSource == "keyboard" ? false : this.allowStartEndSwap;
+
+			// Update the Calendar with the edited value.
+			if(editKind == "move"){
+					
+				if(cal.compare(item.startTime, newTime) != 0){
+					var duration = cal.difference(item.startTime, item.endTime, "millisecond");
+					item.startTime = this.newDate(newTime);
+					item.endTime = cal.add(item.startTime, "millisecond", duration);
+					moveOrResizeDone = true;
+				}
+				
+			}else if(editKind == "resizeStart"){
+				
+				if(cal.compare(item.startTime, newTime) != 0){	
+					if(cal.compare(item.endTime, newTime) != -1){				
+						item.startTime = this.newDate(newTime);
+					}else{ // swap detected
+						if(allowSwap){
+							item.startTime = this.newDate(item.endTime);
+							item.endTime = this.newDate(newTime);	
+							p.editKind = editKind = "resizeEnd";
+							if(eventSource == "touch"){ // invert touches as well!
+								p.resizeEndTouchIndex = p.resizeStartTouchIndex;
+								p.resizeStartTouchIndex = -1;
+							}	
+						}else{ // block the swap but keep the time of day
+							item.startTime = this.newDate(item.endTime);
+							item.startTime.setHours(newTime.getHours());
+							item.startTime.setMinutes(newTime.getMinutes());
+							item.startTime.setSeconds(newTime.getSeconds());
+						}
+					}
+					moveOrResizeDone = true;
+				}
+				
+			}else if(editKind == "resizeEnd"){
+				
+				if(cal.compare(item.endTime, newTime) != 0){
+					if(cal.compare(item.startTime, newTime) != 1){
+						item.endTime = this.newDate(newTime);	
+					}else{ // swap detected
+
+						if(allowSwap){
+							item.endTime = this.newDate(item.startTime);
+							item.startTime = this.newDate(newTime);	
+							p.editKind = editKind = "resizeStart";
+							if(eventSource == "touch"){ // invert touches as well!
+								p.resizeStartTouchIndex = p.resizeEndTouchIndex;
+								p.resizeEndTouchIndex = -1;
+							}
+						}else{ // block the swap but keep the time of day
+							item.endTime = this.newDate(item.startTime);
+							item.endTime.setHours(newTime.getHours());
+							item.endTime.setMinutes(newTime.getMinutes());
+							item.endTime.setSeconds(newTime.getSeconds());	
+						}
+					}
+
+					moveOrResizeDone = true;
+				}
+			}else if(editKind == "resizeBoth"){
+				
+					moveOrResizeDone = true;
+
+					var start =  this.newDate(newTime);
+					var end = this.newDate(newTimes[1]);		
+
+					if(cal.compare(start, end) != -1){ // swap detected
+						if(allowSwap){
+							var t = start;
+							start = end;
+							end = t;
+						}else{ // as both ends are moved, the simple way is to forbid the move gesture.
+							moveOrResizeDone = false;
+						}
+					}
+
+					if(moveOrResizeDone){
+						item.startTime = start;
+						item.endTime = end; 
+					}
+
+			}else{	
+				return false;
+			}
+
+			if(!moveOrResizeDone){
+				return false;
+			}
+
+			var evt = lang.mixin(this._createItemEditEvent(), {
+				item: item,
+				storeItem: p.storeItem,
+				startTime: item.startTime,
+				endTime: item.endTime,
+				editKind: editKind,
+				rendererKind: p.rendererKind,
+				triggerEvent: e,
+				eventSource: eventSource
+			}); 
+			
+			// trigger snapping, rounding, minimal duration, boundaries checks etc.
+			if(editKind == "move"){
+				this._onItemEditMoveGesture(evt);
+			}else{
+				this._onItemEditResizeGesture(evt);
+			}
+			
+			// prevent invalid range
+			if(cal.compare(item.startTime, item.endTime) == 1){
+				var tmp = item.startTime;
+				item.startTime = item.endTime;
+				item.endTime = tmp;
+			}
+			
+			moveOrResizeDone = 
+				cal.compare(oldStart, item.startTime) != 0 || 
+				cal.compare(oldEnd, item.endTime) != 0;
+			
+			if(!moveOrResizeDone){
+				return false;
+			}
+
+			this._layoutRenderers(this.renderData);	
+
+			if(p.liveLayout && p.secItem != null){
+				p.secItem.startTime = item.startTime;
+				p.secItem.endTime = item.endTime;
+				this._secondarySheet._layoutRenderers(this._secondarySheet.renderData);
+			}else if(p.ownerItem != null && this.owner.liveLayout){
+				p.ownerItem.startTime = item.startTime;
+				p.ownerItem.endTime = item.endTime;
+				this.owner._layoutRenderers(this.owner.renderData);
+			}
+												
+			return true;
+		},
+		
+		_findRenderItem: function(id, list){
+			// tags:
+			//		private
+
+			list = list || this.renderData.items;
+			for(var i=0; i<list.length; i++){
+				if(list[i].id == id){
+					return list[i];
+				}
+			}
+			return null;
+		},
+
+		_onItemEditMoveGesture: function(e){	
+			// tags:
+			//		private
+
+			this._dispatchCalendarEvt(e, "onItemEditMoveGesture");
+
+			if(!e.isDefaultPrevented()){
+				
+				var p = e.source._edProps;
+				var rd = this.renderData;
+				var cal = rd.dateModule;
+				var newStartTime, newEndTime;
+				
+				if(p.rendererKind == "label" || (this.roundToDay && !e.item.allDay)){
+					
+					newStartTime = this.floorToDay(e.item.startTime, false, rd);
+					newStartTime.setHours(p._itemEditBeginSave.getHours());
+					newStartTime.setMinutes(p._itemEditBeginSave.getMinutes());
+					
+					newEndTime = cal.add(newStartTime, "millisecond", p._initDuration);
+					
+				}else if(e.item.allDay){
+					newStartTime = this.floorToDay(e.item.startTime, true);
+					newEndTime = cal.add(newStartTime, "day", p._initDuration);
+				}else{
+					newStartTime = this.floorDate(e.item.startTime, this.snapUnit, this.snapSteps);
+					newEndTime = cal.add(newStartTime, "millisecond", p._initDuration);
+				} 
+
+				e.item.startTime = newStartTime;
+				e.item.endTime = newEndTime;
+				
+				if(!p.inViewOnce){
+					p.inViewOnce = this._isItemInView(e.item);
+				}
+
+				// to prevent strange behaviors use constraint in items already fully in view.
+				if(p.inViewOnce && this.stayInView){
+					this._ensureItemInView(e.item);
+				}
+			}
+		},
+		
+		_DAY_IN_MILLISECONDS: 24 * 60 * 60 * 1000,
+		
+		onItemEditMoveGesture: function(e){
+			// summary:
+			//		Event dispatched during a move editing gesture.
+			// e: __itemEditingEventArgs
+			//		The editing event.
+			// tags:
+			//		callback
+
+		},
+				
+		_onItemEditResizeGesture: function(e){
+			// tags:
+			//		private
+
+			this._dispatchCalendarEvt(e, "onItemEditResizeGesture");
+			
+			if(!e.isDefaultPrevented()){				
+							
+				var p = e.source._edProps;
+				var rd = this.renderData;
+				var cal = rd.dateModule;
+				
+				var newStartTime = e.item.startTime;
+				var newEndTime = e.item.endTime;
+				
+				if(e.editKind == "resizeStart"){
+					if(e.item.allDay){
+						newStartTime = this.floorToDay(e.item.startTime, false, this.renderData);
+					}else if(this.roundToDay){
+						newStartTime = this.floorToDay(e.item.startTime, false, rd);
+						newStartTime.setHours(p._itemEditBeginSave.getHours());
+						newStartTime.setMinutes(p._itemEditBeginSave.getMinutes());
+					}else{
+						newStartTime = this.floorDate(e.item.startTime, this.snapUnit, this.snapSteps);
+					}
+				}else if(e.editKind == "resizeEnd"){
+					if(e.item.allDay){
+						if(!this.isStartOfDay(e.item.endTime)){
+							newEndTime = this.floorToDay(e.item.endTime, false, this.renderData);
+							newEndTime = cal.add(newEndTime, "day", 1);
+						}
+					}else if(this.roundToDay){
+						newEndTime = this.floorToDay(e.item.endTime, false, rd);
+						newEndTime.setHours(p._itemEditEndSave.getHours());
+						newEndTime.setMinutes(p._itemEditEndSave.getMinutes());
+					}else{
+						newEndTime = this.floorDate(e.item.endTime, this.snapUnit, this.snapSteps);
+					
+						if(e.eventSource == "mouse"){
+							newEndTime = cal.add(newEndTime, this.snapUnit, this.snapSteps);
+						}
+					}
+				}else{ // Resize both
+					newStartTime = this.floorDate(e.item.startTime, this.snapUnit, this.snapSteps);
+					newEndTime = this.floorDate(e.item.endTime, this.snapUnit, this.snapSteps);
+					newEndTime = cal.add(newEndTime, this.snapUnit, this.snapSteps);
+				}
+				
+				e.item.startTime = newStartTime;
+				e.item.endTime = newEndTime;
+				
+				var minimalDay = e.item.allDay || p._initDuration >= this._DAY_IN_MILLISECONDS && !this.allowResizeLessThan24H;
+				
+				this.ensureMinimalDuration(this.renderData, e.item, 
+					minimalDay ? "day" : this.minDurationUnit, 
+					minimalDay ? 1 : this.minDurationSteps, 
+					e.editKind);
+					
+				if(!p.inViewOnce){
+					p.inViewOnce = this._isItemInView(e.item);
+				}
+
+				// to prevent strange behaviors use constraint in items already fully in view.
+				if(p.inViewOnce && this.stayInView){
+					this._ensureItemInView(e.item);
+				}
+			}
+		},
+		
+		onItemEditResizeGesture: function(e){
+			// summary:
+			//		Event dispatched during a resize editing gesture.
+			// e: __itemEditingEventArgs
+			//		The editing event.
+			// tags:
+			//		callback
+
+		},
+		
+		_endItemEditingGesture: function(/*String*/eventSource,	/*Event*/e){
+			// tags:
+			//		protected
+
+			if(!this._isEditing){
+				return;
+			}					
+			
+			this._editingGesture = false;
+			
+			var p = this._edProps;
+			var item = p.editedItem;
+			
+			p.itemBeginDispatched = false;							
+			
+			this._onItemEditEndGesture(lang.mixin(this._createItemEditEvent(), {
+				item: item,
+				storeItem: p.storeItem,
+				startTime: item.startTime,
+				endTime: item.endTime,
+				editKind: p.editKind,
+				rendererKind: p.rendererKind,
+				triggerEvent: e,
+				eventSource: eventSource
+			}));
+
+		},
+		
+		_onItemEditEndGesture: function(e){
+			// tags:
+			//		private
+
+			var p = this._edProps;
+			
+			delete p._itemEditBeginSave;
+			delete p._itemEditEndSave;
+					
+			this._dispatchCalendarEvt(e, "onItemEditEndGesture");
+			
+			if (!e.isDefaultPrevented()){
+				if(p.editLayer){
+					if(has("ie")){
+						p.editLayer.style.cursor = "default";
+					}
+					setTimeout(lang.hitch(this, function(){
+						if(this.domNode){ // for unit tests					
+							this.domNode.focus();
+							p.editLayer.parentNode.removeChild(p.editLayer);
+							p.editLayer = null;
+						}		
+					}), 10);
+								
+				}
+			}
+		},
+		
+		onItemEditEndGesture: function(e){
+			// summary:
+			//		Event dispatched at the end of an editing gesture.
+			// e: __itemEditingEventArgs
+			//		The editing event.
+			// tags:
+			//		callback
+
+		},
+		
+		ensureMinimalDuration: function(renderData, item, unit, steps, editKind){
+			// summary:
+			//		During the resize editing gesture, ensures that the item has the specified minimal duration.
+			// renderData: Object
+			//		The render data.
+			// item: Object
+			//		The edited item.
+			// unit: String
+			//		The unit used to define the minimal duration.
+			// steps: Integer
+			//		The number of time units.
+			// editKind: String
+			//		The edit kind: "resizeStart" or "resizeEnd".
+			var minTime;
+			var cal = renderData.dateModule;
+			
+			if(editKind == "resizeStart"){
+				minTime = cal.add(item.endTime, unit, -steps);
+				if(cal.compare(item.startTime, minTime) == 1){
+					item.startTime = minTime;
+				}
+			} else {
+				minTime = cal.add(item.startTime, unit, steps);
+				if(cal.compare(item.endTime, minTime) == -1){
+					item.endTime = minTime;
+				}
+			}
+		},
+		
+		// doubleTapDelay: Integer
+		//		The maximum delay between two taps needed to trigger an "itemDoubleClick" event, in touch context.		
+		doubleTapDelay: 300,
+		
+		// snapUnit: String
+		//		The unit of the snapping to apply during the editing of an event.
+		//		"day", "hour" and "minute" are valid values. 
+		snapUnit: "minute",
+		
+		// snapSteps: Integer
+		//		The number of units used to compute the snapping of the edited item.
+		snapSteps: 15,
+		
+		// minDurationUnit: "String"
+		//		The unit used to define the minimal duration of the edited item.
+		//		"day", "hour" and "minute" are valid values.
+		minDurationUnit: "hour",
+		
+		// minDurationSteps: Integer
+		//		The number of units used to define the minimal duration of the edited item.
+		minDurationSteps: 1,
+		
+		// liveLayout: Boolean
+		//		If true, all the events are laid out during the editing gesture. If false, only the edited event is laid out.
+		liveLayout: false,			
+		
+		// stayInView: Boolean
+		//		Specifies during editing, if the item is already in view, if the item must stay in the time range defined by the view or not.		
+		stayInView: true,
+		
+		// allowStartEndSwap: Boolean
+		//		Specifies if the start and end time of an item can be swapped during an editing gesture. Note that using the keyboard this property is ignored.	
+		allowStartEndSwap: true,			
+		
+		// allowResizeLessThan24H: Boolean
+		//		If an event has a duration greater than 24 hours, indicates if using a resize gesture, it can be resized to last less than 24 hours.
+		//		This flag is usually used when two different kind of renderers are used (MatrixView) to prevent changing the kind of renderer during an editing gesture.
+		allowResizeLessThan24H: false
+		
+	});
 });

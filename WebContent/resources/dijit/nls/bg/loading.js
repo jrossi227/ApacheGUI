@@ -1,2 +1,6 @@
-//>>built
-define("dijit/nls/bg/loading",({loadingState:"Зареждане...",errorState:"Съжаляваме, възникна грешка"}));
+define(
+({
+	loadingState: "Зареждане...",
+	errorState: "Съжаляваме, възникна грешка"
+})
+);

@@ -1,69 +1,99 @@
-//>>built
-define("dojox/app/utils/mvcModel",["dojo/_base/lang","dojo/Deferred","dojo/when","dojox/mvc/getStateful"],function(_1,_2,_3,_4){
-return function(_5,_6,_7){
-var _8={};
-var _9=new _2();
-var _a=function(_b){
-var _c={};
-for(var _d in _b){
-if(_d.charAt(0)!=="_"){
-_c[_d]=_b[_d];
-}
-}
-return (_c);
-};
-var _e;
-if(_6.store){
-_e={"store":_6.store.store,"query":_6.query?_a(_6.query):_6.store.query?_a(_6.store.query):{}};
-}else{
-if(_6.datastore){
-try{
-var _f=require("dojo/store/DataStore");
-}
-catch(e){
-throw new Error("When using datastore the dojo/store/DataStore module must be listed in the dependencies");
-}
-_e={"store":new _f({store:_6.datastore.store}),"query":_a(_6.query)};
-}else{
-if(_6.data){
-if(_6.data&&_1.isString(_6.data)){
-_6.data=_1.getObject(_6.data);
-}
-_e={"data":_6.data,query:{}};
-}else{
-console.warn("mvcModel: Missing parameters.");
-}
-}
-}
-var _10=_5[_7].type?_5[_7].type:"dojox/mvc/EditStoreRefListController";
-try{
-var _11=require(_10);
-}
-catch(e){
-throw new Error(_10+" must be listed in the dependencies");
-}
-var _12=new _11(_e);
-var _13;
-try{
-if(_12.queryStore){
-_13=_12.queryStore(_e.query);
-}else{
-var _14=_12._refSourceModelProp||_12._refModelProp||"model";
-_12.set(_14,_4(_e.data));
-_13=_12;
-}
-}
-catch(ex){
-_9.reject("load mvc model error.");
-return _9.promise;
-}
-_3(_13,_1.hitch(this,function(){
-_8=_12;
-_9.resolve(_8);
-return _8;
-}),function(){
-_9.reject("load model error.");
-});
-return _9;
-};
+define(["dojo/_base/lang", "dojo/Deferred", "dojo/when", "dojox/mvc/getStateful"],
+function(lang, Deferred, when, getStateful){
+	return function(/*Object*/config, /*Object*/params, /*String*/item){
+		// summary:
+		//		mvcModel is called for each mvc model, to create the mvc model based upon the type and params.
+		//		It will also load models and return the either the loadedModels or a promise.
+		// description:
+		//		Called for each model with a modelLoader of "dojox/app/utils/mvcModel", it will
+		//		create the model based upon the type and the params set for the model in the config.
+		// config: Object
+		//		The models section of the config for this view or for the app.
+		// params: Object
+		//		The params set into the config for this model.
+		// item: String
+		//		The String with the name of this model
+		// returns: model 
+		//		The model, of the type specified in the config for this model.
+		var loadedModels = {};
+		var loadMvcModelDeferred = new Deferred();
+
+		var fixupQuery = function(query){
+			var ops = {};
+			for(var item in query){ // need this to handle query params without errors
+				if(item.charAt(0) !== "_"){
+					ops[item] = query[item];
+				}
+			}
+			return(ops);
+		};
+
+		var options;
+		if(params.store){
+			//	if query is not set on the model params, it may be set on the store
+			options = {
+				"store": params.store.store,
+				"query": params.query ? fixupQuery(params.query) : params.store.query ? fixupQuery(params.store.query) : {}
+			};
+		}else if(params.datastore){
+			try{
+				var dataStoreCtor = require("dojo/store/DataStore");
+			}catch(e){
+				throw new Error("When using datastore the dojo/store/DataStore module must be listed in the dependencies");
+			}
+			options = {
+				"store": new dataStoreCtor({
+					store: params.datastore.store
+				}),
+				"query": fixupQuery(params.query)
+			};
+		}else if(params.data){
+			if(params.data && lang.isString(params.data)){
+				//get the object specified by string value of data property
+				//cannot assign object literal or reference to data property
+				//because json.ref will generate __parent to point to its parent
+				//and will cause infinitive loop when creating StatefulModel.
+				params.data = lang.getObject(params.data);
+			}
+			options = {"data": params.data, query: {}};
+		}
+		else{
+			console.warn("mvcModel: Missing parameters.");
+		}
+
+		var type = config[item].type ? config[item].type : "dojox/mvc/EditStoreRefListController";
+		// need to load the class to use for the model
+		// modelLoader must be listed in the dependencies and has thus already been loaded so it _must_ be here
+		// => no need for complex code here
+		try{
+			var modelCtor = require(type);
+		}catch(e){
+			throw new Error(type+" must be listed in the dependencies");
+		}
+		var newModel = new modelCtor(options);
+		var createMvcPromise;
+		try{
+			if(newModel.queryStore){
+				createMvcPromise = newModel.queryStore(options.query);
+			}else{
+				var modelProp = newModel._refSourceModelProp || newModel._refModelProp || "model";
+				newModel.set(modelProp, getStateful(options.data));
+				createMvcPromise = newModel;
+			}
+		}catch(ex){
+			//console.warn("load mvc model error.", ex);
+			loadMvcModelDeferred.reject("load mvc model error.");
+			return loadMvcModelDeferred.promise;
+		}
+		when(createMvcPromise, lang.hitch(this, function(){
+			// now the loadedModels[item].models is set.
+			loadedModels = newModel;
+			loadMvcModelDeferred.resolve(loadedModels);
+			//this.app.log("in mvcModel promise path, loadedModels = ", loadedModels);
+			return loadedModels;
+		}), function(){
+			loadMvcModelDeferred.reject("load model error.")
+		});
+		return loadMvcModelDeferred;
+	}
 });

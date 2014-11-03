@@ -1,131 +1,232 @@
-//>>built
-define("dojox/editor/plugins/AutoUrlLink",["dojo","dijit","dojox","dijit/_editor/_Plugin","dijit/form/Button","dojo/_base/declare","dojo/string"],function(_1,_2,_3,_4){
-var _5=_1.declare("dojox.editor.plugins.AutoUrlLink",[_4],{_template:"<a _djrealurl='${url}' href='${url}'>${url}</a>",setEditor:function(_6){
-this.editor=_6;
-if(!_1.isIE){
-_1.some(_6._plugins,function(_7){
-if(_7.isInstanceOf(_2._editor.plugins.EnterKeyHandling)){
-this.blockNodeForEnter=_7.blockNodeForEnter;
-return true;
-}
-return false;
-},this);
-this.connect(_6,"onKeyPress","_keyPress");
-this.connect(_6,"onClick","_recognize");
-this.connect(_6,"onBlur","_recognize");
-}
-},_keyPress:function(_8){
-var ks=_1.keys,v=118,V=86,kc=_8.keyCode,cc=_8.charCode;
-if(cc==ks.SPACE||(_8.ctrlKey&&(cc==v||cc==V))){
-setTimeout(_1.hitch(this,"_recognize"),0);
-}else{
-if(kc==ks.ENTER){
-setTimeout(_1.hitch(this,function(){
-this._recognize({enter:true});
-}),0);
-}else{
-this._saved=this.editor.window.getSelection().anchorNode;
-}
-}
-},_recognize:function(_9){
-var _a=this._template,_b=_9?_9.enter:false,ed=this.editor,_c=ed.window.getSelection();
-if(_c){
-var _d=_b?this._findLastEditingNode(_c.anchorNode):(this._saved||_c.anchorNode),bm=this._saved=_c.anchorNode,_e=_c.anchorOffset;
-if(_d.nodeType==3&&!this._inLink(_d)){
-var _f=false,_10=this._findUrls(_d,bm,_e),_11=ed.document.createRange(),_12,_13=0,_14=(bm==_d);
-_12=_10.shift();
-while(_12){
-_11.setStart(_d,_12.start);
-_11.setEnd(_d,_12.end);
-_c.removeAllRanges();
-_c.addRange(_11);
-ed.execCommand("insertHTML",_1.string.substitute(_a,{url:_11.toString()}));
-_13+=_12.end;
-_12=_10.shift();
-_f=true;
-}
-if(_14&&(_e=_e-_13)<=0){
-return;
-}
-if(!_f){
-return;
-}
-try{
-_11.setStart(bm,0);
-_11.setEnd(bm,_e);
-_c.removeAllRanges();
-_c.addRange(_11);
-ed._sCall("collapse",[]);
-}
-catch(e){
-}
-}
-}
-},_inLink:function(_15){
-var _16=this.editor.editNode,_17=false,_18;
-_15=_15.parentNode;
-while(_15&&_15!==_16){
-_18=_15.tagName?_15.tagName.toLowerCase():"";
-if(_18=="a"){
-_17=true;
-break;
-}
-_15=_15.parentNode;
-}
-return _17;
-},_findLastEditingNode:function(_19){
-var _1a=_2.range.BlockTagNames,_1b=this.editor.editNode,_1c;
-if(!_19){
-return _19;
-}
-if(this.blockNodeForEnter=="BR"&&(!(_1c=_2.range.getBlockAncestor(_19,null,_1b).blockNode)||_1c.tagName.toUpperCase()!="LI")){
-while((_19=_19.previousSibling)&&_19.nodeType!=3){
-}
-}else{
-if((_1c||(_1c=_2.range.getBlockAncestor(_19,null,_1b).blockNode))&&_1c.tagName.toUpperCase()=="LI"){
-_19=_1c;
-}else{
-_19=_2.range.getBlockAncestor(_19,null,_1b).blockNode;
-}
-while((_19=_19.previousSibling)&&!(_19.tagName&&_19.tagName.match(_1a))){
-}
-if(_19){
-_19=_19.lastChild;
-while(_19){
-if(_19.nodeType==3&&_1.trim(_19.nodeValue)!=""){
-break;
-}else{
-if(_19.nodeType==1){
-_19=_19.lastChild;
-}else{
-_19=_19.previousSibling;
-}
-}
-}
-}
-}
-return _19;
-},_findUrls:function(_1d,bm,_1e){
-var _1f=/(http|https|ftp):\/\/[^\s]+/ig,_20=[],_21=0,_22=_1d.nodeValue,_23,ch;
-if(_1d===bm&&_1e<_22.length){
-_22=_22.substr(0,_1e);
-}
-while((_23=_1f.exec(_22))!=null){
-if(_23.index==0||(ch=_22.charAt(_23.index-1))==" "||ch==" "){
-_20.push({start:_23.index-_21,end:_23.index+_23[0].length-_21});
-_21=_23.index+_23[0].length;
-}
-}
-return _20;
-}});
-_1.subscribe(_2._scopeName+".Editor.getPlugin",null,function(o){
-if(o.plugin){
-return;
-}
-var _24=o.args.name.toLowerCase();
-if(_24==="autourllink"){
-o.plugin=new _5();
-}
+define([
+	"dojo",
+	"dijit",
+	"dojox",
+	"dijit/_editor/_Plugin",
+	"dijit/form/Button",
+	"dojo/_base/declare",
+	"dojo/string"
+], function(dojo, dijit, dojox, _Plugin) {
+
+var AutoUrlLink = dojo.declare("dojox.editor.plugins.AutoUrlLink", [_Plugin], {
+	// summary:
+	//		This plugin can recognize a URL like string
+	//		(such as http://www.website.com) and turn it into
+	//		a hyperlink that points to that URL.
+	
+	// _template: [private] String
+	//		The link template
+	_template: "<a _djrealurl='${url}' href='${url}'>${url}</a>",
+	
+	setEditor: function(/*dijit.Editor*/ editor){
+		// summary:
+		//		Called by the editor it belongs to.
+		// editor:
+		//		The editor it belongs to.
+		this.editor = editor;
+		if(!dojo.isIE){
+			// IE will recognize URL as a link automatically
+			// No need to re-invent the wheel.
+			dojo.some(editor._plugins, function(plugin){
+				// Need to detect which enter key mode it is now
+				if(plugin.isInstanceOf(dijit._editor.plugins.EnterKeyHandling)){
+					this.blockNodeForEnter = plugin.blockNodeForEnter;
+					return true;
+				}
+				return false;
+			}, this);
+			this.connect(editor, "onKeyPress", "_keyPress");
+			this.connect(editor, "onClick", "_recognize");
+			this.connect(editor, "onBlur", "_recognize");
+		}
+	},
+	
+	_keyPress: function(evt){
+		// summary:
+		//		Handle the keypress event and dispatch it to the target handler
+		// evt:
+		//		The keypress event object.
+		// tags:
+		//		protected
+		var ks = dojo.keys, v = 118, V = 86,
+			kc = evt.keyCode, cc = evt.charCode;
+		if(cc == ks.SPACE || (evt.ctrlKey && (cc == v || cc == V))){
+			setTimeout(dojo.hitch(this, "_recognize"), 0);
+		}else if(kc == ks.ENTER){
+			// Handle the enter event after EnterKeyHandling finishes its job
+			setTimeout(dojo.hitch(this, function(){
+				this._recognize({enter: true});
+			}), 0);
+		}else{
+			// _saved: The previous dom node when the cursor is at a new dom node.
+			// When we click elsewhere, the previous dom node
+			// should be examed to see if there is any URL need to be activated
+			this._saved = this.editor.window.getSelection().anchorNode;
+		}
+	},
+	
+	_recognize: function(args){
+		// summary:
+		//		Recognize the URL like strings and turn them into a link
+		// tags:
+		//		private
+		var template = this._template,
+			isEnter = args ? args.enter : false,
+			ed = this.editor,
+			selection = ed.window.getSelection();
+		console.log("_recognize: isEnter = ", isEnter, ", selection is ", selection,  selection.anchorNode, this._findLastEditingNode(selection.anchorNode))
+			if(selection){
+				var node = isEnter ? this._findLastEditingNode(selection.anchorNode) :
+								(this._saved || selection.anchorNode),
+				bm = this._saved = selection.anchorNode,
+				bmOff = selection.anchorOffset;
+			
+			if(node.nodeType == 3 && !this._inLink(node)){
+				var linked = false, result = this._findUrls(node, bm, bmOff),
+					range = ed.document.createRange(),
+					item, cost = 0, isSameNode = (bm == node);
+						
+				item = result.shift();
+				while(item){
+					// Covert a URL to a link.
+					range.setStart(node, item.start);
+					range.setEnd(node, item.end);
+					selection.removeAllRanges();
+					selection.addRange(range);
+					ed.execCommand("insertHTML", dojo.string.substitute(template, {url: range.toString()}));
+					cost += item.end;
+					item = result.shift();
+					linked = true;
+				}
+				
+				// If bm and node are the some dom node, caculate the actual bookmark offset
+				// If the position of the cursor is modified (turned into a link, etc.), no
+				// need to recover the cursor position
+				if(isSameNode && (bmOff = bmOff - cost) <= 0){ return; }
+	
+				// We didn't update anything, so don't collapse selections.
+				if(!linked) { return ; }
+				try{
+					// Try to recover the cursor position
+					range.setStart(bm, 0);
+					range.setEnd(bm, bmOff);
+					selection.removeAllRanges();
+					selection.addRange(range);
+					ed._sCall("collapse", []);
+				}catch(e){}
+			}
+		}
+	},
+	
+	_inLink: function(/*DomNode*/ node){
+		// summary:
+		//		Check if the node is already embraced within a `<a>...</a>` tag.
+		// node:
+		//		The node to be examined.
+		// tags:
+		//		private
+		var editNode = this.editor.editNode,
+			result = false, tagName;
+			
+		node = node.parentNode;
+		while(node && node !== editNode){
+			tagName = node.tagName ? node.tagName.toLowerCase() : "";
+			if(tagName == "a"){
+				result = true;
+				break;
+			}
+			node = node.parentNode;
+		}
+		return result;
+	},
+	
+	_findLastEditingNode: function(/*DomNode*/ node){
+		// summary:
+		//		Find the last node that was edited so that we can
+		//		get the last edited text.
+		// node:
+		//		The current node that the cursor is at.
+		// tags:
+		//		private
+		var blockTagNames = dijit.range.BlockTagNames,
+			editNode = this.editor.editNode, blockNode;
+
+		if(!node){ return node; }
+		if(this.blockNodeForEnter == "BR" &&
+				(!(blockNode = dijit.range.getBlockAncestor(node, null, editNode).blockNode) ||
+				blockNode.tagName.toUpperCase() != "LI")){
+			while((node = node.previousSibling) && node.nodeType != 3){}
+		}else{
+			// EnterKeyHandling is under "DIV" or "P" mode or
+			// it's in a LI element. Find the last editing block
+			if((blockNode || (blockNode = dijit.range.getBlockAncestor(node, null, editNode).blockNode)) &&
+					blockNode.tagName.toUpperCase() == "LI"){
+				node = blockNode;
+			}else{
+				node = dijit.range.getBlockAncestor(node, null, editNode).blockNode;
+			}
+			// Find the last editing text node
+			while((node = node.previousSibling) && !(node.tagName && node.tagName.match(blockTagNames))){}
+			if(node){
+				node = node.lastChild;
+				while(node){
+					if(node.nodeType == 3 && dojo.trim(node.nodeValue) != ""){
+						break;
+					}else if(node.nodeType == 1){
+						node = node.lastChild;
+					}else{
+						node = node.previousSibling;
+					}
+				}
+			}
+		}
+		return node;
+	},
+	
+	_findUrls: function(/*DomNode*/ node, /*DomNode*/ bm, /*Number*/ bmOff){
+		// summary:
+		//		Find the occurrace of the URL strings.
+		//		FF, Chrome && Safri have a behavior that when insertHTML is executed,
+		//		the orignal referrence to the text node will be the text node next to
+		//		the inserted anchor automatically. So we have to re-caculate the index of
+		//		the following URL occurrence.
+		// value:
+		//		A text to be scanned.
+		// tags:
+		//		private
+		var pattern = /(http|https|ftp):\/\/[^\s]+/ig,
+			list = [], baseIndex = 0,
+			value = node.nodeValue, result, ch;
+		
+		if(node === bm && bmOff < value.length){
+			// Break the text so that it may not grab extra words.
+			// Such as if you type:
+			// foo http://foo.com|bar (And | is where you press enter).
+			// It will grab the bar word as part of the link. That's annoying/bad.
+			// Also it prevents recognizing the text after the cursor.
+			value = value.substr(0, bmOff);
+		}
+		
+		while((result = pattern.exec(value)) != null){
+			if(result.index == 0 || (ch = value.charAt(result.index - 1)) == " " || ch == "\xA0"){
+				list.push({start: result.index - baseIndex, end: result.index + result[0].length - baseIndex});
+				baseIndex = result.index + result[0].length;
+			}
+		}
+
+		return list;
+	}
 });
-return _5;
+
+// Register this plugin.
+dojo.subscribe(dijit._scopeName + ".Editor.getPlugin",null,function(o){
+	if(o.plugin){ return; }
+	var name = o.args.name.toLowerCase();
+	if(name ===  "autourllink"){
+		o.plugin = new AutoUrlLink();
+	}
+});
+
+return AutoUrlLink;
+
 });

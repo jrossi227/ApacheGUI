@@ -1,142 +1,407 @@
-//>>built
-define("dijit/place",["dojo/_base/array","dojo/dom-geometry","dojo/dom-style","dojo/_base/kernel","dojo/_base/window","./Viewport","./main"],function(_1,_2,_3,_4,_5,_6,_7){
-function _8(_9,_a,_b,_c){
-var _d=_6.getEffectiveBox(_9.ownerDocument);
-if(!_9.parentNode||String(_9.parentNode.tagName).toLowerCase()!="body"){
-_5.body(_9.ownerDocument).appendChild(_9);
-}
-var _e=null;
-_1.some(_a,function(_f){
-var _10=_f.corner;
-var pos=_f.pos;
-var _11=0;
-var _12={w:{"L":_d.l+_d.w-pos.x,"R":pos.x-_d.l,"M":_d.w}[_10.charAt(1)],h:{"T":_d.t+_d.h-pos.y,"B":pos.y-_d.t,"M":_d.h}[_10.charAt(0)]};
-var s=_9.style;
-s.left=s.right="auto";
-if(_b){
-var res=_b(_9,_f.aroundCorner,_10,_12,_c);
-_11=typeof res=="undefined"?0:res;
-}
-var _13=_9.style;
-var _14=_13.display;
-var _15=_13.visibility;
-if(_13.display=="none"){
-_13.visibility="hidden";
-_13.display="";
-}
-var bb=_2.position(_9);
-_13.display=_14;
-_13.visibility=_15;
-var _16={"L":pos.x,"R":pos.x-bb.w,"M":Math.max(_d.l,Math.min(_d.l+_d.w,pos.x+(bb.w>>1))-bb.w)}[_10.charAt(1)],_17={"T":pos.y,"B":pos.y-bb.h,"M":Math.max(_d.t,Math.min(_d.t+_d.h,pos.y+(bb.h>>1))-bb.h)}[_10.charAt(0)],_18=Math.max(_d.l,_16),_19=Math.max(_d.t,_17),_1a=Math.min(_d.l+_d.w,_16+bb.w),_1b=Math.min(_d.t+_d.h,_17+bb.h),_1c=_1a-_18,_1d=_1b-_19;
-_11+=(bb.w-_1c)+(bb.h-_1d);
-if(_e==null||_11<_e.overflow){
-_e={corner:_10,aroundCorner:_f.aroundCorner,x:_18,y:_19,w:_1c,h:_1d,overflow:_11,spaceAvailable:_12};
-}
-return !_11;
-});
-if(_e.overflow&&_b){
-_b(_9,_e.aroundCorner,_e.corner,_e.spaceAvailable,_c);
-}
-var l=_2.isBodyLtr(_9.ownerDocument),top=_e.y,_1e=l?_e.x:_d.w-_e.x-_e.w;
-if(/relative|absolute/.test(_3.get(_5.body(_9.ownerDocument),"position"))){
-top-=_3.get(_5.body(_9.ownerDocument),"marginTop");
-_1e-=(l?1:-1)*_3.get(_5.body(_9.ownerDocument),l?"marginLeft":"marginRight");
-}
-var s=_9.style;
-s.top=top+"px";
-s[l?"left":"right"]=_1e+"px";
-s[l?"right":"left"]="auto";
-return _e;
-};
-var _1f={"TL":"BR","TR":"BL","BL":"TR","BR":"TL"};
-var _20={at:function(_21,pos,_22,_23,_24){
-var _25=_1.map(_22,function(_26){
-var c={corner:_26,aroundCorner:_1f[_26],pos:{x:pos.x,y:pos.y}};
-if(_23){
-c.pos.x+=_26.charAt(1)=="L"?_23.x:-_23.x;
-c.pos.y+=_26.charAt(0)=="T"?_23.y:-_23.y;
-}
-return c;
-});
-return _8(_21,_25,_24);
-},around:function(_27,_28,_29,_2a,_2b){
-var _2c;
-if(typeof _28=="string"||"offsetWidth" in _28){
-_2c=_2.position(_28,true);
-if(/^(above|below)/.test(_29[0])){
-var _2d=_2.getBorderExtents(_28),_2e=_28.firstChild?_2.getBorderExtents(_28.firstChild):{t:0,l:0,b:0,r:0},_2f=_2.getBorderExtents(_27),_30=_27.firstChild?_2.getBorderExtents(_27.firstChild):{t:0,l:0,b:0,r:0};
-_2c.y+=Math.min(_2d.t+_2e.t,_2f.t+_30.t);
-_2c.h-=Math.min(_2d.t+_2e.t,_2f.t+_30.t)+Math.min(_2d.b+_2e.b,_2f.b+_30.b);
-}
-}else{
-_2c=_28;
-}
-if(_28.parentNode){
-var _31=_3.getComputedStyle(_28).position=="absolute";
-var _32=_28.parentNode;
-while(_32&&_32.nodeType==1&&_32.nodeName!="BODY"){
-var _33=_2.position(_32,true),pcs=_3.getComputedStyle(_32);
-if(/relative|absolute/.test(pcs.position)){
-_31=false;
-}
-if(!_31&&/hidden|auto|scroll/.test(pcs.overflow)){
-var _34=Math.min(_2c.y+_2c.h,_33.y+_33.h);
-var _35=Math.min(_2c.x+_2c.w,_33.x+_33.w);
-_2c.x=Math.max(_2c.x,_33.x);
-_2c.y=Math.max(_2c.y,_33.y);
-_2c.h=_34-_2c.y;
-_2c.w=_35-_2c.x;
-}
-if(pcs.position=="absolute"){
-_31=true;
-}
-_32=_32.parentNode;
-}
-}
-var x=_2c.x,y=_2c.y,_36="w" in _2c?_2c.w:(_2c.w=_2c.width),_37="h" in _2c?_2c.h:(_4.deprecated("place.around: dijit/place.__Rectangle: { x:"+x+", y:"+y+", height:"+_2c.height+", width:"+_36+" } has been deprecated.  Please use { x:"+x+", y:"+y+", h:"+_2c.height+", w:"+_36+" }","","2.0"),_2c.h=_2c.height);
-var _38=[];
-function _39(_3a,_3b){
-_38.push({aroundCorner:_3a,corner:_3b,pos:{x:{"L":x,"R":x+_36,"M":x+(_36>>1)}[_3a.charAt(1)],y:{"T":y,"B":y+_37,"M":y+(_37>>1)}[_3a.charAt(0)]}});
-};
-_1.forEach(_29,function(pos){
-var ltr=_2a;
-switch(pos){
-case "above-centered":
-_39("TM","BM");
-break;
-case "below-centered":
-_39("BM","TM");
-break;
-case "after-centered":
-ltr=!ltr;
-case "before-centered":
-_39(ltr?"ML":"MR",ltr?"MR":"ML");
-break;
-case "after":
-ltr=!ltr;
-case "before":
-_39(ltr?"TL":"TR",ltr?"TR":"TL");
-_39(ltr?"BL":"BR",ltr?"BR":"BL");
-break;
-case "below-alt":
-ltr=!ltr;
-case "below":
-_39(ltr?"BL":"BR",ltr?"TL":"TR");
-_39(ltr?"BR":"BL",ltr?"TR":"TL");
-break;
-case "above-alt":
-ltr=!ltr;
-case "above":
-_39(ltr?"TL":"TR",ltr?"BL":"BR");
-_39(ltr?"TR":"TL",ltr?"BR":"BL");
-break;
-default:
-_39(pos.aroundCorner,pos.corner);
-}
-});
-var _3c=_8(_27,_38,_2b,{w:_36,h:_37});
-_3c.aroundNodePos=_2c;
-return _3c;
-}};
-return _7.place=_20;
+define([
+	"dojo/_base/array", // array.forEach array.map array.some
+	"dojo/dom-geometry", // domGeometry.position
+	"dojo/dom-style", // domStyle.getComputedStyle
+	"dojo/_base/kernel", // kernel.deprecated
+	"dojo/_base/window", // win.body
+	"./Viewport", // getEffectiveBox
+	"./main"	// dijit (defining dijit.place to match API doc)
+], function(array, domGeometry, domStyle, kernel, win, Viewport, dijit){
+
+	// module:
+	//		dijit/place
+
+
+	function _place(/*DomNode*/ node, choices, layoutNode, aroundNodeCoords){
+		// summary:
+		//		Given a list of spots to put node, put it at the first spot where it fits,
+		//		of if it doesn't fit anywhere then the place with the least overflow
+		// choices: Array
+		//		Array of elements like: {corner: 'TL', pos: {x: 10, y: 20} }
+		//		Above example says to put the top-left corner of the node at (10,20)
+		// layoutNode: Function(node, aroundNodeCorner, nodeCorner, size)
+		//		for things like tooltip, they are displayed differently (and have different dimensions)
+		//		based on their orientation relative to the parent.	 This adjusts the popup based on orientation.
+		//		It also passes in the available size for the popup, which is useful for tooltips to
+		//		tell them that their width is limited to a certain amount.	 layoutNode() may return a value expressing
+		//		how much the popup had to be modified to fit into the available space.	 This is used to determine
+		//		what the best placement is.
+		// aroundNodeCoords: Object
+		//		Size of aroundNode, ex: {w: 200, h: 50}
+
+		// get {x: 10, y: 10, w: 100, h:100} type obj representing position of
+		// viewport over document
+		var view = Viewport.getEffectiveBox(node.ownerDocument);
+
+		// This won't work if the node is inside a <div style="position: relative">,
+		// so reattach it to <body>.	 (Otherwise, the positioning will be wrong
+		// and also it might get cutoff.)
+		if(!node.parentNode || String(node.parentNode.tagName).toLowerCase() != "body"){
+			win.body(node.ownerDocument).appendChild(node);
+		}
+
+		var best = null;
+		array.some(choices, function(choice){
+			var corner = choice.corner;
+			var pos = choice.pos;
+			var overflow = 0;
+
+			// calculate amount of space available given specified position of node
+			var spaceAvailable = {
+				w: {
+					'L': view.l + view.w - pos.x,
+					'R': pos.x - view.l,
+					'M': view.w
+				}[corner.charAt(1)],
+				h: {
+					'T': view.t + view.h - pos.y,
+					'B': pos.y - view.t,
+					'M': view.h
+				}[corner.charAt(0)]
+			};
+
+			// Clear left/right position settings set earlier so they don't interfere with calculations,
+			// specifically when layoutNode() (a.k.a. Tooltip.orient()) measures natural width of Tooltip
+			var s = node.style;
+			s.left = s.right = "auto";
+
+			// configure node to be displayed in given position relative to button
+			// (need to do this in order to get an accurate size for the node, because
+			// a tooltip's size changes based on position, due to triangle)
+			if(layoutNode){
+				var res = layoutNode(node, choice.aroundCorner, corner, spaceAvailable, aroundNodeCoords);
+				overflow = typeof res == "undefined" ? 0 : res;
+			}
+
+			// get node's size
+			var style = node.style;
+			var oldDisplay = style.display;
+			var oldVis = style.visibility;
+			if(style.display == "none"){
+				style.visibility = "hidden";
+				style.display = "";
+			}
+			var bb = domGeometry.position(node);
+			style.display = oldDisplay;
+			style.visibility = oldVis;
+
+			// coordinates and size of node with specified corner placed at pos,
+			// and clipped by viewport
+			var
+				startXpos = {
+					'L': pos.x,
+					'R': pos.x - bb.w,
+					'M': Math.max(view.l, Math.min(view.l + view.w, pos.x + (bb.w >> 1)) - bb.w) // M orientation is more flexible
+				}[corner.charAt(1)],
+				startYpos = {
+					'T': pos.y,
+					'B': pos.y - bb.h,
+					'M': Math.max(view.t, Math.min(view.t + view.h, pos.y + (bb.h >> 1)) - bb.h)
+				}[corner.charAt(0)],
+				startX = Math.max(view.l, startXpos),
+				startY = Math.max(view.t, startYpos),
+				endX = Math.min(view.l + view.w, startXpos + bb.w),
+				endY = Math.min(view.t + view.h, startYpos + bb.h),
+				width = endX - startX,
+				height = endY - startY;
+
+			overflow += (bb.w - width) + (bb.h - height);
+
+			if(best == null || overflow < best.overflow){
+				best = {
+					corner: corner,
+					aroundCorner: choice.aroundCorner,
+					x: startX,
+					y: startY,
+					w: width,
+					h: height,
+					overflow: overflow,
+					spaceAvailable: spaceAvailable
+				};
+			}
+
+			return !overflow;
+		});
+
+		// In case the best position is not the last one we checked, need to call
+		// layoutNode() again.
+		if(best.overflow && layoutNode){
+			layoutNode(node, best.aroundCorner, best.corner, best.spaceAvailable, aroundNodeCoords);
+		}
+
+		// And then position the node.  Do this last, after the layoutNode() above
+		// has sized the node, due to browser quirks when the viewport is scrolled
+		// (specifically that a Tooltip will shrink to fit as though the window was
+		// scrolled to the left).
+
+		var top = best.y,
+			side = best.x,
+			body = win.body(node.ownerDocument);
+
+		if(/relative|absolute/.test(domStyle.get(body, "position"))){
+			// compensate for margin on <body>, see #16148
+			top -= domStyle.get(body, "marginTop");
+			side -= domStyle.get(body, "marginLeft");
+		}
+
+		var s = node.style;
+		s.top = top + "px";
+		s.left = side + "px";
+		s.right = "auto";	// needed for FF or else tooltip goes to far left
+
+		return best;
+	}
+
+	var reverse = {
+		// Map from corner to kitty-corner
+		"TL": "BR",
+		"TR": "BL",
+		"BL": "TR",
+		"BR": "TL"
+	};
+
+	var place = {
+		// summary:
+		//		Code to place a DOMNode relative to another DOMNode.
+		//		Load using require(["dijit/place"], function(place){ ... }).
+
+		at: function(node, pos, corners, padding, layoutNode){
+			// summary:
+			//		Positions node kitty-corner to the rectangle centered at (pos.x, pos.y) with width and height of
+			//		padding.x * 2 and padding.y * 2, or zero if padding not specified.  Picks first corner in corners[]
+			//		where node is fully visible, or the corner where it's most visible.
+			//
+			//		Node is assumed to be absolutely or relatively positioned.
+			// node: DOMNode
+			//		The node to position
+			// pos: dijit/place.__Position
+			//		Object like {x: 10, y: 20}
+			// corners: String[]
+			//		Array of Strings representing order to try corners of the node in, like ["TR", "BL"].
+			//		Possible values are:
+			//
+			//		- "BL" - bottom left
+			//		- "BR" - bottom right
+			//		- "TL" - top left
+			//		- "TR" - top right
+			// padding: dijit/place.__Position?
+			//		Optional param to set padding, to put some buffer around the element you want to position.
+			//		Defaults to zero.
+			// layoutNode: Function(node, aroundNodeCorner, nodeCorner)
+			//		For things like tooltip, they are displayed differently (and have different dimensions)
+			//		based on their orientation relative to the parent.  This adjusts the popup based on orientation.
+			// example:
+			//		Try to place node's top right corner at (10,20).
+			//		If that makes node go (partially) off screen, then try placing
+			//		bottom left corner at (10,20).
+			//	|	place(node, {x: 10, y: 20}, ["TR", "BL"])
+			var choices = array.map(corners, function(corner){
+				var c = {
+					corner: corner,
+					aroundCorner: reverse[corner],	// so TooltipDialog.orient() gets aroundCorner argument set
+					pos: {x: pos.x,y: pos.y}
+				};
+				if(padding){
+					c.pos.x += corner.charAt(1) == 'L' ? padding.x : -padding.x;
+					c.pos.y += corner.charAt(0) == 'T' ? padding.y : -padding.y;
+				}
+				return c;
+			});
+
+			return _place(node, choices, layoutNode);
+		},
+
+		around: function(
+			/*DomNode*/		node,
+			/*DomNode|dijit/place.__Rectangle*/ anchor,
+			/*String[]*/	positions,
+			/*Boolean*/		leftToRight,
+			/*Function?*/	layoutNode){
+
+			// summary:
+			//		Position node adjacent or kitty-corner to anchor
+			//		such that it's fully visible in viewport.
+			// description:
+			//		Place node such that corner of node touches a corner of
+			//		aroundNode, and that node is fully visible.
+			// anchor:
+			//		Either a DOMNode or a rectangle (object with x, y, width, height).
+			// positions:
+			//		Ordered list of positions to try matching up.
+			//
+			//		- before: places drop down to the left of the anchor node/widget, or to the right in the case
+			//			of RTL scripts like Hebrew and Arabic; aligns either the top of the drop down
+			//			with the top of the anchor, or the bottom of the drop down with bottom of the anchor.
+			//		- after: places drop down to the right of the anchor node/widget, or to the left in the case
+			//			of RTL scripts like Hebrew and Arabic; aligns either the top of the drop down
+			//			with the top of the anchor, or the bottom of the drop down with bottom of the anchor.
+			//		- before-centered: centers drop down to the left of the anchor node/widget, or to the right
+			//			in the case of RTL scripts like Hebrew and Arabic
+			//		- after-centered: centers drop down to the right of the anchor node/widget, or to the left
+			//			in the case of RTL scripts like Hebrew and Arabic
+			//		- above-centered: drop down is centered above anchor node
+			//		- above: drop down goes above anchor node, left sides aligned
+			//		- above-alt: drop down goes above anchor node, right sides aligned
+			//		- below-centered: drop down is centered above anchor node
+			//		- below: drop down goes below anchor node
+			//		- below-alt: drop down goes below anchor node, right sides aligned
+			// layoutNode: Function(node, aroundNodeCorner, nodeCorner)
+			//		For things like tooltip, they are displayed differently (and have different dimensions)
+			//		based on their orientation relative to the parent.	 This adjusts the popup based on orientation.
+			// leftToRight:
+			//		True if widget is LTR, false if widget is RTL.   Affects the behavior of "above" and "below"
+			//		positions slightly.
+			// example:
+			//	|	placeAroundNode(node, aroundNode, {'BL':'TL', 'TR':'BR'});
+			//		This will try to position node such that node's top-left corner is at the same position
+			//		as the bottom left corner of the aroundNode (ie, put node below
+			//		aroundNode, with left edges aligned).	If that fails it will try to put
+			//		the bottom-right corner of node where the top right corner of aroundNode is
+			//		(ie, put node above aroundNode, with right edges aligned)
+			//
+
+			// If around is a DOMNode (or DOMNode id), convert to coordinates.
+			var aroundNodePos;
+			if(typeof anchor == "string" || "offsetWidth" in anchor || "ownerSVGElement" in anchor){
+				aroundNodePos = domGeometry.position(anchor, true);
+
+				// For above and below dropdowns, subtract width of border so that popup and aroundNode borders
+				// overlap, preventing a double-border effect.  Unfortunately, difficult to measure the border
+				// width of either anchor or popup because in both cases the border may be on an inner node.
+				if(/^(above|below)/.test(positions[0])){
+					var anchorBorder = domGeometry.getBorderExtents(anchor),
+						anchorChildBorder = anchor.firstChild ? domGeometry.getBorderExtents(anchor.firstChild) : {t:0,l:0,b:0,r:0},
+						nodeBorder =  domGeometry.getBorderExtents(node),
+						nodeChildBorder = node.firstChild ? domGeometry.getBorderExtents(node.firstChild) : {t:0,l:0,b:0,r:0};
+					aroundNodePos.y += Math.min(anchorBorder.t + anchorChildBorder.t, nodeBorder.t + nodeChildBorder.t);
+					aroundNodePos.h -=  Math.min(anchorBorder.t + anchorChildBorder.t, nodeBorder.t+ nodeChildBorder.t) +
+						Math.min(anchorBorder.b + anchorChildBorder.b, nodeBorder.b + nodeChildBorder.b);
+				}
+			}else{
+				aroundNodePos = anchor;
+			}
+
+			// Compute position and size of visible part of anchor (it may be partially hidden by ancestor nodes w/scrollbars)
+			if(anchor.parentNode){
+				// ignore nodes between position:relative and position:absolute
+				var sawPosAbsolute = domStyle.getComputedStyle(anchor).position == "absolute";
+				var parent = anchor.parentNode;
+				while(parent && parent.nodeType == 1 && parent.nodeName != "BODY"){  //ignoring the body will help performance
+					var parentPos = domGeometry.position(parent, true),
+						pcs = domStyle.getComputedStyle(parent);
+					if(/relative|absolute/.test(pcs.position)){
+						sawPosAbsolute = false;
+					}
+					if(!sawPosAbsolute && /hidden|auto|scroll/.test(pcs.overflow)){
+						var bottomYCoord = Math.min(aroundNodePos.y + aroundNodePos.h, parentPos.y + parentPos.h);
+						var rightXCoord = Math.min(aroundNodePos.x + aroundNodePos.w, parentPos.x + parentPos.w);
+						aroundNodePos.x = Math.max(aroundNodePos.x, parentPos.x);
+						aroundNodePos.y = Math.max(aroundNodePos.y, parentPos.y);
+						aroundNodePos.h = bottomYCoord - aroundNodePos.y;
+						aroundNodePos.w = rightXCoord - aroundNodePos.x;
+					}
+					if(pcs.position == "absolute"){
+						sawPosAbsolute = true;
+					}
+					parent = parent.parentNode;
+				}
+			}			
+
+			var x = aroundNodePos.x,
+				y = aroundNodePos.y,
+				width = "w" in aroundNodePos ? aroundNodePos.w : (aroundNodePos.w = aroundNodePos.width),
+				height = "h" in aroundNodePos ? aroundNodePos.h : (kernel.deprecated("place.around: dijit/place.__Rectangle: { x:"+x+", y:"+y+", height:"+aroundNodePos.height+", width:"+width+" } has been deprecated.  Please use { x:"+x+", y:"+y+", h:"+aroundNodePos.height+", w:"+width+" }", "", "2.0"), aroundNodePos.h = aroundNodePos.height);
+
+			// Convert positions arguments into choices argument for _place()
+			var choices = [];
+			function push(aroundCorner, corner){
+				choices.push({
+					aroundCorner: aroundCorner,
+					corner: corner,
+					pos: {
+						x: {
+							'L': x,
+							'R': x + width,
+							'M': x + (width >> 1)
+						}[aroundCorner.charAt(1)],
+						y: {
+							'T': y,
+							'B': y + height,
+							'M': y + (height >> 1)
+						}[aroundCorner.charAt(0)]
+					}
+				})
+			}
+			array.forEach(positions, function(pos){
+				var ltr =  leftToRight;
+				switch(pos){
+					case "above-centered":
+						push("TM", "BM");
+						break;
+					case "below-centered":
+						push("BM", "TM");
+						break;
+					case "after-centered":
+						ltr = !ltr;
+						// fall through
+					case "before-centered":
+						push(ltr ? "ML" : "MR", ltr ? "MR" : "ML");
+						break;
+					case "after":
+						ltr = !ltr;
+						// fall through
+					case "before":
+						push(ltr ? "TL" : "TR", ltr ? "TR" : "TL");
+						push(ltr ? "BL" : "BR", ltr ? "BR" : "BL");
+						break;
+					case "below-alt":
+						ltr = !ltr;
+						// fall through
+					case "below":
+						// first try to align left borders, next try to align right borders (or reverse for RTL mode)
+						push(ltr ? "BL" : "BR", ltr ? "TL" : "TR");
+						push(ltr ? "BR" : "BL", ltr ? "TR" : "TL");
+						break;
+					case "above-alt":
+						ltr = !ltr;
+						// fall through
+					case "above":
+						// first try to align left borders, next try to align right borders (or reverse for RTL mode)
+						push(ltr ? "TL" : "TR", ltr ? "BL" : "BR");
+						push(ltr ? "TR" : "TL", ltr ? "BR" : "BL");
+						break;
+					default:
+						// To assist dijit/_base/place, accept arguments of type {aroundCorner: "BL", corner: "TL"}.
+						// Not meant to be used directly.  Remove for 2.0.
+						push(pos.aroundCorner, pos.corner);
+				}
+			});
+
+			var position = _place(node, choices, layoutNode, {w: width, h: height});
+			position.aroundNodePos = aroundNodePos;
+
+			return position;
+		}
+	};
+
+	/*=====
+	place.__Position = {
+		// x: Integer
+		//		horizontal coordinate in pixels, relative to document body
+		// y: Integer
+		//		vertical coordinate in pixels, relative to document body
+	};
+	place.__Rectangle = {
+		// x: Integer
+		//		horizontal offset in pixels, relative to document body
+		// y: Integer
+		//		vertical offset in pixels, relative to document body
+		// w: Integer
+		//		width in pixels.   Can also be specified as "width" for backwards-compatibility.
+		// h: Integer
+		//		height in pixels.   Can also be specified as "height" for backwards-compatibility.
+	};
+	=====*/
+
+	return dijit.place = place;	// setting dijit.place for back-compat, remove for 2.0
 });

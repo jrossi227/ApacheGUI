@@ -1,2 +1,6 @@
-//>>built
-define("dojox/editor/plugins/nls/fr/TextColor",({"setButtonText":"Définir","cancelButtonText":"Annuler"}));
+define(
+({
+	"setButtonText": "Définir",
+	"cancelButtonText": "Annuler"
+})
+);

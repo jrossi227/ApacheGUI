@@ -1,4 +1,6 @@
+/* dojox.mobile.View */
 
+/* dojox.mobile.Heading */
 .dj_tablet .mblHeading {
 	background: -webkit-gradient(linear, left top, left bottom, from(#f3f4f6), to(#a7abb8));
 	border-top: 1px solid #fefefe;
@@ -6,6 +8,8 @@
 	color: #70777f;
 	text-shadow: rgba(256,256,256,0.6) 0px 1px 0px;
 }
+
+/* dojox.mobile.ToolBarButton */
 .dj_tablet .mblToolBarButton {
 	text-shadow: rgba(0, 0, 0, 0.6) 0px -1px 0px;
 }
@@ -15,19 +19,28 @@
 .dj_tablet .mblHeading .mblToolBarButtonBody {
 	border-color: #4e4f51 #60656f #565b64 #5a5c5f;
 }
+
+/*Headings and Button styles are overridden in Tooltips*/
 .dj_tablet .mblTooltip .mblHeading { 
 	color: white;
 	text-shadow: rgba(0, 0, 0, 0.6) 0px -1px 0px;
 }
+
+/* dojox.mobile.RoundRect */
 .dj_tablet .mblRoundRect {
 	margin: 7px 30px 30px 30px;
 }
 .dj_tablet .mblHeading + .mblRoundRect {
 	margin-top: 30px;
 }
+
+/* dojox.mobile.EdgeToEdgeCategory */
+/* dojox.mobile.RoundRectCategory */
 .dj_tablet .mblRoundRectCategory {
 	margin: 18px 0px 0px 41px;
 }
+
+/* dojox.mobile.RoundRectList */
 .dj_tablet .mblRoundRectList {
 	margin: 7px 30px 30px 30px;
 }
@@ -37,18 +50,33 @@
 .dj_tablet .mblHeading + .mblRoundRectList {
 	margin-top: 30px;
 }
+
+/* dojox.mobile.SearchBox */
 .dj_tablet .mblFilteredRoundRectListSearchBox {
   padding-left: 30px;
   padding-right: 30px;
 }
+
+/* dojox.mobile.EdgeToEdgeList */
+/* dojox.mobile.ListItem */
+/* Switch */
+/* Icon Container */
+/* Icon Content Heading */
+/* dojox.mobile.Button */
+/* Tab Container */
+/* Progress Indicator */
+
+/* dojox.mobile.TabBar */
 .dj_tablet .mblTabBar {
 	color: #70777f;
 	text-shadow: rgba(255,255,255,0.6) 0px 1px 0px;
 }
+/* barType=tabBar */
 .dj_tablet .mblTabBarTabBar {
 	border-top: 1px solid #000000;
 	background-image: -webkit-gradient(linear, left top, left bottom, from(#2d2d2d), to(#000000), color-stop(0.5, #141414), color-stop(0.5, #000000));
 }
+/* barType=segmentedControl */
 .dj_tablet .mblTabBarSegmentedControl,
 .dj_tablet .mblTabBarStandardTab {
 	border-top: 1px solid #fefefe;
@@ -62,6 +90,7 @@
 	color: #70777f;
 	text-shadow: none;
 }
+
 .dj_tablet .mblTabBarSegmentedControl .mblTabBarButtonSelected {
 	color: white;
 	text-shadow: rgba(0, 0, 0, 0.6) 0px -1px 0px;
@@ -71,6 +100,7 @@
 .dj_tablet .mblHeading .mblTabBarSegmentedControl {
  	border: none;
 }
+/* barType=standardTab */
 .dj_tablet .mblTabBarStandardTab .mblTabBarButton {
 	color: #000000;
 	text-shadow: rgba(255, 255, 255, 0.6) 0px 1px 0px;
@@ -79,18 +109,24 @@
 .dj_tablet .mblTabBarStandardTab .mblTabBarButtonSelected {
 	background-image: -webkit-gradient(linear, left top, left bottom, from(#f3f4f6), to(#f2f3f7));
 }
+/* barType=flatTab */
 .dj_tablet .mblTabBarFlatTab .mblTabBarButton {
 	color: white;
 }
+
+/* Default Button Colors */
 .dj_tablet .mblColorDefault {
 	background-image: -webkit-gradient(linear, left top, left bottom, from(#b1b5bb), to(#6a727d));
 }
+
 .dj_tablet .mblColorDefault45 {
 	background-image: -webkit-gradient(linear, left top, right bottom, from(#b1b5bb), to(#6a727d));
 }
+
 .dj_tablet .mblColorDefaultSel {
 	background-image: -webkit-gradient(linear, left top, left bottom, from(#7a7e85), to(#303845));
 }
+
 .dj_tablet .mblColorDefaultSel45 {
 	background-image: -webkit-gradient(linear, left top, right bottom, from(#7a7e85), to(#303845));
 }

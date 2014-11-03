@@ -1,4 +1,4 @@
-
+/* Make unselected content portion "look" more like a text box and less like a button */
 .tundra .dijitSelectError .dijitButtonContents,
 .tundra .dijitSelectHover .dijitArrowButton,
 .tundra .dijitSelectActive .dijitArrowButton,
@@ -11,6 +11,8 @@
 	background: #fff url("../images/buttonEnabled.png") repeat-x bottom left;
 	border-width: 0;
 }
+
+/* Mirror DropDownButton */
 .tundra .dijitSelectDisabled,
 .tundra .dijitSelectDisabled TD {
 	border-color: #d5d5d5 #bdbdbd #bdbdbd #d5d5d5 !important;
@@ -19,12 +21,14 @@
 .dj_ie .tundra .dijitSelectDisabled TD * {
 	filter: gray() alpha(opacity=50);
 }
+
 .tundra .dijitSelectHover,
 .tundra .dijitSelectHover TD {
 	border-color:#a5beda #5c7590 #5c7590 #a5beda !important;
 	color:#243C5F;
 	background:#fcfdff url("../images/buttonHover.png") repeat-x bottom;
 }
+
 .tundra .dijitSelectActive,
 .tundra .dijitSelectOpened,
 .tundra .dijitSelectActive TD,
@@ -32,6 +36,8 @@
 	border-color:#366dba !important;
 	background: #ededed url("../images/buttonActive.png") bottom repeat-x;
 }
+
+/* Make the menu look more combobox-like */
 .tundra .dijitSelectMenu td {
 	padding: 0;
 }

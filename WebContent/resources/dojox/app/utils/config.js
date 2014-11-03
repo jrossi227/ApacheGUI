@@ -1,48 +1,85 @@
-//>>built
-define("dojox/app/utils/config",["dojo/sniff"],function(_1){
-return {configProcessHas:function(_2){
-for(var _3 in _2){
-var _4=_2[_3];
-if(_3=="has"){
-for(var _5 in _4){
-if(!(_5.charAt(0)=="_"&&_5.charAt(1)=="_")&&_4&&typeof _4==="object"){
-var _6=_5.split(",");
-if(_6.length>0){
-while(_6.length>0){
-var _7=_6.shift();
-if((_1(_7))||(_7.charAt(0)=="!"&&!(_1(_7.substring(1))))){
-var _8=_4[_5];
-this.configMerge(_2,_8);
-break;
-}
-}
-}
-}
-}
-delete _2["has"];
-}else{
-if(!(_3.charAt(0)=="_"&&_3.charAt(1)=="_")&&_4&&typeof _4==="object"){
-this.configProcessHas(_4);
-}
-}
-}
-return _2;
-},configMerge:function(_9,_a){
-for(var _b in _a){
-var _c=_9[_b];
-var _d=_a[_b];
-if(_c!==_d&&!(_b.charAt(0)=="_"&&_b.charAt(1)=="_")){
-if(_c&&typeof _c==="object"&&_d&&typeof _d==="object"){
-this.configMerge(_c,_d);
-}else{
-if(_9 instanceof Array){
-_9.push(_d);
-}else{
-_9[_b]=_d;
-}
-}
-}
-}
-return _9;
-}};
+define(["dojo/sniff"], function(has){
+
+// module:
+//		dojox/app/utils/config
+
+return {
+	// summary:
+	//		This module contains the config
+
+	configProcessHas: function(/*Object*/ source){
+		// summary:
+		//		scan the source config for has checks and call configMerge to merge has sections, and remove the has sections from the source.
+		// description:
+		//		configProcessHas will scan the source config for has checks. 
+		//		For each has section the items inside the has section will be tested with has (sniff)
+		//		If the has test is true it will call configMerge to merge has sections back into the source config.
+		//		It will always remove the has section from the source after processing it.
+		//		The names in the has section can be separated by a comma, indicating that any of those being true will satisfy the test.
+		// source:
+		//		an object representing the config to be processed.
+		// returns:
+		//		the updated source object.
+		for(var name in source){
+			var	sval = source[name];
+			if(name == "has"){ // found a "has" section in source
+				for(var hasname in sval){ // get the hasnames from the has section
+					if(!(hasname.charAt(0) == '_' && hasname.charAt(1) == '_') && sval && typeof sval === 'object'){
+						// need to handle multiple has checks separated by a ",".
+						var parts = hasname.split(',');
+						if(parts.length > 0){
+							while(parts.length > 0){ 	
+								var haspart = parts.shift();
+								// check for has(haspart) or if haspart starts with ! check for !(has(haspart))
+								if((has(haspart)) || (haspart.charAt(0) == '!' && !(has(haspart.substring(1))))){ // if true this one should be merged
+									var hasval = sval[hasname];
+									this.configMerge(source, hasval); // merge this has section into the source config
+									break;	// found a match for this multiple has test, so go to the next one
+								}
+							}
+						}
+					}
+				}
+				delete source["has"];	// after merge remove this has section from the config
+			}else{
+				if(!(name.charAt(0) == '_' && name.charAt(1) == '_') && sval && typeof sval === 'object'){
+						this.configProcessHas(sval);
+				}
+			}
+		}
+		return source;
+	},
+
+	configMerge: function(/*Object*/ target, /*Object*/ source){
+		// summary:
+		//		does a deep copy of the source into the target to merge the config from the source into the target
+		// description:
+		//		configMerge will merge the source config into the target config with a deep copy.
+		//		anything starting with __ will be skipped and if the target is an array the source items will be pushed into the target.
+		// target:
+		//		an object representing the config which will be updated by merging in the source.
+		// source:
+		//		an object representing the config to be merged into the target.
+		// returns:
+		//		the updated target object.
+
+		for(var name in source){
+			var tval = target[name];
+			var	sval = source[name];
+			if(tval !== sval && !(name.charAt(0) == '_' && name.charAt(1) == '_')){
+				if(tval && typeof tval === 'object' && sval && typeof sval === 'object'){
+					this.configMerge(tval, sval);
+				}else{
+					if(target instanceof Array){
+						target.push(sval);
+					}else{
+						target[name] = sval;
+					}
+				}
+			}
+		}
+		return target;
+	}
+};
+
 });

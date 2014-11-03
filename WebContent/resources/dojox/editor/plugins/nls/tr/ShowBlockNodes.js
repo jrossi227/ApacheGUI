@@ -1,2 +1,5 @@
-//>>built
-define("dojox/editor/plugins/nls/tr/ShowBlockNodes",({"showBlockNodes":"HTML Bloğu Öğelerini Göster"}));
+define(
+({
+	"showBlockNodes": "HTML Bloğu Öğelerini Göster"
+})
+);

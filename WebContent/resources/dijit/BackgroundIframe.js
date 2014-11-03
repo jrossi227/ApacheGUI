@@ -1,62 +1,115 @@
-//>>built
-define("dijit/BackgroundIframe",["require","./main","dojo/_base/config","dojo/dom-construct","dojo/dom-style","dojo/_base/lang","dojo/on","dojo/sniff"],function(_1,_2,_3,_4,_5,_6,on,_7){
-_7.add("config-bgIframe",!_7("touch"));
-var _8=new function(){
-var _9=[];
-this.pop=function(){
-var _a;
-if(_9.length){
-_a=_9.pop();
-_a.style.display="";
-}else{
-if(_7("ie")<9){
-var _b=_3["dojoBlankHtmlUrl"]||_1.toUrl("dojo/resources/blank.html")||"javascript:\"\"";
-var _c="<iframe src='"+_b+"' role='presentation'"+" style='position: absolute; left: 0px; top: 0px;"+"z-index: -1; filter:Alpha(Opacity=\"0\");'>";
-_a=document.createElement(_c);
-}else{
-_a=_4.create("iframe");
-_a.src="javascript:\"\"";
-_a.className="dijitBackgroundIframe";
-_a.setAttribute("role","presentation");
-_5.set(_a,"opacity",0.1);
-}
-_a.tabIndex=-1;
-}
-return _a;
-};
-this.push=function(_d){
-_d.style.display="none";
-_9.push(_d);
-};
-}();
-_2.BackgroundIframe=function(_e){
-if(!_e.id){
-throw new Error("no id");
-}
-if(_7("config-bgIframe")){
-var _f=(this.iframe=_8.pop());
-_e.appendChild(_f);
-if(_7("ie")<7||_7("quirks")){
-this.resize(_e);
-this._conn=on(_e,"resize",_6.hitch(this,"resize",_e));
-}else{
-_5.set(_f,{width:"100%",height:"100%"});
-}
-}
-};
-_6.extend(_2.BackgroundIframe,{resize:function(_10){
-if(this.iframe){
-_5.set(this.iframe,{width:_10.offsetWidth+"px",height:_10.offsetHeight+"px"});
-}
-},destroy:function(){
-if(this._conn){
-this._conn.remove();
-this._conn=null;
-}
-if(this.iframe){
-_8.push(this.iframe);
-delete this.iframe;
-}
-}});
-return _2.BackgroundIframe;
+define([
+	"require",			// require.toUrl
+	"./main",	// to export dijit.BackgroundIframe
+	"dojo/_base/config",
+	"dojo/dom-construct", // domConstruct.create
+	"dojo/dom-style", // domStyle.set
+	"dojo/_base/lang", // lang.extend lang.hitch
+	"dojo/on",
+	"dojo/sniff" // has("ie"), has("mozilla"), has("quirks")
+], function(require, dijit, config, domConstruct, domStyle, lang, on, has){
+
+	// module:
+	//		dijit/BackgroundIFrame
+
+	// Flag for whether to create background iframe behind popups like Menus and Dialog.
+	// A background iframe is useful to prevent problems with popups appearing behind applets/pdf files,
+	// and is also useful on older versions of IE (IE6 and IE7) to prevent the "bleed through select" problem.
+	// TODO: For 2.0, make this false by default.  Also, possibly move definition to has.js so that this module can be
+	// conditionally required via  dojo/has!bgIfame?dijit/BackgroundIframe
+	has.add("config-bgIframe", !has("touch"));
+
+	// TODO: remove _frames, it isn't being used much, since popups never release their
+	// iframes (see [22236])
+	var _frames = new function(){
+		// summary:
+		//		cache of iframes
+
+		var queue = [];
+
+		this.pop = function(){
+			var iframe;
+			if(queue.length){
+				iframe = queue.pop();
+				iframe.style.display="";
+			}else{
+				// transparency needed for DialogUnderlay and for tooltips on IE (to see screen near connector)
+				if(has("ie") < 9){
+					var burl = config["dojoBlankHtmlUrl"] || require.toUrl("dojo/resources/blank.html") || "javascript:\"\"";
+					var html="<iframe src='" + burl + "' role='presentation'"
+						+ " style='position: absolute; left: 0px; top: 0px;"
+						+ "z-index: -1; filter:Alpha(Opacity=\"0\");'>";
+					iframe = document.createElement(html);
+				}else{
+					iframe = domConstruct.create("iframe");
+					iframe.src = 'javascript:""';
+					iframe.className = "dijitBackgroundIframe";
+					iframe.setAttribute("role", "presentation");
+					domStyle.set(iframe, "opacity", 0.1);
+				}
+				iframe.tabIndex = -1; // Magic to prevent iframe from getting focus on tab keypress - as style didn't work.
+			}
+			return iframe;
+		};
+
+		this.push = function(iframe){
+			iframe.style.display="none";
+			queue.push(iframe);
+		}
+	}();
+
+
+	dijit.BackgroundIframe = function(/*DomNode*/ node){
+		// summary:
+		//		For IE/FF z-index shenanigans. id attribute is required.
+		//
+		// description:
+		//		new dijit.BackgroundIframe(node).
+		//
+		//		Makes a background iframe as a child of node, that fills
+		//		area (and position) of node
+
+		if(!node.id){ throw new Error("no id"); }
+		if(has("config-bgIframe")){
+			var iframe = (this.iframe = _frames.pop());
+			node.appendChild(iframe);
+			if(has("ie")<7 || has("quirks")){
+				this.resize(node);
+				this._conn = on(node, 'resize', lang.hitch(this, "resize", node));
+			}else{
+				domStyle.set(iframe, {
+					width: '100%',
+					height: '100%'
+				});
+			}
+		}
+	};
+
+	lang.extend(dijit.BackgroundIframe, {
+		resize: function(node){
+			// summary:
+			//		Resize the iframe so it's the same size as node.
+			//		Needed on IE6 and IE/quirks because height:100% doesn't work right.
+			if(this.iframe){
+				domStyle.set(this.iframe, {
+					width: node.offsetWidth + 'px',
+					height: node.offsetHeight + 'px'
+				});
+			}
+		},
+		destroy: function(){
+			// summary:
+			//		destroy the iframe
+			if(this._conn){
+				this._conn.remove();
+				this._conn = null;
+			}
+			if(this.iframe){
+				_frames.push(this.iframe);
+				delete this.iframe;
+			}
+		}
+	});
+
+	return dijit.BackgroundIframe;
 });

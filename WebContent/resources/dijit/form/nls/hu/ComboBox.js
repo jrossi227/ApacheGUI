@@ -1,2 +1,6 @@
-//>>built
-define("dijit/form/nls/hu/ComboBox",({previousMessage:"Előző menüpontok",nextMessage:"További menüpontok"}));
+define(
+({
+		previousMessage: "Előző menüpontok",
+		nextMessage: "További menüpontok"
+})
+);

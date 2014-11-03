@@ -1,108 +1,297 @@
-//>>built
-(typeof define==="undefined"?function(_1,_2){
-_2();
-}:define)(["dojo/_base/config","dojo/_base/lang","dojo/_base/window","require"],function(_3,_4,_5,_6){
-var dm=_4&&_4.getObject("dojox.mobile",true)||{};
-var _7=function(){
-if(!_5){
-_5=window;
-_5.doc=document;
-_5._no_dojo_dm=dm;
-}
-_3=_3||_5.mblConfig||{};
-var _8=_5.doc.getElementsByTagName("script");
-for(var i=0;i<_8.length;i++){
-var n=_8[i];
-var _9=n.getAttribute("src")||"";
-if(_9.match(/\/deviceTheme\.js/i)){
-_3.baseUrl=_9.replace("deviceTheme.js","../../dojo/");
-var _a=(n.getAttribute("data-dojo-config")||n.getAttribute("djConfig"));
-if(_a){
-var _b=eval("({ "+_a+" })");
-for(var _c in _b){
-_3[_c]=_b[_c];
-}
-}
-break;
-}else{
-if(_9.match(/\/dojo\.js/i)){
-_3.baseUrl=_9.replace("dojo.js","");
-break;
-}
-}
-}
-this.loadCssFile=function(_d){
-var _e=_5.doc.createElement("link");
-_e.href=_d;
-_e.type="text/css";
-_e.rel="stylesheet";
-var _f=_5.doc.getElementsByTagName("head")[0];
-_f.insertBefore(_e,_f.firstChild);
-dm.loadedCssFiles.push(_e);
-};
-this.toUrl=function(_10){
-return _6?_6.toUrl(_10):_3.baseUrl+"../"+_10;
-};
-this.setDm=function(_11){
-dm=_11;
-};
-this.themeMap=_3.themeMap||[["Holodark","holodark",[]],["Android 3","holodark",[]],["Android 4","holodark",[]],["Android","android",[]],["BlackBerry","blackberry",[]],["BB10","blackberry",[]],["iPhone","iphone",[]],["iPad","iphone",[this.toUrl("dojox/mobile/themes/iphone/ipad.css")]],["WindowsPhone","windows",[]],["MSIE [6-9]","iphone",[]],["Trident","windows",[]],["Custom","custom",[]],[".*","iphone",[]]];
-dm.loadedCssFiles=[];
-this.loadDeviceTheme=function(_12){
-var t=_3.mblThemeFiles||dm.themeFiles||["@theme"];
-var i,j;
-var m=this.themeMap;
-var ua=_12||_3.mblUserAgent||(location.search.match(/theme=(\w+)/)?RegExp.$1:navigator.userAgent);
-for(i=0;i<m.length;i++){
-if(ua.match(new RegExp(m[i][0]))){
-var _13=m[i][1];
-if(_13=="windows"&&_3.mblDisableWindowsTheme){
-continue;
-}
-var cls=_5.doc.documentElement.className;
-cls=cls.replace(new RegExp(" *"+dm.currentTheme+"_theme"),"")+" "+_13+"_theme";
-_5.doc.documentElement.className=cls;
-dm.currentTheme=_13;
-var _14=[].concat(m[i][2]);
-for(j=0;j<t.length;j++){
-var _15=(t[j] instanceof Array||typeof t[j]=="array");
-var _16;
-if(!_15&&t[j].indexOf("/")!==-1){
-_16=t[j];
-}else{
-var pkg=_15?(t[j][0]||"").replace(/\./g,"/"):"dojox/mobile";
-var _17=(_15?t[j][1]:t[j]).replace(/\./g,"/");
-var f="themes/"+_13+"/"+(_17==="@theme"?_13:_17)+".css";
-_16=pkg+"/"+f;
-}
-_14.unshift(this.toUrl(_16));
-}
-for(var k=0;k<dm.loadedCssFiles.length;k++){
-var n=dm.loadedCssFiles[k];
-n.parentNode.removeChild(n);
-}
-dm.loadedCssFiles=[];
-for(j=0;j<_14.length;j++){
-var _18=_14[j].toString();
-if(_3["dojo-bidi"]==true&&_18.indexOf("_rtl")==-1){
-var _19="android.css blackberry.css custom.css iphone.css holodark.css base.css Carousel.css ComboBox.css IconContainer.css IconMenu.css ListItem.css RoundRectCategory.css SpinWheel.css Switch.css TabBar.css ToggleButton.css ToolBarButton.css";
-var _1a=_18.substr(_18.lastIndexOf("/")+1);
-if(_19.indexOf(_1a)!=-1){
-this.loadCssFile(_18.replace(".css","_rtl.css"));
-}
-}
-this.loadCssFile(_14[j].toString());
-}
-if(_12&&dm.loadCompatCssFiles){
-dm.loadCompatCssFiles();
-}
-break;
-}
-}
-};
-};
-var _1b=new _7();
-_1b.loadDeviceTheme();
-window.deviceTheme=dm.deviceTheme=_1b;
-return _1b;
+(typeof define === "undefined" ? function(deps, def) { def(); } : define)([
+	"dojo/_base/config",
+	"dojo/_base/lang",
+	"dojo/_base/window",
+	"require"
+], function(config, lang, win, require){
+
+	// module:
+	//		dojox/mobile/deviceTheme
+
+	var dm = lang && lang.getObject("dojox.mobile", true) || {};
+
+	var DeviceTheme = function(){
+		// summary:
+		//		Automatic theme loader.
+		// description:
+		//		This module detects the user agent of the browser and loads the
+		//		appropriate theme files. It can be enabled by simply including 
+		//		the dojox/mobile/deviceTheme script in your application as follows:
+		//
+		//	|	<script src="dojox/mobile/deviceTheme.js"></script>
+		//	|	<script src="dojo/dojo.js" data-dojo-config="parseOnLoad: true"></script>
+		//
+		//		Using the script tag as above is the recommended way to load the 
+		//		deviceTheme. Trying to load it using the AMD loader can lead to styles 
+		//		being applied too late, because the loading of the theme files would 
+		//		be performed asynchronously by the browser, so you could not assume 
+		//		that the loading has been completed when your widgets are initialized.
+		//		However, loading deviceTheme using the script tag has the drawback that 
+		//		deviceTheme.js cannot be included in a build.
+		//
+		//		You can also pass an additional query parameter string:
+		//		theme={theme id} to force a specific theme through the browser
+		//		URL input. The available theme ids are Android, Holodark (theme introduced in Android 3.0), 
+		//		BlackBerry, Custom, iPhone, and iPad. The theme names are case-sensitive. If the given
+		//		id does not match, the iPhone theme is used.
+		//
+		//	|	http://your.server.com/yourapp.html // automatic detection
+		//	|	http://your.server.com/yourapp.html?theme=Android // forces Android theme
+		//	|	http://your.server.com/yourapp.html?theme=Holodark // forces Holodark theme
+		//	|	http://your.server.com/yourapp.html?theme=BlackBerry // forces Blackberry theme
+		//	|	http://your.server.com/yourapp.html?theme=Custom // forces Custom theme
+		//	|	http://your.server.com/yourapp.html?theme=iPhone // forces iPhone theme
+		//	|	http://your.server.com/yourapp.html?theme=iPad // forces iPad theme
+		//
+		//		To simulate a particular device from the application code, the user agent
+		//		can be forced by setting dojoConfig.mblUserAgent as follows:
+		//
+		//	|	<script src="dojox/mobile/deviceTheme.js" data-dojo-config="mblUserAgent: 'Holodark'"></script>
+		//	|	<script src="dojo/dojo.js" data-dojo-config="parseOnLoad: true"></script>
+		//
+		//		By default, an all-in-one theme file (e.g. themes/iphone/iphone.css) is
+		//		loaded. The all-in-one theme files contain style sheets for all the
+		//		dojox/mobile widgets regardless of whether they are used in your
+		//		application or not.
+		//
+		//		If you want to choose what theme files to load, you can specify them
+		//		via dojoConfig or data-dojo-config as shown in the following example:
+		//
+		//	|	<script src="dojox/mobile/deviceTheme.js"
+		//	|		data-dojo-config="mblThemeFiles:['base','Button']"></script>
+		//	|	<script src="dojo/dojo.js" data-dojo-config="parseOnLoad: true"></script>
+		//
+		//		In the case of this example, if iphone is detected, for example, the
+		//		following files will be loaded:
+		//
+		//	|	dojox/mobile/themes/iphone/base.css
+		//	|	dojox/mobile/themes/iphone/Button.css
+		//
+		//		If you want to load style sheets for your own custom widgets, you can
+		//		specify a package name along with a theme file name in an array.
+		//
+		//	|	['base',['com.acme','MyWidget']]
+		//
+		//		In this case, the following files will be loaded.
+		//
+		//	|	dojox/mobile/themes/iphone/base.css
+		//	|	com/acme/themes/iphone/MyWidget.css
+		//
+		//		If you specify '@theme' as a theme file name, it will be replaced with
+		//		the theme folder name (e.g. 'iphone'). For example,
+		//
+		//	|	['@theme',['com.acme','MyWidget']]
+		//
+		//		will load the following files:
+		//
+		//	|	dojox/mobile/themes/iphone/iphone.css
+		//	|	com/acme/themes/iphone/MyWidget.css
+		
+		if(!win){
+			win = window;
+			win.doc = document;
+			win._no_dojo_dm = dm;
+		}
+		config = config || win.mblConfig || {};
+		var scripts = win.doc.getElementsByTagName("script");
+		for(var i = 0; i < scripts.length; i++){
+			var n = scripts[i];
+			var src = n.getAttribute("src") || "";
+			if(src.match(/\/deviceTheme\.js/i)){
+				config.baseUrl = src.replace("deviceTheme\.js", "../../dojo/");
+				var conf = (n.getAttribute("data-dojo-config") || n.getAttribute("djConfig"));
+				if(conf){
+					var obj = eval("({ " + conf + " })");
+					for(var key in obj){
+						config[key] = obj[key];
+					}
+				}
+				break;
+			}else if(src.match(/\/dojo\.js/i)){
+				config.baseUrl = src.replace("dojo\.js", "");
+				break;
+			}
+		}
+
+		this.loadCssFile = function(/*String*/file){
+			// summary:
+			//		Loads the given CSS file programmatically.
+			var link = win.doc.createElement("link");
+			link.href = file;
+			link.type = "text/css";
+			link.rel = "stylesheet";
+			var head = win.doc.getElementsByTagName('head')[0];
+			head.insertBefore(link, head.firstChild);
+			dm.loadedCssFiles.push(link);
+		};
+
+		this.toUrl = function(/*String*/path){
+			// summary:
+			//		A wrapper for require.toUrl to support non-dojo usage.
+			return require ? require.toUrl(path) : config.baseUrl + "../" + path;
+		};
+
+		this.setDm = function(/*Object*/_dm){
+			// summary:
+			//		Replaces the dojox/mobile object.
+			// description:
+			//		When this module is loaded from a script tag, dm is a plain
+			//		local object defined at the begining of this module.
+			//		common.js will replace the local dm object with the
+			//		real dojox/mobile object through this method.
+			dm = _dm;
+		};
+
+		this.themeMap = config.themeMap || [
+			// summary:
+			//		A map of user-agents to theme files.
+			// description:
+			//		The first array element is a regexp pattern that matches the
+			//		userAgent string.
+			//
+			//		The second array element is a theme folder name.
+			//
+			//		The third array element is an array of css file paths to load.
+			//
+			//		The matching is performed in the array order, and stops after the
+			//		first match.
+			[
+				"Holodark",
+				"holodark",
+				[]
+			],
+			[
+				"Android 3",
+				"holodark",
+				[]
+			],
+			[
+				"Android 4",
+				"holodark",
+				[]
+			],
+			[
+				"Android",
+				"android",
+				[]
+			],
+			[
+				"BlackBerry",
+				"blackberry",
+				[]
+			],
+			[
+				"BB10",
+				"blackberry",
+				[]
+			],
+			[
+				"iPhone",
+				"iphone",
+				[]
+			],
+			[
+				"iPad",
+				"iphone",
+				[this.toUrl("dojox/mobile/themes/iphone/ipad.css")]
+			],
+			[
+				"WindowsPhone",
+				"windows",
+				[]
+			],
+			[
+				"MSIE [6-9]",
+				"iphone",
+				[]
+			],
+			[
+				"Trident",
+				"windows",
+				[]
+			],
+			[
+				"Custom",
+				"custom",
+				[]
+			],
+			[
+				".*",
+				"iphone",
+				[]
+			]
+		];
+
+		dm.loadedCssFiles = [];
+		this.loadDeviceTheme = function(/*String?*/userAgent){
+			// summary:
+			//		Loads a device-specific theme according to the user-agent
+			//		string.
+			// description:
+			//		This function is automatically called when this module is
+			//		evaluated.
+			var t = config.mblThemeFiles || dm.themeFiles || ["@theme"];
+			var i, j;
+			var m = this.themeMap;
+			var ua = userAgent || config.mblUserAgent || (location.search.match(/theme=(\w+)/) ? RegExp.$1 : navigator.userAgent);
+			for(i = 0; i < m.length; i++){
+				if(ua.match(new RegExp(m[i][0]))){
+					var theme = m[i][1];
+					if(theme == "windows" && config.mblDisableWindowsTheme){
+						continue;
+					}
+					var cls = win.doc.documentElement.className;
+					cls = cls.replace(new RegExp(" *" + dm.currentTheme + "_theme"), "") + " " + theme + "_theme";
+					win.doc.documentElement.className = cls;
+					dm.currentTheme = theme;
+					var files = [].concat(m[i][2]);
+					for(j = 0; j < t.length; j++){ 
+						var isArray = (t[j] instanceof Array || typeof t[j] == "array");
+						var path;
+						if(!isArray && t[j].indexOf('/') !== -1){
+							path = t[j];
+						}else{
+							var pkg = isArray ? (t[j][0]||"").replace(/\./g, '/') : "dojox/mobile";
+							var name = (isArray ? t[j][1] : t[j]).replace(/\./g, '/');
+							var f = "themes/" + theme + "/" +
+								(name === "@theme" ? theme : name) + ".css";
+							path = pkg + "/" + f;
+						}
+						files.unshift(this.toUrl(path));
+					}
+					//remove old css files
+					for(var k = 0; k < dm.loadedCssFiles.length; k++){
+						var n = dm.loadedCssFiles[k];
+						n.parentNode.removeChild(n);
+					}
+					dm.loadedCssFiles = [];
+					for(j = 0; j < files.length; j++){
+						// dojox.mobile mirroring support
+						var cssFilePath = files[j].toString();
+						if(config["dojo-bidi"] == true && cssFilePath.indexOf("_rtl") == -1){
+							var rtlCssList = "android.css blackberry.css custom.css iphone.css holodark.css base.css Carousel.css ComboBox.css IconContainer.css IconMenu.css ListItem.css RoundRectCategory.css SpinWheel.css Switch.css TabBar.css ToggleButton.css ToolBarButton.css";
+							var cssName = cssFilePath.substr(cssFilePath.lastIndexOf('/') + 1);
+							if(rtlCssList.indexOf(cssName) != -1){
+								this.loadCssFile(cssFilePath.replace(".css","_rtl.css"));
+							}
+						}
+						this.loadCssFile(files[j].toString());
+					}
+
+					if(userAgent && dm.loadCompatCssFiles){
+						dm.loadCompatCssFiles();
+					}
+					break;
+				}
+			}
+		};
+	};
+
+	// Singleton.  (TODO: can we replace DeviceTheme class and singleton w/a simple hash of functions?)
+	var deviceTheme = new DeviceTheme();
+
+	deviceTheme.loadDeviceTheme();
+	window.deviceTheme = dm.deviceTheme = deviceTheme;
+
+	return deviceTheme;
 });

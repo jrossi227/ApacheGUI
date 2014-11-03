@@ -1,50 +1,5 @@
-
-.mblDomButtonWhiteCross {
-  position: relative;
-  width: 29px;
-  height: 29px;
-}
-.mblDomButtonWhiteCross > div {
-  position: absolute;
-  top: 12px;
-  left: 7px;
-  width: 14px;
-  height: 2px;
-  margin: 0px;
-  font-size: 1px;
-  border: 1px solid #808080;
-  background-color: #ffffff;
-  -webkit-transform: rotate(45deg);
-  transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  border-radius: 2px;
-}
-.mblDomButtonWhiteCross > div > div {
-  position: absolute;
-  top: -7px;
-  left: 5px;
-  width: 2px;
-  height: 14px;
-  margin: 0px;
-  font-size: 1px;
-  border: 1px solid #808080;
-  background-color: #ffffff;
-  border-radius: 2px;
-}
-.mblToolBarButtonHasArrow-styles {
-  width: 27px;
-  height: 27px;
-  border-radius: 20px;
-  border: 2px solid #ffffff;
-  padding: 0px;
-  margin: 0px;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  background-image: url("images/dark/back.png");
-  background-position: 50% 50%;
-  background-size: 27px 27px;
-  background-repeat: no-repeat;
-}
+@import "../common/domButtons/DomButtonWhiteCross.css";
+/* dojox.mobile.TabBar */
 .mblTabBar {
   position: relative;
   margin: 0px;
@@ -59,6 +14,7 @@
   border-bottom: 1px solid transparent;
   padding: 0px;
 }
+/* dojox.mobile.TabBarButton */
 .mblTabBarFill .mblTabBarButton {
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -88,6 +44,7 @@
 .mblTabBarButtonSelected .mblTabBarButtonIconParent2 {
   display: block;
 }
+/* barType="tabBar" */
 .mblTabBarTabBar {
   height: 48px;
   border-top: 1px solid #000000;
@@ -111,6 +68,7 @@
 .mblTabBarTabBar .mblTabBarButtonSelected .mblTabBarButtonLabel {
   color: white;
 }
+/* barType="segmentedControl" */
 .mblTabBarSegmentedControl.mblTabBarNoText .mblTabBarButton {
   width: auto;
   padding: 0 3px;
@@ -155,6 +113,7 @@
   height: auto;
   border: none;
 }
+/* barType="standardTab" */
 .mblTabBarStandardTab {
   border-top: none;
   border-bottom: none;
@@ -179,6 +138,7 @@
 .mblTabBarStandardTab .mblTabBarButtonHasIcon .mblTabBarButtonLabel {
   margin-left: 20px;
 }
+/* barType="slimTab" */
 .mblTabBarSlimTab {
   height: 30px;
   padding: 0px;
@@ -215,6 +175,7 @@
 .mblTabBarSlimTab .mblTabBarButtonHasIcon .mblTabBarButtonLabel {
   margin-left: 20px;
 }
+/* barType="flatTab" */
 .mblTabBarFlatTab {
   height: 30px;
   padding: 0px;
@@ -239,6 +200,7 @@
 .mblTabBarFlatTab .mblTabBarButtonHasIcon .mblTabBarButtonLabel {
   margin-left: 20px;
 }
+/* barType="tallTab" */
 .mblTabBarTallTab {
   height: 64px;
   border-top: 1px solid #cdd5df;

@@ -1,2 +1,5 @@
-//>>built
-define("dojox/editor/plugins/nls/kk/PageBreak",({"pageBreak":"Бет үзілімі"}));
+define(
+({
+	"pageBreak": "Бет үзілімі"
+})
+);

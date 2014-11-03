@@ -1,2 +1,6 @@
-//>>built
-define("dijit/nls/he/loading",({loadingState:"טעינה...",errorState:"אירעה שגיאה"}));
+define(
+({
+	loadingState: "טעינה...‏",
+	errorState: "אירעה שגיאה"
+})
+);

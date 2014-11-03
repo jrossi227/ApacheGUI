@@ -1,2 +1,5 @@
-//>>built
-define("dojox/editor/plugins/nls/nl/ShowBlockNodes",({"showBlockNodes":"HTML-blokelementen afbeelden"}));
+define(
+({
+	"showBlockNodes": "HTML-blokelementen afbeelden"
+})
+);

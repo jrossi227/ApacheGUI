@@ -1,10 +1,28 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
+define([
+	"./router/RouterBase"
+], function(RouterBase){
 
-//>>built
-define("dojo/router",["./router/RouterBase"],function(_1){
-return new _1({});
+	// module:
+	//		dojo/router
+
+/*=====
+return {
+	// summary:
+	//		A singleton-style instance of dojo/router/RouterBase. See that
+	//		module for specifics.
+	// example:
+	//	|	router.register("/widgets/:id", function(evt){
+	//	|		// If "/widgets/3" was matched,
+	//	|		// evt.params.id === "3"
+	//	|		xhr.get({
+	//	|			url: "/some/path/" + evt.params.id,
+	//	|			load: function(data){
+	//	|				// ...
+	//	|			}
+	//	|		});
+	//	|	});
+};
+=====*/
+
+	return new RouterBase({});
 });

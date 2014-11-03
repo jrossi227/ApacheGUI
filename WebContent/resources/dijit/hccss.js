@@ -1,9 +1,21 @@
-//>>built
-define("dijit/hccss",["dojo/dom-class","dojo/hccss","dojo/domReady","dojo/_base/window"],function(_1,_2,_3,_4){
-_3(function(){
-if(_2("highcontrast")){
-_1.add(_4.body(),"dijit_a11y");
-}
-});
-return _2;
+define(["dojo/dom-class", "dojo/hccss", "dojo/domReady", "dojo/_base/window"], function(domClass, has, domReady, win){
+
+	// module:
+	//		dijit/hccss
+
+	/*=====
+	return function(){
+		// summary:
+		//		Test if computer is in high contrast mode, and sets `dijit_a11y` flag on `<body>` if it is.
+		//		Deprecated, use ``dojo/hccss`` instead.
+	};
+	=====*/
+
+	domReady(function(){
+		if(has("highcontrast")){
+			domClass.add(win.body(), "dijit_a11y");
+		}
+	});
+
+	return has;
 });

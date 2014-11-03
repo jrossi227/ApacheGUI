@@ -1,43 +1,104 @@
-//>>built
-define("dojox/mobile/CarouselItem",["dojo/_base/declare","dojo/dom-construct","dojo/dom-geometry","dojo/dom-style","dijit/_Contained","dijit/_WidgetBase","dojo/has","dojo/has!dojo-bidi?dojox/mobile/bidi/CarouselItem"],function(_1,_2,_3,_4,_5,_6,_7,_8){
-var _9=_1(_7("dojo-bidi")?"dojox.mobile.NonBidiCarouselItem":"dojox.mobile.CarouselItem",[_6,_5],{alt:"",src:"",headerText:"",footerText:"",baseClass:"mblCarouselItem",buildRendering:function(){
-this.inherited(arguments);
-this.domNode.tabIndex="0";
-this.headerTextNode=_2.create("div",{className:"mblCarouselItemHeaderText"},this.domNode);
-this.imageNode=_2.create("img",{className:"mblCarouselItemImage"},this.domNode);
-this.footerTextNode=_2.create("div",{className:"mblCarouselItemFooterText"},this.domNode);
-},startup:function(){
-if(this._started){
-return;
-}
-this.inherited(arguments);
-this.resize();
-},resize:function(_a){
-var _b=_3.getMarginBox(this.domNode);
-if(_b.h===0){
-return;
-}
-var h1=_3.getMarginBox(this.headerTextNode).h;
-var h2=_3.getMarginBox(this.footerTextNode).h;
-_3.setMarginBox(this.imageNode,{h:_b.h-h1-h2});
-},select:function(){
-var _c=this.imageNode;
-_4.set(_c,"opacity",0.4);
-this.defer(function(){
-_4.set(_c,"opacity",1);
-},1000);
-},_setAltAttr:function(_d){
-this._set("alt",_d);
-this.imageNode.alt=_d;
-},_setSrcAttr:function(_e){
-this._set("src",_e);
-this.imageNode.src=_e;
-},_setHeaderTextAttr:function(_f){
-this._set("headerText",_f);
-this.headerTextNode.innerHTML=this._cv?this._cv(_f):_f;
-},_setFooterTextAttr:function(_10){
-this._set("footerText",_10);
-this.footerTextNode.innerHTML=this._cv?this._cv(_10):_10;
-}});
-return _7("dojo-bidi")?_1("dojox.mobile.CarouselItem",[_9,_8]):_9;
+define([
+	"dojo/_base/declare",
+	"dojo/dom-construct",
+	"dojo/dom-geometry",
+	"dojo/dom-style",
+	"dijit/_Contained",
+	"dijit/_WidgetBase",
+	"dojo/has",
+	"dojo/has!dojo-bidi?dojox/mobile/bidi/CarouselItem"
+], function(declare, domConstruct, domGeometry, domStyle, Contained, WidgetBase, has, BidiCarouselItem){
+
+	// module:
+	//		dojox/mobile/CarouselItem
+
+	var CarouselItem = declare(has("dojo-bidi") ? "dojox.mobile.NonBidiCarouselItem" : "dojox.mobile.CarouselItem", [WidgetBase, Contained], {
+		// summary:
+		//		An item of dojox/mobile/Carousel.
+		// description:
+		//		CarouselItem represents an item of dojox/mobile/Carousel. In
+		//		typical use cases, users do not use this widget alone. Instead,
+		//		it is used in conjunction with the Carousel widget.
+
+		// alt: String
+		//		An alt text for the carousel item image.
+		alt: "",
+
+		// src: String
+		//		A path for an image to be displayed as a carousel item.
+		src: "",
+
+		// headerText: String
+		//		A text that is displayed above the carousel item image.
+		headerText: "",
+
+		// footerText: String
+		//		A text that is displayed below the carousel item image.
+		footerText: "",
+
+		/* internal properties */	
+		
+		// baseClass: String
+		//		The name of the CSS class of this widget.
+		baseClass: "mblCarouselItem",
+
+		buildRendering: function(){
+			this.inherited(arguments);
+			this.domNode.tabIndex = "0";
+			this.headerTextNode = domConstruct.create("div", { className: "mblCarouselItemHeaderText" }, this.domNode);
+			this.imageNode = domConstruct.create("img", { className: "mblCarouselItemImage" }, this.domNode);
+			this.footerTextNode = domConstruct.create("div", { className: "mblCarouselItemFooterText" }, this.domNode);
+		},
+
+		startup: function(){
+			if(this._started){ return; }
+			this.inherited(arguments);
+			this.resize();
+		},
+
+		resize: function(size){
+			var box = domGeometry.getMarginBox(this.domNode);
+			if(box.h === 0){ return; }
+			var h1 = domGeometry.getMarginBox(this.headerTextNode).h;
+			var h2 = domGeometry.getMarginBox(this.footerTextNode).h;
+			domGeometry.setMarginBox(this.imageNode, {h:box.h - h1 - h2});
+		},
+
+		select: function(){
+			// summary:
+			//		Highlights the item.
+			var img = this.imageNode
+			domStyle.set(img, "opacity", 0.4);
+			this.defer(function(){
+				domStyle.set(img, "opacity", 1);
+			}, 1000);
+		},
+
+		_setAltAttr: function(/*String*/alt){
+			// tags:
+			//		private
+			this._set("alt", alt);
+			this.imageNode.alt = alt;
+		},
+
+		_setSrcAttr: function(/*String*/src){
+			// tags:
+			//		private
+			this._set("src", src);
+			this.imageNode.src = src;
+		},
+
+		_setHeaderTextAttr: function(/*String*/text){
+			this._set("headerText", text);
+			this.headerTextNode.innerHTML = this._cv ? this._cv(text) : text;
+		},
+
+		_setFooterTextAttr: function(/*String*/text){
+			// tags:
+			//		private
+			this._set("footerText", text);
+			this.footerTextNode.innerHTML = this._cv ? this._cv(text) : text;
+		}
+	});
+	return has("dojo-bidi") ? declare("dojox.mobile.CarouselItem", [CarouselItem, BidiCarouselItem]) : CarouselItem;
 });

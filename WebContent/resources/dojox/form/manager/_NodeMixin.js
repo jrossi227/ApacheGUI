@@ -1,234 +1,372 @@
-//>>built
-define("dojox/form/manager/_NodeMixin",["dojo/_base/lang","dojo/_base/array","dojo/on","dojo/dom","dojo/dom-attr","dojo/query","./_Mixin","dijit/form/_FormWidget","dijit/_base/manager","dojo/_base/declare"],function(_1,_2,on,_3,_4,_5,_6,_7,_8,_9){
-var fm=_1.getObject("dojox.form.manager",true),aa=fm.actionAdapter,_a=fm._keys,ce=fm.changeEvent=function(_b){
-var _c="click";
-switch(_b.tagName.toLowerCase()){
-case "textarea":
-_c="keyup";
-break;
-case "select":
-_c="change";
-break;
-case "input":
-switch(_b.type.toLowerCase()){
-case "text":
-case "password":
-_c="keyup";
-break;
-}
-break;
-}
-return _c;
-},_d=function(_e,_f){
-var _10=_4.get(_e,"name");
-_f=_f||this.domNode;
-if(_10&&!(_10 in this.formWidgets)){
-for(var n=_e;n&&n!==_f;n=n.parentNode){
-if(_4.get(n,"widgetId")&&_8.byNode(n).isInstanceOf(_7)){
-return null;
-}
-}
-if(_e.tagName.toLowerCase()=="input"&&_e.type.toLowerCase()=="radio"){
-var a=this.formNodes[_10];
-a=a&&a.node;
-if(a&&_1.isArray(a)){
-a.push(_e);
-}else{
-this.formNodes[_10]={node:[_e],connections:[]};
-}
-}else{
-this.formNodes[_10]={node:_e,connections:[]};
-}
-}else{
-_10=null;
-}
-return _10;
-},_11=function(_12){
-var _13={};
-aa(function(_14,n){
-var o=_4.get(n,"data-dojo-observer")||_4.get(n,"observer");
-if(o&&typeof o=="string"){
-_2.forEach(o.split(","),function(o){
-o=_1.trim(o);
-if(o&&_1.isFunction(this[o])){
-_13[o]=1;
-}
-},this);
-}
-}).call(this,null,this.formNodes[_12].node);
-return _a(_13);
-},_15=function(_16,_17){
-var t=this.formNodes[_16],c=t.connections;
-if(c.length){
-_2.forEach(c,function(_18){
-_18.remove();
-});
-c=t.connections=[];
-}
-aa(function(_19,n){
-var _1a=ce(n);
-_2.forEach(_17,function(o){
-c.push(on(n,_1a,_1.hitch(this,function(evt){
-if(this.watching){
-this[o](this.formNodeValue(_16),_16,n,evt);
-}
-})));
-},this);
-}).call(this,null,t.node);
-};
-return _9("dojox.form.manager._NodeMixin",null,{destroy:function(){
-for(var _1b in this.formNodes){
-_2.forEach(this.formNodes[_1b].connections,function(_1c){
-_1c.remove();
-});
-}
-this.formNodes={};
-this.inherited(arguments);
-},registerNode:function(_1d){
-if(typeof _1d=="string"){
-_1d=_3.byId(_1d);
-}
-var _1e=_d.call(this,_1d);
-if(_1e){
-_15.call(this,_1e,_11.call(this,_1e));
-}
-return this;
-},unregisterNode:function(_1f){
-if(_1f in this.formNodes){
-_2.forEach(this.formNodes[_1f].connections,function(_20){
-_20.remove();
-});
-delete this.formNodes[_1f];
-}
-return this;
-},registerNodeDescendants:function(_21){
-if(typeof _21=="string"){
-_21=_3.byId(_21);
-}
-_5("input, select, textarea, button",_21).map(function(n){
-return _d.call(this,n,_21);
-},this).forEach(function(_22){
-if(_22){
-_15.call(this,_22,_11.call(this,_22));
-}
-},this);
-return this;
-},unregisterNodeDescendants:function(_23){
-if(typeof _23=="string"){
-_23=_3.byId(_23);
-}
-_5("input, select, textarea, button",_23).map(function(n){
-return _4.get(_23,"name")||null;
-}).forEach(function(_24){
-if(_24){
-this.unregisterNode(_24);
-}
-},this);
-return this;
-},formNodeValue:function(_25,_26){
-var _27=arguments.length==2&&_26!==undefined,_28;
-if(typeof _25=="string"){
-_25=this.formNodes[_25];
-if(_25){
-_25=_25.node;
-}
-}
-if(!_25){
-return null;
-}
-if(_1.isArray(_25)){
-if(_27){
-_2.forEach(_25,function(_29){
-_29.checked="";
-});
-_2.forEach(_25,function(_2a){
-_2a.checked=_2a.value===_26?"checked":"";
-});
-return this;
-}
-_2.some(_25,function(_2b){
-if(_2b.checked){
-_28=_2b;
-return true;
-}
-return false;
-});
-return _28?_28.value:"";
-}
-switch(_25.tagName.toLowerCase()){
-case "select":
-if(_25.multiple){
-if(_27){
-if(_1.isArray(_26)){
-var _2c={};
-_2.forEach(_26,function(v){
-_2c[v]=1;
-});
-_5("> option",_25).forEach(function(opt){
-opt.selected=opt.value in _2c;
-});
-return this;
-}
-_5("> option",_25).forEach(function(opt){
-opt.selected=opt.value===_26;
-});
-return this;
-}
-_28=_5("> option",_25).filter(function(opt){
-return opt.selected;
-}).map(function(opt){
-return opt.value;
-});
-return _28.length==1?_28[0]:_28;
-}
-if(_27){
-_5("> option",_25).forEach(function(opt){
-opt.selected=opt.value===_26;
-});
-return this;
-}
-return _25.value||"";
-case "button":
-if(_27){
-_25.innerHTML=""+_26;
-return this;
-}
-return _25.innerHTML;
-case "input":
-if(_25.type.toLowerCase()=="checkbox"){
-if(_27){
-_25.checked=_26?"checked":"";
-return this;
-}
-return Boolean(_25.checked);
-}
-}
-if(_27){
-_25.value=""+_26;
-return this;
-}
-return _25.value;
-},inspectFormNodes:function(_2d,_2e,_2f){
-var _30,_31={};
-if(_2e){
-if(_1.isArray(_2e)){
-_2.forEach(_2e,function(_32){
-if(_32 in this.formNodes){
-_31[_32]=_2d.call(this,_32,this.formNodes[_32].node,_2f);
-}
-},this);
-}else{
-for(_30 in _2e){
-if(_30 in this.formNodes){
-_31[_30]=_2d.call(this,_30,this.formNodes[_30].node,_2e[_30]);
-}
-}
-}
-}else{
-for(_30 in this.formNodes){
-_31[_30]=_2d.call(this,_30,this.formNodes[_30].node,_2f);
-}
-}
-return _31;
-}});
+define([
+	"dojo/_base/lang",
+	"dojo/_base/array",
+	"dojo/on",
+	"dojo/dom",
+	"dojo/dom-attr",
+	"dojo/query",
+	"./_Mixin",
+	"dijit/form/_FormWidget",
+	"dijit/_base/manager",
+	"dojo/_base/declare"
+], function(lang, array, on, dom, domAttr, query, _Mixin, _FormWidget, manager, declare){
+	var fm = lang.getObject("dojox.form.manager", true),
+		aa = fm.actionAdapter,
+		keys = fm._keys,
+
+		ce = fm.changeEvent = function(node){
+			// summary:
+			//		Function that returns a valid "onchange" event for a given form node.
+			// node: Node
+			//		Form node.
+
+			var eventName = "click";
+			switch(node.tagName.toLowerCase()){
+				case "textarea":
+					eventName = "keyup";
+					break;
+				case "select":
+					eventName = "change";
+					break;
+				case "input":
+					switch(node.type.toLowerCase()){
+						case "text":
+						case "password":
+							eventName = "keyup";
+							break;
+					}
+					break;
+				// button, input/button, input/checkbox, input/radio,
+				// input/file, input/image, input/submit, input/reset
+				// use "onclick" (the default)
+			}
+			return eventName;	// String
+		},
+
+		registerNode = function(node, groupNode){
+			var name = domAttr.get(node, "name");
+			groupNode = groupNode || this.domNode;
+			if(name && !(name in this.formWidgets)){
+				// verify that it is not part of any widget
+				for(var n = node; n && n !== groupNode; n = n.parentNode){
+					if(domAttr.get(n, "widgetId") && manager.byNode(n).isInstanceOf(_FormWidget)){
+						// this is a child of some widget --- bail out
+						return null;
+					}
+				}
+				// register the node
+				if(node.tagName.toLowerCase() == "input" && node.type.toLowerCase() == "radio"){
+					var a = this.formNodes[name];
+					a = a && a.node;
+					if(a && lang.isArray(a)){
+						a.push(node);
+					}else{
+						this.formNodes[name] = {node: [node], connections: []};
+					}
+				}else{
+					this.formNodes[name] = {node: node, connections: []};
+				}
+			}else{
+				name = null;
+			}
+			return name;
+		},
+
+		getObserversFromNode = function(name){
+			var observers = {};
+			aa(function(_, n){
+				var o = domAttr.get(n, "data-dojo-observer") || domAttr.get(n, "observer");
+				if(o && typeof o == "string"){
+					array.forEach(o.split(","), function(o){
+						o = lang.trim(o);
+						if(o && lang.isFunction(this[o])){
+							observers[o] = 1;
+						}
+					}, this);
+				}
+			}).call(this, null, this.formNodes[name].node);
+			return keys(observers);
+		},
+
+		connectNode = function(name, observers){
+			var t = this.formNodes[name], c = t.connections;
+			if(c.length){
+				array.forEach(c, function(item){ item.remove(); });
+				c = t.connections = [];
+			}
+			aa(function(_, n){
+				// the next line is a crude workaround for Button that fires onClick instead of onChange
+				var eventName = ce(n);
+				array.forEach(observers, function(o){
+					c.push(on(n, eventName, lang.hitch(this, function(evt){
+						if(this.watching){
+							this[o](this.formNodeValue(name), name, n, evt);
+						}
+					})));
+				}, this);
+			}).call(this, null, t.node);
+		};
+
+	return declare("dojox.form.manager._NodeMixin", null, {
+		// summary:
+		//		Mixin to orchestrate dynamic forms (works with DOM nodes).
+		// description:
+		//		This mixin provides a foundation for an enhanced form
+		//		functionality: unified access to individual form elements,
+		//		unified "change" event processing, and general event
+		//		processing. It complements dojox/form/manager/_Mixin
+		//		extending the functionality to DOM nodes.
+
+		destroy: function(){
+			// summary:
+			//		Called when the widget is being destroyed
+
+			for(var name in this.formNodes){
+				array.forEach(this.formNodes[name].connections, function(item){
+					item.remove();
+				});
+			}
+			this.formNodes = {};
+
+			this.inherited(arguments);
+		},
+
+		// register/unregister widgets and nodes
+
+		registerNode: function(node){
+			// summary:
+			//		Register a node with the form manager
+			// node: String|Node
+			//		A node, or its id
+			// returns: Object
+			//		Returns self
+			if(typeof node == "string"){
+				node = dom.byId(node);
+			}
+			var name = registerNode.call(this, node);
+			if(name){
+				connectNode.call(this, name, getObserversFromNode.call(this, name));
+			}
+			return this;
+		},
+
+		unregisterNode: function(name){
+			// summary:
+			//		Removes the node by name from internal tables unregistering
+			//		connected observers
+			// name: String
+			//		Name of the to unregister
+			// returns: Object
+			//		Returns self
+			if(name in this.formNodes){
+				array.forEach(this.formNodes[name].connections, function(item){
+					item.remove();
+				});
+				delete this.formNodes[name];
+			}
+			return this;
+		},
+
+		registerNodeDescendants: function(node){
+			// summary:
+			//		Register node's descendants (form nodes) with the form manager
+			// node: String|Node
+			//		A widget, or its widgetId, or its DOM node
+			// returns: Object
+			//		Returns self
+
+			if(typeof node == "string"){
+				node = dom.byId(node);
+			}
+
+			query("input, select, textarea, button", node).
+				map(function(n){
+					return registerNode.call(this, n, node);
+				}, this).
+				forEach(function(name){
+					if(name){
+						connectNode.call(this, name, getObserversFromNode.call(this, name));
+					}
+				}, this);
+
+			return this;
+		},
+
+		unregisterNodeDescendants: function(node){
+			// summary:
+			//		Unregister node's descendants (form nodes) with the form manager
+			// node: String|Node
+			//		A widget, or its widgetId, or its DOM node
+			// returns: Object
+			//		Returns self
+
+			if(typeof node == "string"){
+				node = dom.byId(node);
+			}
+
+			query("input, select, textarea, button", node).
+				map(function(n){ return domAttr.get(node, "name") || null; }).
+				forEach(function(name){
+					if(name){
+						this.unregisterNode(name);
+					}
+				}, this);
+
+			return this;
+		},
+
+		// value accessors
+
+		formNodeValue: function(elem, value){
+			// summary:
+			//		Set or get a form element by name.
+			// elem: String|Node|Array
+			//		Form element's name, DOM node, or array or radio nodes.
+			// value: Object?
+			//		Optional. The value to set.
+			// returns: Object
+			//		For a getter it returns the value, for a setter it returns
+			//		self. If the elem is not valid, null will be returned.
+
+			var isSetter = arguments.length == 2 && value !== undefined, result;
+
+			if(typeof elem == "string"){
+				elem = this.formNodes[elem];
+				if(elem){
+					elem = elem.node;
+				}
+			}
+
+			if(!elem){
+				return null;	// Object
+			}
+
+			if(lang.isArray(elem)){
+				// input/radio array
+				if(isSetter){
+					array.forEach(elem, function(node){
+						node.checked = "";
+					});
+					array.forEach(elem, function(node){
+						node.checked = node.value === value ? "checked" : "";
+					});
+					return this;	// self
+				}
+				// getter
+				array.some(elem, function(node){
+					if(node.checked){
+						result = node;
+						return true;
+					}
+					return false;
+				});
+				return result ? result.value : "";	// String
+			}
+			// all other elements
+			switch(elem.tagName.toLowerCase()){
+				case "select":
+					if(elem.multiple){
+						// multiple is allowed
+						if(isSetter){
+							if(lang.isArray(value)){
+								var dict = {};
+								array.forEach(value, function(v){
+									dict[v] = 1;
+								});
+								query("> option", elem).forEach(function(opt){
+									opt.selected = opt.value in dict;
+								});
+								return this;	// self
+							}
+							// singular property
+							query("> option", elem).forEach(function(opt){
+								opt.selected = opt.value === value;
+							});
+							return this;	// self
+						}
+						// getter
+						result = query("> option", elem).filter(function(opt){
+							return opt.selected;
+						}).map(function(opt){
+							return opt.value;
+						});
+						return result.length == 1 ? result[0] : result;	// Object
+					}
+					// singular
+					if(isSetter){
+						query("> option", elem).forEach(function(opt){
+							opt.selected = opt.value === value;
+						});
+						return this;	// self
+					}
+					// getter
+					return elem.value || ""; // String
+				case "button":
+					if(isSetter){
+						elem.innerHTML = "" + value;
+						return this;
+					}
+					// getter
+					return elem.innerHTML;
+				case "input":
+					if(elem.type.toLowerCase() == "checkbox"){
+						// input/checkbox element
+						if(isSetter){
+							elem.checked = value ? "checked" : "";
+							return this;
+						}
+						// getter
+						return Boolean(elem.checked);
+					}
+			}
+			// the rest of inputs
+			if(isSetter){
+				elem.value = "" + value;
+				return this;
+			}
+			// getter
+			return elem.value;
+		},
+
+		// inspectors
+
+		inspectFormNodes: function(inspector, state, defaultValue){
+			// summary:
+			//		Run an inspector function on controlled form elements returning a result object.
+			// inspector: Function
+			//		A function to be called on a form element. Takes three arguments: a name, a node or
+			//		an array of nodes, and a supplied value. Runs in the context of the form manager.
+			//		Returns a value that will be collected and returned as a state.
+			// state: Object?
+			//		Optional. If a name-value dictionary --- only listed names will be processed.
+			//		If an array, all names in the array will be processed with defaultValue.
+			//		If omitted or null, all form elements will be processed with defaultValue.
+			// defaultValue: Object?
+			//		Optional. The default state (true, if omitted).
+
+			var name, result = {};
+
+			if(state){
+				if(lang.isArray(state)){
+					array.forEach(state, function(name){
+						if(name in this.formNodes){
+							result[name] = inspector.call(this, name, this.formNodes[name].node, defaultValue);
+						}
+					}, this);
+				}else{
+					for(name in state){
+						if(name in this.formNodes){
+							result[name] = inspector.call(this, name, this.formNodes[name].node, state[name]);
+						}
+					}
+				}
+			}else{
+				for(name in this.formNodes){
+					result[name] = inspector.call(this, name, this.formNodes[name].node, defaultValue);
+				}
+			}
+
+			return result;	// Object
+		}
+	});
 });

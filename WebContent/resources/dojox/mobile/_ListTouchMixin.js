@@ -1,23 +1,48 @@
-//>>built
-define("dojox/mobile/_ListTouchMixin",["dojo/_base/declare","dojo/touch","./sniff","dijit/form/_ListBase"],function(_1,_2,_3,_4){
-return _1("dojox.mobile._ListTouchMixin",_4,{postCreate:function(){
-this.inherited(arguments);
-if(!((_3("ie")===10||(!_3("ie")&&_3("trident")>6))&&typeof (MSGesture)!=="undefined")){
-this._listConnect("click","_onClick");
-}else{
-this._listConnect(_2.press,"_onPress");
-var _5=this,_6=new MSGesture(),_7;
-this._onPress=function(e){
-_6.target=_5.domNode;
-_6.addPointer(e.pointerId);
-_7=e.target;
-};
-this.on("MSGestureTap",function(e){
-_5._onClick(e,_7);
-});
-}
-},_onClick:function(_8,_9){
-this._setSelectedAttr(_9);
-this.onClick(_9);
-}});
+define([
+	"dojo/_base/declare",
+	"dojo/touch",
+	"./sniff",
+	"dijit/form/_ListBase"
+], function(declare, touch, has, ListBase){
+
+	return declare( "dojox.mobile._ListTouchMixin", ListBase, {
+		// summary:
+		//		Focus-less menu to handle touch events consistently.
+		// description:
+		//		Focus-less menu to handle touch events consistently. Abstract
+		//		method that must be defined externally:
+		//
+		//		- onClick: item was chosen (mousedown somewhere on the menu and mouseup somewhere on the menu).
+
+		postCreate: function(){
+			this.inherited(arguments);
+
+			// For some reason in IE click event is fired immediately after user scrolled combobox control and released
+			// his/her finger. As a fix we replace click with tap event that is fired correctly.
+			if(!( (has("ie") === 10 || (!has("ie") && has("trident") > 6)) && typeof(MSGesture) !== "undefined")){
+				this._listConnect("click", "_onClick");
+			}else{
+				this._listConnect(touch.press, "_onPress");
+
+				var self = this,
+					tapGesture = new MSGesture(),
+					target;
+
+				this._onPress = function(e){
+					tapGesture.target = self.domNode;
+					tapGesture.addPointer(e.pointerId);
+					target = e.target;
+				};
+
+				this.on("MSGestureTap", function(e){
+					self._onClick(e, target);
+				});
+			}
+		},
+
+		_onClick: function(/*Event*/ evt, /*DomNode*/ target){
+			this._setSelectedAttr(target);
+			this.onClick(target);
+		}
+	});
 });

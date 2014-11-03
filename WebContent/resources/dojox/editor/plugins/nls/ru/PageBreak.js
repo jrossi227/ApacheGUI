@@ -1,2 +1,5 @@
-//>>built
-define("dojox/editor/plugins/nls/ru/PageBreak",({"pageBreak":"Разделитель страниц"}));
+define(
+({
+	"pageBreak": "Разделитель страниц"
+})
+);

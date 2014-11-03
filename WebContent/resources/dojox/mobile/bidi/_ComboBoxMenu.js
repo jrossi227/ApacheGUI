@@ -1,14 +1,27 @@
-//>>built
-define("dojox/mobile/bidi/_ComboBoxMenu",["dojo/_base/declare","dojo/dom-construct","dojo/dom-class","dojo/dom-style"],function(_1,_2,_3,_4){
-return _1(null,{buildRendering:function(){
-this.inherited(arguments);
-if(!this.isLeftToRight()){
-this.containerNode.style.left="auto";
-_4.set(this.containerNode,{position:"absolute",top:0,right:0});
-_3.remove(this.previousButton,"mblComboBoxMenuItem");
-_3.add(this.previousButton,"mblComboBoxMenuItemRtl");
-_3.remove(this.nextButton,"mblComboBoxMenuItem");
-_3.add(this.nextButton,"mblComboBoxMenuItemRtl");
-}
-}});
+define([
+	"dojo/_base/declare",
+	"dojo/dom-construct",
+	"dojo/dom-class",
+	"dojo/dom-style"
+],
+	function(declare, domConstruct, domClass, domStyle){
+	// module:
+	//		dojox/mobile/bidi/_ComboBoxMenu
+
+	return declare(null, {
+
+		buildRendering: function(){
+			this.inherited(arguments);
+			// dojox.mobile mirroring support
+			if(!this.isLeftToRight()){
+				this.containerNode.style.left = "auto";
+				domStyle.set(this.containerNode, { position:"absolute", top:0, right:0 });
+				domClass.remove(this.previousButton, "mblComboBoxMenuItem");
+				domClass.add(this.previousButton, "mblComboBoxMenuItemRtl");
+				domClass.remove(this.nextButton, "mblComboBoxMenuItem");
+				domClass.add(this.nextButton, "mblComboBoxMenuItemRtl");
+			}
+		}
+		
+	});
 });

@@ -42,6 +42,10 @@
 .nihilo .dojoxCalendarMonthColumnView .dojoxCalendarGridTable tr:first-child td {
   border-top: 1px solid transparent;
 }
+/* 
+ * The dojoxCalendarToday & dojoxCalendarWeekend classes is added by the 
+ * ColumnView.styleGridColumn method that can be subclassed to add/remove css classes
+ */
 .nihilo .dojoxCalendarMonthColumnView .dojoxCalendarGridTable .dojoxCalendarToday {
   background-color: #fff2d2;
   font-weight: bold;

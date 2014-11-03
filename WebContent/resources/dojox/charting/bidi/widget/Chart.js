@@ -1,17 +1,29 @@
-//>>built
-define("dojox/charting/bidi/widget/Chart",["dojo/_base/declare"],function(_1){
-function _2(_3){
-return /^(ltr|rtl|auto)$/.test(_3)?_3:null;
-};
-return _1(null,{postMixInProperties:function(){
-this.textDir=this.params["textDir"]?this.params["textDir"]:this.params["dir"];
-},_setTextDirAttr:function(_4){
-if(_2(_4)!=null){
-this._set("textDir",_4);
-this.chart.setTextDir(_4);
-}
-},_setDirAttr:function(_5){
-this._set("dir",_5);
-this.chart.setDir(_5);
-}});
+define(["dojo/_base/declare"],
+	function(declare){
+	// module:
+	//		dojox/charting/bidi/widget/Chart						
+	function validateTextDir(textDir){
+		return /^(ltr|rtl|auto)$/.test(textDir) ? textDir : null;
+	}
+	
+	return declare(null, {
+		postMixInProperties: function(){
+			// set initial textDir of the chart, if passed in the creation use that value
+			// else use default value, following the GUI direction, this.chart doesn't exist yet
+			// so can't use set("textDir", textDir). This passed to this.chart in it's future creation.
+			this.textDir = this.params["textDir"] ? this.params["textDir"] : this.params["dir"];
+		},
+	
+		_setTextDirAttr: function(/*String*/ textDir){
+			if(validateTextDir(textDir) != null){
+				this._set("textDir", textDir);
+				this.chart.setTextDir(textDir);
+			}
+		},
+		
+		_setDirAttr: function(/*String*/ dir){
+			this._set("dir", dir);
+			this.chart.setDir(dir);			
+		}
+	});	
 });

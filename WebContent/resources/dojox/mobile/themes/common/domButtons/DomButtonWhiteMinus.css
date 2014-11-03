@@ -1,11 +1,12 @@
-
+/* === Minus Button ==*/
 .mblDomButtonWhiteMinus {
   position: relative;
   width: 29px;
   height: 29px;
 }
 .mblDomButtonWhiteMinus > div {
-  
+  /* horiz line */
+
   position: absolute;
   top: 12px;
   left: 8px;

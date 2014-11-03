@@ -1,55 +1,225 @@
-//>>built
-define("dojox/gfx/svgext",["dojo/dom","dojo/_base/array","dojo/_base/window","./_base","./svg"],function(_1,_2,_3,_4,_5){
-var _6=_4.svgext={};
-var _7={primitives:null,tag:null,children:null};
-function _8(_9,_a){
-var _b=_a.ownerDocument.createElementNS(_5.xmlns.svg,_9.tag);
-_a.appendChild(_b);
-for(var p in _9){
-if(!(p in _7)){
-_b.setAttribute(p,_9[p]);
-}
-}
-if(_9.children){
-_2.forEach(_9.children,function(f){
-_8(f,_b);
-});
-}
-return _b;
-};
-_5.Shape.extend({addRenderingOption:function(_c,_d){
-this.rawNode.setAttribute(_c,_d);
-return this;
-},setFilter:function(_e){
-if(!_e){
-this.rawNode.removeAttribute("filter");
-this.filter=null;
-return this;
-}
-this.filter=_e;
-_e.id=_e.id||_4._base._getUniqueId();
-var _f=_1.byId(_e.id);
-if(!_f){
-_f=this.rawNode.ownerDocument.createElementNS(_5.xmlns.svg,"filter");
-_f.setAttribute("filterUnits","userSpaceOnUse");
-for(var p in _e){
-if(!(p in _7)){
-_f.setAttribute(p,_e[p]);
-}
-}
-_2.forEach(_e.primitives,function(p){
-_8(p,_f);
-});
-var _10=this._getParentSurface();
-if(_10){
-var _11=_10.defNode;
-_11.appendChild(_f);
-}
-}
-this.rawNode.setAttribute("filter","url(#"+_e.id+")");
-return this;
-},getFilter:function(){
-return this.filter;
-}});
-return _6;
+define([
+	"dojo/dom",
+	"dojo/_base/array",
+	"dojo/_base/window",
+	"./_base",
+	"./svg"], 
+	function(dom, array, win, gfx, svg){
+
+	/*=====
+	return {
+		// summary:
+		//		A module that adds svg-specific features to the gfx api. You should require this module
+		//		when your application specifically targets the SVG renderer.
+	}
+	=====*/
+
+	var svgext = gfx.svgext = {};
+	var toIgnore = {
+		primitives:null,
+		tag:null,
+		children:null
+	};
+
+	function buildFilterPrimitivesDOM(primitive, parentNode){
+		var node =  parentNode.ownerDocument.createElementNS(svg.xmlns.svg, primitive.tag);
+		parentNode.appendChild(node);
+		for(var p in primitive){
+			if(!(p in toIgnore)){
+				node.setAttribute(p, primitive[p]);
+			}
+		}
+		if(primitive.children){
+			array.forEach(primitive.children, function(f){buildFilterPrimitivesDOM(f, node);});
+		}
+		return node;
+	}
+
+	/*=====
+	declare("dojox.gfx.svgext.__FilterPrimitiveArgs", null, {
+		// summary:
+		//		Represents an SVG filter primitive.
+		// description:
+		//		In addition to the following properties, a FilterPrimitiveArgs should define the properties specific to
+		//		this primitive, as defined by the SVG spec.
+		// example:
+		//		Define a simple feGaussianBlur primitive:
+		//	|	var blurPrimitive = {
+		//	|		"tag": "feGaussianBlur",
+		//	|		"in": "SourceAlpha",
+		//	|		"stdDeviation":"4",
+		//	|		"result":"blur"
+		//	|	};
+		//
+		// example:
+		//		Define a feSpecularLighting primitive with one fePointLight child
+		//	|	var lighting = {
+		//	|		"tag": "feSpecularLighting",
+		//	|		"in":"blur",
+		//	|		"surfaceScale":5,
+		//	|		"specularConstant":.75,
+		//	|		"specularExponent":20,
+		//	|		"lighting-color":"#bbbbbb",
+		//	|		"result":"specOut"
+		//	|		"children": [
+		//	|			"tag": "fePointLight"
+		//	|			"x":-5000,
+		//	|			"y":-10000,
+		//	|			"z":20000
+		//	|		]
+		//	|	};
+
+		// tag: String?
+		//		The type of the primitive, as specified by the SVG spec (http://www.w3.org/TR/SVG/filters.html)
+		tag: null,
+
+		// children: dojox.gfx.svgext.__FilterPrimitiveArgs[]?
+		//		An array of child primitives, if any.
+		children: null
+	});
+	=====*/
+
+
+	/*=====
+	declare("dojox.gfx.svgext.__FilterArgs", null, {
+		// summary:
+		//		The filter arguments passed to the dojox/gfx/svgext/Shape.setFilter method.
+		// description:
+		//		An object defining the properties of a SVG Filter.
+		// example:
+		//		Define a drop shadow filter:
+		//	|	var filter = {
+		//	|		"id": "fastSmallDropShadow",
+		//	|		"x": "-10%",
+		//	|		"y": "-10%",
+		//	|		"width": "125%",
+		//	|		"height": "125%",
+		//	|		"primitives": [{
+		//	|			"tag": "feColorMatrix",
+		//	|			"in": "SourceAlpha",
+		//	|			"type": "matrix",
+		//	|			"result": "grey",
+		//	|			"values": "0.2125,0.7154,0.0721,0,0,0.2125,0.7154,0.0721,0,0,0.2125,0.7154,0.0721,0,0,0,0,0,0.7,0"
+		//	|		},{
+		//	|			"tag": "feOffset",
+		//	|			"dx": 3,
+		//	|			"dy": 3,
+		//	|			"result": "offsetBlur"
+		//	|		},{
+		//	|			"tag": "feMerge",
+		//	|			"children":[{
+		//	|				"tag": "feMergeNode",
+		//	|				"in": "offsetBlur"
+		//	|			},{
+		//	|				"tag": "feMergeNode",
+		//	|				"in": "SourceGraphic"
+		//	|			}]
+		//	|		}]
+		//	|	};
+
+
+		// id: String?
+		//		The filter identifier. If none is provided, a generated id will be used.
+		id: null,
+
+		// filterUnits: String?
+		//		The coordinate system of the filter. Default is "userSpaceOnUse".
+		filterUnits: "userSpaceOnUse",
+
+		// primitives: dojox.gfx.svgext.__FilterPrimitiveArgs[]
+		//		An array of filter primitives that define this filter.
+		primitives: []
+	});
+	=====*/
+
+	svg.Shape.extend({
+		addRenderingOption: function(/*String*/option, /*String*/value){
+			// summary:
+			//		Adds the specified SVG rendering option on this shape.
+			// option: String
+			//		The name of the rendering option to add to this shape, as specified by the
+			//		SVG specification (http://www.w3.org/TR/SVG/painting.html#RenderingProperties)
+			// value: String
+			//		the option value.
+			this.rawNode.setAttribute(option, value);
+			return this; // self
+		},
+
+		setFilter: function(/*dojox.gfx.svgext.__FilterArgs*/filter){
+			// summary:
+			//		Sets the specified SVG Filter on this shape.
+			// filter: dojox.gfx.svgext.__FilterArgs
+			//		An object that defines the filter properties. Note that in order to make the creation of such filter
+			//		easier, the dojox/gfx/filters module defines both a simple API to easily create filter objects and
+			//		also a set of predefined filters like drop shadows, blurs, textures effects (among others).
+			// example:
+			//		Sets a drop shadow filter:
+			//	|	var filter = {
+			//	|		"id": "fastSmallDropShadow",
+			//	|		"x": "-10%",
+			//	|		"y": "-10%",
+			//	|		"width": "125%",
+			//	|		"height": "125%",
+			//	|		"primitives": [{
+			//	|			"tag": "feColorMatrix",
+			//	|			"in": "SourceAlpha",
+			//	|			"type": "matrix",
+			//	|			"result": "grey",
+			//	|			"values": "0.2125,0.7154,0.0721,0,0,0.2125,0.7154,0.0721,0,0,0.2125,0.7154,0.0721,0,0,0,0,0,0.7,0"
+			//	|		},{
+			//	|			"tag": "feOffset",
+			//	|			"dx": 3,
+			//	|			"dy": 3,
+			//	|			"result": "offsetBlur"
+			//	|		},{
+			//	|			"tag": "feMerge",
+			//	|			"in": "offsetBlur",
+			//	|			"in2": "SourceGraphic"
+			//	|		}]
+			//	|	};
+			//	|	var shape = surface.createRect().setFilter(filter);
+			//
+			// example:
+			//		Sets a predefined filter from the dojox/gfx/filters module:
+			//	|	require(["dojox/gfx/filters","dojox/gfx/svgext",...], function(filters, svgext){
+			//	|		...
+			//	|		var filter = filters.textures.paper({"id":"myFilter","x":0,"y":0,"width":100,"height":100});
+			//	|		var shape = surface.createRect().setFilter(filter);
+
+			if(!filter){
+				this.rawNode.removeAttribute("filter");
+				this.filter = null;
+				return this;
+			}
+			this.filter = filter;
+			filter.id = filter.id || gfx._base._getUniqueId();
+			var filterNode = dom.byId(filter.id);
+			if(!filterNode){
+				filterNode = this.rawNode.ownerDocument.createElementNS(svg.xmlns.svg, "filter");
+				filterNode.setAttribute("filterUnits", "userSpaceOnUse");
+				for(var p in filter){
+					if(!(p in toIgnore)){
+						filterNode.setAttribute(p, filter[p]);
+					}
+				}
+				array.forEach(filter.primitives, function(p){
+					buildFilterPrimitivesDOM(p, filterNode);
+				});
+				var surface = this._getParentSurface();
+				if(surface){
+					var defs = surface.defNode;
+					defs.appendChild(filterNode);
+				}
+			}
+			this.rawNode.setAttribute("filter", "url(#"+filter.id+")");
+			return this;
+		},
+
+		getFilter: function(){
+			// summary:
+			//		Gets the shape SVG Filter.
+			return this.filter;
+		}
+	});
+	return svgext;
 });

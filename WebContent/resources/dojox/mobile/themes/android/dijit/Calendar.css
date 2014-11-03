@@ -1,4 +1,5 @@
-
+/* if you link this style sheet, dijit/themes/dijit.css must be imported. */
+/* dijit.Calendar */
 .dijitCalendar {
   padding: 0;
   width: 320px;

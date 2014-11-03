@@ -154,6 +154,10 @@
   -moz-transition-duration: 0.2s;
   transition-duration: 0.2s;
 }
+/* 
+ * The dojoxCalendarToday & dojoxCalendarWeekend classes is added by the 
+ * ColumnView.styleColumnHeaderCell method that can be subclassed to add/remove css classes
+ */
 .dojoxCalendarColumnView .dojoxCalendarColumnHeaderTable .dojoxCalendarToday {
   color: #295bb3;
 }
@@ -189,6 +193,9 @@
   width: 100%;
   height: 100%;
 }
+/* 
+ * The ColumnView.styleRowHeaderCell method that can be subclassed to add/remove css classes per hour.
+ */
 .dojoxCalendarColumnView .dojoxCalendarRowHeaderTable td {
   vertical-align: top;
   text-align: right;

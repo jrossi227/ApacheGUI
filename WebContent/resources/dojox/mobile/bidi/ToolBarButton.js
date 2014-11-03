@@ -1,21 +1,35 @@
-//>>built
-define("dojox/mobile/bidi/ToolBarButton",["dojo/_base/declare","dojo/_base/lang","dojo/dom-class"],function(_1,_2,_3){
-return _1(null,{buildRendering:function(){
-this.inherited(arguments);
-if(!this.isLeftToRight()&&this.arrow){
-var _4=(this.arrow==="left"?"mblToolBarButtonLeftArrow":"mblToolBarButtonRightArrow");
-var _5=(this.arrow==="left"?"mblToolBarButtonHasLeftArrow":"mblToolBarButtonHasRightArrow");
-var _6=(this.arrow==="left"?"mblToolBarButtonRightArrow":"mblToolBarButtonLeftArrow");
-var _7=(this.arrow==="left"?"mblToolBarButtonHasRightArrow":"mblToolBarButtonHasLeftArrow");
-_3.remove(this.arrowNode,_4);
-_3.add(this.arrowNode,_6);
-_3.remove(this.domNode,_5);
-_3.add(this.domNode,_7);
-}
-},_setLabelAttr:function(_8){
-this.inherited(arguments);
-if(!this.isLeftToRight()){
-_3.toggle(this.tableNode,"mblToolBarButtonTextRtl",_8||this.arrow);
-}
-}});
+define([
+	"dojo/_base/declare",
+	"dojo/_base/lang",
+	"dojo/dom-class"
+], function(declare, lang, domClass){
+
+	// module:
+	//		dojox/mobile/ToolBarButton
+
+	return declare(null, {
+		buildRendering: function(){
+			this.inherited(arguments);
+			//dojox.mobile mirroring support
+			if(!this.isLeftToRight() && this.arrow){
+				var cRemove1 = (this.arrow === "left" ? "mblToolBarButtonLeftArrow" : "mblToolBarButtonRightArrow");
+				var cRemove2 = (this.arrow === "left" ? "mblToolBarButtonHasLeftArrow" : "mblToolBarButtonHasRightArrow");
+				var cAdd1 = (this.arrow === "left" ? "mblToolBarButtonRightArrow" : "mblToolBarButtonLeftArrow");
+				var cAdd2 = (this.arrow === "left" ? "mblToolBarButtonHasRightArrow" : "mblToolBarButtonHasLeftArrow");
+				domClass.remove(this.arrowNode, cRemove1);
+				domClass.add(this.arrowNode, cAdd1);
+				domClass.remove(this.domNode, cRemove2);
+				domClass.add(this.domNode, cAdd2);
+			}
+		},
+		_setLabelAttr: function(/*String*/text){
+			// summary:
+			//		Sets the button label text.
+			this.inherited(arguments);
+			// dojox.mobile mirroring support
+			if(!this.isLeftToRight()){
+				domClass.toggle(this.tableNode, "mblToolBarButtonTextRtl", text || this.arrow);
+			}
+		}
+	});
 });

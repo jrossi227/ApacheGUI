@@ -1,15 +1,93 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
+define(["./kernel", "./lang", "../sniff"], function(dojo, lang, has){
+	// module:
+	//		dojo/_base/sniff
 
-//>>built
-define("dojo/_base/sniff",["./kernel","./lang","../sniff"],function(_1,_2,_3){
-if(!1){
-return _3;
-}
-_1._name="browser";
-_2.mixin(_1,{isBrowser:true,isFF:_3("ff"),isIE:_3("ie"),isKhtml:_3("khtml"),isWebKit:_3("webkit"),isMozilla:_3("mozilla"),isMoz:_3("mozilla"),isOpera:_3("opera"),isSafari:_3("safari"),isChrome:_3("chrome"),isMac:_3("mac"),isIos:_3("ios"),isAndroid:_3("android"),isWii:_3("wii"),isQuirks:_3("quirks"),isAir:_3("air")});
-return _3;
+	/*=====
+	return {
+		// summary:
+		//		Deprecated.   New code should use dojo/sniff.
+		//		This module populates the dojo browser version sniffing properties like dojo.isIE.
+	};
+	=====*/
+
+	if(!has("host-browser")){
+		return has;
+	}
+
+	// no idea what this is for, or if it's used
+	dojo._name = "browser";
+
+	lang.mixin(dojo, {
+		// isBrowser: Boolean
+		//		True if the client is a web-browser
+		isBrowser: true,
+
+		// isFF: Number|undefined
+		//		Version as a Number if client is FireFox. undefined otherwise. Corresponds to
+		//		major detected FireFox version (1.5, 2, 3, etc.)
+		isFF: has("ff"),
+
+		// isIE: Number|undefined
+		//		Version as a Number if client is MSIE(PC). undefined otherwise. Corresponds to
+		//		major detected IE version (6, 7, 8, etc.)
+		isIE: has("ie"),
+
+		// isKhtml: Number|undefined
+		//		Version as a Number if client is a KHTML browser. undefined otherwise. Corresponds to major
+		//		detected version.
+		isKhtml: has("khtml"),
+
+		// isWebKit: Number|undefined
+		//		Version as a Number if client is a WebKit-derived browser (Konqueror,
+		//		Safari, Chrome, etc.). undefined otherwise.
+		isWebKit: has("webkit"),
+
+		// isMozilla: Number|undefined
+		//		Version as a Number if client is a Mozilla-based browser (Firefox,
+		//		SeaMonkey). undefined otherwise. Corresponds to major detected version.
+		isMozilla: has("mozilla"),
+		// isMoz: Number|undefined
+		//		Version as a Number if client is a Mozilla-based browser (Firefox,
+		//		SeaMonkey). undefined otherwise. Corresponds to major detected version.
+		isMoz: has("mozilla"),
+
+		// isOpera: Number|undefined
+		//		Version as a Number if client is Opera. undefined otherwise. Corresponds to
+		//		major detected version.
+		isOpera: has("opera"),
+
+		// isSafari: Number|undefined
+		//		Version as a Number if client is Safari or iPhone. undefined otherwise.
+		isSafari: has("safari"),
+
+		// isChrome: Number|undefined
+		//		Version as a Number if client is Chrome browser. undefined otherwise.
+		isChrome: has("chrome"),
+
+		// isMac: Boolean
+		//		True if the client runs on Mac
+		isMac: has("mac"),
+
+		// isIos: Number|undefined
+		//		Version as a Number if client is iPhone, iPod, or iPad. undefined otherwise.
+		isIos: has("ios"),
+
+		// isAndroid: Number|undefined
+		//		Version as a Number if client is android browser. undefined otherwise.
+		isAndroid: has("android"),
+
+		// isWii: Boolean
+		//		True if client is Wii
+		isWii: has("wii"),
+
+		// isQuirks: Boolean
+		//		Page is in quirks mode.
+		isQuirks: has("quirks"),
+
+		// isAir: Boolean
+		//		True if client is Adobe Air
+		isAir: has("air")
+	});
+
+	return has;
 });

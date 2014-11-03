@@ -1,42 +1,45 @@
-//>>built
-define("dojox/charting/bidi/action2d/Tooltip",["dojo/_base/declare","dojo/dom-style"],function(_1,_2){
-return _1(null,{_recheckPosition:function(_3,_4,_5){
-if(!this.chart.isRightToLeft()){
-return;
-}
-var _6=this.chart.offsets.l-this.chart.offsets.r;
-if(_3.element=="marker"){
-_4.x=this.chart.dim.width-_3.cx+_6;
-_5[0]="before-centered";
-_5[1]="after-centered";
-}else{
-if(_3.element=="circle"){
-_4.x=this.chart.dim.width-_3.cx-_3.cr+_6;
-}else{
-if(_3.element=="bar"||_3.element=="column"){
-_4.x=this.chart.dim.width-_4.width-_4.x+_6;
-if(_3.element=="bar"){
-_5[0]="before-centered";
-_5[1]="after-centered";
-}
-}else{
-if(_3.element=="candlestick"){
-_4.x=this.chart.dim.width+_6-_3.x;
-}
-}
-}
-}
-},_format:function(_7){
-var _8=(_2.get(this.chart.node,"direction")=="rtl");
-var _9=(this.chart.getTextDir(_7)=="rtl");
-if(_9&&!_8){
-return "<span dir = 'rtl'>"+_7+"</span>";
-}else{
-if(!_9&&_8){
-return "<span dir = 'ltr'>"+_7+"</span>";
-}else{
-return _7;
-}
-}
-}});
+define(["dojo/_base/declare", "dojo/dom-style"],
+	function(declare, domStyle){
+	// module:
+	//		dojox/charting/bidi/action2d/Tooltip		
+	return declare(null, {
+		_recheckPosition: function(obj,rect,position){
+			if(!this.chart.isRightToLeft()){
+				return;
+			}
+			var shift = this.chart.offsets.l - this.chart.offsets.r;
+			if(obj.element == "marker"){
+				rect.x = this.chart.dim.width - obj.cx + shift;
+				position[0] = "before-centered";
+				position[1] = "after-centered";
+			}
+			else if(obj.element == "circle"){
+				rect.x = this.chart.dim.width - obj.cx - obj.cr + shift;
+			}
+			else if(obj.element == "bar" || obj.element == "column"){
+				rect.x = this.chart.dim.width - rect.width - rect.x + shift;
+				if(obj.element == "bar"){
+					position[0] = "before-centered";
+					position[1] = "after-centered";
+				}
+			}
+			else if(obj.element == "candlestick"){
+				rect.x = this.chart.dim.width + shift - obj.x;
+			}
+		},
+		
+		_format: function(tooltip){
+			var isChartDirectionRtl = (domStyle.get(this.chart.node, "direction") == "rtl");
+			var isBaseTextDirRtl = (this.chart.getTextDir(tooltip) == "rtl");
+			if(isBaseTextDirRtl && !isChartDirectionRtl){
+				return "<span dir = 'rtl'>" + tooltip +"</span>";
+			}
+			else if(!isBaseTextDirRtl && isChartDirectionRtl){
+				return "<span dir = 'ltr'>" + tooltip +"</span>";
+			}else{
+				return tooltip;
+			}
+		}
+	});
 });
+

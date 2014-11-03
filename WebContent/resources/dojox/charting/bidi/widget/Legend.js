@@ -1,37 +1,63 @@
-//>>built
-define("dojox/charting/bidi/widget/Legend",["dojo/_base/declare","dojo/dom","dijit/registry","dojo/_base/connect","dojo/_base/array","dojo/query"],function(_1,_2,_3,_4,_5,_6){
-function _7(_8){
-return /^(ltr|rtl|auto)$/.test(_8)?_8:null;
-};
-return _1(null,{postMixInProperties:function(){
-if(!this.chart){
-if(!this.chartRef){
-return;
-}
-var _9=_3.byId(this.chartRef);
-if(!_9){
-var _a=_2.byId(this.chartRef);
-if(_a){
-_9=_3.byNode(_a);
-}else{
-return;
-}
-}
-this.textDir=_9.chart.textDir;
-_4.connect(_9.chart,"setTextDir",this,"_setTextDirAttr");
-}else{
-this.textDir=this.chart.textDir;
-_4.connect(this.chart,"setTextDir",this,"_setTextDirAttr");
-}
-},_setTextDirAttr:function(_b){
-if(_7(_b)!=null){
-if(this.textDir!=_b){
-this._set("textDir",_b);
-var _c=_6(".dojoxLegendText",this._tr);
-_5.forEach(_c,function(_d){
-_d.dir=this.getTextDir(_d.innerHTML,_d.dir);
-},this);
-}
-}
-}});
+define(["dojo/_base/declare", "dojo/dom", "dijit/registry", "dojo/_base/connect", "dojo/_base/array", "dojo/query"],
+	function(declare, dom, widgetManager, hub, arrayUtil, query){
+	// module:
+	//		dojox/charting/bidi/widget/Legend	
+	function validateTextDir(textDir){
+		return /^(ltr|rtl|auto)$/.test(textDir) ? textDir : null;
+	}
+	
+	return declare(null, {
+		postMixInProperties: function(){
+			// summary:
+			//		Connect the setter of textDir legend to setTextDir of the chart,
+			//		so _setTextDirAttr of the legend will be called after setTextDir of the chart is called.
+			// tags:
+			//		private
+
+			// find the chart that is the owner of this legend, use it's
+			// textDir
+			if(!this.chart){
+				if(!this.chartRef){ return; }
+				var chart = widgetManager.byId(this.chartRef);
+				if(!chart){
+					var node = dom.byId(this.chartRef);
+					if(node){
+						chart = widgetManager.byNode(node);
+					}else{
+						return;
+					}
+				}
+				this.textDir = chart.chart.textDir;
+				hub.connect(chart.chart, "setTextDir", this, "_setTextDirAttr");
+
+			}else{
+				this.textDir = this.chart.textDir;
+				hub.connect(this.chart, "setTextDir", this, "_setTextDirAttr");
+
+			}
+		},
+
+		_setTextDirAttr: function(/*String*/ textDir){
+			// summary:
+			//		Setter for textDir.
+			// description:
+			//		Users shouldn't call this function; they should be calling
+			//		set('textDir', value)
+			// tags:
+			//		private
+
+			// only if new textDir is different from the old one
+			if(validateTextDir(textDir) != null){
+				if(this.textDir != textDir){
+					this._set("textDir", textDir);
+					// get array of all the labels
+					var legendLabels = query(".dojoxLegendText", this._tr);
+						// for every label calculate it's new dir.
+						arrayUtil.forEach(legendLabels, function(label){
+							label.dir = this.getTextDir(label.innerHTML, label.dir);
+					}, this);
+				}
+			}
+		}
+	});	
 });

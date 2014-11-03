@@ -1,254 +1,606 @@
-//>>built
-define("dijit/_editor/plugins/FontChoice",["require","dojo/_base/array","dojo/_base/declare","dojo/dom-construct","dojo/i18n","dojo/_base/lang","dojo/store/Memory","../../registry","../../_Widget","../../_TemplatedMixin","../../_WidgetsInTemplateMixin","../../form/FilteringSelect","../_Plugin","../range","dojo/i18n!../nls/FontChoice"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a,_b,_c,_d,_e){
-var _f=_3("dijit._editor.plugins._FontDropDown",[_9,_a,_b],{label:"",plainText:false,templateString:"<span style='white-space: nowrap' class='dijit dijitReset dijitInline'>"+"<label class='dijitLeft dijitInline' for='${selectId}'>${label}</label>"+"<input data-dojo-type='../../form/FilteringSelect' required='false' "+"data-dojo-props='labelType:\"html\", labelAttr:\"label\", searchAttr:\"name\"' "+"class='${comboClass}' "+"tabIndex='-1' id='${selectId}' data-dojo-attach-point='select' value=''/>"+"</span>",contextRequire:_1,postMixInProperties:function(){
-this.inherited(arguments);
-this.strings=_5.getLocalization("dijit._editor","FontChoice");
-this.label=this.strings[this.command];
-this.id=_8.getUniqueId(this.declaredClass.replace(/\./g,"_"));
-this.selectId=this.id+"_select";
-this.inherited(arguments);
-},postCreate:function(){
-this.select.set("store",new _7({idProperty:"value",data:_2.map(this.values,function(_10){
-var _11=this.strings[_10]||_10;
-return {label:this.getLabel(_10,_11),name:_11,value:_10};
-},this)}));
-this.select.set("value","",false);
-this.disabled=this.select.get("disabled");
-},_setValueAttr:function(_12,_13){
-_13=_13!==false;
-this.select.set("value",_2.indexOf(this.values,_12)<0?"":_12,_13);
-if(!_13){
-this.select._lastValueReported=null;
-}
-},_getValueAttr:function(){
-return this.select.get("value");
-},focus:function(){
-this.select.focus();
-},_setDisabledAttr:function(_14){
-this._set("disabled",_14);
-this.select.set("disabled",_14);
-}});
-var _15=_3("dijit._editor.plugins._FontNameDropDown",_f,{generic:false,command:"fontName",comboClass:"dijitFontNameCombo",postMixInProperties:function(){
-if(!this.values){
-this.values=this.generic?["serif","sans-serif","monospace","cursive","fantasy"]:["Arial","Times New Roman","Comic Sans MS","Courier New"];
-}
-this.inherited(arguments);
-},getLabel:function(_16,_17){
-if(this.plainText){
-return _17;
-}else{
-return "<div style='font-family: "+_16+"'>"+_17+"</div>";
-}
-},_setValueAttr:function(_18,_19){
-_19=_19!==false;
-if(this.generic){
-var map={"Arial":"sans-serif","Helvetica":"sans-serif","Myriad":"sans-serif","Times":"serif","Times New Roman":"serif","Comic Sans MS":"cursive","Apple Chancery":"cursive","Courier":"monospace","Courier New":"monospace","Papyrus":"fantasy","Estrangelo Edessa":"cursive","Gabriola":"fantasy"};
-_18=map[_18]||_18;
-}
-this.inherited(arguments,[_18,_19]);
-}});
-var _1a=_3("dijit._editor.plugins._FontSizeDropDown",_f,{command:"fontSize",comboClass:"dijitFontSizeCombo",values:[1,2,3,4,5,6,7],getLabel:function(_1b,_1c){
-if(this.plainText){
-return _1c;
-}else{
-return "<font size="+_1b+"'>"+_1c+"</font>";
-}
-},_setValueAttr:function(_1d,_1e){
-_1e=_1e!==false;
-if(_1d.indexOf&&_1d.indexOf("px")!=-1){
-var _1f=parseInt(_1d,10);
-_1d={10:1,13:2,16:3,18:4,24:5,32:6,48:7}[_1f]||_1d;
-}
-this.inherited(arguments,[_1d,_1e]);
-}});
-var _20=_3("dijit._editor.plugins._FormatBlockDropDown",_f,{command:"formatBlock",comboClass:"dijitFormatBlockCombo",values:["noFormat","p","h1","h2","h3","pre"],postCreate:function(){
-this.inherited(arguments);
-this.set("value","noFormat",false);
-},getLabel:function(_21,_22){
-if(this.plainText||_21=="noFormat"){
-return _22;
-}else{
-return "<"+_21+">"+_22+"</"+_21+">";
-}
-},_execCommand:function(_23,_24,_25){
-if(_25==="noFormat"){
-var _26;
-var end;
-var sel=_e.getSelection(_23.window);
-if(sel&&sel.rangeCount>0){
-var _27=sel.getRangeAt(0);
-var _28,tag;
-if(_27){
-_26=_27.startContainer;
-end=_27.endContainer;
-while(_26&&_26!==_23.editNode&&_26!==_23.document.body&&_26.nodeType!==1){
-_26=_26.parentNode;
-}
-while(end&&end!==_23.editNode&&end!==_23.document.body&&end.nodeType!==1){
-end=end.parentNode;
-}
-var _29=_6.hitch(this,function(_2a,ary){
-if(_2a.childNodes&&_2a.childNodes.length){
-var i;
-for(i=0;i<_2a.childNodes.length;i++){
-var c=_2a.childNodes[i];
-if(c.nodeType==1){
-if(_23.selection.inSelection(c)){
-var tag=c.tagName?c.tagName.toLowerCase():"";
-if(_2.indexOf(this.values,tag)!==-1){
-ary.push(c);
-}
-_29(c,ary);
-}
-}
-}
-}
-});
-var _2b=_6.hitch(this,function(_2c){
-if(_2c&&_2c.length){
-_23.beginEditing();
-while(_2c.length){
-this._removeFormat(_23,_2c.pop());
-}
-_23.endEditing();
-}
-});
-var _2d=[];
-if(_26==end){
-var _2e;
-_28=_26;
-while(_28&&_28!==_23.editNode&&_28!==_23.document.body){
-if(_28.nodeType==1){
-tag=_28.tagName?_28.tagName.toLowerCase():"";
-if(_2.indexOf(this.values,tag)!==-1){
-_2e=_28;
-break;
-}
-}
-_28=_28.parentNode;
-}
-_29(_26,_2d);
-if(_2e){
-_2d=[_2e].concat(_2d);
-}
-_2b(_2d);
-}else{
-_28=_26;
-while(_23.selection.inSelection(_28)){
-if(_28.nodeType==1){
-tag=_28.tagName?_28.tagName.toLowerCase():"";
-if(_2.indexOf(this.values,tag)!==-1){
-_2d.push(_28);
-}
-_29(_28,_2d);
-}
-_28=_28.nextSibling;
-}
-_2b(_2d);
-}
-_23.onDisplayChanged();
-}
-}
-}else{
-_23.execCommand(_24,_25);
-}
-},_removeFormat:function(_2f,_30){
-if(_2f.customUndo){
-while(_30.firstChild){
-_4.place(_30.firstChild,_30,"before");
-}
-_30.parentNode.removeChild(_30);
-}else{
-_2f.selection.selectElementChildren(_30);
-var _31=_2f.selection.getSelectedHtml();
-_2f.selection.selectElement(_30);
-_2f.execCommand("inserthtml",_31||"");
-}
-}});
-var _32=_3("dijit._editor.plugins.FontChoice",_d,{useDefaultCommand:false,_initButton:function(){
-var _33={fontName:_15,fontSize:_1a,formatBlock:_20}[this.command],_34=this.params;
-if(this.params.custom){
-_34.values=this.params.custom;
-}
-var _35=this.editor;
-this.button=new _33(_6.delegate({dir:_35.dir,lang:_35.lang},_34));
-this.own(this.button.select.on("change",_6.hitch(this,function(_36){
-if(this.editor.focused){
-this.editor.focus();
-}
-if(this.command=="fontName"&&_36.indexOf(" ")!=-1){
-_36="'"+_36+"'";
-}
-if(this.button._execCommand){
-this.button._execCommand(this.editor,this.command,_36);
-}else{
-this.editor.execCommand(this.command,_36);
-}
-})));
-},updateState:function(){
-var _37=this.editor;
-var _38=this.command;
-if(!_37||!_37.isLoaded||!_38.length){
-return;
-}
-if(this.button){
-var _39=this.get("disabled");
-this.button.set("disabled",_39);
-if(_39){
-return;
-}
-var _3a;
-try{
-_3a=_37.queryCommandValue(_38)||"";
-}
-catch(e){
-_3a="";
-}
-var _3b=_6.isString(_3a)&&_3a.match(/'([^']*)'/);
-if(_3b){
-_3a=_3b[1];
-}
-if(_38==="formatBlock"){
-if(!_3a||_3a=="p"){
-_3a=null;
-var _3c;
-var sel=_e.getSelection(this.editor.window);
-if(sel&&sel.rangeCount>0){
-var _3d=sel.getRangeAt(0);
-if(_3d){
-_3c=_3d.endContainer;
-}
-}
-while(_3c&&_3c!==_37.editNode&&_3c!==_37.document){
-var tg=_3c.tagName?_3c.tagName.toLowerCase():"";
-if(tg&&_2.indexOf(this.button.values,tg)>-1){
-_3a=tg;
-break;
-}
-_3c=_3c.parentNode;
-}
-if(!_3a){
-_3a="noFormat";
-}
-}else{
-if(_2.indexOf(this.button.values,_3a)<0){
-_3a="noFormat";
-}
-}
-}
-if(_3a!==this.button.get("value")){
-this.button.set("value",_3a,false);
-}
-}
-}});
-_2.forEach(["fontName","fontSize","formatBlock"],function(_3e){
-_d.registry[_3e]=function(_3f){
-return new _32({command:_3e,plainText:_3f.plainText});
-};
-});
-_32._FontDropDown=_f;
-_32._FontNameDropDown=_15;
-_32._FontSizeDropDown=_1a;
-_32._FormatBlockDropDown=_20;
-return _32;
+define([
+	"require",
+	"dojo/_base/array", // array.indexOf array.map
+	"dojo/_base/declare", // declare
+	"dojo/dom-construct", // domConstruct.place
+	"dojo/i18n", // i18n.getLocalization
+	"dojo/_base/lang", // lang.delegate lang.hitch lang.isString
+	"dojo/store/Memory", // MemoryStore
+	"../../registry", // registry.getUniqueId
+	"../../_Widget",
+	"../../_TemplatedMixin",
+	"../../_WidgetsInTemplateMixin",
+	"../../form/FilteringSelect",
+	"../_Plugin",
+	"../range",
+	"dojo/i18n!../nls/FontChoice"
+], function(require, array, declare, domConstruct, i18n, lang, MemoryStore,
+	registry, _Widget, _TemplatedMixin, _WidgetsInTemplateMixin, FilteringSelect, _Plugin, rangeapi){
+
+	// module:
+	//		dijit/_editor/plugins/FontChoice
+
+	var _FontDropDown = declare("dijit._editor.plugins._FontDropDown",
+		[_Widget, _TemplatedMixin, _WidgetsInTemplateMixin], {
+			// summary:
+			//		Base class for widgets that contains a label (like "Font:")
+			//		and a FilteringSelect drop down to pick a value.
+			//		Used as Toolbar entry.
+
+			// label: [public] String
+			//		The label to apply to this particular FontDropDown.
+			label: "",
+
+			// plainText: [public] boolean
+			//		Flag to indicate that the returned label should be plain text
+			//		instead of an example.
+			plainText: false,
+
+			// templateString: [public] String
+			//		The template used to construct the labeled dropdown.
+			templateString: "<span style='white-space: nowrap' class='dijit dijitReset dijitInline'>" +
+				"<label class='dijitLeft dijitInline' for='${selectId}'>${label}</label>" +
+				"<input data-dojo-type='../../form/FilteringSelect' required='false' " +
+				"data-dojo-props='labelType:\"html\", labelAttr:\"label\", searchAttr:\"name\"' " +
+				"class='${comboClass}' " +
+				"tabIndex='-1' id='${selectId}' data-dojo-attach-point='select' value=''/>" +
+				"</span>",
+
+			// contextRequire: [public] Function
+			//		The context require that is used to resolve modules in template.
+			contextRequire: require,
+
+			postMixInProperties: function(){
+				// summary:
+				//		Over-ride to set specific properties.
+				this.inherited(arguments);
+
+				this.strings = i18n.getLocalization("dijit._editor", "FontChoice");
+
+				// Set some substitution variables used in the template
+				this.label = this.strings[this.command];
+
+				// _WidgetBase sets the id after postMixInProperties(), but we need it now.
+				// Alternative is to have a buildRendering() method and move this.selectId setting there,
+				// or alternately get rid of selectId variable and just access ${id} in template?
+				this.id = registry.getUniqueId(this.declaredClass.replace(/\./g, "_"));
+
+				this.selectId = this.id + "_select";	// used in template
+
+				this.inherited(arguments);
+			},
+
+			postCreate: function(){
+				// summary:
+				//		Over-ride for the default postCreate action
+				//		This establishes the filtering selects and the like.
+
+				// Initialize the list of items in the drop down by creating data store with items like:
+				// {value: 1, name: "xx-small", label: "<font size=1>xx-small</font-size>" }
+				this.select.set("store", new MemoryStore({
+					idProperty: "value",
+					data: array.map(this.values, function(value){
+						var name = this.strings[value] || value;
+						return {
+							label: this.getLabel(value, name),
+							name: name,
+							value: value
+						};
+					}, this)
+				}));
+
+				this.select.set("value", "", false);
+				this.disabled = this.select.get("disabled");
+			},
+
+			_setValueAttr: function(value, priorityChange){
+				// summary:
+				//		Over-ride for the default action of setting the
+				//		widget value, maps the input to known values
+				// value: Object|String
+				//		The value to set in the select.
+				// priorityChange:
+				//		Optional parameter used to tell the select whether or not to fire
+				//		onChange event.
+
+				// if the value is not a permitted value, just set empty string to prevent showing the warning icon
+				priorityChange = priorityChange !== false;
+				this.select.set('value', array.indexOf(this.values, value) < 0 ? "" : value, priorityChange);
+				if(!priorityChange){
+					// Clear the last state in case of updateState calls.  Ref: #10466
+					this.select._lastValueReported = null;
+				}
+			},
+
+			_getValueAttr: function(){
+				// summary:
+				//		Allow retrieving the value from the composite select on
+				//		call to button.get("value");
+				return this.select.get('value');
+			},
+
+			focus: function(){
+				// summary:
+				//		Over-ride for focus control of this widget.  Delegates focus down to the
+				//		filtering select.
+				this.select.focus();
+			},
+
+			_setDisabledAttr: function(value){
+				// summary:
+				//		Over-ride for the button's 'disabled' attribute so that it can be
+				//		disabled programmatically.
+
+				// Save off ths disabled state so the get retrieves it correctly
+				//without needing to have a function proxy it.
+				this._set("disabled", value);
+				this.select.set("disabled", value);
+			}
+		});
+
+
+	var _FontNameDropDown = declare("dijit._editor.plugins._FontNameDropDown", _FontDropDown, {
+		// summary:
+		//		Dropdown to select a font; goes in editor toolbar.
+
+		// generic: [const] Boolean
+		//		Use generic (web standard) font names
+		generic: false,
+
+		// command: [public] String
+		//		The editor 'command' implemented by this plugin.
+		command: "fontName",
+
+		comboClass: "dijitFontNameCombo",
+
+		postMixInProperties: function(){
+			// summary:
+			//		Over-ride for the default posr mixin control
+			if(!this.values){
+				this.values = this.generic ?
+					["serif", "sans-serif", "monospace", "cursive", "fantasy"] : // CSS font-family generics
+					["Arial", "Times New Roman", "Comic Sans MS", "Courier New"];
+			}
+			this.inherited(arguments);
+		},
+
+		getLabel: function(value, name){
+			// summary:
+			//		Function used to generate the labels of the format dropdown
+			//		will return a formatted, or plain label based on the value
+			//		of the plainText option.
+			// value: String
+			//		The 'insert value' associated with a name
+			// name: String
+			//		The text name of the value
+			if(this.plainText){
+				return name;
+			}else{
+				return "<div style='font-family: " + value + "'>" + name + "</div>";
+			}
+		},
+
+		_setValueAttr: function(value, priorityChange){
+			// summary:
+			//		Over-ride for the default action of setting the
+			//		widget value, maps the input to known values
+
+			priorityChange = priorityChange !== false;
+			if(this.generic){
+				var map = {
+					"Arial": "sans-serif",
+					"Helvetica": "sans-serif",
+					"Myriad": "sans-serif",
+					"Times": "serif",
+					"Times New Roman": "serif",
+					"Comic Sans MS": "cursive",
+					"Apple Chancery": "cursive",
+					"Courier": "monospace",
+					"Courier New": "monospace",
+					"Papyrus": "fantasy",
+					"Estrangelo Edessa": "cursive", // Windows 7
+					"Gabriola": "fantasy" // Windows 7
+				};
+				value = map[value] || value;
+			}
+			this.inherited(arguments, [value, priorityChange]);
+		}
+	});
+
+	var _FontSizeDropDown = declare("dijit._editor.plugins._FontSizeDropDown", _FontDropDown, {
+		// summary:
+		//		Dropdown to select a font size; goes in editor toolbar.
+
+		// command: [public] String
+		//		The editor 'command' implemented by this plugin.
+		command: "fontSize",
+
+		comboClass: "dijitFontSizeCombo",
+
+		// values: [public] Number[]
+		//		The HTML font size values supported by this plugin
+		values: [1, 2, 3, 4, 5, 6, 7], // sizes according to the old HTML FONT SIZE
+
+		getLabel: function(value, name){
+			// summary:
+			//		Function used to generate the labels of the format dropdown
+			//		will return a formatted, or plain label based on the value
+			//		of the plainText option.
+			//		We're stuck using the deprecated FONT tag to correspond
+			//		with the size measurements used by the editor
+			// value: String
+			//		The 'insert value' associated with a name
+			// name: String
+			//		The text name of the value
+			if(this.plainText){
+				return name;
+			}else{
+				return "<font size=" + value + "'>" + name + "</font>";
+			}
+		},
+
+		_setValueAttr: function(value, priorityChange){
+			// summary:
+			//		Over-ride for the default action of setting the
+			//		widget value, maps the input to known values
+			priorityChange = priorityChange !== false;
+			if(value.indexOf && value.indexOf("px") != -1){
+				var pixels = parseInt(value, 10);
+				value = {10: 1, 13: 2, 16: 3, 18: 4, 24: 5, 32: 6, 48: 7}[pixels] || value;
+			}
+
+			this.inherited(arguments, [value, priorityChange]);
+		}
+	});
+
+
+	var _FormatBlockDropDown = declare("dijit._editor.plugins._FormatBlockDropDown", _FontDropDown, {
+		// summary:
+		//		Dropdown to select a format (like paragraph or heading); goes in editor toolbar.
+
+		// command: [public] String
+		//		The editor 'command' implemented by this plugin.
+		command: "formatBlock",
+
+		comboClass: "dijitFormatBlockCombo",
+
+		// values: [public] Array
+		//		The HTML format tags supported by this plugin
+		values: ["noFormat", "p", "h1", "h2", "h3", "pre"],
+
+		postCreate: function(){
+			// Init and set the default value to no formatting.  Update state will adjust it
+			// as needed.
+			this.inherited(arguments);
+			this.set("value", "noFormat", false);
+		},
+
+		getLabel: function(value, name){
+			// summary:
+			//		Function used to generate the labels of the format dropdown
+			//		will return a formatted, or plain label based on the value
+			//		of the plainText option.
+			// value: String
+			//		The 'insert value' associated with a name
+			// name: String
+			//		The text name of the value
+			if(this.plainText || value == "noFormat"){
+				return name;
+			}else{
+				return "<" + value + ">" + name + "</" + value + ">";
+			}
+		},
+
+		_execCommand: function(editor, command, choice){
+			// summary:
+			//		Over-ride for default exec-command label.
+			//		Allows us to treat 'none' as special.
+			if(choice === "noFormat"){
+				var start;
+				var end;
+				var sel = rangeapi.getSelection(editor.window);
+				if(sel && sel.rangeCount > 0){
+					var range = sel.getRangeAt(0);
+					var node, tag;
+					if(range){
+						start = range.startContainer;
+						end = range.endContainer;
+
+						// find containing nodes of start/end.
+						while(start && start !== editor.editNode &&
+							start !== editor.document.body &&
+							start.nodeType !== 1){
+							start = start.parentNode;
+						}
+
+						while(end && end !== editor.editNode &&
+							end !== editor.document.body &&
+							end.nodeType !== 1){
+							end = end.parentNode;
+						}
+
+						var processChildren = lang.hitch(this, function(node, ary){
+							if(node.childNodes && node.childNodes.length){
+								var i;
+								for(i = 0; i < node.childNodes.length; i++){
+									var c = node.childNodes[i];
+									if(c.nodeType == 1){
+										if(editor.selection.inSelection(c)){
+											var tag = c.tagName ? c.tagName.toLowerCase() : "";
+											if(array.indexOf(this.values, tag) !== -1){
+												ary.push(c);
+											}
+											processChildren(c, ary);
+										}
+									}
+								}
+							}
+						});
+
+						var unformatNodes = lang.hitch(this, function(nodes){
+							// summary:
+							//		Internal function to clear format nodes.
+							// nodes:
+							//		The array of nodes to strip formatting from.
+							if(nodes && nodes.length){
+								editor.beginEditing();
+								while(nodes.length){
+									this._removeFormat(editor, nodes.pop());
+								}
+								editor.endEditing();
+							}
+						});
+
+						var clearNodes = [];
+						if(start == end){
+							//Contained within the same block, may be collapsed, but who cares, see if we
+							// have a block element to remove.
+							var block;
+							node = start;
+							while(node && node !== editor.editNode && node !== editor.document.body){
+								if(node.nodeType == 1){
+									tag = node.tagName ? node.tagName.toLowerCase() : "";
+									if(array.indexOf(this.values, tag) !== -1){
+										block = node;
+										break;
+									}
+								}
+								node = node.parentNode;
+							}
+
+							//Also look for all child nodes in the selection that may need to be
+							//cleared of formatting
+							processChildren(start, clearNodes);
+							if(block){
+								clearNodes = [block].concat(clearNodes);
+							}
+							unformatNodes(clearNodes);
+						}else{
+							// Probably a multi select, so we have to process it.  Whee.
+							node = start;
+							while(editor.selection.inSelection(node)){
+								if(node.nodeType == 1){
+									tag = node.tagName ? node.tagName.toLowerCase() : "";
+									if(array.indexOf(this.values, tag) !== -1){
+										clearNodes.push(node);
+									}
+									processChildren(node, clearNodes);
+								}
+								node = node.nextSibling;
+							}
+							unformatNodes(clearNodes);
+						}
+						editor.onDisplayChanged();
+					}
+				}
+			}else{
+				editor.execCommand(command, choice);
+			}
+		},
+
+		_removeFormat: function(editor, node){
+			// summary:
+			//		function to remove the block format node.
+			// node:
+			//		The block format node to remove (and leave the contents behind)
+			if(editor.customUndo){
+				// So of course IE doesn't work right with paste-overs.
+				// We have to do this manually, which is okay since IE already uses
+				// customUndo and we turned it on for WebKit.  WebKit pasted funny,
+				// so couldn't use the execCommand approach
+				while(node.firstChild){
+					domConstruct.place(node.firstChild, node, "before");
+				}
+				node.parentNode.removeChild(node);
+			}else{
+				// Everyone else works fine this way, a paste-over and is native
+				// undo friendly.
+				editor.selection.selectElementChildren(node);
+				var html = editor.selection.getSelectedHtml();
+				editor.selection.selectElement(node);
+				editor.execCommand("inserthtml", html || "");
+			}
+		}
+	});
+
+	// TODO: for 2.0, split into FontChoice plugin into three separate classes,
+	// one for each command (and change registry below)
+	var FontChoice = declare("dijit._editor.plugins.FontChoice", _Plugin, {
+		// summary:
+		//		This plugin provides three drop downs for setting style in the editor
+		//		(font, font size, and format block), as controlled by command.
+		//
+		// description:
+		//		The commands provided by this plugin are:
+		//
+		//		- fontName: Provides a drop down to select from a list of font names
+		//		- fontSize: Provides a drop down to select from a list of font sizes
+		//		- formatBlock: Provides a drop down to select from a list of block styles
+		//		  which can easily be added to an editor by including one or more of the above commands
+		//		  in the `plugins` attribute as follows:
+		//
+		//	|	plugins="['fontName','fontSize',...]"
+		//
+		//		It is possible to override the default dropdown list by providing an Array for the `custom` property when
+		//		instantiating this plugin, e.g.
+		//
+		//	|	plugins="[{name:'dijit._editor.plugins.FontChoice', command:'fontName', values:['Verdana','Myriad','Garamond']},...]"
+		//
+		//		Alternatively, for `fontName` only, `generic:true` may be specified to provide a dropdown with
+		//		[CSS generic font families](http://www.w3.org/TR/REC-CSS2/fonts.html#generic-font-families).
+		//
+		//		Note that the editor is often unable to properly handle font styling information defined outside
+		//		the context of the current editor instance, such as pre-populated HTML.
+
+		// useDefaultCommand: [protected] Boolean
+		//		Override _Plugin.useDefaultCommand...
+		//		processing is handled by this plugin, not by dijit/Editor.
+		useDefaultCommand: false,
+
+		_initButton: function(){
+			// summary:
+			//		Overrides _Plugin._initButton(), to initialize the FilteringSelect+label in toolbar,
+			//		rather than a simple button.
+			// tags:
+			//		protected
+
+			// Create the widget to go into the toolbar (the so-called "button")
+			var clazz = {
+					fontName: _FontNameDropDown,
+					fontSize: _FontSizeDropDown,
+					formatBlock: _FormatBlockDropDown
+				}[this.command],
+				params = this.params;
+
+			// For back-compat reasons support setting custom values via "custom" parameter
+			// rather than "values" parameter.   Remove in 2.0.
+			if(this.params.custom){
+				params.values = this.params.custom;
+			}
+
+			var editor = this.editor;
+			this.button = new clazz(lang.delegate({dir: editor.dir, lang: editor.lang}, params));
+
+			// Reflect changes to the drop down in the editor
+			this.own(this.button.select.on("change", lang.hitch(this, function(choice){
+				// User invoked change, since all internal updates set priorityChange to false and will
+				// not trigger an onChange event.
+
+				if(this.editor.focused){
+					// put focus back in the iframe, unless focus has somehow been shifted out of the editor completely
+					this.editor.focus();
+				}
+
+				if(this.command == "fontName" && choice.indexOf(" ") != -1){
+					choice = "'" + choice + "'";
+				}
+
+				// Invoke, the editor already normalizes commands called through its
+				// execCommand.
+				if(this.button._execCommand){
+					this.button._execCommand(this.editor, this.command, choice);
+				}else{
+					this.editor.execCommand(this.command, choice);
+				}
+			})));
+		},
+
+		updateState: function(){
+			// summary:
+			//		Overrides _Plugin.updateState().  This controls updating the menu
+			//		options to the right values on state changes in the document (that trigger a
+			//		test of the actions.)
+			//		It set value of drop down in toolbar to reflect font/font size/format block
+			//		of text at current caret position.
+			// tags:
+			//		protected
+			var _e = this.editor;
+			var _c = this.command;
+			if(!_e || !_e.isLoaded || !_c.length){
+				return;
+			}
+
+			if(this.button){
+				var disabled = this.get("disabled");
+				this.button.set("disabled", disabled);
+				if(disabled){
+					return;
+				}
+				var value;
+				try{
+					value = _e.queryCommandValue(_c) || "";
+				}catch(e){
+					//Firefox may throw error above if the editor is just loaded, ignore it
+					value = "";
+				}
+
+				// strip off single quotes, if any
+				var quoted = lang.isString(value) && value.match(/'([^']*)'/);
+				if(quoted){
+					value = quoted[1];
+				}
+
+				if(_c === "formatBlock"){
+					if(!value || value == "p"){
+						// Some browsers (WebKit) doesn't actually get the tag info right.
+						// and IE returns paragraph when in a DIV!, so incorrect a lot,
+						// so we have double-check it.
+						value = null;
+						var elem;
+						// Try to find the current element where the caret is.
+						var sel = rangeapi.getSelection(this.editor.window);
+						if(sel && sel.rangeCount > 0){
+							var range = sel.getRangeAt(0);
+							if(range){
+								elem = range.endContainer;
+							}
+						}
+
+						// Okay, now see if we can find one of the formatting types we're in.
+						while(elem && elem !== _e.editNode && elem !== _e.document){
+							var tg = elem.tagName ? elem.tagName.toLowerCase() : "";
+							if(tg && array.indexOf(this.button.values, tg) > -1){
+								value = tg;
+								break;
+							}
+							elem = elem.parentNode;
+						}
+						if(!value){
+							// Still no value, so lets select 'none'.
+							value = "noFormat";
+						}
+					}else{
+						// Check that the block format is one allowed, if not,
+						// null it so that it gets set to empty.
+						if(array.indexOf(this.button.values, value) < 0){
+							value = "noFormat";
+						}
+					}
+				}
+				if(value !== this.button.get("value")){
+					// Set the value, but denote it is not a priority change, so no
+					// onchange fires.
+					this.button.set('value', value, false);
+				}
+			}
+		}
+	});
+
+	// Register these plugins
+	array.forEach(["fontName", "fontSize", "formatBlock"], function(name){
+		_Plugin.registry[name] = function(args){
+			return new FontChoice({
+				command: name,
+				plainText: args.plainText
+			});
+		};
+	});
+
+	// Make all classes available through AMD, and return main class
+	FontChoice._FontDropDown = _FontDropDown;
+	FontChoice._FontNameDropDown = _FontNameDropDown;
+	FontChoice._FontSizeDropDown = _FontSizeDropDown;
+	FontChoice._FormatBlockDropDown = _FormatBlockDropDown;
+	return FontChoice;
+
 });

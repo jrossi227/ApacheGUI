@@ -1,11 +1,12 @@
-
+/* === Plus Button ==*/
 .mblDomButtonGrayPlus {
   position: relative;
   width: 29px;
   height: 29px;
 }
 .mblDomButtonGrayPlus > div {
-  
+  /* horiz line */
+
   position: absolute;
   top: 12px;
   left: 6px;
@@ -18,7 +19,8 @@
   border-radius: 2px;
 }
 .mblDomButtonGrayPlus > div > div {
-  
+  /* vert line */
+
   position: absolute;
   top: -8px;
   left: 7px;

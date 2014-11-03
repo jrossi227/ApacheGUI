@@ -1,10 +1,21 @@
-//>>built
-define("dojox/mobile/EdgeToEdgeCategory",["dojo/_base/declare","./RoundRectCategory"],function(_1,_2){
-return _1("dojox.mobile.EdgeToEdgeCategory",_2,{buildRendering:function(){
-this.inherited(arguments);
-this.domNode.className="mblEdgeToEdgeCategory";
-if(this.type&&this.type=="long"){
-this.domNode.className+=" mblEdgeToEdgeCategoryLong";
-}
-}});
+define([
+	"dojo/_base/declare",
+	"./RoundRectCategory"
+], function(declare, RoundRectCategory){
+
+	// module:
+	//		dojox/mobile/EdgeToEdgeCategory
+
+	return declare("dojox.mobile.EdgeToEdgeCategory", RoundRectCategory, {
+		// summary:
+		//		A category header for an edge-to-edge list.
+		buildRendering: function(){
+			this.inherited(arguments);
+			this.domNode.className = "mblEdgeToEdgeCategory";
+
+			if(this.type && this.type == "long"){
+				this.domNode.className += " mblEdgeToEdgeCategoryLong";
+			}
+		}
+	});
 });

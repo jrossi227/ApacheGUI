@@ -1,86 +1,189 @@
-//>>built
-define("dijit/_TemplatedMixin",["dojo/cache","dojo/_base/declare","dojo/dom-construct","dojo/_base/lang","dojo/on","dojo/sniff","dojo/string","./_AttachMixin"],function(_1,_2,_3,_4,on,_5,_6,_7){
-var _8=_2("dijit._TemplatedMixin",_7,{templateString:null,templatePath:null,_skipNodeCache:false,searchContainerNode:true,_stringRepl:function(_9){
-var _a=this.declaredClass,_b=this;
-return _6.substitute(_9,this,function(_c,_d){
-if(_d.charAt(0)=="!"){
-_c=_4.getObject(_d.substr(1),false,_b);
-}
-if(typeof _c=="undefined"){
-throw new Error(_a+" template:"+_d);
-}
-if(_c==null){
-return "";
-}
-return _d.charAt(0)=="!"?_c:_c.toString().replace(/"/g,"&quot;");
-},this);
-},buildRendering:function(){
-if(!this._rendered){
-if(!this.templateString){
-this.templateString=_1(this.templatePath,{sanitize:true});
-}
-var _e=_8.getCachedTemplate(this.templateString,this._skipNodeCache,this.ownerDocument);
-var _f;
-if(_4.isString(_e)){
-_f=_3.toDom(this._stringRepl(_e),this.ownerDocument);
-if(_f.nodeType!=1){
-throw new Error("Invalid template: "+_e);
-}
-}else{
-_f=_e.cloneNode(true);
-}
-this.domNode=_f;
-}
-this.inherited(arguments);
-if(!this._rendered){
-this._fillContent(this.srcNodeRef);
-}
-this._rendered=true;
-},_fillContent:function(_10){
-var _11=this.containerNode;
-if(_10&&_11){
-while(_10.hasChildNodes()){
-_11.appendChild(_10.firstChild);
-}
-}
-}});
-_8._templateCache={};
-_8.getCachedTemplate=function(_12,_13,doc){
-var _14=_8._templateCache;
-var key=_12;
-var _15=_14[key];
-if(_15){
-try{
-if(!_15.ownerDocument||_15.ownerDocument==(doc||document)){
-return _15;
-}
-}
-catch(e){
-}
-_3.destroy(_15);
-}
-_12=_6.trim(_12);
-if(_13||_12.match(/\$\{([^\}]+)\}/g)){
-return (_14[key]=_12);
-}else{
-var _16=_3.toDom(_12,doc);
-if(_16.nodeType!=1){
-throw new Error("Invalid template: "+_12);
-}
-return (_14[key]=_16);
-}
-};
-if(_5("ie")){
-on(window,"unload",function(){
-var _17=_8._templateCache;
-for(var key in _17){
-var _18=_17[key];
-if(typeof _18=="object"){
-_3.destroy(_18);
-}
-delete _17[key];
-}
-});
-}
-return _8;
+define([
+	"dojo/cache",	// dojo.cache
+	"dojo/_base/declare", // declare
+	"dojo/dom-construct", // domConstruct.destroy, domConstruct.toDom
+	"dojo/_base/lang", // lang.getObject
+	"dojo/on",
+	"dojo/sniff", // has("ie")
+	"dojo/string", // string.substitute string.trim
+	"./_AttachMixin"
+], function(cache, declare, domConstruct, lang, on, has, string, _AttachMixin){
+
+	// module:
+	//		dijit/_TemplatedMixin
+
+	var _TemplatedMixin = declare("dijit._TemplatedMixin", _AttachMixin, {
+		// summary:
+		//		Mixin for widgets that are instantiated from a template
+
+		// templateString: [protected] String
+		//		A string that represents the widget template.
+		//		Use in conjunction with dojo.cache() to load from a file.
+		templateString: null,
+
+		// templatePath: [protected deprecated] String
+		//		Path to template (HTML file) for this widget relative to dojo.baseUrl.
+		//		Deprecated: use templateString with require([... "dojo/text!..."], ...) instead
+		templatePath: null,
+
+		// skipNodeCache: [protected] Boolean
+		//		If using a cached widget template nodes poses issues for a
+		//		particular widget class, it can set this property to ensure
+		//		that its template is always re-built from a string
+		_skipNodeCache: false,
+
+/*=====
+		// _rendered: Boolean
+		//		Not normally use, but this flag can be set by the app if the server has already rendered the template,
+		//		i.e. already inlining the template for the widget into the main page.   Reduces _TemplatedMixin to
+		//		just function like _AttachMixin.
+		_rendered: false,
+=====*/
+
+		// Set _AttachMixin.searchContainerNode to true for back-compat for widgets that have data-dojo-attach-point's
+		// and events inside this.containerNode.   Remove for 2.0.
+		searchContainerNode: true,
+
+		_stringRepl: function(tmpl){
+			// summary:
+			//		Does substitution of ${foo} type properties in template string
+			// tags:
+			//		private
+			var className = this.declaredClass, _this = this;
+			// Cache contains a string because we need to do property replacement
+			// do the property replacement
+			return string.substitute(tmpl, this, function(value, key){
+				if(key.charAt(0) == '!'){ value = lang.getObject(key.substr(1), false, _this); }
+				if(typeof value == "undefined"){ throw new Error(className+" template:"+key); } // a debugging aide
+				if(value == null){ return ""; }
+
+				// Substitution keys beginning with ! will skip the transform step,
+				// in case a user wishes to insert unescaped markup, e.g. ${!foo}
+				return key.charAt(0) == "!" ? value :
+					// Safer substitution, see heading "Attribute values" in
+					// http://www.w3.org/TR/REC-html40/appendix/notes.html#h-B.3.2
+					value.toString().replace(/"/g,"&quot;"); //TODO: add &amp? use encodeXML method?
+			}, this);
+		},
+
+		buildRendering: function(){
+			// summary:
+			//		Construct the UI for this widget from a template, setting this.domNode.
+			// tags:
+			//		protected
+
+			if(!this._rendered){
+				if(!this.templateString){
+					this.templateString = cache(this.templatePath, {sanitize: true});
+				}
+
+				// Lookup cached version of template, and download to cache if it
+				// isn't there already.  Returns either a DomNode or a string, depending on
+				// whether or not the template contains ${foo} replacement parameters.
+				var cached = _TemplatedMixin.getCachedTemplate(this.templateString, this._skipNodeCache, this.ownerDocument);
+
+				var node;
+				if(lang.isString(cached)){
+					node = domConstruct.toDom(this._stringRepl(cached), this.ownerDocument);
+					if(node.nodeType != 1){
+						// Flag common problems such as templates with multiple top level nodes (nodeType == 11)
+						throw new Error("Invalid template: " + cached);
+					}
+				}else{
+					// if it's a node, all we have to do is clone it
+					node = cached.cloneNode(true);
+				}
+
+				this.domNode = node;
+			}
+
+			// Call down to _WidgetBase.buildRendering() to get base classes assigned
+			// TODO: change the baseClass assignment to _setBaseClassAttr
+			this.inherited(arguments);
+
+			if(!this._rendered){
+				this._fillContent(this.srcNodeRef);
+			}
+
+			this._rendered = true;
+		},
+
+		_fillContent: function(/*DomNode*/ source){
+			// summary:
+			//		Relocate source contents to templated container node.
+			//		this.containerNode must be able to receive children, or exceptions will be thrown.
+			// tags:
+			//		protected
+			var dest = this.containerNode;
+			if(source && dest){
+				while(source.hasChildNodes()){
+					dest.appendChild(source.firstChild);
+				}
+			}
+		}
+
+	});
+
+	// key is templateString; object is either string or DOM tree
+	_TemplatedMixin._templateCache = {};
+
+	_TemplatedMixin.getCachedTemplate = function(templateString, alwaysUseString, doc){
+		// summary:
+		//		Static method to get a template based on the templatePath or
+		//		templateString key
+		// templateString: String
+		//		The template
+		// alwaysUseString: Boolean
+		//		Don't cache the DOM tree for this template, even if it doesn't have any variables
+		// doc: Document?
+		//		The target document.   Defaults to document global if unspecified.
+		// returns: Mixed
+		//		Either string (if there are ${} variables that need to be replaced) or just
+		//		a DOM tree (if the node can be cloned directly)
+
+		// is it already cached?
+		var tmplts = _TemplatedMixin._templateCache;
+		var key = templateString;
+		var cached = tmplts[key];
+		if(cached){
+			try{
+				// if the cached value is an innerHTML string (no ownerDocument) or a DOM tree created within the
+				// current document, then use the current cached value
+				if(!cached.ownerDocument || cached.ownerDocument == (doc || document)){
+					// string or node of the same document
+					return cached;
+				}
+			}catch(e){ /* squelch */ } // IE can throw an exception if cached.ownerDocument was reloaded
+			domConstruct.destroy(cached);
+		}
+
+		templateString = string.trim(templateString);
+
+		if(alwaysUseString || templateString.match(/\$\{([^\}]+)\}/g)){
+			// there are variables in the template so all we can do is cache the string
+			return (tmplts[key] = templateString); //String
+		}else{
+			// there are no variables in the template so we can cache the DOM tree
+			var node = domConstruct.toDom(templateString, doc);
+			if(node.nodeType != 1){
+				throw new Error("Invalid template: " + templateString);
+			}
+			return (tmplts[key] = node); //Node
+		}
+	};
+
+	if(has("ie")){
+		on(window, "unload", function(){
+			var cache = _TemplatedMixin._templateCache;
+			for(var key in cache){
+				var value = cache[key];
+				if(typeof value == "object"){ // value is either a string or a DOM node template
+					domConstruct.destroy(value);
+				}
+				delete cache[key];
+			}
+		});
+	}
+
+	return _TemplatedMixin;
 });

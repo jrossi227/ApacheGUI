@@ -1,83 +1,174 @@
-//>>built
-define("dojox/mobile/ProgressIndicator",["dojo/_base/config","dojo/_base/declare","dojo/_base/lang","dojo/dom-class","dojo/dom-construct","dojo/dom-geometry","dojo/dom-style","dojo/has","dijit/_Contained","dijit/_WidgetBase","./_css3"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a,_b){
-var _c=_2("dojox.mobile.ProgressIndicator",[_a,_9],{interval:100,size:40,removeOnStop:true,startSpinning:false,center:true,colors:null,baseClass:"mblProgressIndicator",constructor:function(){
-this.colors=[];
-this._bars=[];
-},buildRendering:function(){
-this.inherited(arguments);
-if(this.center){
-_4.add(this.domNode,"mblProgressIndicatorCenter");
-}
-this.containerNode=_5.create("div",{className:"mblProgContainer"},this.domNode);
-this.spinnerNode=_5.create("div",null,this.containerNode);
-for(var i=0;i<12;i++){
-var _d=_5.create("div",{className:"mblProg mblProg"+i},this.spinnerNode);
-this._bars.push(_d);
-}
-this.scale(this.size);
-if(this.startSpinning){
-this.start();
-}
-},scale:function(_e){
-var _f=_e/40;
-_7.set(this.containerNode,_b.add({},{transform:"scale("+_f+")",transformOrigin:"0 0"}));
-_6.setMarginBox(this.domNode,{w:_e,h:_e});
-_6.setMarginBox(this.containerNode,{w:_e/_f,h:_e/_f});
-},start:function(){
-if(this.imageNode){
-var img=this.imageNode;
-var l=Math.round((this.containerNode.offsetWidth-img.offsetWidth)/2);
-var t=Math.round((this.containerNode.offsetHeight-img.offsetHeight)/2);
-img.style.margin=t+"px "+l+"px";
-return;
-}
-var _10=0;
-var _11=this;
-var n=12;
-this.timer=setInterval(function(){
-_10--;
-_10=_10<0?n-1:_10;
-var c=_11.colors;
-for(var i=0;i<n;i++){
-var idx=(_10+i)%n;
-if(c[idx]){
-_11._bars[i].style.backgroundColor=c[idx];
-}else{
-_4.replace(_11._bars[i],"mblProg"+idx+"Color","mblProg"+(idx===n-1?0:idx+1)+"Color");
-}
-}
-},this.interval);
-},stop:function(){
-if(this.timer){
-clearInterval(this.timer);
-}
-this.timer=null;
-if(this.removeOnStop&&this.domNode&&this.domNode.parentNode){
-this.domNode.parentNode.removeChild(this.domNode);
-}
-},setImage:function(_12){
-if(_12){
-this.imageNode=_5.create("img",{src:_12},this.containerNode);
-this.spinnerNode.style.display="none";
-}else{
-if(this.imageNode){
-this.containerNode.removeChild(this.imageNode);
-this.imageNode=null;
-}
-this.spinnerNode.style.display="";
-}
-},destroy:function(){
-this.inherited(arguments);
-if(this===_c._instance){
-_c._instance=null;
-}
-}});
-_c._instance=null;
-_c.getInstance=function(_13){
-if(!_c._instance){
-_c._instance=new _c(_13);
-}
-return _c._instance;
-};
-return _c;
+define([
+	"dojo/_base/config",
+	"dojo/_base/declare",
+	"dojo/_base/lang",
+	"dojo/dom-class",
+	"dojo/dom-construct",
+	"dojo/dom-geometry",
+	"dojo/dom-style",
+	"dojo/has",
+	"dijit/_Contained",
+	"dijit/_WidgetBase",
+	"./_css3"
+], function(config, declare, lang, domClass, domConstruct, domGeometry, domStyle, has, Contained, WidgetBase, css3){
+
+	// module:
+	//		dojox/mobile/ProgressIndicator
+
+	var cls = declare("dojox.mobile.ProgressIndicator", [WidgetBase, Contained], {
+		// summary:
+		//		A progress indication widget.
+		// description:
+		//		ProgressIndicator is a round spinning graphical representation
+		//		that indicates the current task is ongoing.
+
+		// interval: Number
+		//		The time interval in milliseconds for updating the spinning
+		//		indicator.
+		interval: 100,
+
+		// size: [const] Number
+		//		The size of the indicator in pixels.
+		//		Note that changing the value of the property after the widget
+		//		creation has no effect.
+		size: 40,
+
+		// removeOnStop: Boolean
+		//		If true, this widget is removed from the parent node
+		//		when stop() is called.
+		removeOnStop: true,
+
+		// startSpinning: Boolean
+		//		If true, calls start() to run the indicator at startup.
+		startSpinning: false,
+
+		// center: Boolean
+		//		If true, the indicator is displayed as center aligned.
+		center: true,
+
+		// colors: String[]
+		//		An array of indicator colors. 12 colors have to be given.
+		//		If colors are not specified, CSS styles
+		//		(mblProg0Color - mblProg11Color) are used.
+		colors: null,
+
+		/* internal properties */
+		
+		// baseClass: String
+		//		The name of the CSS class of this widget.	
+		baseClass: "mblProgressIndicator",
+
+		constructor: function(){
+			// summary:
+			//		Creates a new instance of the class.
+			this.colors = [];
+			this._bars = [];
+		},
+
+		buildRendering: function(){
+			this.inherited(arguments);
+			if(this.center){
+				domClass.add(this.domNode, "mblProgressIndicatorCenter");
+			}
+			this.containerNode = domConstruct.create("div", {className:"mblProgContainer"}, this.domNode);
+			this.spinnerNode = domConstruct.create("div", null, this.containerNode);
+			for(var i = 0; i < 12; i++){
+				var div = domConstruct.create("div", {className:"mblProg mblProg"+i}, this.spinnerNode);
+				this._bars.push(div);
+			}
+			this.scale(this.size);
+			if(this.startSpinning){
+				this.start();
+			}
+		},
+
+		scale: function(/*Number*/size){
+			// summary:
+			//		Changes the size of the indicator.
+			// size:
+			//		The size of the indicator in pixels.
+			var scale = size / 40;
+			domStyle.set(this.containerNode, css3.add({}, {
+				transform: "scale(" + scale + ")",
+				transformOrigin: "0 0"
+			}));
+			domGeometry.setMarginBox(this.domNode, {w:size, h:size});
+			domGeometry.setMarginBox(this.containerNode, {w:size / scale, h:size / scale});
+		},
+
+		start: function(){
+			// summary:
+			//		Starts the spinning of the ProgressIndicator.
+			if(this.imageNode){
+				var img = this.imageNode;
+				var l = Math.round((this.containerNode.offsetWidth - img.offsetWidth) / 2);
+				var t = Math.round((this.containerNode.offsetHeight - img.offsetHeight) / 2);
+				img.style.margin = t+"px "+l+"px";
+				return;
+			}
+			var cntr = 0;
+			var _this = this;
+			var n = 12;
+			this.timer = setInterval(function(){
+				cntr--;
+				cntr = cntr < 0 ? n - 1 : cntr;
+				var c = _this.colors;
+				for(var i = 0; i < n; i++){
+					var idx = (cntr + i) % n;
+					if(c[idx]){
+						_this._bars[i].style.backgroundColor = c[idx];
+					}else{
+						domClass.replace(_this._bars[i],
+										 "mblProg" + idx + "Color",
+										 "mblProg" + (idx === n - 1 ? 0 : idx + 1) + "Color");
+					}
+				}
+			}, this.interval);
+		},
+
+		stop: function(){
+			// summary:
+			//		Stops the spinning of the ProgressIndicator.
+			if(this.timer){
+				clearInterval(this.timer);
+			}
+			this.timer = null;
+			if(this.removeOnStop && this.domNode && this.domNode.parentNode){
+				this.domNode.parentNode.removeChild(this.domNode);
+			}
+		},
+
+		setImage: function(/*String*/file){
+			// summary:
+			//		Sets an indicator icon image file (typically animated GIF).
+			//		If null is specified, restores the default spinner.
+			if(file){
+				this.imageNode = domConstruct.create("img", {src:file}, this.containerNode);
+				this.spinnerNode.style.display = "none";
+			}else{
+				if(this.imageNode){
+					this.containerNode.removeChild(this.imageNode);
+					this.imageNode = null;
+				}
+				this.spinnerNode.style.display = "";
+			}
+		},
+
+		destroy: function(){
+			this.inherited(arguments);
+			if(this === cls._instance){
+				cls._instance = null;
+			}
+		}
+	});
+
+	cls._instance = null;
+	cls.getInstance = function(props){
+		if(!cls._instance){
+			cls._instance = new cls(props);
+		}
+		return cls._instance;
+	};
+
+	return cls;
 });

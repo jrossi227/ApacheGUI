@@ -1,179 +1,378 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
+define([
+	"dojo/_base/declare",
+	"dojo/hash",
+	"dojo/topic"
+], function(declare, hash, topic){
 
-//>>built
-define("dojo/router/RouterBase",["dojo/_base/declare","dojo/hash","dojo/topic"],function(_1,_2,_3){
-var _4;
-if(String.prototype.trim){
-_4=function(_5){
-return _5.trim();
-};
-}else{
-_4=function(_6){
-return _6.replace(/^\s\s*/,"").replace(/\s\s*$/,"");
-};
-}
-function _7(_8,_9,_a){
-var _b,_c,_d,_e,_f,i,l;
-_b=this.callbackQueue;
-_c=false;
-_d=false;
-_e={stopImmediatePropagation:function(){
-_c=true;
-},preventDefault:function(){
-_d=true;
-},oldPath:_9,newPath:_a,params:_8};
-_f=[_e];
-if(_8 instanceof Array){
-_f=_f.concat(_8);
-}else{
-for(var key in _8){
-_f.push(_8[key]);
-}
-}
-for(i=0,l=_b.length;i<l;++i){
-if(!_c){
-_b[i].apply(null,_f);
-}
-}
-return !_d;
-};
-var _10=_1(null,{_routes:null,_routeIndex:null,_started:false,_currentPath:"",idMatch:/:(\w[\w\d]*)/g,idReplacement:"([^\\/]+)",globMatch:/\*(\w[\w\d]*)/,globReplacement:"(.+)",constructor:function(_11){
-this._routes=[];
-this._routeIndex={};
-for(var i in _11){
-if(_11.hasOwnProperty(i)){
-this[i]=_11[i];
-}
-}
-},register:function(_12,_13){
-return this._registerRoute(_12,_13);
-},registerBefore:function(_14,_15){
-return this._registerRoute(_14,_15,true);
-},go:function(_16,_17){
-var _18;
-if(typeof _16!=="string"){
-return false;
-}
-_16=_4(_16);
-_18=this._handlePathChange(_16);
-if(_18){
-_2(_16,_17);
-}
-return _18;
-},startup:function(_19){
-if(this._started){
-return;
-}
-var _1a=this,_1b=_2();
-this._started=true;
-this._hashchangeHandle=_3.subscribe("/dojo/hashchange",function(){
-_1a._handlePathChange.apply(_1a,arguments);
-});
-if(!_1b){
-this.go(_19,true);
-}else{
-this._handlePathChange(_1b);
-}
-},destroy:function(){
-this._hashchangeHandle.remove();
-this._routes=null;
-this._routeIndex=null;
-},_handlePathChange:function(_1c){
-var i,j,li,lj,_1d,_1e,_1f,_20,_21,_22=this._routes,_23=this._currentPath;
-if(!this._started||_1c===_23){
-return _1f;
-}
-_1f=true;
-for(i=0,li=_22.length;i<li;++i){
-_1d=_22[i];
-_1e=_1d.route.exec(_1c);
-if(_1e){
-if(_1d.parameterNames){
-_20=_1d.parameterNames;
-_21={};
-for(j=0,lj=_20.length;j<lj;++j){
-_21[_20[j]]=_1e[j+1];
-}
-}else{
-_21=_1e.slice(1);
-}
-_1f=_1d.fire(_21,_23,_1c);
-}
-}
-if(_1f){
-this._currentPath=_1c;
-}
-return _1f;
-},_convertRouteToRegExp:function(_24){
-_24=_24.replace(this.idMatch,this.idReplacement);
-_24=_24.replace(this.globMatch,this.globReplacement);
-_24="^"+_24+"$";
-return new RegExp(_24);
-},_getParameterNames:function(_25){
-var _26=this.idMatch,_27=this.globMatch,_28=[],_29;
-_26.lastIndex=0;
-while((_29=_26.exec(_25))!==null){
-_28.push(_29[1]);
-}
-if((_29=_27.exec(_25))!==null){
-_28.push(_29[1]);
-}
-return _28.length>0?_28:null;
-},_indexRoutes:function(){
-var i,l,_2a,_2b,_2c=this._routes;
-_2b=this._routeIndex={};
-for(i=0,l=_2c.length;i<l;++i){
-_2a=_2c[i];
-_2b[_2a.route]=i;
-}
-},_registerRoute:function(_2d,_2e,_2f){
-var _30,_31,_32,_33,_34,_35=this,_36=this._routes,_37=this._routeIndex;
-_30=this._routeIndex[_2d];
-_31=typeof _30!=="undefined";
-if(_31){
-_32=_36[_30];
-}
-if(!_32){
-_32={route:_2d,callbackQueue:[],fire:_7};
-}
-_33=_32.callbackQueue;
-if(typeof _2d=="string"){
-_32.parameterNames=this._getParameterNames(_2d);
-_32.route=this._convertRouteToRegExp(_2d);
-}
-if(_2f){
-_33.unshift(_2e);
-}else{
-_33.push(_2e);
-}
-if(!_31){
-_30=_36.length;
-_37[_2d]=_30;
-_36.push(_32);
-}
-_34=false;
-return {remove:function(){
-var i,l;
-if(_34){
-return;
-}
-for(i=0,l=_33.length;i<l;++i){
-if(_33[i]===_2e){
-_33.splice(i,1);
-}
-}
-if(_33.length===0){
-_36.splice(_30,1);
-_35._indexRoutes();
-}
-_34=true;
-},register:function(_38,_39){
-return _35.register(_2d,_38,_39);
-}};
-}});
-return _10;
+	// module:
+	//		dojo/router/RouterBase
+
+	// Creating a basic trim to avoid needing the full dojo/string module
+	// similarly to dojo/_base/lang's trim
+	var trim;
+	if(String.prototype.trim){
+		trim = function(str){ return str.trim(); };
+	}else{
+		trim = function(str){ return str.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); };
+	}
+
+	// Firing of routes on the route object is always the same,
+	// no clean way to expose this on the prototype since it's for the
+	// internal router objects.
+	function fireRoute(params, currentPath, newPath){
+		var queue, isStopped, isPrevented, eventObj, callbackArgs, i, l;
+
+		queue = this.callbackQueue;
+		isStopped = false;
+		isPrevented = false;
+		eventObj = {
+			stopImmediatePropagation: function(){ isStopped = true; },
+			preventDefault: function(){ isPrevented = true; },
+			oldPath: currentPath,
+			newPath: newPath,
+			params: params
+		};
+
+		callbackArgs = [eventObj];
+
+		if(params instanceof Array){
+			callbackArgs = callbackArgs.concat(params);
+		}else{
+			for(var key in params){
+				callbackArgs.push(params[key]);
+			}
+		}
+
+		for(i=0, l=queue.length; i<l; ++i){
+			if(!isStopped){
+				queue[i].apply(null, callbackArgs);
+			}
+		}
+
+		return !isPrevented;
+	}
+
+	// Our actual class-like object
+	var RouterBase = declare(null, {
+		// summary:
+		//		A module that allows one to easily map hash-based structures into
+		//		callbacks. The router module is a singleton, offering one central
+		//		point for all registrations of this type.
+		// example:
+		//	|	var router = new RouterBase({});
+		//	|	router.register("/widgets/:id", function(evt){
+		//	|		// If "/widgets/3" was matched,
+		//	|		// evt.params.id === "3"
+		//	|		xhr.get({
+		//	|			url: "/some/path/" + evt.params.id,
+		//	|			load: function(data){
+		//	|				// ...
+		//	|			}
+		//	|		});
+		//	|	});
+
+		_routes: null,
+		_routeIndex: null,
+		_started: false,
+		_currentPath: "",
+
+		idMatch: /:(\w[\w\d]*)/g,
+		idReplacement: "([^\\/]+)",
+		globMatch: /\*(\w[\w\d]*)/,
+		globReplacement: "(.+)",
+
+		constructor: function(kwArgs){
+			// A couple of safety initializations
+			this._routes = [];
+			this._routeIndex = {};
+
+			// Simple constructor-style "Decorate myself all over" for now
+			for(var i in kwArgs){
+				if(kwArgs.hasOwnProperty(i)){
+					this[i] = kwArgs[i];
+				}
+			}
+		},
+
+		register: function(/*String|RegExp*/ route, /*Function*/ callback){
+			// summary:
+			//		Registers a route to a handling callback
+			// description:
+			//		Given either a string or a regular expression, the router
+			//		will monitor the page's hash and respond to changes that
+			//		match the string or regex as provided.
+			//
+			//		When provided a regex for the route:
+			//
+			//		- Matching is performed, and the resulting capture groups
+			//		are passed through to the callback as an array.
+			//
+			//		When provided a string for the route:
+			//
+			//		- The string is parsed as a URL-like structure, like
+			//		"/foo/bar"
+			//		- If any portions of that URL are prefixed with a colon
+			//		(:), they will be parsed out and provided to the callback
+			//		as properties of an object.
+			//		- If the last piece of the URL-like structure is prefixed
+			//		with a star (*) instead of a colon, it will be replaced in
+			//		the resulting regex with a greedy (.+) match and
+			//		anything remaining on the hash will be provided as a
+			//		property on the object passed into the callback. Think of
+			//		it like a basic means of globbing the end of a route.
+			// example:
+			//	|	router.register("/foo/:bar/*baz", function(object){
+			//	|		// If the hash was "/foo/abc/def/ghi",
+			//	|		// object.bar === "abc"
+			//	|		// object.baz === "def/ghi"
+			//	|	});
+			// returns: Object
+			//		A plain JavaScript object to be used as a handle for
+			//		either removing this specific callback's registration, as
+			//		well as to add new callbacks with the same route initially
+			//		used.
+			// route: String|RegExp
+			//		A string or regular expression which will be used when
+			//		monitoring hash changes.
+			// callback: Function
+			//		When the hash matches a pattern as described in the route,
+			//		this callback will be executed. It will receive an event
+			//		object that will have several properties:
+			//
+			//		- params: Either an array or object of properties pulled
+			//		from the new hash
+			//		- oldPath: The hash in its state before the change
+			//		- newPath: The new hash being shifted to
+			//		- preventDefault: A method that will stop hash changes
+			//		from being actually applied to the active hash. This only
+			//		works if the hash change was initiated using `router.go`,
+			//		as changes initiated more directly to the location.hash
+			//		property will already be in place
+			//		- stopImmediatePropagation: When called, will stop any
+			//		further bound callbacks on this particular route from
+			//		being executed. If two distinct routes are bound that are
+			//		different, but both happen to match the current hash in
+			//		some way, this will *not* keep other routes from receiving
+			//		notice of the change.
+
+			return this._registerRoute(route, callback);
+		},
+
+		registerBefore: function(/*String|RegExp*/ route, /*Function*/ callback){
+			// summary:
+			//		Registers a route to a handling callback, except before
+			//		any previously registered callbacks
+			// description:
+			//		Much like the `register` method, `registerBefore` allows
+			//		us to register route callbacks to happen before any
+			//		previously registered callbacks. See the documentation for
+			//		`register` for more details and examples.
+
+			return this._registerRoute(route, callback, true);
+		},
+
+		go: function(path, replace){
+			// summary:
+			//		A simple pass-through to make changing the hash easy,
+			//		without having to require dojo/hash directly. It also
+			//		synchronously fires off any routes that match.
+			// example:
+			//	|	router.go("/foo/bar");
+
+			var applyChange;
+
+			if(typeof path !== "string"){return false;}
+
+			path = trim(path);
+			applyChange = this._handlePathChange(path);
+
+			if(applyChange){
+				hash(path, replace);
+			}
+
+			return applyChange;
+		},
+
+		startup: function(defaultPath){
+			// summary:
+			//		This method must be called to activate the router. Until
+			//		startup is called, no hash changes will trigger route
+			//		callbacks.
+
+			if(this._started){ return; }
+
+			var self = this,
+				startingPath = hash();
+
+			this._started = true;
+			this._hashchangeHandle = topic.subscribe("/dojo/hashchange", function(){
+				self._handlePathChange.apply(self, arguments);
+			});
+
+			if(!startingPath){
+				// If there is no initial starting point, push our defaultPath into our
+				// history as the starting point
+				this.go(defaultPath, true);
+			}else{
+				// Handle the starting path
+				this._handlePathChange(startingPath);
+			}
+		},
+
+		destroy: function(){
+			if(this._hashchangeHandle){
+				this._hashchangeHandle.remove();
+			} 			
+			this._routes = null;
+			this._routeIndex = null;
+		},
+
+		_handlePathChange: function(newPath){
+			var i, j, li, lj, routeObj, result,
+				allowChange, parameterNames, params,
+				routes = this._routes,
+				currentPath = this._currentPath;
+
+			if(!this._started || newPath === currentPath){ return allowChange; }
+
+			allowChange = true;
+
+			for(i=0, li=routes.length; i<li; ++i){
+				routeObj = routes[i];
+				result = routeObj.route.exec(newPath);
+
+				if(result){
+					if(routeObj.parameterNames){
+						parameterNames = routeObj.parameterNames;
+						params = {};
+
+						for(j=0, lj=parameterNames.length; j<lj; ++j){
+							params[parameterNames[j]] = result[j+1];
+						}
+					}else{
+						params = result.slice(1);
+					}
+					allowChange = routeObj.fire(params, currentPath, newPath);
+				}
+			}
+
+			if(allowChange){
+				this._currentPath = newPath;
+			}
+
+			return allowChange;
+		},
+
+		_convertRouteToRegExp: function(route){
+			// Sub in based on IDs and globs
+			route = route.replace(this.idMatch, this.idReplacement);
+			route = route.replace(this.globMatch, this.globReplacement);
+			// Make sure it's an exact match
+			route = "^" + route + "$";
+
+			return new RegExp(route);
+		},
+
+		_getParameterNames: function(route){
+			var idMatch = this.idMatch,
+				globMatch = this.globMatch,
+				parameterNames = [], match;
+
+			idMatch.lastIndex = 0;
+
+			while((match = idMatch.exec(route)) !== null){
+				parameterNames.push(match[1]);
+			}
+			if((match = globMatch.exec(route)) !== null){
+				parameterNames.push(match[1]);
+			}
+
+			return parameterNames.length > 0 ? parameterNames : null;
+		},
+
+		_indexRoutes: function(){
+			var i, l, route, routeIndex, routes = this._routes;
+
+			// Start a new route index
+			routeIndex = this._routeIndex = {};
+
+			// Set it up again
+			for(i=0, l=routes.length; i<l; ++i){
+				route = routes[i];
+				routeIndex[route.route] = i;
+			}
+		},
+
+		_registerRoute: function(/*String|RegExp*/route, /*Function*/callback, /*Boolean?*/isBefore){
+			var index, exists, routeObj, callbackQueue, removed,
+				self = this, routes = this._routes,
+				routeIndex = this._routeIndex;
+
+			// Try to fetch the route if it already exists.
+			// This works thanks to stringifying of regex
+			index = this._routeIndex[route];
+			exists = typeof index !== "undefined";
+			if(exists){
+				routeObj = routes[index];
+			}
+
+			// If we didn't get one, make a default start point
+			if(!routeObj){
+				routeObj = {
+					route: route,
+					callbackQueue: [],
+					fire: fireRoute
+				};
+			}
+
+			callbackQueue = routeObj.callbackQueue;
+
+			if(typeof route == "string"){
+				routeObj.parameterNames = this._getParameterNames(route);
+				routeObj.route = this._convertRouteToRegExp(route);
+			}
+
+			if(isBefore){
+				callbackQueue.unshift(callback);
+			}else{
+				callbackQueue.push(callback);
+			}
+
+			if(!exists){
+				index = routes.length;
+				routeIndex[route] = index;
+				routes.push(routeObj);
+			}
+
+			// Useful in a moment to keep from re-removing routes
+			removed = false;
+
+			return { // Object
+				remove: function(){
+					var i, l;
+
+					if(removed){ return; }
+
+					for(i=0, l=callbackQueue.length; i<l; ++i){
+						if(callbackQueue[i] === callback){
+							callbackQueue.splice(i, 1);
+						}
+					}
+
+
+					if(callbackQueue.length === 0){
+						routes.splice(index, 1);
+						self._indexRoutes();
+					}
+
+					removed = true;
+				},
+				register: function(callback, isBefore){
+					return self.register(route, callback, isBefore);
+				}
+			};
+		}
+	});
+
+	return RouterBase;
 });

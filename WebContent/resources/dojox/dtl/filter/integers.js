@@ -1,22 +1,41 @@
-//>>built
-define("dojox/dtl/filter/integers",["dojo/_base/lang","../_base"],function(_1,dd){
-var _2=_1.getObject("filter.integers",true,dd);
-_1.mixin(_2,{add:function(_3,_4){
-_3=parseInt(_3,10);
-_4=parseInt(_4,10);
-return isNaN(_4)?_3:_3+_4;
-},get_digit:function(_5,_6){
-_5=parseInt(_5,10);
-_6=parseInt(_6,10)-1;
-if(_6>=0){
-_5+="";
-if(_6<_5.length){
-_5=parseInt(_5.charAt(_6),10);
-}else{
-_5=0;
-}
-}
-return (isNaN(_5)?0:_5);
-}});
-return _2;
+define([
+	"dojo/_base/lang",
+	"../_base"
+], function(lang,dd){
+
+	var integers = lang.getObject("filter.integers", true, dd);
+	/*=====
+	 integers = {
+	 	// TODO: summary
+	 };
+	 =====*/
+
+	lang.mixin(integers, {
+		add: function(value, arg){
+			value = parseInt(value, 10);
+			arg = parseInt(arg, 10);
+			return isNaN(arg) ? value : value + arg;
+		},
+		get_digit: function(value, arg){
+			// summary:
+			//		Given a whole number, returns the 1-based requested digit of it
+			// desciprtion:
+			//		1 is the right-most digit, 2 is the second-right-most digit, etc. Returns the
+			//		original value for invalid input (if input or argument is not an integer,
+			//		or if argument is less than 1). Otherwise, output is always an integer.
+			value = parseInt(value, 10);
+			arg = parseInt(arg, 10) - 1;
+			if(arg >= 0){
+				value += "";
+				if(arg < value.length){
+					value = parseInt(value.charAt(arg), 10);
+				}else{
+					value = 0;
+				}
+			}
+			return (isNaN(value) ? 0 : value);
+		}
+	});
+
+	return integers;
 });

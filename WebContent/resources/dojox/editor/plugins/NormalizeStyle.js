@@ -1,451 +1,562 @@
-//>>built
-define("dojox/editor/plugins/NormalizeStyle",["dojo","dijit","dojox","dijit/_editor/_Plugin","dijit/_editor/html","dojo/_base/connect","dojo/_base/declare"],function(_1,_2,_3,_4,_5){
-var _6=_1.declare("dojox.editor.plugins.NormalizeStyle",_4,{mode:"semantic",condenseSpans:true,setEditor:function(_7){
-this.editor=_7;
-_7.customUndo=true;
-if(this.mode==="semantic"){
-this.editor.contentDomPostFilters.push(_1.hitch(this,this._convertToSemantic));
-}else{
-if(this.mode==="css"){
-this.editor.contentDomPostFilters.push(_1.hitch(this,this._convertToCss));
-}
-}
-if(_1.isIE){
-this.editor.contentDomPreFilters.push(_1.hitch(this,this._convertToSemantic));
-this._browserFilter=this._convertToSemantic;
-}else{
-if(_1.isWebKit){
-this.editor.contentDomPreFilters.push(_1.hitch(this,this._convertToCss));
-this._browserFilter=this._convertToCss;
-}else{
-if(_1.isMoz){
-this.editor.contentDomPreFilters.push(_1.hitch(this,this._convertToSemantic));
-this._browserFilter=this._convertToSemantic;
-}else{
-this.editor.contentDomPreFilters.push(_1.hitch(this,this._convertToSemantic));
-this._browserFilter=this._convertToSemantic;
-}
-}
-}
-if(this.editor._inserthtmlImpl){
-this.editor._oldInsertHtmlImpl=this.editor._inserthtmlImpl;
-}
-this.editor._inserthtmlImpl=_1.hitch(this,this._inserthtmlImpl);
-},_convertToSemantic:function(_8){
-if(_8){
-var _9=this.editor.document;
-var _a=this;
-var _b=function(_c){
-if(_c.nodeType==1){
-if(_c.id!=="dijitEditorBody"){
-var _d=_c.style;
-var _e=_c.tagName?_c.tagName.toLowerCase():"";
-var _f;
-if(_d&&_e!="table"&&_e!="ul"&&_e!="ol"){
-var fw=_d.fontWeight?_d.fontWeight.toLowerCase():"";
-var fs=_d.fontStyle?_d.fontStyle.toLowerCase():"";
-var td=_d.textDecoration?_d.textDecoration.toLowerCase():"";
-var s=_d.fontSize?_d.fontSize.toLowerCase():"";
-var bc=_d.backgroundColor?_d.backgroundColor.toLowerCase():"";
-var c=_d.color?_d.color.toLowerCase():"";
-var _10=function(_11,_12){
-if(_11){
-while(_12.firstChild){
-_11.appendChild(_12.firstChild);
-}
-if(_e=="span"&&!_12.style.cssText){
-_1.place(_11,_12,"before");
-_12.parentNode.removeChild(_12);
-_12=_11;
-}else{
-_12.appendChild(_11);
-}
-}
-return _12;
-};
-switch(fw){
-case "bold":
-case "bolder":
-case "700":
-case "800":
-case "900":
-_f=_9.createElement("b");
-_c.style.fontWeight="";
-break;
-}
-_c=_10(_f,_c);
-_f=null;
-if(fs=="italic"){
-_f=_9.createElement("i");
-_c.style.fontStyle="";
-}
-_c=_10(_f,_c);
-_f=null;
-if(td){
-var da=td.split(" ");
-var _13=0;
-_1.forEach(da,function(s){
-switch(s){
-case "underline":
-_f=_9.createElement("u");
-break;
-case "line-through":
-_f=_9.createElement("strike");
-break;
-}
-_13++;
-if(_13==da.length){
-_c.style.textDecoration="";
-}
-_c=_10(_f,_c);
-_f=null;
+define([
+	"dojo",
+	"dijit",
+	"dojox",
+	"dijit/_editor/_Plugin",
+	"dijit/_editor/html",
+	"dojo/_base/connect",
+	"dojo/_base/declare"
+], function(dojo, dijit, dojox, _Plugin, editorHtml) {
+
+var NormalizeStyle = dojo.declare("dojox.editor.plugins.NormalizeStyle", _Plugin,{
+	// summary:
+	//		This plugin provides NormalizeStyle capability to the editor.  It is
+	//		a headless plugin that tries to normalize how content is styled when
+	//		it comes out of th editor ('b' or css).   It also auto-converts
+	//		incoming content to the proper one expected by the browser as well so
+	//		that the native styling buttons work.
+
+	// mode: [public] String
+	//		A String variable indicating if it should use semantic tags 'b', 'i', etc, or
+	//		CSS styling.  The default is semantic.
+	mode: "semantic",
+
+	// condenseSpans: [public] Boolean
+	//		A boolean variable indicating if it should try to condense
+	//		'span''span''span' styles  when in css mode
+	//		The default is true, it will try to combine where it can.
+	condenseSpans: true,
+
+	setEditor: function(editor){
+		// summary:
+		//		Over-ride for the setting of the editor.
+		// editor: Object
+		//		The editor to configure for this plugin to use.
+		this.editor = editor;
+		editor.customUndo = true;
+
+		if(this.mode === "semantic"){
+			this.editor.contentDomPostFilters.push(dojo.hitch(this, this._convertToSemantic));
+		}else if(this.mode === "css"){
+			this.editor.contentDomPostFilters.push(dojo.hitch(this, this._convertToCss));
+		}
+
+		// Pre DOM filters are usually based on what browser, as they all use different ways to
+		// apply styles with actions and modify them.
+		if(dojo.isIE){
+			// IE still uses semantic tags most of the time, so convert to that.
+			this.editor.contentDomPreFilters.push(dojo.hitch(this, this._convertToSemantic));
+			this._browserFilter = this._convertToSemantic;
+		}else if(dojo.isWebKit){
+			this.editor.contentDomPreFilters.push(dojo.hitch(this, this._convertToCss));
+			this._browserFilter = this._convertToCss;
+		}else if(dojo.isMoz){
+			//Editor currently forces Moz into semantic mode, so we need to match.  Ideally
+			//editor could get rid of that and just use CSS mode, which would work cleaner
+			//That's why this is split out, to make it easy to change later.
+			this.editor.contentDomPreFilters.push(dojo.hitch(this, this._convertToSemantic));
+			this._browserFilter = this._convertToSemantic;
+		}else{
+			this.editor.contentDomPreFilters.push(dojo.hitch(this, this._convertToSemantic));
+			this._browserFilter = this._convertToSemantic;
+		}
+
+		// Set up the inserthtml impl over-ride.  This catches semi-paste events and
+		// tries to normalize them too.
+		if(this.editor._inserthtmlImpl){
+			this.editor._oldInsertHtmlImpl = this.editor._inserthtmlImpl;
+		}
+		this.editor._inserthtmlImpl = dojo.hitch(this, this._inserthtmlImpl);
+	},
+
+	_convertToSemantic: function(node){
+		// summary:
+		//		A function to convert the HTML structure of 'node' into
+		//		semantic tags where possible.
+		// node: DOMNode
+		//		The node to process.
+		// tags:
+		//		private
+		if(node){
+			var doc = this.editor.document;
+			var self = this;
+			var convertNode = function(cNode){
+				if(cNode.nodeType == 1){
+					if(cNode.id !== "dijitEditorBody"){
+						var style = cNode.style;
+						var tag = cNode.tagName?cNode.tagName.toLowerCase():"";
+						var sTag;
+						if(style && tag != "table" && tag != "ul" && tag != "ol"){
+							// Avoid wrapper blocks that have specific underlying structure, as injecting
+							// spans/etc there is invalid.
+							// Lets check and convert certain node/style types.
+							var fw = style.fontWeight? style.fontWeight.toLowerCase() : "";
+							var fs = style.fontStyle? style.fontStyle.toLowerCase() : "";
+							var td = style.textDecoration? style.textDecoration.toLowerCase() : "";
+							var s = style.fontSize?style.fontSize.toLowerCase() : "";
+							var bc = style.backgroundColor?style.backgroundColor.toLowerCase() : "";
+							var c = style.color?style.color.toLowerCase() : "";
+	
+							var wrapNodes = function(wrap, pNode){
+								if(wrap){
+									while(pNode.firstChild){
+										wrap.appendChild(pNode.firstChild);
+									}
+									if(tag == "span" && !pNode.style.cssText){
+										// A styler tag with nothing extra in it, so lets remove it.
+										dojo.place(wrap, pNode, "before");
+										pNode.parentNode.removeChild(pNode);
+										pNode = wrap;
+									}else{
+										pNode.appendChild(wrap);
+									}
+								}
+								return pNode;
+							};
+							switch(fw){
+								case "bold":
+								case "bolder":
+								case "700":
+								case "800":
+								case "900":
+									sTag = doc.createElement("b");
+									cNode.style.fontWeight = "";
+									break;
+							}
+							cNode = wrapNodes(sTag, cNode);
+							sTag = null;
+							if(fs == "italic"){
+								sTag = doc.createElement("i");
+								cNode.style.fontStyle = "";
+							}
+							cNode = wrapNodes(sTag, cNode);
+							sTag = null;
+							if(td){
+								var da = td.split(" ");
+								var count = 0;
+								dojo.forEach(da, function(s){
+									switch(s){
+										case "underline":
+											sTag = doc.createElement("u");
+											break;
+										case "line-through":
+											sTag = doc.createElement("strike");
+											break;
+									}
+									count++;
+									if(count == da.length){
+										// Last one, clear the decor and see if we can span strip on wrap.
+										cNode.style.textDecoration = "";
+									}
+									cNode = wrapNodes(sTag, cNode);
+									sTag = null;
+								});
+								
+							}
+							if(s){
+								var sizeMap = {
+									"xx-small": 1,
+									"x-small": 2,
+									"small": 3,
+									"medium": 4,
+									"large": 5,
+									"x-large": 6,
+									"xx-large": 7,
+									"-webkit-xxx-large": 7
+								};
+
+								// Convert point or px size to size
+								// to something roughly mappable.
+								if(s.indexOf("pt") > 0){
+									s = s.substring(0,s.indexOf("pt"));
+									s = parseInt(s);
+									if(s < 5){
+										s = "xx-small";
+									}else if(s < 10){
+										s = "x-small";
+									}else if(s < 15){
+										s = "small";
+									}else if(s < 20){
+										s = "medium";
+									}else if(s < 25){
+										s = "large";
+									}else if(s < 30){
+										s = "x-large";
+									}else if(s > 30){
+										s = "xx-large";
+									}
+								}else if(s.indexOf("px") > 0){
+									s = s.substring(0,s.indexOf("px"));
+									s = parseInt(s);
+									if(s < 5){
+										s = "xx-small";
+									}else if(s < 10){
+										s = "x-small";
+									}else if(s < 15){
+										s = "small";
+									}else if(s < 20){
+										s = "medium";
+									}else if(s < 25){
+										s = "large";
+									}else if(s < 30){
+										s = "x-large";
+									}else if(s > 30){
+										s = "xx-large";
+									}
+								}
+								var size = sizeMap[s];
+								if(!size){
+									size = 3;
+								}
+								sTag = doc.createElement("font");
+								sTag.setAttribute("size", size);
+								cNode.style.fontSize = "";
+							}
+							cNode = wrapNodes(sTag, cNode);
+							sTag = null;
+							if(bc && tag !== "font" && self._isInline(tag)){
+								// IE doesn't like non-font background color crud.
+								// Also, don't move it in if the background color is set on a block style node,
+								// as it won't color properly once put on inline font.
+								bc = new dojo.Color(bc).toHex();
+								sTag = doc.createElement("font");
+								sTag.style.backgroundColor = bc;
+								cNode.style.backgroundColor = "";
+							}
+							if(c && tag !== "font"){
+								// IE doesn't like non-font background color crud.
+								c = new dojo.Color(c).toHex();
+								sTag = doc.createElement("font");
+								sTag.setAttribute("color", c);
+								cNode.style.color = "";
+							}
+							cNode = wrapNodes(sTag, cNode);
+							sTag = null;
+						}
+					}
+					if(cNode.childNodes){
+						// Clone it, since we may alter its position
+						var nodes = [];
+						dojo.forEach(cNode.childNodes, function(n){ nodes.push(n);});
+						dojo.forEach(nodes, convertNode);
+					}
+				}
+				return cNode;
+			};
+			return this._normalizeTags(convertNode(node));
+		}
+		return node;
+	},
+	
+	_normalizeTags: function(node){
+		// summary:
+		//		A function to handle normalizing certain tag types contained under 'node'
+		// node:
+		//		The node to search from.
+		// tags:
+		//		Protected.
+		var w = this.editor.window;
+		var doc = this.editor.document;
+		dojo.query("em,s,strong", node).forEach(function(n){
+			var tag = n.tagName?n.tagName.toLowerCase():"";
+			var tTag;
+			switch(tag){
+				case "s":
+						tTag = "strike";
+						break;
+				case "em":
+						tTag = "i";
+						break;
+				case "strong":
+						tTag = "b";
+						break;
+			}
+			if(tTag){
+				var nNode = doc.createElement(tTag);
+				dojo.place("<"+tTag+">", n, "before");
+				while(n.firstChild){
+					nNode.appendChild(n.firstChild);
+				}
+				n.parentNode.removeChild(n);
+			}
+		});
+		return node;
+	},
+
+	_convertToCss: function(node){
+		// summary:
+		//		A function to convert the HTML structure of 'node' into
+		//		css span styles around text instead of semantic tags.
+		//		Note:  It does not do compression of spans together.
+		// node: DOMNode
+		//		The node to process
+		// tags:
+		//		private
+		if(node){
+			var doc = this.editor.document;
+			var convertNode = function(cNode) {
+				if(cNode.nodeType == 1){
+					if(cNode.id !== "dijitEditorBody"){
+						var tag = cNode.tagName?cNode.tagName.toLowerCase():"";
+						if(tag){
+							var span;
+							switch(tag){
+								case "b":
+								case "strong": // Mainly IE
+									span = doc.createElement("span");
+									span.style.fontWeight = "bold";
+									break;
+								case "i":
+								case "em": // Mainly IE
+									span = doc.createElement("span");
+									span.style.fontStyle = "italic";
+									break;
+								case "u":
+									span = doc.createElement("span");
+									span.style.textDecoration = "underline";
+									break;
+								case "strike":
+								case "s": // Mainly WebKit.
+									span = doc.createElement("span");
+									span.style.textDecoration = "line-through";
+									break;
+								case "font": // Try to deal with colors
+									var styles = {};
+									if(dojo.attr(cNode, "color")){
+										styles.color = dojo.attr(cNode, "color");
+									}
+									if(dojo.attr(cNode, "face")){
+										styles.fontFace = dojo.attr(cNode, "face");
+									}
+									if(cNode.style && cNode.style.backgroundColor){
+										styles.backgroundColor = cNode.style.backgroundColor;
+									}
+									if(cNode.style && cNode.style.color){
+										styles.color = cNode.style.color;
+									}
+									var sizeMap = {
+										1: "xx-small",
+										2: "x-small",
+										3: "small",
+										4: "medium",
+										5: "large",
+										6: "x-large",
+										7: "xx-large"
+									};
+									if(dojo.attr(cNode, "size")){
+										styles.fontSize = sizeMap[dojo.attr(cNode, "size")];
+									}
+									span = doc.createElement("span");
+									dojo.style(span, styles);
+									break;
+							}
+							if(span){
+								while(cNode.firstChild){
+									span.appendChild(cNode.firstChild);
+								}
+								dojo.place(span, cNode, "before");
+								cNode.parentNode.removeChild(cNode);
+								cNode = span;
+							}
+						}
+					}
+					if(cNode.childNodes){
+						// Clone it, since we may alter its position
+						var nodes = [];
+						dojo.forEach(cNode.childNodes, function(n){ nodes.push(n);});
+						dojo.forEach(nodes, convertNode);
+					}
+				}
+				return cNode;
+			};
+			node = convertNode(node);
+			if(this.condenseSpans){
+				this._condenseSpans(node);
+			}
+		}
+		return node;
+	},
+
+	_condenseSpans: function(node){
+		// summary:
+		//		Method to condense spans if you end up with multi-wrapping from
+		//		from converting b, i, u, to span nodes.
+		// node:
+		//		The node (and its children), to process.
+		// tags:
+		//		private
+		var compressSpans = function(node){
+			// Okay, span with no class or id and it has styles.
+			// So, merge the styles, then collapse.  Merge requires determining
+			// all the common/different styles and anything that overlaps the style,
+			// but a different value can't be merged.
+			var genStyleMap = function(styleText){
+				var m;
+				if(styleText){
+					m = {};
+					var styles = styleText.toLowerCase().split(";");
+					dojo.forEach(styles, function(s){
+						if(s){
+							var ss = s.split(":");
+							var key = ss[0] ? dojo.trim(ss[0]): "";
+							var val = ss[1] ? dojo.trim(ss[1]): "";
+							if(key && val){
+								var i;
+								var nKey = "";
+								for(i = 0; i < key.length; i++){
+									var ch = key.charAt(i);
+									if(ch == "-"){
+										i++;
+										ch = key.charAt(i);
+										nKey += ch.toUpperCase();
+									}else{
+										nKey += ch;
+									}
+								}
+								m[nKey] = val;
+							}
+						}
+					});
+				}
+				return m;
+			};
+			if(node && node.nodeType == 1){
+				var tag = node.tagName? node.tagName.toLowerCase() : "";
+				if(tag === "span" && node.childNodes && node.childNodes.length === 1){
+					// Okay, a possibly compressible span
+					var c = node.firstChild;
+					while(c && c.nodeType == 1 && c.tagName && c.tagName.toLowerCase() == "span"){
+						if(!dojo.attr(c, "class") && !dojo.attr(c, "id") && c.style){
+							var s1 = genStyleMap(node.style.cssText);
+							var s2 = genStyleMap(c.style.cssText);
+							if(s1 && s2){
+								// Maps, so lets see if we can combine them.
+								var combinedMap = {};
+								var i;
+								for(i in s1){
+									if(!s1[i] || !s2[i] || s1[i] == s2[i]){
+										combinedMap[i] = s1[i];
+										delete s2[i];
+									}else if(s1[i] != s2[i]){
+										// Collision, cannot merge.
+										// IE does not handle combined underline strikethrough text
+										// decorations on a single span.
+										if(i == "textDecoration"){
+											combinedMap[i] = s1[i] + " " + s2[i];
+											delete s2[i];
+										}else{
+											combinedMap = null;
+										}
+										break;
+									}else{
+										combinedMap = null;
+										break;
+									}
+								}
+								if(combinedMap){
+									for(i in s2){
+										combinedMap[i] = s2[i];
+									}
+									dojo.style(node, combinedMap);
+									while(c.firstChild){
+										node.appendChild(c.firstChild);
+									}
+									var t = c.nextSibling;
+									c.parentNode.removeChild(c);
+									c = t;
+								}else{
+									c = c.nextSibling;
+								}
+							}else{
+								c = c.nextSibling;
+							}
+						}else{
+							c = c.nextSibling;
+						}
+					}
+				}
+			}
+			if(node.childNodes && node.childNodes.length){
+				dojo.forEach(node.childNodes, compressSpans);
+			}
+		};
+		compressSpans(node);
+	},
+	
+	_isInline: function(tag){
+		// summary:
+		//		Function to determine if the current tag is an inline
+		//		element that does formatting, as we don't want to
+		//		try to combine inlines with divs on styles.
+		// tag:
+		//		The tag to examine
+		// tags:
+		//		private
+		switch(tag){
+			case "a":
+			case "b":
+			case "strong":
+			case "s":
+			case "strike":
+			case "i":
+			case "u":
+			case "em":
+			case "sup":
+			case "sub":
+			case "span":
+			case "font":
+			case "big":
+			case "cite":
+			case "q":
+			case "img":
+			case "small":
+				return true;
+			default:
+				return false;
+		}
+	},
+
+	_inserthtmlImpl: function(html){
+		// summary:
+		//		Function to trap and over-ride the editor inserthtml implementation
+		//		to try and filter it to match the editor's internal styling mode.
+		//		Helpful for plugins like PasteFromWord, in that it extra-filters
+		//		and normalizes the input if it can.
+		// html:
+		//		The HTML string to insert.
+		// tags:
+		//		private
+		if(html){
+			var doc = this.editor.document;
+			var div = doc.createElement("div");
+			div.innerHTML = html;
+			div = this._browserFilter(div);
+			html = editorHtml.getChildrenHtml(div);
+			div.innerHTML = "";
+
+			// Call the over-ride, or if not available, just execute it.
+			if(this.editor._oldInsertHtmlImpl){
+				return this.editor._oldInsertHtmlImpl(html);
+			}else{
+				return this.editor.execCommand("inserthtml", html);
+			}
+		}
+		return false;
+	}
 });
-}
-if(s){
-var _14={"xx-small":1,"x-small":2,"small":3,"medium":4,"large":5,"x-large":6,"xx-large":7,"-webkit-xxx-large":7};
-if(s.indexOf("pt")>0){
-s=s.substring(0,s.indexOf("pt"));
-s=parseInt(s);
-if(s<5){
-s="xx-small";
-}else{
-if(s<10){
-s="x-small";
-}else{
-if(s<15){
-s="small";
-}else{
-if(s<20){
-s="medium";
-}else{
-if(s<25){
-s="large";
-}else{
-if(s<30){
-s="x-large";
-}else{
-if(s>30){
-s="xx-large";
-}
-}
-}
-}
-}
-}
-}
-}else{
-if(s.indexOf("px")>0){
-s=s.substring(0,s.indexOf("px"));
-s=parseInt(s);
-if(s<5){
-s="xx-small";
-}else{
-if(s<10){
-s="x-small";
-}else{
-if(s<15){
-s="small";
-}else{
-if(s<20){
-s="medium";
-}else{
-if(s<25){
-s="large";
-}else{
-if(s<30){
-s="x-large";
-}else{
-if(s>30){
-s="xx-large";
-}
-}
-}
-}
-}
-}
-}
-}
-}
-var _15=_14[s];
-if(!_15){
-_15=3;
-}
-_f=_9.createElement("font");
-_f.setAttribute("size",_15);
-_c.style.fontSize="";
-}
-_c=_10(_f,_c);
-_f=null;
-if(bc&&_e!=="font"&&_a._isInline(_e)){
-bc=new _1.Color(bc).toHex();
-_f=_9.createElement("font");
-_f.style.backgroundColor=bc;
-_c.style.backgroundColor="";
-}
-if(c&&_e!=="font"){
-c=new _1.Color(c).toHex();
-_f=_9.createElement("font");
-_f.setAttribute("color",c);
-_c.style.color="";
-}
-_c=_10(_f,_c);
-_f=null;
-}
-}
-if(_c.childNodes){
-var _16=[];
-_1.forEach(_c.childNodes,function(n){
-_16.push(n);
+
+// Register this plugin.
+dojo.subscribe(dijit._scopeName + ".Editor.getPlugin",null,function(o){
+	if(o.plugin){ return; }
+	var name = o.args.name.toLowerCase();
+	if(name === "normalizestyle"){
+		o.plugin = new NormalizeStyle({
+			mode: ("mode" in o.args)?o.args.mode:"semantic",
+			condenseSpans: ("condenseSpans" in o.args)?o.args.condenseSpans:true
+		});
+	}
 });
-_1.forEach(_16,_b);
-}
-}
-return _c;
-};
-return this._normalizeTags(_b(_8));
-}
-return _8;
-},_normalizeTags:function(_17){
-var w=this.editor.window;
-var doc=this.editor.document;
-_1.query("em,s,strong",_17).forEach(function(n){
-var tag=n.tagName?n.tagName.toLowerCase():"";
-var _18;
-switch(tag){
-case "s":
-_18="strike";
-break;
-case "em":
-_18="i";
-break;
-case "strong":
-_18="b";
-break;
-}
-if(_18){
-var _19=doc.createElement(_18);
-_1.place("<"+_18+">",n,"before");
-while(n.firstChild){
-_19.appendChild(n.firstChild);
-}
-n.parentNode.removeChild(n);
-}
-});
-return _17;
-},_convertToCss:function(_1a){
-if(_1a){
-var doc=this.editor.document;
-var _1b=function(_1c){
-if(_1c.nodeType==1){
-if(_1c.id!=="dijitEditorBody"){
-var tag=_1c.tagName?_1c.tagName.toLowerCase():"";
-if(tag){
-var _1d;
-switch(tag){
-case "b":
-case "strong":
-_1d=doc.createElement("span");
-_1d.style.fontWeight="bold";
-break;
-case "i":
-case "em":
-_1d=doc.createElement("span");
-_1d.style.fontStyle="italic";
-break;
-case "u":
-_1d=doc.createElement("span");
-_1d.style.textDecoration="underline";
-break;
-case "strike":
-case "s":
-_1d=doc.createElement("span");
-_1d.style.textDecoration="line-through";
-break;
-case "font":
-var _1e={};
-if(_1.attr(_1c,"color")){
-_1e.color=_1.attr(_1c,"color");
-}
-if(_1.attr(_1c,"face")){
-_1e.fontFace=_1.attr(_1c,"face");
-}
-if(_1c.style&&_1c.style.backgroundColor){
-_1e.backgroundColor=_1c.style.backgroundColor;
-}
-if(_1c.style&&_1c.style.color){
-_1e.color=_1c.style.color;
-}
-var _1f={1:"xx-small",2:"x-small",3:"small",4:"medium",5:"large",6:"x-large",7:"xx-large"};
-if(_1.attr(_1c,"size")){
-_1e.fontSize=_1f[_1.attr(_1c,"size")];
-}
-_1d=doc.createElement("span");
-_1.style(_1d,_1e);
-break;
-}
-if(_1d){
-while(_1c.firstChild){
-_1d.appendChild(_1c.firstChild);
-}
-_1.place(_1d,_1c,"before");
-_1c.parentNode.removeChild(_1c);
-_1c=_1d;
-}
-}
-}
-if(_1c.childNodes){
-var _20=[];
-_1.forEach(_1c.childNodes,function(n){
-_20.push(n);
-});
-_1.forEach(_20,_1b);
-}
-}
-return _1c;
-};
-_1a=_1b(_1a);
-if(this.condenseSpans){
-this._condenseSpans(_1a);
-}
-}
-return _1a;
-},_condenseSpans:function(_21){
-var _22=function(_23){
-var _24=function(_25){
-var m;
-if(_25){
-m={};
-var _26=_25.toLowerCase().split(";");
-_1.forEach(_26,function(s){
-if(s){
-var ss=s.split(":");
-var key=ss[0]?_1.trim(ss[0]):"";
-var val=ss[1]?_1.trim(ss[1]):"";
-if(key&&val){
-var i;
-var _27="";
-for(i=0;i<key.length;i++){
-var ch=key.charAt(i);
-if(ch=="-"){
-i++;
-ch=key.charAt(i);
-_27+=ch.toUpperCase();
-}else{
-_27+=ch;
-}
-}
-m[_27]=val;
-}
-}
-});
-}
-return m;
-};
-if(_23&&_23.nodeType==1){
-var tag=_23.tagName?_23.tagName.toLowerCase():"";
-if(tag==="span"&&_23.childNodes&&_23.childNodes.length===1){
-var c=_23.firstChild;
-while(c&&c.nodeType==1&&c.tagName&&c.tagName.toLowerCase()=="span"){
-if(!_1.attr(c,"class")&&!_1.attr(c,"id")&&c.style){
-var s1=_24(_23.style.cssText);
-var s2=_24(c.style.cssText);
-if(s1&&s2){
-var _28={};
-var i;
-for(i in s1){
-if(!s1[i]||!s2[i]||s1[i]==s2[i]){
-_28[i]=s1[i];
-delete s2[i];
-}else{
-if(s1[i]!=s2[i]){
-if(i=="textDecoration"){
-_28[i]=s1[i]+" "+s2[i];
-delete s2[i];
-}else{
-_28=null;
-}
-break;
-}else{
-_28=null;
-break;
-}
-}
-}
-if(_28){
-for(i in s2){
-_28[i]=s2[i];
-}
-_1.style(_23,_28);
-while(c.firstChild){
-_23.appendChild(c.firstChild);
-}
-var t=c.nextSibling;
-c.parentNode.removeChild(c);
-c=t;
-}else{
-c=c.nextSibling;
-}
-}else{
-c=c.nextSibling;
-}
-}else{
-c=c.nextSibling;
-}
-}
-}
-}
-if(_23.childNodes&&_23.childNodes.length){
-_1.forEach(_23.childNodes,_22);
-}
-};
-_22(_21);
-},_isInline:function(tag){
-switch(tag){
-case "a":
-case "b":
-case "strong":
-case "s":
-case "strike":
-case "i":
-case "u":
-case "em":
-case "sup":
-case "sub":
-case "span":
-case "font":
-case "big":
-case "cite":
-case "q":
-case "img":
-case "small":
-return true;
-default:
-return false;
-}
-},_inserthtmlImpl:function(_29){
-if(_29){
-var doc=this.editor.document;
-var div=doc.createElement("div");
-div.innerHTML=_29;
-div=this._browserFilter(div);
-_29=_5.getChildrenHtml(div);
-div.innerHTML="";
-if(this.editor._oldInsertHtmlImpl){
-return this.editor._oldInsertHtmlImpl(_29);
-}else{
-return this.editor.execCommand("inserthtml",_29);
-}
-}
-return false;
-}});
-_1.subscribe(_2._scopeName+".Editor.getPlugin",null,function(o){
-if(o.plugin){
-return;
-}
-var _2a=o.args.name.toLowerCase();
-if(_2a==="normalizestyle"){
-o.plugin=new _6({mode:("mode" in o.args)?o.args.mode:"semantic",condenseSpans:("condenseSpans" in o.args)?o.args.condenseSpans:true});
-}
-});
-return _6;
+
+return NormalizeStyle;
+
 });

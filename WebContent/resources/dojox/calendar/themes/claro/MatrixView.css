@@ -35,7 +35,11 @@
   padding: 0;
   border-collapse: collapse;
   table-layout: fixed;
-  
+  /* 
+		 * The dojoxCalendarColToday & dojoxCalendarColWeekend classes is added by the 
+		 * MatrixView.styleGridCell method that can be subclassed to add/remove css classes
+		 */
+
 }
 .claro .dojoxCalendarMatrixView .dojoxCalendarGridTable tr {
   -webkit-box-sizing: border-box;
@@ -117,7 +121,11 @@
   height: 100%;
   table-layout: fixed;
   border-collapse: collapse;
-  
+  /* 
+		 * The dojoxCalendarColWeekend class is added by the 
+		 * ColumnView.styleColumnHeaderCell method that can be subclassed to add/remove css class.
+		 */
+
 }
 .claro .dojoxCalendarMatrixView .dojoxCalendarColumnHeaderTable td {
   overflow: hidden;
@@ -160,7 +168,10 @@
   table-layout: fixed;
   margin: 0;
   padding: 0;
-  
+  /* 
+		 * The MatrixView.styleRowHeaderCell method that can be subclassed to add/remove css classes per hour.
+		 */
+
 }
 .claro .dojoxCalendarMatrixView .dojoxCalendarRowHeaderTable tr {
   -webkit-box-sizing: border-box;

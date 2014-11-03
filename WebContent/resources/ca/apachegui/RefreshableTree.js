@@ -4,10 +4,6 @@ define([ "dojo/_base/declare",
          "dojo/_base/lang"
 ], function(declare, Tree, dojo, lang){	
  	
-	dojo.provide('ca.apachegui.RefreshableTree');
-	dojo.provide('ca.apachegui._UncachedTreeNode');
-	dojo.provide('ca.apachegui.RefreshableUncachedTree');
-	
  	declare("ca.apachegui.RefreshableTree", [dijit.Tree], {	
 		_reloadPaths: null, 
 		_reloadOnLoadConnect: null, 

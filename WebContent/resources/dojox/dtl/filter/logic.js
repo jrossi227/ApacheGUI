@@ -1,27 +1,52 @@
-//>>built
-define("dojox/dtl/filter/logic",["dojo/_base/lang","../_base"],function(_1,dd){
-var _2=_1.getObject("filter.logic",true,dd);
-_1.mixin(_2,{default_:function(_3,_4){
-return _3||_4||"";
-},default_if_none:function(_5,_6){
-return (_5===null)?_6||"":_5||"";
-},divisibleby:function(_7,_8){
-return (parseInt(_7,10)%parseInt(_8,10))===0;
-},_yesno:/\s*,\s*/g,yesno:function(_9,_a){
-if(!_a){
-_a="yes,no,maybe";
-}
-var _b=_a.split(dojox.dtl.filter.logic._yesno);
-if(_b.length<2){
-return _9;
-}
-if(_9){
-return _b[0];
-}
-if((!_9&&_9!==null)||_b.length<3){
-return _b[1];
-}
-return _b[2];
-}});
-return _2;
+define([
+	"dojo/_base/lang",
+	"../_base"
+], function(lang,dd){
+
+	var logic = lang.getObject("filter.logic", true, dd);
+	/*=====
+	 logic = {
+	 	// TODO: summary
+	 };
+	 =====*/
+
+	lang.mixin(logic, {
+		default_: function(value, arg){
+			// summary:
+			//		If value is unavailable, use given default
+			return value || arg || "";
+		},
+		default_if_none: function(value, arg){
+			// summary:
+			//		If value is null, use given default
+			return (value === null) ? arg || "" : value || "";
+		},
+		divisibleby: function(value, arg){
+			// summary:
+			//		Returns true if the value is divisible by the argument"
+			return (parseInt(value, 10) % parseInt(arg, 10)) === 0;
+		},
+		_yesno: /\s*,\s*/g,
+		yesno: function(value, arg){
+			// summary:
+			//		arg being a comma-delimited string, value of true/false/none
+			//		chooses the appropriate item from the string
+			if(!arg){
+				arg = 'yes,no,maybe';
+			}
+			var parts = arg.split(dojox.dtl.filter.logic._yesno);
+			if(parts.length < 2){
+				return value;
+			}
+			if(value){
+				return parts[0];
+			}
+			if((!value && value !== null) || parts.length < 3){
+				return parts[1];
+			}
+			return parts[2];
+		}
+	});
+
+	return logic;
 });

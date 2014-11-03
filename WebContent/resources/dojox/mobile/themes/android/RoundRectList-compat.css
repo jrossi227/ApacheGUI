@@ -1,4 +1,4 @@
-
+/* dojox.mobile.RoundRectList */
 .dj_ff3 .mblRoundRectList {
   -moz-border-radius: 8px;
 }
@@ -10,6 +10,7 @@
   -moz-border-radius-bottomleft: 8px;
   -moz-border-radius-bottomright: 8px;
 }
+/* Round Corner */
 .dj_ie .mblRoundRectList {
   position: relative;
 }

@@ -1,103 +1,260 @@
-//>>built
-define("dojox/charting/bidi/Chart",["dojox/main","dojo/_base/declare","dojo/_base/lang","dojo/dom-style","dojo/_base/array","dojo/sniff","dojo/dom","dojo/dom-construct","dojox/gfx","dojox/gfx/_gfxBidiSupport","../axis2d/common","dojox/string/BidiEngine","dojox/lang/functional","dojo/dom-attr","./_bidiutils"],function(_1,_2,_3,_4,_5,_6,_7,_8,g,_9,da,_a,df,_b,_c){
-var _d=new _a();
-var dc=_3.getObject("charting",true,_1);
-function _e(_f){
-return /^(ltr|rtl|auto)$/.test(_f)?_f:null;
-};
-return _2(null,{textDir:"",dir:"",isMirrored:false,getTextDir:function(_10){
-var _11=this.textDir=="auto"?_d.checkContextual(_10):this.textDir;
-if(!_11){
-_11=_4.get(this.node,"direction");
-}
-return _11;
-},postscript:function(_12,_13){
-var _14=_13?(_13["textDir"]?_e(_13["textDir"]):""):"";
-_14=_14?_14:_4.get(this.node,"direction");
-this.textDir=_14;
-this.surface.textDir=_14;
-this.htmlElementsRegistry=[];
-this.truncatedLabelsRegistry=[];
-var _15="ltr";
-if(_b.has(_12,"direction")){
-_15=_b.get(_12,"direction");
-}
-this.setDir(_13?(_13.dir?_13.dir:_15):_15);
-},setTextDir:function(_16,obj){
-if(_16==this.textDir){
-return this;
-}
-if(_e(_16)!=null){
-this.textDir=_16;
-this.surface.setTextDir(_16);
-if(this.truncatedLabelsRegistry&&_16=="auto"){
-_5.forEach(this.truncatedLabelsRegistry,function(_17){
-var _18=this.getTextDir(_17["label"]);
-if(_17["element"].textDir!=_18){
-_17["element"].setShape({textDir:_18});
-}
-},this);
-}
-var _19=df.keys(this.axes);
-if(_19.length>0){
-_5.forEach(_19,function(key,_1a,arr){
-var _1b=this.axes[key];
-if(_1b.htmlElements[0]){
-_1b.dirty=true;
-_1b.render(this.dim,this.offsets);
-}
-},this);
-if(this.title){
-var _1c=(g.renderer=="canvas"),_1d=_1c||!_6("ie")&&!_6("opera")?"html":"gfx",_1e=g.normalizedLength(g.splitFontString(this.titleFont).size);
-_8.destroy(this.chartTitle);
-this.chartTitle=null;
-this.chartTitle=da.createText[_1d](this,this.surface,this.dim.width/2,this.titlePos=="top"?_1e+this.margins.t:this.dim.height-this.margins.b,"middle",this.title,this.titleFont,this.titleFontColor);
-}
-}else{
-_5.forEach(this.htmlElementsRegistry,function(_1f,_20,arr){
-var _21=_16=="auto"?this.getTextDir(_1f[4]):_16;
-if(_1f[0].children[0]&&_1f[0].children[0].dir!=_21){
-_8.destroy(_1f[0].children[0]);
-_1f[0].children[0]=da.createText["html"](this,this.surface,_1f[1],_1f[2],_1f[3],_1f[4],_1f[5],_1f[6]).children[0];
-}
-},this);
-}
-}
-return this;
-},setDir:function(dir){
-if(dir=="rtl"||dir=="ltr"){
-if(this.dir!=dir){
-this.isMirrored=true;
-this.dirty=true;
-}
-this.dir=dir;
-}
-return this;
-},isRightToLeft:function(){
-return this.dir=="rtl";
-},applyMirroring:function(_22,dim,_23){
-_c.reverseMatrix(_22,dim,_23,this.dir=="rtl");
-_4.set(this.node,"direction","ltr");
-return this;
-},formatTruncatedLabel:function(_24,_25,_26){
-this.truncateBidi(_24,_25,_26);
-},truncateBidi:function(_27,_28,_29){
-if(_29=="gfx"){
-this.truncatedLabelsRegistry.push({element:_27,label:_28});
-if(this.textDir=="auto"){
-_27.setShape({textDir:this.getTextDir(_28)});
-}
-}
-if(_29=="html"&&this.textDir=="auto"){
-_27.children[0].dir=this.getTextDir(_28);
-}
-},render:function(){
-this.inherited(arguments);
-this.isMirrored=false;
-return this;
-},_resetLeftBottom:function(_2a){
-if(_2a.vertical&&this.isMirrored){
-_2a.opt.leftBottom=!_2a.opt.leftBottom;
-}
-}});
+define(["dojox/main", "dojo/_base/declare", "dojo/_base/lang", "dojo/dom-style", "dojo/_base/array", "dojo/sniff",
+	"dojo/dom","dojo/dom-construct",
+	"dojox/gfx", "dojox/gfx/_gfxBidiSupport", "../axis2d/common", "dojox/string/BidiEngine",
+	"dojox/lang/functional","dojo/dom-attr","./_bidiutils"],
+	function(dojox, declare, lang, domStyle, arr, has, dom, domConstruct, g, gBidi, da, BidiEngine, df, domAttr,utils){
+	// module:
+	//		dojox/charting/bidi/Chart							
+	var bidiEngine = new BidiEngine();
+	var dc = lang.getObject("charting", true, dojox);
+	function validateTextDir(textDir){
+		return /^(ltr|rtl|auto)$/.test(textDir) ? textDir : null;
+	};
+	
+	return declare(null, {
+		// textDir: String
+		//		Bi-directional support,	the main variable which is responsible for the direction of the text.
+		//		The text direction can be different than the GUI direction by using this parameter.
+		//		Allowed values:
+		//
+		//		1. "ltr"
+		//		2. "rtl"
+		//		3. "auto" - contextual the direction of a text defined by first strong letter.
+		//
+		//		By default is as the page direction.
+		textDir:"",
+		
+		// dir: String
+		//		Mirroring support,	the main variable which is responsible for the direction of the chart.
+		//
+		//		Allowed values:
+		//		1. "ltr"
+		//		2. "rtl"
+		//
+		//		By default is ltr.
+		dir: "",
+		isMirrored: false,
+		
+		getTextDir: function(text){
+			// summary:
+			//		Return direction of the text. 
+			// description:
+			//		If textDir is ltr or rtl returns the value.
+			//		If it's auto, calls to another function that responsible 
+			//		for checking the value, and defining the direction.			
+			// text:
+			//		Used in case textDir is "auto", this case the direction is according to the first
+			//		strong (directionally - which direction is strong defined) letter.
+			// tags:
+			//		protected.
+			var textDir = this.textDir == "auto" ? bidiEngine.checkContextual(text) : this.textDir;
+			// providing default value
+			if(!textDir){
+				textDir = domStyle.get(this.node, "direction");
+			}
+			return textDir;
+		},
+
+		postscript: function(node,args){
+			// summary:
+			//		Kicks off chart instantiation.
+			// description:
+			//		Used for setting the textDir of the chart. 
+			// tags:
+			//		private
+
+			// validate textDir
+			var textDir = args ? (args["textDir"] ? validateTextDir(args["textDir"]) : "") : "";
+			// if textDir wasn't defined or was defined wrong, apply default value
+			textDir = textDir ? textDir : domStyle.get(this.node, "direction");
+			this.textDir = textDir;
+
+			this.surface.textDir = textDir;
+			
+			// two data structures, used for storing data for further enablement to change
+			// textDir dynamically
+			this.htmlElementsRegistry = [];
+			this.truncatedLabelsRegistry = [];
+			// chart mirroring starts
+			var chartDir = "ltr";
+			if(domAttr.has(node, "direction")){
+				chartDir = domAttr.get(node, "direction");
+			}
+			this.setDir(args ? (args.dir ? args.dir: chartDir) : chartDir);
+			// chart mirroring ends
+		},
+
+		setTextDir: function(newTextDir, obj){
+			// summary:
+			//		Setter for the textDir attribute.
+			// description:
+			//		Allows dynamically set the textDir, goes over all the text-children and  
+			//		updates their base text direction.
+			// tags:
+			//		public
+		
+			if(newTextDir == this.textDir){
+				return this;
+			}
+			if(validateTextDir(newTextDir) != null){
+				this.textDir = newTextDir;
+				
+				// set automatically all the gfx objects that were created by this surface
+				// (groups, text objects)
+				this.surface.setTextDir(newTextDir);
+			
+				// truncated labels that were created with gfx creator need to recalculate dir
+				// for case like: "111111A" (A stands for bidi character) and the truncation
+				// is "111..." If the textDir is auto, the display should be: "...111" but in gfx
+				// case we will get "111...". Because this.surface.setTextDir will calculate the dir of truncated
+				// label, which value is "111..." but th real is "111111A".
+				// each time we created a gfx truncated label we stored it in the truncatedLabelsRegistry, so update now 
+				// the registry.
+				if(this.truncatedLabelsRegistry && newTextDir == "auto"){
+					arr.forEach(this.truncatedLabelsRegistry, function(elem){
+						var tDir = this.getTextDir(elem["label"]);
+						if(elem["element"].textDir != tDir){
+							elem["element"].setShape({textDir: tDir});
+						}
+					}, this);
+				}
+				
+				// re-render axes with html labels. for recalculation of the labels
+				// positions etc.
+				// create array of keys for all the axis in chart 
+				var axesKeyArr = df.keys(this.axes);
+				if(axesKeyArr.length > 0){
+					// iterate over the axes, and for each that have html labels render it.
+					arr.forEach(axesKeyArr, function(key, index, arr){
+						// get the axis 
+						var axis = this.axes[key];
+						// if the axis has html labels 
+						if(axis.htmlElements[0]){
+							axis.dirty = true;
+							axis.render(this.dim, this.offsets);
+						}
+					},this);
+					
+					// recreate title
+					if(this.title){
+						var forceHtmlLabels = (g.renderer == "canvas"),
+							labelType = forceHtmlLabels || !has("ie") && !has("opera") ? "html" : "gfx",
+							tsize = g.normalizedLength(g.splitFontString(this.titleFont).size);
+						// remove the title
+						domConstruct.destroy(this.chartTitle);
+						this.chartTitle =null;
+						// create the new title
+						this.chartTitle = da.createText[labelType](
+							this,
+							this.surface,
+							this.dim.width/2,
+							this.titlePos=="top" ? tsize + this.margins.t : this.dim.height - this.margins.b,
+							"middle",
+							this.title,
+							this.titleFont,
+							this.titleFontColor
+						);
+					}				
+				}else{
+					// case of pies, spiders etc.
+					arr.forEach(this.htmlElementsRegistry, function(elem, index, arr){
+						var tDir = newTextDir == "auto" ? this.getTextDir(elem[4]) : newTextDir;
+						if(elem[0].children[0] && elem[0].children[0].dir != tDir){
+							domConstruct.destroy(elem[0].children[0]);
+							elem[0].children[0] = da.createText["html"]
+									(this, this.surface, elem[1], elem[2], elem[3], elem[4], elem[5], elem[6]).children[0];
+						}
+					},this);
+				}
+			}
+			return this;
+		},
+		
+		setDir : function(dir){
+			// summary:
+			//		Setter for the dir attribute.
+			// description:
+			//		Allows dynamically set the dri attribute, which will used to
+			//		updates the chart rendering direction.
+			//	dir : the desired chart direction [rtl: for right to left ,ltr: for left to right]
+ 
+			if(dir == "rtl" || dir == "ltr"){
+				if(this.dir != dir){
+					this.isMirrored = true;
+					this.dirty = true;
+				}
+				this.dir = dir;
+			}			
+			return this; 
+		},
+		
+		isRightToLeft: function(){
+			// summary:
+			//		check the direction of the chart.
+			// description:
+			//		check the dir attribute to determine the rendering direction
+			//		of the chart.
+			return this.dir == "rtl";
+        },
+        
+		applyMirroring: function(plot, dim, offsets){
+			// summary:
+			//		apply the mirroring operation to the current chart plots.
+			//
+			utils.reverseMatrix(plot, dim, offsets, this.dir == "rtl");
+			//force the direction of the node to be ltr to properly render the axes and the plots labels.
+			domStyle.set(this.node, "direction", "ltr");
+			return this;
+		},
+
+		formatTruncatedLabel: function(element, label, labelType){
+			this.truncateBidi(element, label, labelType);
+		},
+
+		truncateBidi: function(elem, label, labelType){
+			// summary:
+			//		Enables bidi support for truncated labels.
+			// description:
+			//		Can be two types of labels: html or gfx.
+			//
+			//		####gfx labels:
+			//
+			//		Need to be stored in registry to be used when the textDir will be set dynamically.
+			//		Additional work on truncated labels is needed for case as 111111A (A stands for "bidi" character rtl directioned).
+			//		let's say in this case the truncation is "111..." If the textDir is auto, the display should be: "...111" but in gfx
+			//		case we will get "111...". Because this.surface.setTextDir will calculate the dir of truncated
+			//		label, which value is "111..." but th real is "111111A".
+			//		each time we created a gfx truncated label we store it in the truncatedLabelsRegistry.
+			//
+			//		####html labels:
+			//
+			//		no need for repository (stored in another place). Here we only need to update the current dir according to textDir.
+			// tags:
+			//		private
+		
+			if(labelType == "gfx"){
+				// store truncated gfx labels in the data structure.
+				this.truncatedLabelsRegistry.push({element: elem, label: label});
+				if(this.textDir == "auto"){
+					elem.setShape({textDir: this.getTextDir(label)});
+				}
+			}
+			if(labelType == "html" && this.textDir == "auto"){
+				elem.children[0].dir = this.getTextDir(label);
+			}
+		},
+		
+		render: function(){
+			this.inherited(arguments);
+			this.isMirrored = false;
+			return this;
+		},
+		
+		_resetLeftBottom: function(axis){
+			if(axis.vertical && this.isMirrored){
+				axis.opt.leftBottom = !axis.opt.leftBottom;
+			}
+		}		
+	});
 });
+

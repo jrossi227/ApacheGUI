@@ -1,237 +1,333 @@
+define([
+	"../_base/array", "../_base/declare", "../_base/kernel", "../_base/lang",
+	"../dom", "../dom-construct", "../mouse", "../_base/NodeList", "../on", "../touch", "./common", "./Container"
+], function(array, declare, kernel, lang, dom, domConstruct, mouse, NodeList, on, touch, dnd, Container){
+
+// module:
+//		dojo/dnd/Selector
+
 /*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
+	Container item states:
+		""			- an item is not selected
+		"Selected"	- an item is selected
+		"Anchor"	- an item is selected, and is an anchor for a "shift" selection
 */
 
-//>>built
-define("dojo/dnd/Selector",["../_base/array","../_base/declare","../_base/kernel","../_base/lang","../dom","../dom-construct","../mouse","../_base/NodeList","../on","../touch","./common","./Container"],function(_1,_2,_3,_4,_5,_6,_7,_8,on,_9,_a,_b){
-var _c=_2("dojo.dnd.Selector",_b,{constructor:function(_d,_e){
-if(!_e){
-_e={};
-}
-this.singular=_e.singular;
-this.autoSync=_e.autoSync;
-this.selection={};
-this.anchor=null;
-this.simpleSelection=false;
-this.events.push(on(this.node,_9.press,_4.hitch(this,"onMouseDown")),on(this.node,_9.release,_4.hitch(this,"onMouseUp")));
-},singular:false,getSelectedNodes:function(){
-var t=new _8();
-var e=_a._empty;
-for(var i in this.selection){
-if(i in e){
-continue;
-}
-t.push(_5.byId(i));
-}
-return t;
-},selectNone:function(){
-return this._removeSelection()._removeAnchor();
-},selectAll:function(){
-this.forInItems(function(_f,id){
-this._addItemClass(_5.byId(id),"Selected");
-this.selection[id]=1;
-},this);
-return this._removeAnchor();
-},deleteSelectedNodes:function(){
-var e=_a._empty;
-for(var i in this.selection){
-if(i in e){
-continue;
-}
-var n=_5.byId(i);
-this.delItem(i);
-_6.destroy(n);
-}
-this.anchor=null;
-this.selection={};
-return this;
-},forInSelectedItems:function(f,o){
-o=o||_3.global;
-var s=this.selection,e=_a._empty;
-for(var i in s){
-if(i in e){
-continue;
-}
-f.call(o,this.getItem(i),i,this);
-}
-},sync:function(){
-_c.superclass.sync.call(this);
-if(this.anchor){
-if(!this.getItem(this.anchor.id)){
-this.anchor=null;
-}
-}
-var t=[],e=_a._empty;
-for(var i in this.selection){
-if(i in e){
-continue;
-}
-if(!this.getItem(i)){
-t.push(i);
-}
-}
-_1.forEach(t,function(i){
-delete this.selection[i];
-},this);
-return this;
-},insertNodes:function(_10,_11,_12,_13){
-var _14=this._normalizedCreator;
-this._normalizedCreator=function(_15,_16){
-var t=_14.call(this,_15,_16);
-if(_10){
-if(!this.anchor){
-this.anchor=t.node;
-this._removeItemClass(t.node,"Selected");
-this._addItemClass(this.anchor,"Anchor");
-}else{
-if(this.anchor!=t.node){
-this._removeItemClass(t.node,"Anchor");
-this._addItemClass(t.node,"Selected");
-}
-}
-this.selection[t.node.id]=1;
-}else{
-this._removeItemClass(t.node,"Selected");
-this._removeItemClass(t.node,"Anchor");
-}
-return t;
-};
-_c.superclass.insertNodes.call(this,_11,_12,_13);
-this._normalizedCreator=_14;
-return this;
-},destroy:function(){
-_c.superclass.destroy.call(this);
-this.selection=this.anchor=null;
-},onMouseDown:function(e){
-if(this.autoSync){
-this.sync();
-}
-if(!this.current){
-return;
-}
-if(!this.singular&&!_a.getCopyKeyState(e)&&!e.shiftKey&&(this.current.id in this.selection)){
-this.simpleSelection=true;
-if(_7.isLeft(e)){
-e.stopPropagation();
-e.preventDefault();
-}
-return;
-}
-if(!this.singular&&e.shiftKey){
-if(!_a.getCopyKeyState(e)){
-this._removeSelection();
-}
-var c=this.getAllNodes();
-if(c.length){
-if(!this.anchor){
-this.anchor=c[0];
-this._addItemClass(this.anchor,"Anchor");
-}
-this.selection[this.anchor.id]=1;
-if(this.anchor!=this.current){
-var i=0,_17;
-for(;i<c.length;++i){
-_17=c[i];
-if(_17==this.anchor||_17==this.current){
-break;
-}
-}
-for(++i;i<c.length;++i){
-_17=c[i];
-if(_17==this.anchor||_17==this.current){
-break;
-}
-this._addItemClass(_17,"Selected");
-this.selection[_17.id]=1;
-}
-this._addItemClass(this.current,"Selected");
-this.selection[this.current.id]=1;
-}
-}
-}else{
-if(this.singular){
-if(this.anchor==this.current){
-if(_a.getCopyKeyState(e)){
-this.selectNone();
-}
-}else{
-this.selectNone();
-this.anchor=this.current;
-this._addItemClass(this.anchor,"Anchor");
-this.selection[this.current.id]=1;
-}
-}else{
-if(_a.getCopyKeyState(e)){
-if(this.anchor==this.current){
-delete this.selection[this.anchor.id];
-this._removeAnchor();
-}else{
-if(this.current.id in this.selection){
-this._removeItemClass(this.current,"Selected");
-delete this.selection[this.current.id];
-}else{
-if(this.anchor){
-this._removeItemClass(this.anchor,"Anchor");
-this._addItemClass(this.anchor,"Selected");
-}
-this.anchor=this.current;
-this._addItemClass(this.current,"Anchor");
-this.selection[this.current.id]=1;
-}
-}
-}else{
-if(!(this.current.id in this.selection)){
-this.selectNone();
-this.anchor=this.current;
-this._addItemClass(this.current,"Anchor");
-this.selection[this.current.id]=1;
-}
-}
-}
-}
-e.stopPropagation();
-e.preventDefault();
-},onMouseUp:function(){
-if(!this.simpleSelection){
-return;
-}
-this.simpleSelection=false;
-this.selectNone();
-if(this.current){
-this.anchor=this.current;
-this._addItemClass(this.anchor,"Anchor");
-this.selection[this.current.id]=1;
-}
-},onMouseMove:function(){
-this.simpleSelection=false;
-},onOverEvent:function(){
-this.onmousemoveEvent=on(this.node,_9.move,_4.hitch(this,"onMouseMove"));
-},onOutEvent:function(){
-if(this.onmousemoveEvent){
-this.onmousemoveEvent.remove();
-delete this.onmousemoveEvent;
-}
-},_removeSelection:function(){
-var e=_a._empty;
-for(var i in this.selection){
-if(i in e){
-continue;
-}
-var _18=_5.byId(i);
-if(_18){
-this._removeItemClass(_18,"Selected");
-}
-}
-this.selection={};
-return this;
-},_removeAnchor:function(){
-if(this.anchor){
-this._removeItemClass(this.anchor,"Anchor");
-this.anchor=null;
-}
-return this;
-}});
-return _c;
+/*=====
+var __SelectorArgs = declare([Container.__ContainerArgs], {
+	// singular: Boolean
+	//		allows selection of only one element, if true
+	singular: false,
+
+	// autoSync: Boolean
+	//		autosynchronizes the source with its list of DnD nodes,
+	autoSync: false
+});
+=====*/
+
+var Selector = declare("dojo.dnd.Selector", Container, {
+	// summary:
+	//		a Selector object, which knows how to select its children
+
+	/*=====
+	// selection: Set<String>
+	//		The set of id's that are currently selected, such that this.selection[id] == 1
+	//		if the node w/that id is selected.  Can iterate over selected node's id's like:
+	//	|		for(var id in this.selection)
+	selection: {},
+	=====*/
+
+	constructor: function(node, params){
+		// summary:
+		//		constructor of the Selector
+		// node: Node||String
+		//		node or node's id to build the selector on
+		// params: __SelectorArgs?
+		//		a dictionary of parameters
+		if(!params){ params = {}; }
+		this.singular = params.singular;
+		this.autoSync = params.autoSync;
+		// class-specific variables
+		this.selection = {};
+		this.anchor = null;
+		this.simpleSelection = false;
+		// set up events
+		this.events.push(
+			on(this.node, touch.press, lang.hitch(this, "onMouseDown")),
+			on(this.node, touch.release, lang.hitch(this, "onMouseUp"))
+		);
+	},
+
+	// object attributes (for markup)
+	singular: false,	// is singular property
+
+	// methods
+	getSelectedNodes: function(){
+		// summary:
+		//		returns a list (an array) of selected nodes
+		var t = new NodeList();
+		var e = dnd._empty;
+		for(var i in this.selection){
+			if(i in e){ continue; }
+			t.push(dom.byId(i));
+		}
+		return t;	// NodeList
+	},
+	selectNone: function(){
+		// summary:
+		//		unselects all items
+		return this._removeSelection()._removeAnchor();	// self
+	},
+	selectAll: function(){
+		// summary:
+		//		selects all items
+		this.forInItems(function(data, id){
+			this._addItemClass(dom.byId(id), "Selected");
+			this.selection[id] = 1;
+		}, this);
+		return this._removeAnchor();	// self
+	},
+	deleteSelectedNodes: function(){
+		// summary:
+		//		deletes all selected items
+		var e = dnd._empty;
+		for(var i in this.selection){
+			if(i in e){ continue; }
+			var n = dom.byId(i);
+			this.delItem(i);
+			domConstruct.destroy(n);
+		}
+		this.anchor = null;
+		this.selection = {};
+		return this;	// self
+	},
+	forInSelectedItems: function(/*Function*/ f, /*Object?*/ o){
+		// summary:
+		//		iterates over selected items;
+		//		see `dojo/dnd/Container.forInItems()` for details
+		o = o || kernel.global;
+		var s = this.selection, e = dnd._empty;
+		for(var i in s){
+			if(i in e){ continue; }
+			f.call(o, this.getItem(i), i, this);
+		}
+	},
+	sync: function(){
+		// summary:
+		//		sync up the node list with the data map
+
+		Selector.superclass.sync.call(this);
+
+		// fix the anchor
+		if(this.anchor){
+			if(!this.getItem(this.anchor.id)){
+				this.anchor = null;
+			}
+		}
+
+		// fix the selection
+		var t = [], e = dnd._empty;
+		for(var i in this.selection){
+			if(i in e){ continue; }
+			if(!this.getItem(i)){
+				t.push(i);
+			}
+		}
+		array.forEach(t, function(i){
+			delete this.selection[i];
+		}, this);
+
+		return this;	// self
+	},
+	insertNodes: function(addSelected, data, before, anchor){
+		// summary:
+		//		inserts new data items (see `dojo/dnd/Container.insertNodes()` method for details)
+		// addSelected: Boolean
+		//		all new nodes will be added to selected items, if true, no selection change otherwise
+		// data: Array
+		//		a list of data items, which should be processed by the creator function
+		// before: Boolean
+		//		insert before the anchor, if true, and after the anchor otherwise
+		// anchor: Node
+		//		the anchor node to be used as a point of insertion
+		var oldCreator = this._normalizedCreator;
+		this._normalizedCreator = function(item, hint){
+			var t = oldCreator.call(this, item, hint);
+			if(addSelected){
+				if(!this.anchor){
+					this.anchor = t.node;
+					this._removeItemClass(t.node, "Selected");
+					this._addItemClass(this.anchor, "Anchor");
+				}else if(this.anchor != t.node){
+					this._removeItemClass(t.node, "Anchor");
+					this._addItemClass(t.node, "Selected");
+				}
+				this.selection[t.node.id] = 1;
+			}else{
+				this._removeItemClass(t.node, "Selected");
+				this._removeItemClass(t.node, "Anchor");
+			}
+			return t;
+		};
+		Selector.superclass.insertNodes.call(this, data, before, anchor);
+		this._normalizedCreator = oldCreator;
+		return this;	// self
+	},
+	destroy: function(){
+		// summary:
+		//		prepares the object to be garbage-collected
+		Selector.superclass.destroy.call(this);
+		this.selection = this.anchor = null;
+	},
+
+	// mouse events
+	onMouseDown: function(e){
+		// summary:
+		//		event processor for onmousedown
+		// e: Event
+		//		mouse event
+		if(this.autoSync){ this.sync(); }
+		if(!this.current){ return; }
+		if(!this.singular && !dnd.getCopyKeyState(e) && !e.shiftKey && (this.current.id in this.selection)){
+			this.simpleSelection = true;
+			if(mouse.isLeft(e)){
+				// Accept the left button and stop the event.   Stopping the event prevents text selection while
+				// dragging.   However, don't stop the event on mobile because that prevents a click event,
+				// and also prevents scroll (see #15838).
+				// For IE we don't stop event when multiple buttons are pressed.
+				e.stopPropagation();
+				e.preventDefault();
+			}
+			return;
+		}
+		if(!this.singular && e.shiftKey){
+			if(!dnd.getCopyKeyState(e)){
+				this._removeSelection();
+			}
+			var c = this.getAllNodes();
+			if(c.length){
+				if(!this.anchor){
+					this.anchor = c[0];
+					this._addItemClass(this.anchor, "Anchor");
+				}
+				this.selection[this.anchor.id] = 1;
+				if(this.anchor != this.current){
+					var i = 0, node;
+					for(; i < c.length; ++i){
+						node = c[i];
+						if(node == this.anchor || node == this.current){ break; }
+					}
+					for(++i; i < c.length; ++i){
+						node = c[i];
+						if(node == this.anchor || node == this.current){ break; }
+						this._addItemClass(node, "Selected");
+						this.selection[node.id] = 1;
+					}
+					this._addItemClass(this.current, "Selected");
+					this.selection[this.current.id] = 1;
+				}
+			}
+		}else{
+			if(this.singular){
+				if(this.anchor == this.current){
+					if(dnd.getCopyKeyState(e)){
+						this.selectNone();
+					}
+				}else{
+					this.selectNone();
+					this.anchor = this.current;
+					this._addItemClass(this.anchor, "Anchor");
+					this.selection[this.current.id] = 1;
+				}
+			}else{
+				if(dnd.getCopyKeyState(e)){
+					if(this.anchor == this.current){
+						delete this.selection[this.anchor.id];
+						this._removeAnchor();
+					}else{
+						if(this.current.id in this.selection){
+							this._removeItemClass(this.current, "Selected");
+							delete this.selection[this.current.id];
+						}else{
+							if(this.anchor){
+								this._removeItemClass(this.anchor, "Anchor");
+								this._addItemClass(this.anchor, "Selected");
+							}
+							this.anchor = this.current;
+							this._addItemClass(this.current, "Anchor");
+							this.selection[this.current.id] = 1;
+						}
+					}
+				}else{
+					if(!(this.current.id in this.selection)){
+						this.selectNone();
+						this.anchor = this.current;
+						this._addItemClass(this.current, "Anchor");
+						this.selection[this.current.id] = 1;
+					}
+				}
+			}
+		}
+		e.stopPropagation();
+		e.preventDefault();
+	},
+	onMouseUp: function(/*===== e =====*/){
+		// summary:
+		//		event processor for onmouseup
+		// e: Event
+		//		mouse event
+		if(!this.simpleSelection){ return; }
+		this.simpleSelection = false;
+		this.selectNone();
+		if(this.current){
+			this.anchor = this.current;
+			this._addItemClass(this.anchor, "Anchor");
+			this.selection[this.current.id] = 1;
+		}
+	},
+	onMouseMove: function(/*===== e =====*/){
+		// summary:
+		//		event processor for onmousemove
+		// e: Event
+		//		mouse event
+		this.simpleSelection = false;
+	},
+
+	// utilities
+	onOverEvent: function(){
+		// summary:
+		//		this function is called once, when mouse is over our container
+		this.onmousemoveEvent = on(this.node, touch.move, lang.hitch(this, "onMouseMove"));
+	},
+	onOutEvent: function(){
+		// summary:
+		//		this function is called once, when mouse is out of our container
+		if(this.onmousemoveEvent){
+			this.onmousemoveEvent.remove();
+			delete this.onmousemoveEvent;
+		}
+	},
+	_removeSelection: function(){
+		// summary:
+		//		unselects all items
+		var e = dnd._empty;
+		for(var i in this.selection){
+			if(i in e){ continue; }
+			var node = dom.byId(i);
+			if(node){ this._removeItemClass(node, "Selected"); }
+		}
+		this.selection = {};
+		return this;	// self
+	},
+	_removeAnchor: function(){
+		if(this.anchor){
+			this._removeItemClass(this.anchor, "Anchor");
+			this.anchor = null;
+		}
+		return this;	// self
+	}
+});
+
+return Selector;
+
 });

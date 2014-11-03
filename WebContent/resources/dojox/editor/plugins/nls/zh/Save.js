@@ -1,2 +1,5 @@
-//>>built
-define("dojox/editor/plugins/nls/zh/Save",({"save":"保存"}));
+define(
+({
+	"save": "保存"
+})
+);

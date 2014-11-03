@@ -5,9 +5,12 @@
 	overflow: hidden;
 	-webkit-box-shadow: 0px 5px 10px #adadad;
 }
+
 .dojoxFloatingPaneFg {
 	-webkit-box-shadow: 0px 8px 20px #525252;
 }
+
+/* titleNode */
 .dojoxFloatingPaneTitle {
 	background: #cccccc;
 	background:#fafafa repeat-x bottom left;
@@ -16,6 +19,7 @@
 	cursor: pointer;
 	white-space: nowrap;
 }
+
 .soria .dojoxFloatingPaneTitle {
 	background:#fff url("../../../dijit/themes/soria/images/titleBar.png") repeat-x top left;
 	border:1px solid #b1badf;
@@ -23,11 +27,16 @@
 	font-weight: bold;
 	line-height:1.2em;
 }
+
+
 .tundra .dojoxFloatingPaneTitle {
 	background:#fafafa url("../../../dijit/themes/tundra/images/titleBarBg.gif") repeat-x bottom left;
 	border:1px solid #bfbfbf;
 	color:#000; 	
 }
+
+
+/* Icons */
 .dojoxFloatingCloseIcon {
 	background:url('../../../dijit/themes/tundra/images/tabClose.png') no-repeat center center; 
 	width:16px;
@@ -35,6 +44,7 @@
 	overflow:hidden;
 	float:right; 
 }
+
 .dojoxFloatingMinimizeIcon {
 	background:url('../../../dijit/themes/tundra/images/spriteArrows.png') no-repeat 0px center; 
 	width:7px;
@@ -47,6 +57,7 @@
 	width: 14px;
 	margin: 0px 2px;
 }
+
 .floatingPaneMaximized .dojoxFloatingMaximizeIcon { display:none; }
 .dojoxFloatingMaximizeIcon {
 	background:url('../../../dijit/themes/tundra/images/spriteArrows.png') no-repeat -21px center;
@@ -58,6 +69,7 @@
 .soria .dojoxFloatingMaximizeIcon {
 	background:url("../../../dijit/themes/soria/images/spriteRoundedIconsSmallBl.png") no-repeat -45px top;
 }
+
 .floatingPaneMaximized .dojoxFloatingRestoreIcon { display:inline; }
 .dojoxFloatingRestoreIcon {
 	background:url('../../../dijit/themes/tundra/images/spriteArrows.png') no-repeat 0px center; 
@@ -66,6 +78,7 @@
 	float:right;
 	display:none;
 }
+
 .dojoxFloatingResizeHandle {
 	background:url('icons/resize.png') no-repeat bottom right;
 	position:absolute; 
@@ -75,6 +88,7 @@
 	height:16px; 
 	cursor:nw-resize;
 }
+
 .dojoxFloatingCloseIcon {
 	width:15px;
 	height:15px; 
@@ -82,12 +96,16 @@
 	float:right; 
 	cursor:pointer;
 }
+
 .soria .dojoxFloatingCloseIcon {
 	background:url("../../../dijit/themes/soria/images/spriteRoundedIconsSmallBl.png") no-repeat -60px top;
 }
+
 .tundra .dojoxFloatingCloseIcon {
 	background:url('../../../dijit/themes/tundra/images/tabClose.png') no-repeat center center; 	
 }
+
+/* our un-used dock styles for now */
 .dojoxFloatingDockDefault {
 	position:absolute;
 	bottom:0px;
@@ -97,14 +115,19 @@
 	margin-bottom:3px; 
 	padding:0px; 
 	width:100%;
-	z-index:99; 
+	z-index:99; /* position the dock _just_ below the lowest pane */
+
 	background:transparent;
-	
+	/* background-color:#fff; 
+	border-top:1px solid #ccc; 
+	*/
 }
+
 .dojoxDockList {
 	padding: 0px;
 	margin: 0px;
 }
+
 .dojoxDockRestoreButton {
 	background:url('../../../dijit/themes/tundra/images/folderClosed.gif') no-repeat center center;
 	width:16px; height:16px;
@@ -115,9 +138,13 @@
 .soria .dojoxDockRestoreButton {
 	background:url("../../../dijit/themes/soria/images/spriteRoundedIconsSmallBl.png") no-repeat -45px top;
 }
+
 .dojoxDockTitleNode {
 	overflow:hidden;
 }
+
+/* Modifications */
+
 .dojoxDock {
 	display: block;
 	border: 1px solid black;
@@ -126,6 +153,7 @@
 	margin:0;
 	background:#fcfcfc;
 }
+
 .dojoxDockNode {
 	border: 1px solid #adadad;
 	border-radius: 2px;
@@ -143,12 +171,14 @@
 .soria .dojoxDockNode {
 	background:#b7cdee url("../../../dijit/themes/soria/images/titleBar.png") repeat-x;
 }
+
 .dojoxFloatingPaneContent {
 	overflow: auto;
 	background-color: #fff; 
 	height: 100%; 
 	width:	100%; 
 }
+
 .dojoxFloatingPaneCanvas {
 	background-color:#fff;
 }

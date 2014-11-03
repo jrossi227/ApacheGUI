@@ -1,171 +1,407 @@
-//>>built
-define("dijit/_TimePicker",["dojo/_base/array","dojo/date","dojo/date/locale","dojo/date/stamp","dojo/_base/declare","dojo/dom-class","dojo/dom-construct","dojo/_base/kernel","dojo/keys","dojo/_base/lang","dojo/sniff","dojo/query","dojo/mouse","dojo/on","./_WidgetBase","./form/_ListMouseMixin"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a,_b,_c,_d,on,_e,_f){
-var _10=_5("dijit._TimePicker",[_e,_f],{baseClass:"dijitTimePicker",clickableIncrement:"T00:15:00",visibleIncrement:"T01:00:00",value:new Date(),_visibleIncrement:2,_clickableIncrement:1,_totalIncrements:10,constraints:{},serialize:_4.toISOString,buildRendering:function(){
-this.inherited(arguments);
-this.containerNode=this.domNode;
-this.timeMenu=this.domNode;
-},setValue:function(_11){
-_8.deprecated("dijit._TimePicker:setValue() is deprecated.  Use set('value', ...) instead.","","2.0");
-this.set("value",_11);
-},_setValueAttr:function(_12){
-this._set("value",_12);
-this._showText();
-},_setFilterStringAttr:function(val){
-this._set("filterString",val);
-this._showText();
-},isDisabledDate:function(){
-return false;
-},_getFilteredNodes:function(_13,_14,_15,_16){
-var _17=[];
-for(var i=0;i<this._maxIncrement;i++){
-var n=this._createOption(i);
-if(n){
-_17.push(n);
-}
-}
-return _17;
-},_showText:function(){
-var _18=_4.fromISOString;
-this.domNode.innerHTML="";
-this._clickableIncrementDate=_18(this.clickableIncrement);
-this._visibleIncrementDate=_18(this.visibleIncrement);
-var _19=function(_1a){
-return _1a.getHours()*60*60+_1a.getMinutes()*60+_1a.getSeconds();
-},_1b=_19(this._clickableIncrementDate),_1c=_19(this._visibleIncrementDate),_1d=(this.value||this.currentFocus).getTime();
-this._refDate=_18("T00:00:00");
-this._refDate.setFullYear(1970,0,1);
-this._clickableIncrement=1;
-this._visibleIncrement=_1c/_1b;
-this._maxIncrement=(60*60*24)/_1b;
-var _1e=this._getFilteredNodes();
-_1.forEach(_1e,function(n){
-this.domNode.appendChild(n);
-},this);
-if(!_1e.length&&this.filterString){
-this.filterString="";
-this._showText();
-}
-},constructor:function(){
-this.constraints={};
-},postMixInProperties:function(){
-this.inherited(arguments);
-this._setConstraintsAttr(this.constraints);
-},_setConstraintsAttr:function(_1f){
-for(var key in {clickableIncrement:1,visibleIncrement:1}){
-if(key in _1f){
-this[key]=_1f[key];
-}
-}
-if(!_1f.locale){
-_1f.locale=this.lang;
-}
-},_createOption:function(_20){
-var _21=new Date(this._refDate);
-var _22=this._clickableIncrementDate;
-_21.setHours(_21.getHours()+_22.getHours()*_20,_21.getMinutes()+_22.getMinutes()*_20,_21.getSeconds()+_22.getSeconds()*_20);
-if(this.constraints.selector=="time"){
-_21.setFullYear(1970,0,1);
-}
-var _23=_3.format(_21,this.constraints);
-if(this.filterString&&_23.toLowerCase().indexOf(this.filterString)!==0){
-return null;
-}
-var div=this.ownerDocument.createElement("div");
-div.className=this.baseClass+"Item";
-div.date=_21;
-div.idx=_20;
-_7.create("div",{"class":this.baseClass+"ItemInner",innerHTML:_23},div);
-if(_20%this._visibleIncrement<1&&_20%this._visibleIncrement>-1){
-_6.add(div,this.baseClass+"Marker");
-}else{
-if(!(_20%this._clickableIncrement)){
-_6.add(div,this.baseClass+"Tick");
-}
-}
-if(this.isDisabledDate(_21)){
-_6.add(div,this.baseClass+"ItemDisabled");
-}
-if(this.value&&!_2.compare(this.value,_21,this.constraints.selector)){
-div.selected=true;
-_6.add(div,this.baseClass+"ItemSelected");
-this._selectedDiv=div;
-if(_6.contains(div,this.baseClass+"Marker")){
-_6.add(div,this.baseClass+"MarkerSelected");
-}else{
-_6.add(div,this.baseClass+"TickSelected");
-}
-this._highlightOption(div,true);
-}
-return div;
-},onOpen:function(){
-this.inherited(arguments);
-this.set("selected",this._selectedDiv);
-},_onOptionSelected:function(tgt){
-var _24=tgt.target.date||tgt.target.parentNode.date;
-if(!_24||this.isDisabledDate(_24)){
-return;
-}
-this._highlighted_option=null;
-this.set("value",_24);
-this.onChange(_24);
-},onChange:function(){
-},_highlightOption:function(_25,_26){
-if(!_25){
-return;
-}
-if(_26){
-if(this._highlighted_option){
-this._highlightOption(this._highlighted_option,false);
-}
-this._highlighted_option=_25;
-}else{
-if(this._highlighted_option!==_25){
-return;
-}else{
-this._highlighted_option=null;
-}
-}
-_6.toggle(_25,this.baseClass+"ItemHover",_26);
-if(_6.contains(_25,this.baseClass+"Marker")){
-_6.toggle(_25,this.baseClass+"MarkerHover",_26);
-}else{
-_6.toggle(_25,this.baseClass+"TickHover",_26);
-}
-},handleKey:function(e){
-if(e.keyCode==_9.DOWN_ARROW){
-this.selectNextNode();
-e.stopPropagation();
-e.preventDefault();
-return false;
-}else{
-if(e.keyCode==_9.UP_ARROW){
-this.selectPreviousNode();
-e.stopPropagation();
-e.preventDefault();
-return false;
-}else{
-if(e.keyCode==_9.ENTER||e.keyCode===_9.TAB){
-if(!this._keyboardSelected&&e.keyCode===_9.TAB){
-return true;
-}
-if(this._highlighted_option){
-this._onOptionSelected({target:this._highlighted_option});
-}
-return e.keyCode===_9.TAB;
-}
-}
-}
-return undefined;
-},onHover:function(_27){
-this._highlightOption(_27,true);
-},onUnhover:function(_28){
-this._highlightOption(_28,false);
-},onSelect:function(_29){
-this._highlightOption(_29,true);
-},onDeselect:function(_2a){
-this._highlightOption(_2a,false);
-},onClick:function(_2b){
-this._onOptionSelected({target:_2b});
-}});
-return _10;
+define([
+	"dojo/_base/array", // array.forEach
+	"dojo/date", // date.compare
+	"dojo/date/locale", // locale.format
+	"dojo/date/stamp", // stamp.fromISOString stamp.toISOString
+	"dojo/_base/declare", // declare
+	"dojo/dom-class", // domClass.add domClass.contains domClass.toggle
+	"dojo/dom-construct", // domConstruct.create
+	"dojo/_base/kernel", // deprecated
+	"dojo/keys", // keys
+	"dojo/_base/lang", // lang.mixin
+	"dojo/sniff", // has(...)
+	"dojo/query", // query
+	"dojo/mouse", // mouse.wheel
+	"dojo/on",
+	"./_WidgetBase",
+	"./form/_ListMouseMixin"
+], function(array, ddate, locale, stamp, declare, domClass, domConstruct, kernel, keys, lang, has, query, mouse, on,
+			_WidgetBase, _ListMouseMixin){
+
+	// module:
+	//		dijit/_TimePicker
+
+
+	var TimePicker = declare("dijit._TimePicker", [_WidgetBase, _ListMouseMixin], {
+		// summary:
+		//		A time picker dropdown, used by dijit/form/TimeTextBox.
+		//		This widget is not available as a standalone widget due to lack of accessibility support.
+
+		// baseClass: [protected] String
+		//		The root className to use for the various states of this widget
+		baseClass: "dijitTimePicker",
+
+		// clickableIncrement: String
+		//		ISO-8601 string representing the amount by which
+		//		every clickable element in the time picker increases.
+		//		Set in local time, without a time zone.
+		//		Example: `T00:15:00` creates 15 minute increments
+		//		Must divide dijit/_TimePicker.visibleIncrement evenly
+		clickableIncrement: "T00:15:00",
+
+		// visibleIncrement: String
+		//		ISO-8601 string representing the amount by which
+		//		every element with a visible time in the time picker increases.
+		//		Set in local time, without a time zone.
+		//		Example: `T01:00:00` creates text in every 1 hour increment
+		visibleIncrement: "T01:00:00",
+
+		// value: String
+		//		Date to display.
+		//		Defaults to current time and date.
+		//		Can be a Date object or an ISO-8601 string.
+		//		If you specify the GMT time zone (`-01:00`),
+		//		the time will be converted to the local time in the local time zone.
+		//		Otherwise, the time is considered to be in the local time zone.
+		//		If you specify the date and isDate is true, the date is used.
+		//		Example: if your local time zone is `GMT -05:00`,
+		//		`T10:00:00` becomes `T10:00:00-05:00` (considered to be local time),
+		//		`T10:00:00-01:00` becomes `T06:00:00-05:00` (4 hour difference),
+		//		`T10:00:00Z` becomes `T05:00:00-05:00` (5 hour difference between Zulu and local time)
+		//		`yyyy-mm-ddThh:mm:ss` is the format to set the date and time
+		//		Example: `2007-06-01T09:00:00`
+		value: new Date(),
+
+		_visibleIncrement: 2,
+		_clickableIncrement: 1,
+		_totalIncrements: 10,
+
+		// constraints: TimePicker.__Constraints
+		//		Specifies valid range of times (start time, end time)
+		constraints: {},
+
+		/*=====
+		 serialize: function(val, options){
+			 // summary:
+			 //		User overridable function used to convert the attr('value') result to a String
+			 // val: Date
+			 //		The current value
+			 // options: Object?
+			 // tags:
+			 //		protected
+		 },
+		 =====*/
+		serialize: stamp.toISOString,
+
+		/*=====
+		 // filterString: string
+		 //		The string to filter by
+		 filterString: "",
+		 =====*/
+
+		buildRendering: function(){
+			this.inherited(arguments);
+			this.containerNode = this.domNode;	// expected by _ListBase
+			this.timeMenu = this.domNode;	// for back-compat
+		},
+
+		setValue: function(/*Date*/ value){
+			// summary:
+			//		Deprecated.  Used set('value') instead.
+			// tags:
+			//		deprecated
+			kernel.deprecated("dijit._TimePicker:setValue() is deprecated.  Use set('value', ...) instead.", "", "2.0");
+			this.set('value', value);
+		},
+
+		_setValueAttr: function(/*Date*/ date){
+			// summary:
+			//		Hook so set('value', ...) works.
+			// description:
+			//		Set the value of the TimePicker.
+			//		Redraws the TimePicker around the new date.
+			// tags:
+			//		protected
+			this._set("value", date);
+			this._showText();
+		},
+
+		_setFilterStringAttr: function(val){
+			// summary:
+			//		Called by TimeTextBox to filter the values shown in my list
+			this._set("filterString", val);
+			this._showText();
+		},
+
+		isDisabledDate: function(/*===== dateObject, locale =====*/){
+			// summary:
+			//		May be overridden to disable certain dates in the TimePicker e.g. `isDisabledDate=locale.isWeekend`
+			// dateObject: Date
+			// locale: String?
+			// type:
+			//		extension
+			return false; // Boolean
+		},
+
+		_getFilteredNodes: function(/*number*/ start, /*number*/ maxNum, /*Boolean*/ before, /*DOMNode*/ lastNode){
+			// summary:
+			//		Returns an array of nodes with the filter applied.  At most maxNum nodes
+			//		will be returned - but fewer may be returned as well.  If the
+			//		before parameter is set to true, then it will return the elements
+			//		before the given index
+			// tags:
+			//		private
+
+			var nodes = [];
+
+			for(var i = 0 ; i < this._maxIncrement; i++){
+				var n = this._createOption(i);
+				if(n){
+					nodes.push(n);
+				}
+			}
+			return nodes;
+		},
+
+		_showText: function(){
+			// summary:
+			//		Displays the relevant choices in the drop down list
+			// tags:
+			//		private
+			var fromIso = stamp.fromISOString;
+			this.domNode.innerHTML = "";
+			this._clickableIncrementDate = fromIso(this.clickableIncrement);
+			this._visibleIncrementDate = fromIso(this.visibleIncrement);
+			// get the value of the increments to find out how many divs to create
+			var
+				sinceMidnight = function(/*Date*/ date){
+					return date.getHours() * 60 * 60 + date.getMinutes() * 60 + date.getSeconds();
+				},
+				clickableIncrementSeconds = sinceMidnight(this._clickableIncrementDate),
+				visibleIncrementSeconds = sinceMidnight(this._visibleIncrementDate),
+				// round reference date to previous visible increment
+				time = (this.value || this.currentFocus).getTime();
+
+			this._refDate = fromIso("T00:00:00");
+			this._refDate.setFullYear(1970, 0, 1); // match parse defaults
+
+			// assume clickable increment is the smallest unit
+			this._clickableIncrement = 1;
+			// divide the visible range by the clickable increment to get the number of divs to create
+			// example: 10:00:00/00:15:00 -> display 40 divs
+			// divide the visible increments by the clickable increments to get how often to display the time inline
+			// example: 01:00:00/00:15:00 -> display the time every 4 divs
+			this._visibleIncrement = visibleIncrementSeconds / clickableIncrementSeconds;
+			// divide the number of seconds in a day by the clickable increment in seconds to get the
+			// absolute max number of increments.
+			this._maxIncrement = (60 * 60 * 24) / clickableIncrementSeconds;
+
+			var nodes  = this._getFilteredNodes();
+			array.forEach(nodes, function(n){
+				this.domNode.appendChild(n);
+			}, this);
+
+			// never show empty due to a bad filter
+			if(!nodes.length && this.filterString){
+				this.filterString = '';
+				this._showText();
+			}
+		},
+
+		constructor: function(/*===== params, srcNodeRef =====*/){
+			// summary:
+			//		Create the widget.
+			// params: Object|null
+			//		Hash of initialization parameters for widget, including scalar values (like title, duration etc.)
+			//		and functions, typically callbacks like onClick.
+			//		The hash can contain any of the widget's properties, excluding read-only properties.
+			// srcNodeRef: DOMNode|String?
+			//		If a srcNodeRef (DOM node) is specified, replace srcNodeRef with my generated DOM tree
+
+			this.constraints = {};
+		},
+
+		postMixInProperties: function(){
+			this.inherited(arguments);
+			this._setConstraintsAttr(this.constraints); // this needs to happen now (and later) due to codependency on _set*Attr calls
+		},
+
+		_setConstraintsAttr: function(/* Object */ constraints){
+			// brings in increments, etc.
+			for (var key in { clickableIncrement: 1, visibleIncrement: 1 }) {
+				if (key in constraints) {
+					this[key] = constraints[key];
+				}
+			}
+
+			// locale needs the lang in the constraints as locale
+			if(!constraints.locale){
+				constraints.locale = this.lang;
+			}
+		},
+
+		_createOption: function(/*Number*/ index){
+			// summary:
+			//		Creates a clickable time option, or returns null if the specified index doesn't match the filter
+			// tags:
+			//		private
+			var date = new Date(this._refDate);
+			var incrementDate = this._clickableIncrementDate;
+			date.setHours(date.getHours() + incrementDate.getHours() * index,
+				date.getMinutes() + incrementDate.getMinutes() * index,
+				date.getSeconds() + incrementDate.getSeconds() * index);
+			if(this.constraints.selector == "time"){
+				date.setFullYear(1970, 0, 1); // make sure each time is for the same date
+			}
+			var dateString = locale.format(date, this.constraints);
+			if(this.filterString && dateString.toLowerCase().indexOf(this.filterString) !== 0){
+				// Doesn't match the filter - return null
+				return null;
+			}
+
+			var div = this.ownerDocument.createElement("div");
+			div.className = this.baseClass + "Item";
+			div.date = date;
+			div.idx = index;
+			domConstruct.create('div', {
+				"class": this.baseClass + "ItemInner",
+				innerHTML: dateString
+			}, div);
+
+			if(index % this._visibleIncrement < 1 && index % this._visibleIncrement > -1){
+				domClass.add(div, this.baseClass + "Marker");
+			}else if(!(index % this._clickableIncrement)){
+				domClass.add(div, this.baseClass + "Tick");
+			}
+
+			if(this.isDisabledDate(date)){
+				// set disabled
+				domClass.add(div, this.baseClass + "ItemDisabled");
+			}
+			if(this.value && !ddate.compare(this.value, date, this.constraints.selector)){
+				div.selected = true;
+				domClass.add(div, this.baseClass + "ItemSelected");
+				this._selectedDiv = div;
+				if(domClass.contains(div, this.baseClass + "Marker")){
+					domClass.add(div, this.baseClass + "MarkerSelected");
+				}else{
+					domClass.add(div, this.baseClass + "TickSelected");
+				}
+
+				// Initially highlight the current value.   User can change highlight by up/down arrow keys
+				// or mouse movement.
+				this._highlightOption(div, true);
+			}
+			return div;
+		},
+
+		onOpen: function(){
+			this.inherited(arguments);
+
+			// Since _ListBase::_setSelectedAttr() calls scrollIntoView(), shouldn't call it until list is visible.
+			this.set("selected", this._selectedDiv);
+		},
+
+		_onOptionSelected: function(/*Object*/ tgt){
+			// summary:
+			//		Called when user clicks an option in the drop down list
+			// tags:
+			//		private
+			var tdate = tgt.target.date || tgt.target.parentNode.date;
+			if(!tdate || this.isDisabledDate(tdate)){
+				return;
+			}
+			this._highlighted_option = null;
+			this.set('value', tdate);
+			this.onChange(tdate);
+		},
+
+		onChange: function(/*Date*/ /*===== time =====*/){
+			// summary:
+			//		Notification that a time was selected.  It may be the same as the previous value.
+			// tags:
+			//		public
+		},
+
+		_highlightOption: function(/*node*/ node, /*Boolean*/ highlight){
+			// summary:
+			//		Turns on/off highlight effect on a node based on mouse out/over event
+			// tags:
+			//		private
+			if(!node){
+				return;
+			}
+			if(highlight){
+				if(this._highlighted_option){
+					this._highlightOption(this._highlighted_option, false);
+				}
+				this._highlighted_option = node;
+			}else if(this._highlighted_option !== node){
+				return;
+			}else{
+				this._highlighted_option = null;
+			}
+			domClass.toggle(node, this.baseClass + "ItemHover", highlight);
+			if(domClass.contains(node, this.baseClass + "Marker")){
+				domClass.toggle(node, this.baseClass + "MarkerHover", highlight);
+			}else{
+				domClass.toggle(node, this.baseClass + "TickHover", highlight);
+			}
+		},
+
+		handleKey: function(/*Event*/ e){
+			// summary:
+			//		Called from `dijit/form/_DateTimeTextBox` to pass a keypress event
+			//		from the `dijit/form/TimeTextBox` to be handled in this widget
+			// tags:
+			//		protected
+			if(e.keyCode == keys.DOWN_ARROW){
+				this.selectNextNode();
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}else if(e.keyCode == keys.UP_ARROW){
+				this.selectPreviousNode();
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}else if(e.keyCode == keys.ENTER || e.keyCode === keys.TAB){
+				// mouse hover followed by TAB is NO selection
+				if(!this._keyboardSelected && e.keyCode === keys.TAB){
+					return true;	// true means don't call stopEvent()
+				}
+
+				// Accept the currently-highlighted option as the value
+				if(this._highlighted_option){
+					this._onOptionSelected({target: this._highlighted_option});
+				}
+
+				// Call stopEvent() for ENTER key so that form doesn't submit,
+				// but not for TAB, so that TAB does switch focus
+				return e.keyCode === keys.TAB;
+			}
+			return undefined;
+		},
+
+		// Implement abstract methods for _ListBase
+		onHover: function(/*DomNode*/ node){
+			this._highlightOption(node, true);
+		},
+
+		onUnhover: function(/*DomNode*/ node){
+			this._highlightOption(node, false);
+		},
+
+		onSelect: function(/*DomNode*/ node){
+			this._highlightOption(node, true);
+		},
+
+		onDeselect: function(/*DomNode*/ node){
+			this._highlightOption(node, false);
+		},
+
+		onClick: function(/*DomNode*/ node){
+			this._onOptionSelected({target: node});
+		}
+	});
+
+	/*=====
+	 TimePicker.__Constraints = declare(locale.__FormatOptions, {
+		 // clickableIncrement: String
+		 //		See `dijit/_TimePicker.clickableIncrement`
+		 clickableIncrement: "T00:15:00"
+	 });
+	 =====*/
+
+	return TimePicker;
 });

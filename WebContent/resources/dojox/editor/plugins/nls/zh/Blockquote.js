@@ -1,2 +1,5 @@
-//>>built
-define("dojox/editor/plugins/nls/zh/Blockquote",({"blockquote":"块引用"}));
+define(
+({
+	"blockquote": "块引用"
+})
+);

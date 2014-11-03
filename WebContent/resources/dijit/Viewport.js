@@ -1,44 +1,87 @@
-//>>built
-define("dijit/Viewport",["dojo/Evented","dojo/on","dojo/domReady","dojo/sniff","dojo/window"],function(_1,on,_2,_3,_4){
-var _5=new _1();
-var _6;
-_2(function(){
-var _7=_4.getBox();
-_5._rlh=on(window,"resize",function(){
-var _8=_4.getBox();
-if(_7.h==_8.h&&_7.w==_8.w){
-return;
-}
-_7=_8;
-_5.emit("resize");
-});
-if(_3("ie")==8){
-var _9=screen.deviceXDPI;
-setInterval(function(){
-if(screen.deviceXDPI!=_9){
-_9=screen.deviceXDPI;
-_5.emit("resize");
-}
-},500);
-}
-if(_3("ios")){
-on(document,"focusin",function(_a){
-_6=_a.target;
-});
-on(document,"focusout",function(_b){
-_6=null;
-});
-}
-});
-_5.getEffectiveBox=function(_c){
-var _d=_4.getBox(_c);
-var _e=_6&&_6.tagName&&_6.tagName.toLowerCase();
-if(_3("ios")&&_6&&!_6.readOnly&&(_e=="textarea"||(_e=="input"&&/^(color|email|number|password|search|tel|text|url)$/.test(_6.type)))){
-_d.h*=(orientation==0||orientation==180?0.66:0.4);
-var _f=_6.getBoundingClientRect();
-_d.h=Math.max(_d.h,_f.top+_f.height);
-}
-return _d;
-};
-return _5;
+define([
+	"dojo/Evented",
+	"dojo/on",
+	"dojo/domReady",
+	"dojo/sniff",	// has("ie"), has("ios")
+	"dojo/window" // getBox()
+], function(Evented, on, domReady, has, winUtils){
+
+	// module:
+	//		dijit/Viewport
+
+	/*=====
+	return {
+		// summary:
+		//		Utility singleton to watch for viewport resizes, avoiding duplicate notifications
+		//		which can lead to infinite loops.
+		// description:
+		//		Usage: Viewport.on("resize", myCallback).
+		//
+		//		myCallback() is called without arguments in case it's _WidgetBase.resize(),
+		//		which would interpret the argument as the size to make the widget.
+	};
+	=====*/
+
+	var Viewport = new Evented();
+
+	var focusedNode;
+
+	domReady(function(){
+		var oldBox = winUtils.getBox();
+		Viewport._rlh = on(window, "resize", function(){
+			var newBox = winUtils.getBox();
+			if(oldBox.h == newBox.h && oldBox.w == newBox.w){ return; }
+			oldBox = newBox;
+			Viewport.emit("resize");
+		});
+
+		// Also catch zoom changes on IE8, since they don't naturally generate resize events
+		if(has("ie") == 8){
+			var deviceXDPI = screen.deviceXDPI;
+			setInterval(function(){
+				if(screen.deviceXDPI != deviceXDPI){
+					deviceXDPI = screen.deviceXDPI;
+					Viewport.emit("resize");
+				}
+			}, 500);
+		}
+
+		// On iOS, keep track of the focused node so we can guess when the keyboard is/isn't being displayed.
+		if(has("ios")){
+			on(document, "focusin", function(evt){
+				focusedNode = evt.target;
+			});
+			on(document, "focusout", function(evt){
+				focusedNode = null;
+			});
+		}
+	});
+
+	Viewport.getEffectiveBox = function(/*Document*/ doc){
+		// summary:
+		//		Get the size of the viewport, or on mobile devices, the part of the viewport not obscured by the
+		//		virtual keyboard.
+
+		var box = winUtils.getBox(doc);
+
+		// Account for iOS virtual keyboard, if it's being shown.  Unfortunately no direct way to check or measure.
+		var tag = focusedNode && focusedNode.tagName && focusedNode.tagName.toLowerCase();
+		if(has("ios") && focusedNode && !focusedNode.readOnly && (tag == "textarea" || (tag == "input" &&
+			/^(color|email|number|password|search|tel|text|url)$/.test(focusedNode.type)))){
+
+			// Box represents the size of the viewport.  Some of the viewport is likely covered by the keyboard.
+			// Estimate height of visible viewport assuming viewport goes to bottom of screen, but is covered by keyboard.
+			box.h *= (orientation == 0 || orientation == 180 ? 0.66 : 0.40);
+
+			// Above measurement will be inaccurate if viewport was scrolled up so far that it ends before the bottom
+			// of the screen.   In this case, keyboard isn't covering as much of the viewport as we thought.
+			// We know the visible size is at least the distance from the top of the viewport to the focused node.
+			var rect = focusedNode.getBoundingClientRect();
+			box.h = Math.max(box.h, rect.top + rect.height);
+		}
+
+		return box;
+	};
+
+	return Viewport;
 });

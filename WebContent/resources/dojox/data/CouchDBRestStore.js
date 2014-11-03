@@ -1,57 +1,82 @@
-//>>built
-define("dojox/data/CouchDBRestStore",["dojo","dojox","dojox/data/JsonRestStore"],function(_1,_2){
-var _3=_1.declare("dojox.data.CouchDBRestStore",_2.data.JsonRestStore,{save:function(_4){
-var _5=this.inherited(arguments);
-var _6=this.service.servicePath;
-for(var i=0;i<_5.length;i++){
-(function(_7,_8){
-_8.addCallback(function(_9){
-if(_9){
-_7.__id=_6+_9.id;
-_7._rev=_9.rev;
-}
-return _9;
-});
-})(_5[i].content,_5[i].deferred);
-}
-},fetch:function(_a){
-_a.query=_a.query||"_all_docs?";
-if(_a.start){
-_a.query=(_a.query?(_a.query+"&"):"")+"skip="+_a.start;
-delete _a.start;
-}
-if(_a.count){
-_a.query=(_a.query?(_a.query+"&"):"")+"limit="+_a.count;
-delete _a.count;
-}
-return this.inherited(arguments);
-},_processResults:function(_b){
-var _c=_b.rows;
-if(_c){
-var _d=this.service.servicePath;
-var _e=this;
-for(var i=0;i<_c.length;i++){
-var _f=_c[i].value;
-_f.__id=_d+_c[i].id;
-_f._id=_c[i].id;
-_f._loadObject=_2.rpc.JsonRest._loader;
-_c[i]=_f;
-}
-return {totalCount:_b.total_rows,items:_b.rows};
-}else{
-return {items:_b};
-}
-}});
-_3.getStores=function(_10){
-var dfd=_1.xhrGet({url:_10+"_all_dbs",handleAs:"json",sync:true});
-var _11={};
-dfd.addBoth(function(dbs){
-for(var i=0;i<dbs.length;i++){
-_11[dbs[i]]=new _2.data.CouchDBRestStore({target:_10+dbs[i],idAttribute:"_id"});
-}
-return _11;
-});
-return _11;
+define(["dojo", "dojox", "dojox/data/JsonRestStore"], function(dojo, dojox) {
+
+var CouchDBRestStore = dojo.declare("dojox.data.CouchDBRestStore",
+	dojox.data.JsonRestStore,
+	{
+	// summary:
+	//		A CouchDBRestStore is an extension of JsonRestStore to handle CouchDB's idiosyncrasies, special features,
+	//		and deviations from standard HTTP Rest.
+	//		NOTE: CouchDB is not designed to be run on a public facing network. There is no access control
+	//	 	on database documents, and you should NOT rely on client side control to implement security.
+
+		save: function(kwArgs){
+			var actions = this.inherited(arguments); // do the default save and then update for version numbers
+			var prefix = this.service.servicePath;
+			for(var i = 0; i < actions.length; i++){
+				// need to update the item's version number after it has been committed
+				(function(item,dfd){
+					dfd.addCallback(function(result){
+						if(result){
+							item.__id = prefix + result.id; // update the object with the results of the post
+							item._rev = result.rev;
+						}
+						return result;
+					});
+				})(actions[i].content,actions[i].deferred);
+			}
+		},
+		fetch: function(args){
+			// summary:
+			//		This only differs from JsonRestStore in that it, will put the query string the query part of the URL and it handles start and count
+			args.query = args.query || '_all_docs?';
+			if(args.start){
+				args.query = (args.query ? (args.query + '&') : '') + 'skip=' + args.start;
+				delete args.start;
+			}
+			if(args.count){
+				args.query = (args.query ? (args.query + '&') : '') + 'limit=' + args.count;
+				delete args.count;
+			}
+			return this.inherited(arguments);
+		},
+		_processResults: function(results){
+			var rows = results.rows;
+			if(rows){
+				var prefix = this.service.servicePath;
+				var self = this;
+				for(var i = 0; i < rows.length;i++){
+					var realItem = rows[i].value;
+					realItem.__id= prefix + rows[i].id;
+					realItem._id= rows[i].id;
+					realItem._loadObject= dojox.rpc.JsonRest._loader;
+					rows[i] = realItem;
+				}
+				return {totalCount:results.total_rows, items:results.rows};
+			}else{
+				return {items:results};
+			}
+
+		}
+	}
+);
+
+// create a set of stores
+CouchDBRestStore.getStores = function(couchServerUrl){
+	var dfd = dojo.xhrGet({
+		url: couchServerUrl+"_all_dbs",
+		handleAs: "json",
+		sync: true
+	});
+	var stores = {};
+	dfd.addBoth(function(dbs){
+		for(var i = 0; i < dbs.length; i++){
+			stores[dbs[i]] = new dojox.data.CouchDBRestStore({target:couchServerUrl + dbs[i],idAttribute:"_id"});
+		}
+		return stores;
+	});
+	return stores;
 };
-return _3;
+
+return CouchDBRestStore;
+
 });

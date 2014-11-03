@@ -1,4 +1,4 @@
-
+/* barType="segmentedControl" | "standardTab" Rtl */
 .dj_ff3 .mblTabBarSegmentedControl .mblTabBarButtonRtl:first-child {
   -moz-border-radius-topright: 6px;
   -moz-border-radius-topleft: 0px;

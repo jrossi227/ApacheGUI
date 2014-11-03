@@ -1,96 +1,162 @@
-//>>built
-define("dojox/dtl/_Templated",["dojo/aspect","dojo/_base/declare","./_base","dijit/_TemplatedMixin","dojo/dom-construct","dojo/cache","dojo/_base/array","dojo/string","dojo/parser"],function(_1,_2,dd,_3,_4,_5,_6,_7,_8){
-return _2("dojox.dtl._Templated",_3,{_dijitTemplateCompat:false,buildRendering:function(){
-var _9;
-if(this.domNode&&!this._template){
-return;
-}
-if(!this._template){
-var t=this.getCachedTemplate(this.templatePath,this.templateString,this._skipNodeCache);
-if(t instanceof dd.Template){
-this._template=t;
-}else{
-_9=t.cloneNode(true);
-}
-}
-if(!_9){
-var _a=new dd._Context(this);
-if(!this._created){
-delete _a._getter;
-}
-var _b=_4.toDom(this._template.render(_a));
-if(_b.nodeType!==1&&_b.nodeType!==3){
-for(var i=0,l=_b.childNodes.length;i<l;++i){
-_9=_b.childNodes[i];
-if(_9.nodeType==1){
-break;
-}
-}
-}else{
-_9=_b;
-}
-}
-this._attachTemplateNodes(_9);
-if(this.widgetsInTemplate){
-var _c=_8,_d,_e;
-if(_c._query!="[dojoType]"){
-_d=_c._query;
-_e=_c._attrName;
-_c._query="[dojoType]";
-_c._attrName="dojoType";
-}
-var cw=(this._startupWidgets=_8.parse(_9,{noStart:!this._earlyTemplatedStartup,inherited:{dir:this.dir,lang:this.lang}}));
-if(_d){
-_c._query=_d;
-_c._attrName=_e;
-}
-for(var i=0;i<cw.length;i++){
-this._processTemplateNode(cw[i],function(n,p){
-return n[p];
-},function(_f,_10,_11){
-if(_10 in _f){
-return _1.after(_f,_10,_11,true);
-}else{
-return _f.on(_10,_11,true);
-}
-});
-}
-}
-if(this.domNode){
-_4.place(_9,this.domNode,"before");
-this.destroyDescendants();
-_4.destroy(this.domNode);
-}
-this.domNode=_9;
-this._fillContent(this.srcNodeRef);
-},_processTemplateNode:function(_12,_13,_14){
-if(this.widgetsInTemplate&&(_13(_12,"dojoType")||_13(_12,"data-dojo-type"))){
-return true;
-}
-this.inherited(arguments);
-},_templateCache:{},getCachedTemplate:function(_15,_16,_17){
-var _18=this._templateCache;
-var key=_16||_15;
-if(_18[key]){
-return _18[key];
-}
-_16=_7.trim(_16||_5(_15,{sanitize:true}));
-if(this._dijitTemplateCompat&&(_17||_16.match(/\$\{([^\}]+)\}/g))){
-_16=this._stringRepl(_16);
-}
-if(_17||!_16.match(/\{[{%]([^\}]+)[%}]\}/g)){
-return _18[key]=_4.toDom(_16);
-}else{
-return _18[key]=new dd.Template(_16);
-}
-},render:function(){
-this.buildRendering();
-},startup:function(){
-_6.forEach(this._startupWidgets,function(w){
-if(w&&!w._started&&w.startup){
-w.startup();
-}
-});
-this.inherited(arguments);
-}});
+define([
+	"dojo/aspect",
+	"dojo/_base/declare",
+	"./_base",
+	"dijit/_TemplatedMixin",
+	"dojo/dom-construct",
+	"dojo/cache",
+	"dojo/_base/array",
+	"dojo/string",
+	"dojo/parser"
+], function(aspect,declare,dd,TemplatedMixin, domConstruct,Cache,Array,dString,Parser){
+
+	return declare("dojox.dtl._Templated", TemplatedMixin, {
+		// summary:
+		//		The base-class for DTL-templated widgets.
+
+		_dijitTemplateCompat: false,
+		
+		buildRendering: function(){
+			var node;
+
+			if(this.domNode && !this._template){
+				return;
+			}
+
+			if(!this._template){
+				var t = this.getCachedTemplate(
+					this.templatePath,
+					this.templateString,
+					this._skipNodeCache
+				);
+				if(t instanceof dd.Template) {
+					this._template = t;
+				}else{
+					node = t.cloneNode(true);
+				}
+			}
+			if(!node){
+				var context = new dd._Context(this);
+				if(!this._created){
+					delete context._getter;
+				}
+				var nodes = domConstruct.toDom(
+					this._template.render(context)
+				);
+				// TODO: is it really necessary to look for the first node?
+				if(nodes.nodeType !== 1 && nodes.nodeType !== 3){
+					// nodes.nodeType === 11
+					// the node is a document fragment
+					for(var i = 0, l = nodes.childNodes.length; i < l; ++i){
+						node = nodes.childNodes[i];
+						if(node.nodeType == 1){
+							break;
+						}
+					}
+				}else{
+					// the node is an element or a text
+					node = nodes;
+				}
+			}
+			this._attachTemplateNodes(node);
+			if(this.widgetsInTemplate){
+				//Make sure dojoType is used for parsing widgets in template.
+				//The Parser.query could be changed from multiversion support.
+				var parser = Parser, qry, attr;
+				if(parser._query != "[dojoType]"){
+					qry = parser._query;
+					attr = parser._attrName;
+					parser._query = "[dojoType]";
+					parser._attrName = "dojoType";
+				}
+
+				//Store widgets that we need to start at a later point in time
+				var cw = (this._startupWidgets = Parser.parse(node, {
+					noStart: !this._earlyTemplatedStartup,
+					inherited: {dir: this.dir, lang: this.lang}
+				}));
+
+				//Restore the query.
+				if(qry){
+					parser._query = qry;
+					parser._attrName = attr;
+				}
+
+				// Hook up attach points and events for nodes that were converted to widgets
+				for(var i = 0; i < cw.length; i++){
+					this._processTemplateNode(cw[i], function(n,p){
+						return n[p];
+					}, function(widget, type, callback){
+						// function to do data-dojo-attach-event to a widget
+						if(type in widget){
+							// back-compat, remove for 2.0
+							return aspect.after(widget, type, callback, true);
+						}else{
+							// 1.x may never hit this branch, but it's the default for 2.0
+							return widget.on(type, callback, true);
+						}
+					});
+				}
+			}
+
+			if(this.domNode){
+				domConstruct.place(node, this.domNode, "before");
+				this.destroyDescendants();
+				domConstruct.destroy(this.domNode);
+			}
+			this.domNode = node;
+
+			this._fillContent(this.srcNodeRef);
+		},
+
+		_processTemplateNode: function(/*DOMNode|Widget*/ baseNode, getAttrFunc, attachFunc){
+			// Override _AttachMixin._processNode to skip nodes with data-dojo-type set.   They are handled separately
+			// in the buildRendering() code above.
+
+			if(this.widgetsInTemplate && (getAttrFunc(baseNode, "dojoType") || getAttrFunc(baseNode, "data-dojo-type"))){
+				return true;
+			}
+
+			this.inherited(arguments);
+		},
+
+		_templateCache: {},
+		getCachedTemplate: function(templatePath, templateString, alwaysUseString){
+			// summary:
+			//		Layer for dijit._Templated.getCachedTemplate
+			var tmplts = this._templateCache;
+			var key = templateString || templatePath;
+			if(tmplts[key]){
+				return tmplts[key];
+			}
+
+			templateString = dString.trim(templateString || Cache(templatePath, {sanitize: true}));
+
+			if(	this._dijitTemplateCompat &&
+				(alwaysUseString || templateString.match(/\$\{([^\}]+)\}/g))
+			){
+				templateString = this._stringRepl(templateString);
+			}
+
+			// If we always use a string, or find no variables, just store it as a node
+			if(alwaysUseString || !templateString.match(/\{[{%]([^\}]+)[%}]\}/g)){
+				return tmplts[key] = domConstruct.toDom(templateString);
+			}else{
+				return tmplts[key] = new dd.Template(templateString);
+			}
+		},
+		render: function(){
+			// summary:
+			//		Renders the widget.
+			this.buildRendering();
+		},
+		startup: function(){
+			Array.forEach(this._startupWidgets, function(w){
+				if(w && !w._started && w.startup){
+					w.startup();
+				}
+			});
+			this.inherited(arguments);
+		}
+	});
 });

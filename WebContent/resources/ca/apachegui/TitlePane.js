@@ -6,7 +6,6 @@ define([ "dojo/_base/declare",
          "dijit/registry"
 ], function(declare, TitlePane, dojo, lang, array, registry){ 
     
-    dojo.provide('ca.apachegui.TitlePane');
    
     declare("ca.apachegui.TitlePane", [dijit.TitlePane], {
         toggle : function() {                                                                                                                                                                                                                                                        

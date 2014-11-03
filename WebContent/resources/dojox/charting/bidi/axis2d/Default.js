@@ -1,16 +1,27 @@
-//>>built
-define("dojox/charting/bidi/axis2d/Default",["dojo/_base/declare","dojo/dom-style"],function(_1,_2){
-return _1(null,{labelTooltip:function(_3,_4,_5,_6,_7,_8){
-var _9=(_2.get(_4.node,"direction")=="rtl");
-var _a=(_4.getTextDir(_5)=="rtl");
-if(_a&&!_9){
-_5="<span dir='rtl'>"+_5+"</span>";
-}
-if(!_a&&_9){
-_5="<span dir='ltr'>"+_5+"</span>";
-}
-this.inherited(arguments);
-},_isRtl:function(){
-return this.chart.isRightToLeft();
-}});
+define(["dojo/_base/declare", "dojo/dom-style"],
+	function(declare, domStyle){
+	// module:
+	//		dojox/charting/bidi/axis2d/Default			
+	return declare(null, {
+		labelTooltip: function(elem, chart, label, truncatedLabel, font, elemType){
+			// additional preprocessing of the labels, needed for rtl base text direction in LTR
+			// GUI, or for ltr base text direction for RTL GUI.
+
+			var isChartDirectionRtl = (domStyle.get(chart.node,"direction") == "rtl");
+			var isBaseTextDirRtl = (chart.getTextDir(label) == "rtl");
+
+			if(isBaseTextDirRtl && !isChartDirectionRtl){
+				label = "<span dir='rtl'>" + label +"</span>";
+			}
+			if(!isBaseTextDirRtl && isChartDirectionRtl){
+				label = "<span dir='ltr'>" + label +"</span>";
+			}
+			this.inherited(arguments);
+		},
+		
+		_isRtl: function(){
+			return this.chart.isRightToLeft();
+		}
+	});
 });
+

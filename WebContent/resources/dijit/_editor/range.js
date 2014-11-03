@@ -1,443 +1,559 @@
-//>>built
-define("dijit/_editor/range",["dojo/_base/array","dojo/_base/declare","dojo/_base/lang"],function(_1,_2,_3){
-var _4={getIndex:function(_5,_6){
-var _7=[],_8=[];
-var _9=_5;
-var _a,n;
-while(_5!=_6){
-var i=0;
-_a=_5.parentNode;
-while((n=_a.childNodes[i++])){
-if(n===_5){
---i;
-break;
-}
-}
-_7.unshift(i);
-_8.unshift(i-_a.childNodes.length);
-_5=_a;
-}
-if(_7.length>0&&_9.nodeType==3){
-n=_9.previousSibling;
-while(n&&n.nodeType==3){
-_7[_7.length-1]--;
-n=n.previousSibling;
-}
-n=_9.nextSibling;
-while(n&&n.nodeType==3){
-_8[_8.length-1]++;
-n=n.nextSibling;
-}
-}
-return {o:_7,r:_8};
-},getNode:function(_b,_c){
-if(!_3.isArray(_b)||_b.length==0){
-return _c;
-}
-var _d=_c;
-_1.every(_b,function(i){
-if(i>=0&&i<_d.childNodes.length){
-_d=_d.childNodes[i];
-}else{
-_d=null;
-return false;
-}
-return true;
-});
-return _d;
-},getCommonAncestor:function(n1,n2,_e){
-_e=_e||n1.ownerDocument.body;
-var _f=function(n){
-var as=[];
-while(n){
-as.unshift(n);
-if(n!==_e){
-n=n.parentNode;
-}else{
-break;
-}
-}
-return as;
-};
-var _10=_f(n1);
-var _11=_f(n2);
-var m=Math.min(_10.length,_11.length);
-var com=_10[0];
-for(var i=1;i<m;i++){
-if(_10[i]===_11[i]){
-com=_10[i];
-}else{
-break;
-}
-}
-return com;
-},getAncestor:function(_12,_13,_14){
-_14=_14||_12.ownerDocument.body;
-while(_12&&_12!==_14){
-var _15=_12.nodeName.toUpperCase();
-if(_13.test(_15)){
-return _12;
-}
-_12=_12.parentNode;
-}
-return null;
-},BlockTagNames:/^(?:P|DIV|H1|H2|H3|H4|H5|H6|ADDRESS|PRE|OL|UL|LI|DT|DE)$/,getBlockAncestor:function(_16,_17,_18){
-_18=_18||_16.ownerDocument.body;
-_17=_17||_4.BlockTagNames;
-var _19=null,_1a;
-while(_16&&_16!==_18){
-var _1b=_16.nodeName.toUpperCase();
-if(!_19&&_17.test(_1b)){
-_19=_16;
-}
-if(!_1a&&(/^(?:BODY|TD|TH|CAPTION)$/).test(_1b)){
-_1a=_16;
-}
-_16=_16.parentNode;
-}
-return {blockNode:_19,blockContainer:_1a||_16.ownerDocument.body};
-},atBeginningOfContainer:function(_1c,_1d,_1e){
-var _1f=false;
-var _20=(_1e==0);
-if(!_20&&_1d.nodeType==3){
-if(/^[\s\xA0]+$/.test(_1d.nodeValue.substr(0,_1e))){
-_20=true;
-}
-}
-if(_20){
-var _21=_1d;
-_1f=true;
-while(_21&&_21!==_1c){
-if(_21.previousSibling){
-_1f=false;
-break;
-}
-_21=_21.parentNode;
-}
-}
-return _1f;
-},atEndOfContainer:function(_22,_23,_24){
-var _25=false;
-var _26=(_24==(_23.length||_23.childNodes.length));
-if(!_26&&_23.nodeType==3){
-if(/^[\s\xA0]+$/.test(_23.nodeValue.substr(_24))){
-_26=true;
-}
-}
-if(_26){
-var _27=_23;
-_25=true;
-while(_27&&_27!==_22){
-if(_27.nextSibling){
-_25=false;
-break;
-}
-_27=_27.parentNode;
-}
-}
-return _25;
-},adjacentNoneTextNode:function(_28,_29){
-var _2a=_28;
-var len=(0-_28.length)||0;
-var _2b=_29?"nextSibling":"previousSibling";
-while(_2a){
-if(_2a.nodeType!=3){
-break;
-}
-len+=_2a.length;
-_2a=_2a[_2b];
-}
-return [_2a,len];
-},create:function(win){
-win=win||window;
-if(win.getSelection){
-return win.document.createRange();
-}else{
-return new _2c();
-}
-},getSelection:function(_2d,_2e){
-if(_2d.getSelection){
-return _2d.getSelection();
-}else{
-var s=new ie.selection(_2d);
-if(!_2e){
-s._getCurrentSelection();
-}
-return s;
-}
-}};
-if(!window.getSelection){
-var ie=_4.ie={cachedSelection:{},selection:function(_2f){
-this._ranges=[];
-this.addRange=function(r,_30){
-this._ranges.push(r);
-if(!_30){
-r._select();
-}
-this.rangeCount=this._ranges.length;
-};
-this.removeAllRanges=function(){
-this._ranges=[];
-this.rangeCount=0;
-};
-var _31=function(){
-var r=_2f.document.selection.createRange();
-var _32=_2f.document.selection.type.toUpperCase();
-if(_32=="CONTROL"){
-return new _2c(ie.decomposeControlRange(r));
-}else{
-return new _2c(ie.decomposeTextRange(r));
-}
-};
-this.getRangeAt=function(i){
-return this._ranges[i];
-};
-this._getCurrentSelection=function(){
-this.removeAllRanges();
-var r=_31();
-if(r){
-this.addRange(r,true);
-this.isCollapsed=r.collapsed;
-}else{
-this.isCollapsed=true;
-}
-};
-},decomposeControlRange:function(_33){
-var _34=_33.item(0),_35=_33.item(_33.length-1);
-var _36=_34.parentNode,_37=_35.parentNode;
-var _38=_4.getIndex(_34,_36).o[0];
-var _39=_4.getIndex(_35,_37).o[0]+1;
-return [_36,_38,_37,_39];
-},getEndPoint:function(_3a,end){
-var _3b=_3a.duplicate();
-_3b.collapse(!end);
-var _3c="EndTo"+(end?"End":"Start");
-var _3d=_3b.parentElement();
-var _3e,_3f,_40;
-if(_3d.childNodes.length>0){
-_1.every(_3d.childNodes,function(_41,i){
-var _42;
-if(_41.nodeType!=3){
-_3b.moveToElementText(_41);
-if(_3b.compareEndPoints(_3c,_3a)>0){
-if(_40&&_40.nodeType==3){
-_3e=_40;
-_42=true;
-}else{
-_3e=_3d;
-_3f=i;
-return false;
-}
-}else{
-if(i==_3d.childNodes.length-1){
-_3e=_3d;
-_3f=_3d.childNodes.length;
-return false;
-}
-}
-}else{
-if(i==_3d.childNodes.length-1){
-_3e=_41;
-_42=true;
-}
-}
-if(_42&&_3e){
-var _43=_4.adjacentNoneTextNode(_3e)[0];
-if(_43){
-_3e=_43.nextSibling;
-}else{
-_3e=_3d.firstChild;
-}
-var _44=_4.adjacentNoneTextNode(_3e);
-_43=_44[0];
-var _45=_44[1];
-if(_43){
-_3b.moveToElementText(_43);
-_3b.collapse(false);
-}else{
-_3b.moveToElementText(_3d);
-}
-_3b.setEndPoint(_3c,_3a);
-_3f=_3b.text.length-_45;
-return false;
-}
-_40=_41;
-return true;
-});
-}else{
-_3e=_3d;
-_3f=0;
-}
-if(!end&&_3e.nodeType==1&&_3f==_3e.childNodes.length){
-var _46=_3e.nextSibling;
-if(_46&&_46.nodeType==3){
-_3e=_46;
-_3f=0;
-}
-}
-return [_3e,_3f];
-},setEndPoint:function(_47,_48,_49){
-var _4a=_47.duplicate(),_4b,len;
-if(_48.nodeType!=3){
-if(_49>0){
-_4b=_48.childNodes[_49-1];
-if(_4b){
-if(_4b.nodeType==3){
-_48=_4b;
-_49=_4b.length;
-}else{
-if(_4b.nextSibling&&_4b.nextSibling.nodeType==3){
-_48=_4b.nextSibling;
-_49=0;
-}else{
-_4a.moveToElementText(_4b.nextSibling?_4b:_48);
-var _4c=_4b.parentNode;
-var _4d=_4c.insertBefore(_4b.ownerDocument.createTextNode(" "),_4b.nextSibling);
-_4a.collapse(false);
-_4c.removeChild(_4d);
-}
-}
-}
-}else{
-_4a.moveToElementText(_48);
-_4a.collapse(true);
-}
-}
-if(_48.nodeType==3){
-var _4e=_4.adjacentNoneTextNode(_48);
-var _4f=_4e[0];
-len=_4e[1];
-if(_4f){
-_4a.moveToElementText(_4f);
-_4a.collapse(false);
-if(_4f.contentEditable!="inherit"){
-len++;
-}
-}else{
-_4a.moveToElementText(_48.parentNode);
-_4a.collapse(true);
-_4a.move("character",1);
-_4a.move("character",-1);
-}
-_49+=len;
-if(_49>0){
-if(_4a.move("character",_49)!=_49){
-console.error("Error when moving!");
-}
-}
-}
-return _4a;
-},decomposeTextRange:function(_50){
-var _51=ie.getEndPoint(_50);
-var _52=_51[0],_53=_51[1];
-var _54=_51[0],_55=_51[1];
-if(_50.htmlText.length){
-if(_50.htmlText==_50.text){
-_55=_53+_50.text.length;
-}else{
-_51=ie.getEndPoint(_50,true);
-_54=_51[0],_55=_51[1];
-}
-}
-return [_52,_53,_54,_55];
-},setRange:function(_56,_57,_58,_59,_5a,_5b){
-var _5c=ie.setEndPoint(_56,_57,_58);
-_56.setEndPoint("StartToStart",_5c);
-if(!_5b){
-var end=ie.setEndPoint(_56,_59,_5a);
-}
-_56.setEndPoint("EndToEnd",end||_5c);
-return _56;
-}};
-var _2c=_4.W3CRange=_2(null,{constructor:function(){
-if(arguments.length>0){
-this.setStart(arguments[0][0],arguments[0][1]);
-this.setEnd(arguments[0][2],arguments[0][3]);
-}else{
-this.commonAncestorContainer=null;
-this.startContainer=null;
-this.startOffset=0;
-this.endContainer=null;
-this.endOffset=0;
-this.collapsed=true;
-}
-},_updateInternal:function(){
-if(this.startContainer!==this.endContainer){
-this.commonAncestorContainer=_4.getCommonAncestor(this.startContainer,this.endContainer);
-}else{
-this.commonAncestorContainer=this.startContainer;
-}
-this.collapsed=(this.startContainer===this.endContainer)&&(this.startOffset==this.endOffset);
-},setStart:function(_5d,_5e){
-_5e=parseInt(_5e);
-if(this.startContainer===_5d&&this.startOffset==_5e){
-return;
-}
-delete this._cachedBookmark;
-this.startContainer=_5d;
-this.startOffset=_5e;
-if(!this.endContainer){
-this.setEnd(_5d,_5e);
-}else{
-this._updateInternal();
-}
-},setEnd:function(_5f,_60){
-_60=parseInt(_60);
-if(this.endContainer===_5f&&this.endOffset==_60){
-return;
-}
-delete this._cachedBookmark;
-this.endContainer=_5f;
-this.endOffset=_60;
-if(!this.startContainer){
-this.setStart(_5f,_60);
-}else{
-this._updateInternal();
-}
-},setStartAfter:function(_61,_62){
-this._setPoint("setStart",_61,_62,1);
-},setStartBefore:function(_63,_64){
-this._setPoint("setStart",_63,_64,0);
-},setEndAfter:function(_65,_66){
-this._setPoint("setEnd",_65,_66,1);
-},setEndBefore:function(_67,_68){
-this._setPoint("setEnd",_67,_68,0);
-},_setPoint:function(_69,_6a,_6b,ext){
-var _6c=_4.getIndex(_6a,_6a.parentNode).o;
-this[_69](_6a.parentNode,_6c.pop()+ext);
-},_getIERange:function(){
-var r=(this._body||this.endContainer.ownerDocument.body).createTextRange();
-ie.setRange(r,this.startContainer,this.startOffset,this.endContainer,this.endOffset,this.collapsed);
-return r;
-},getBookmark:function(){
-this._getIERange();
-return this._cachedBookmark;
-},_select:function(){
-var r=this._getIERange();
-r.select();
-},deleteContents:function(){
-var s=this.startContainer,r=this._getIERange();
-if(s.nodeType===3&&!this.startOffset){
-this.setStartBefore(s);
-}
-r.pasteHTML("");
-this.endContainer=this.startContainer;
-this.endOffset=this.startOffset;
-this.collapsed=true;
-},cloneRange:function(){
-var r=new _2c([this.startContainer,this.startOffset,this.endContainer,this.endOffset]);
-r._body=this._body;
-return r;
-},detach:function(){
-this._body=null;
-this.commonAncestorContainer=null;
-this.startContainer=null;
-this.startOffset=0;
-this.endContainer=null;
-this.endOffset=0;
-this.collapsed=true;
-}});
-}
-_3.setObject("dijit.range",_4);
-return _4;
+define([
+	"dojo/_base/array", // array.every
+	"dojo/_base/declare", // declare
+	"dojo/_base/lang" // lang.isArray
+], function(array, declare, lang){
+
+	// module:
+	//		dijit/_editor/range
+
+	var rangeapi = {
+		// summary:
+		//		W3C range API
+
+		getIndex: function(/*DomNode*/ node, /*DomNode*/ parent){
+			var ret = [], retR = [];
+			var onode = node;
+
+			var pnode, n;
+			while(node != parent){
+				var i = 0;
+				pnode = node.parentNode;
+				while((n = pnode.childNodes[i++])){
+					if(n === node){
+						--i;
+						break;
+					}
+				}
+				//if(i>=pnode.childNodes.length){
+				//console.debug("Error finding index of a node in dijit/range.getIndex()");
+				//}
+				ret.unshift(i);
+				retR.unshift(i - pnode.childNodes.length);
+				node = pnode;
+			}
+
+			//normalized() can not be called so often to prevent
+			//invalidating selection/range, so we have to detect
+			//here that any text nodes in a row
+			if(ret.length > 0 && onode.nodeType == 3){
+				n = onode.previousSibling;
+				while(n && n.nodeType == 3){
+					ret[ret.length - 1]--;
+					n = n.previousSibling;
+				}
+				n = onode.nextSibling;
+				while(n && n.nodeType == 3){
+					retR[retR.length - 1]++;
+					n = n.nextSibling;
+				}
+			}
+
+			return {o: ret, r:retR};
+		},
+
+		getNode: function(/*Array*/ index, /*DomNode*/ parent){
+			if(!lang.isArray(index) || index.length == 0){
+				return parent;
+			}
+			var node = parent;
+			//	if(!node)debugger
+			array.every(index, function(i){
+				if(i >= 0 && i < node.childNodes.length){
+					node = node.childNodes[i];
+				}else{
+					node = null;
+					//console.debug('Error: can not find node with index',index,'under parent node',parent );
+					return false; //terminate array.every
+				}
+				return true; //carry on the every loop
+			});
+
+			return node;
+		},
+
+		getCommonAncestor: function(n1, n2, root){
+			root = root || n1.ownerDocument.body;
+			var getAncestors = function(n){
+				var as = [];
+				while(n){
+					as.unshift(n);
+					if(n !== root){
+						n = n.parentNode;
+					}else{
+						break;
+					}
+				}
+				return as;
+			};
+			var n1as = getAncestors(n1);
+			var n2as = getAncestors(n2);
+
+			var m = Math.min(n1as.length, n2as.length);
+			var com = n1as[0]; //at least, one element should be in the array: the root (BODY by default)
+			for(var i = 1; i < m; i++){
+				if(n1as[i] === n2as[i]){
+					com = n1as[i]
+				}else{
+					break;
+				}
+			}
+			return com;
+		},
+
+		getAncestor: function(/*DomNode*/ node, /*RegEx?*/ regex, /*DomNode?*/ root){
+			root = root || node.ownerDocument.body;
+			while(node && node !== root){
+				var name = node.nodeName.toUpperCase();
+				if(regex.test(name)){
+					return node;
+				}
+
+				node = node.parentNode;
+			}
+			return null;
+		},
+
+		BlockTagNames: /^(?:P|DIV|H1|H2|H3|H4|H5|H6|ADDRESS|PRE|OL|UL|LI|DT|DE)$/,
+
+		getBlockAncestor: function(/*DomNode*/ node, /*RegEx?*/ regex, /*DomNode?*/ root){
+			root = root || node.ownerDocument.body;
+			regex = regex || rangeapi.BlockTagNames;
+			var block = null, blockContainer;
+			while(node && node !== root){
+				var name = node.nodeName.toUpperCase();
+				if(!block && regex.test(name)){
+					block = node;
+				}
+				if(!blockContainer && (/^(?:BODY|TD|TH|CAPTION)$/).test(name)){
+					blockContainer = node;
+				}
+
+				node = node.parentNode;
+			}
+			return {blockNode:block, blockContainer:blockContainer || node.ownerDocument.body};
+		},
+
+		atBeginningOfContainer: function(/*DomNode*/ container, /*DomNode*/ node, /*Int*/ offset){
+			var atBeginning = false;
+			var offsetAtBeginning = (offset == 0);
+			if(!offsetAtBeginning && node.nodeType == 3){ //if this is a text node, check whether the left part is all space
+				if(/^[\s\xA0]+$/.test(node.nodeValue.substr(0, offset))){
+					offsetAtBeginning = true;
+				}
+			}
+			if(offsetAtBeginning){
+				var cnode = node;
+				atBeginning = true;
+				while(cnode && cnode !== container){
+					if(cnode.previousSibling){
+						atBeginning = false;
+						break;
+					}
+					cnode = cnode.parentNode;
+				}
+			}
+			return atBeginning;
+		},
+
+		atEndOfContainer: function(/*DomNode*/ container, /*DomNode*/ node, /*Int*/ offset){
+			var atEnd = false;
+			var offsetAtEnd = (offset == (node.length || node.childNodes.length));
+			if(!offsetAtEnd && node.nodeType == 3){ //if this is a text node, check whether the right part is all space
+				if(/^[\s\xA0]+$/.test(node.nodeValue.substr(offset))){
+					offsetAtEnd = true;
+				}
+			}
+			if(offsetAtEnd){
+				var cnode = node;
+				atEnd = true;
+				while(cnode && cnode !== container){
+					if(cnode.nextSibling){
+						atEnd = false;
+						break;
+					}
+					cnode = cnode.parentNode;
+				}
+			}
+			return atEnd;
+		},
+
+		adjacentNoneTextNode: function(startnode, next){
+			var node = startnode;
+			var len = (0 - startnode.length) || 0;
+			var prop = next ? 'nextSibling' : 'previousSibling';
+			while(node){
+				if(node.nodeType != 3){
+					break;
+				}
+				len += node.length;
+				node = node[prop];
+			}
+			return [node,len];
+		},
+
+		create: function(/*Window?*/ win){	// TODO: for 2.0, replace optional window param w/mandatory window or document param
+			win = win || window;
+			if(win.getSelection){
+				return win.document.createRange();
+			}else{//IE
+				return new W3CRange();
+			}
+		},
+
+		getSelection: function(/*Window*/ window, /*Boolean?*/ ignoreUpdate){
+			if(window.getSelection){
+				return window.getSelection();
+			}else{//IE
+				var s = new ie.selection(window);
+				if(!ignoreUpdate){
+					s._getCurrentSelection();
+				}
+				return s;
+			}
+		}
+	};
+
+	// TODO: convert to has() test?   But remember IE9 issues with quirks vs. standards in main frame vs. iframe.
+	if(!window.getSelection){
+		var ie = rangeapi.ie = {
+			cachedSelection: {},
+			selection: function(window){
+				this._ranges = [];
+				this.addRange = function(r, /*boolean*/ internal){
+					this._ranges.push(r);
+					if(!internal){
+						r._select();
+					}
+					this.rangeCount = this._ranges.length;
+				};
+				this.removeAllRanges = function(){
+					//don't detach, the range may be used later
+					//				for(var i=0;i<this._ranges.length;i++){
+					//					this._ranges[i].detach();
+					//				}
+					this._ranges = [];
+					this.rangeCount = 0;
+				};
+				var _initCurrentRange = function(){
+					var r = window.document.selection.createRange();
+					var type = window.document.selection.type.toUpperCase();
+					if(type == "CONTROL"){
+						//TODO: multiple range selection(?)
+						return new W3CRange(ie.decomposeControlRange(r));
+					}else{
+						return new W3CRange(ie.decomposeTextRange(r));
+					}
+				};
+				this.getRangeAt = function(i){
+					return this._ranges[i];
+				};
+				this._getCurrentSelection = function(){
+					this.removeAllRanges();
+					var r = _initCurrentRange();
+					if(r){
+						this.addRange(r, true);
+						this.isCollapsed = r.collapsed;
+					}else{
+						this.isCollapsed = true;
+					}
+				};
+			},
+			decomposeControlRange: function(range){
+				var firstnode = range.item(0), lastnode = range.item(range.length - 1);
+				var startContainer = firstnode.parentNode, endContainer = lastnode.parentNode;
+				var startOffset = rangeapi.getIndex(firstnode, startContainer).o[0];
+				var endOffset = rangeapi.getIndex(lastnode, endContainer).o[0] + 1;
+				return [startContainer, startOffset,endContainer, endOffset];
+			},
+			getEndPoint: function(range, end){
+				var atmrange = range.duplicate();
+				atmrange.collapse(!end);
+				var cmpstr = 'EndTo' + (end ? 'End' : 'Start');
+				var parentNode = atmrange.parentElement();
+
+				var startnode, startOffset, lastNode;
+				if(parentNode.childNodes.length > 0){
+					array.every(parentNode.childNodes, function(node, i){
+						var calOffset;
+						if(node.nodeType != 3){
+							atmrange.moveToElementText(node);
+
+							if(atmrange.compareEndPoints(cmpstr, range) > 0){
+								//startnode = node.previousSibling;
+								if(lastNode && lastNode.nodeType == 3){
+									//where shall we put the start? in the text node or after?
+									startnode = lastNode;
+									calOffset = true;
+								}else{
+									startnode = parentNode;
+									startOffset = i;
+									return false;
+								}
+							}else{
+								if(i == parentNode.childNodes.length - 1){
+									startnode = parentNode;
+									startOffset = parentNode.childNodes.length;
+									return false;
+								}
+							}
+						}else{
+							if(i == parentNode.childNodes.length - 1){//at the end of this node
+								startnode = node;
+								calOffset = true;
+							}
+						}
+						//			try{
+						if(calOffset && startnode){
+							var prevnode = rangeapi.adjacentNoneTextNode(startnode)[0];
+							if(prevnode){
+								startnode = prevnode.nextSibling;
+							}else{
+								startnode = parentNode.firstChild; //firstChild must be a text node
+							}
+							var prevnodeobj = rangeapi.adjacentNoneTextNode(startnode);
+							prevnode = prevnodeobj[0];
+							var lenoffset = prevnodeobj[1];
+							if(prevnode){
+								atmrange.moveToElementText(prevnode);
+								atmrange.collapse(false);
+							}else{
+								atmrange.moveToElementText(parentNode);
+							}
+							atmrange.setEndPoint(cmpstr, range);
+							startOffset = atmrange.text.length - lenoffset;
+
+							return false;
+						}
+						//			}catch(e){ debugger }
+						lastNode = node;
+						return true;
+					});
+				}else{
+					startnode = parentNode;
+					startOffset = 0;
+				}
+
+				//if at the end of startnode and we are dealing with start container, then
+				//move the startnode to nextSibling if it is a text node
+				//TODO: do this for end container?
+				if(!end && startnode.nodeType == 1 && startOffset == startnode.childNodes.length){
+					var nextnode = startnode.nextSibling;
+					if(nextnode && nextnode.nodeType == 3){
+						startnode = nextnode;
+						startOffset = 0;
+					}
+				}
+				return [startnode, startOffset];
+			},
+			setEndPoint: function(range, container, offset){
+				//text node
+				var atmrange = range.duplicate(), node, len;
+				if(container.nodeType != 3){ //normal node
+					if(offset > 0){
+						node = container.childNodes[offset - 1];
+						if(node){
+							if(node.nodeType == 3){
+								container = node;
+								offset = node.length;
+								//pass through
+							}else{
+								if(node.nextSibling && node.nextSibling.nodeType == 3){
+									container = node.nextSibling;
+									offset = 0;
+									//pass through
+								}else{
+									atmrange.moveToElementText(node.nextSibling ? node : container);
+									var parent = node.parentNode;
+									var tempNode = parent.insertBefore(node.ownerDocument.createTextNode(' '), node.nextSibling);
+									atmrange.collapse(false);
+									parent.removeChild(tempNode);
+								}
+							}
+						}
+					}else{
+						atmrange.moveToElementText(container);
+						atmrange.collapse(true);
+					}
+				}
+				if(container.nodeType == 3){
+					var prevnodeobj = rangeapi.adjacentNoneTextNode(container);
+					var prevnode = prevnodeobj[0];
+					len = prevnodeobj[1];
+					if(prevnode){
+						atmrange.moveToElementText(prevnode);
+						atmrange.collapse(false);
+						//if contentEditable is not inherit, the above collapse won't make the end point
+						//in the correctly position: it always has a -1 offset, so compensate it
+						if(prevnode.contentEditable != 'inherit'){
+							len++;
+						}
+					}else{
+						atmrange.moveToElementText(container.parentNode);
+						atmrange.collapse(true);
+
+						// Correct internal cursor position
+						// http://bugs.dojotoolkit.org/ticket/15578
+						atmrange.move('character', 1);
+						atmrange.move('character', -1);
+					}
+
+					offset += len;
+					if(offset > 0){
+						if(atmrange.move('character', offset) != offset){
+							console.error('Error when moving!');
+						}
+					}
+				}
+
+				return atmrange;
+			},
+			decomposeTextRange: function(range){
+				var tmpary = ie.getEndPoint(range);
+				var startContainer = tmpary[0], startOffset = tmpary[1];
+				var endContainer = tmpary[0], endOffset = tmpary[1];
+
+				if(range.htmlText.length){
+					if(range.htmlText == range.text){ //in the same text node
+						endOffset = startOffset + range.text.length;
+					}else{
+						tmpary = ie.getEndPoint(range, true);
+						endContainer = tmpary[0],endOffset = tmpary[1];
+						//					if(startContainer.tagName == "BODY"){
+						//						startContainer = startContainer.firstChild;
+						//					}
+					}
+				}
+				return [startContainer, startOffset, endContainer, endOffset];
+			},
+			setRange: function(range, startContainer, startOffset, endContainer, endOffset, collapsed){
+				var start = ie.setEndPoint(range, startContainer, startOffset);
+
+				range.setEndPoint('StartToStart', start);
+				if(!collapsed){
+					var end = ie.setEndPoint(range, endContainer, endOffset);
+				}
+				range.setEndPoint('EndToEnd', end || start);
+
+				return range;
+			}
+		};
+
+		var W3CRange = rangeapi.W3CRange = declare(null, {
+			constructor: function(){
+				if(arguments.length>0){
+					this.setStart(arguments[0][0],arguments[0][1]);
+					this.setEnd(arguments[0][2],arguments[0][3]);
+				}else{
+					this.commonAncestorContainer = null;
+					this.startContainer = null;
+					this.startOffset = 0;
+					this.endContainer = null;
+					this.endOffset = 0;
+					this.collapsed = true;
+				}
+			},
+			_updateInternal: function(){
+				if(this.startContainer !== this.endContainer){
+					this.commonAncestorContainer = rangeapi.getCommonAncestor(this.startContainer, this.endContainer);
+				}else{
+					this.commonAncestorContainer = this.startContainer;
+				}
+				this.collapsed = (this.startContainer === this.endContainer) && (this.startOffset == this.endOffset);
+			},
+			setStart: function(node, offset){
+				offset=parseInt(offset);
+				if(this.startContainer === node && this.startOffset == offset){
+					return;
+				}
+				delete this._cachedBookmark;
+
+				this.startContainer = node;
+				this.startOffset = offset;
+				if(!this.endContainer){
+					this.setEnd(node, offset);
+				}else{
+					this._updateInternal();
+				}
+			},
+			setEnd: function(node, offset){
+				offset=parseInt(offset);
+				if(this.endContainer === node && this.endOffset == offset){
+					return;
+				}
+				delete this._cachedBookmark;
+
+				this.endContainer = node;
+				this.endOffset = offset;
+				if(!this.startContainer){
+					this.setStart(node, offset);
+				}else{
+					this._updateInternal();
+				}
+			},
+			setStartAfter: function(node, offset){
+				this._setPoint('setStart', node, offset, 1);
+			},
+			setStartBefore: function(node, offset){
+				this._setPoint('setStart', node, offset, 0);
+			},
+			setEndAfter: function(node, offset){
+				this._setPoint('setEnd', node, offset, 1);
+			},
+			setEndBefore: function(node, offset){
+				this._setPoint('setEnd', node, offset, 0);
+			},
+			_setPoint: function(what, node, offset, ext){
+				var index = rangeapi.getIndex(node, node.parentNode).o;
+				this[what](node.parentNode, index.pop()+ext);
+			},
+			_getIERange: function(){
+				var r = (this._body || this.endContainer.ownerDocument.body).createTextRange();
+				ie.setRange(r, this.startContainer, this.startOffset, this.endContainer, this.endOffset, this.collapsed);
+				return r;
+			},
+			getBookmark: function(){
+				this._getIERange();
+				return this._cachedBookmark;
+			},
+			_select: function(){
+				var r = this._getIERange();
+				r.select();
+			},
+			deleteContents: function(){
+				var s = this.startContainer, r = this._getIERange();
+				if(s.nodeType === 3 && !this.startOffset){
+					//if the range starts at the beginning of a
+					//text node, move it to before the textnode
+					//to make sure the range is still valid
+					//after deleteContents() finishes
+					this.setStartBefore(s);
+				}
+				r.pasteHTML('');
+				this.endContainer = this.startContainer;
+				this.endOffset = this.startOffset;
+				this.collapsed = true;
+			},
+			cloneRange: function(){
+				var r = new W3CRange([this.startContainer,this.startOffset,
+					this.endContainer,this.endOffset]);
+				r._body = this._body;
+				return r;
+			},
+			detach: function(){
+				this._body = null;
+				this.commonAncestorContainer = null;
+				this.startContainer = null;
+				this.startOffset = 0;
+				this.endContainer = null;
+				this.endOffset = 0;
+				this.collapsed = true;
+			}
+		});
+	} //if(!window.getSelection)
+
+	// remove for 2.0
+	lang.setObject("dijit.range", rangeapi);
+
+	return rangeapi;
 });

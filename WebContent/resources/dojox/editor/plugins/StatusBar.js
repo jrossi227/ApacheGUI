@@ -1,85 +1,184 @@
-//>>built
-define("dojox/editor/plugins/StatusBar",["dojo","dijit","dojox","dijit/_Widget","dijit/_TemplatedMixin","dijit/_editor/_Plugin","dojo/_base/connect","dojo/_base/declare","dojox/layout/ResizeHandle"],function(_1,_2,_3,_4,_5,_6){
-_1.experimental("dojox.editor.plugins.StatusBar");
-var _7=_1.declare("dojox.editor.plugins._StatusBar",[_4,_5],{templateString:"<div class=\"dojoxEditorStatusBar\">"+"<table><tbody><tr>"+"<td class=\"dojoxEditorStatusBarText\" tabindex=\"-1\" aria-role=\"presentation\" aria-live=\"aggressive\"><span dojoAttachPoint=\"barContent\">&nbsp;</span></td>"+"<td><span dojoAttachPoint=\"handle\"></span></td>"+"</tr></tbody><table>"+"</div>",_getValueAttr:function(){
-return this.barContent.innerHTML;
-},_setValueAttr:function(_8){
-if(_8){
-_8=_1.trim(_8);
-if(!_8){
-_8="&nbsp;";
-}
-}else{
-_8="&nbsp;";
-}
-this.barContent.innerHTML=_8;
-}});
-var _9=_1.declare("dojox.editor.plugins.StatusBar",_6,{statusBar:null,resizer:true,setEditor:function(_a){
-this.editor=_a;
-this.statusBar=new _7();
-if(this.resizer){
-this.resizeHandle=new _3.layout.ResizeHandle({targetId:this.editor,activeResize:true},this.statusBar.handle);
-this.resizeHandle.startup();
-}else{
-_1.style(this.statusBar.handle.parentNode,"display","none");
-}
-var _b=null;
-if(_a.footer.lastChild){
-_b="after";
-}
-_1.place(this.statusBar.domNode,_a.footer.lastChild||_a.footer,_b);
-this.statusBar.startup();
-this.editor.statusBar=this;
-this._msgListener=_1.subscribe(this.editor.id+"_statusBar",_1.hitch(this,this._setValueAttr));
-},_getValueAttr:function(){
-return this.statusBar.get("value");
-},_setValueAttr:function(_c){
-this.statusBar.set("value",_c);
-},set:function(_d,_e){
-if(_d){
-var _f="_set"+_d.charAt(0).toUpperCase()+_d.substring(1,_d.length)+"Attr";
-if(_1.isFunction(this[_f])){
-this[_f](_e);
-}else{
-this[_d]=_e;
-}
-}
-},get:function(_10){
-if(_10){
-var _11="_get"+_10.charAt(0).toUpperCase()+_10.substring(1,_10.length)+"Attr";
-var f=this[_11];
-if(_1.isFunction(f)){
-return this[_11]();
-}else{
-return this[_10];
-}
-}
-return null;
-},destroy:function(){
-if(this.statusBar){
-this.statusBar.destroy();
-delete this.statusBar;
-}
-if(this.resizeHandle){
-this.resizeHandle.destroy();
-delete this.resizeHandle;
-}
-if(this._msgListener){
-_1.unsubscribe(this._msgListener);
-delete this._msgListener;
-}
-delete this.editor.statusBar;
-}});
-_9._StatusBar=_7;
-_1.subscribe(_2._scopeName+".Editor.getPlugin",null,function(o){
-if(o.plugin){
-return;
-}
-var _12=o.args.name.toLowerCase();
-if(_12==="statusbar"){
-var _13=("resizer" in o.args)?o.args.resizer:true;
-o.plugin=new _9({resizer:_13});
-}
+define([
+	"dojo",
+	"dijit",
+	"dojox",
+	"dijit/_Widget",
+	"dijit/_TemplatedMixin",
+	"dijit/_editor/_Plugin",
+	"dojo/_base/connect",
+	"dojo/_base/declare",
+	"dojox/layout/ResizeHandle"
+], function(dojo, dijit, dojox, _Widget, _TemplatedMixin, _Plugin) {
+
+dojo.experimental("dojox.editor.plugins.StatusBar");
+
+var _StatusBar = dojo.declare("dojox.editor.plugins._StatusBar", [_Widget, _TemplatedMixin],{
+	// templateString: String
+	//		Template for the widget.  Currently using table to get the alignment behavior and
+	//		bordering I wanted.  Would prefer not to use table, though.
+	templateString: '<div class="dojoxEditorStatusBar">' +
+		'<table><tbody><tr>'+
+		'<td class="dojoxEditorStatusBarText" tabindex="-1" aria-role="presentation" aria-live="aggressive"><span dojoAttachPoint="barContent">&nbsp;</span></td>' +
+		'<td><span dojoAttachPoint="handle"></span></td>' +
+		'</tr></tbody><table>'+
+	'</div>',
+
+	_getValueAttr: function(){
+		// summary:
+		//		Over-ride to get the value of the status bar from the widget.
+		// tags:
+		//		Protected
+		return this.barContent.innerHTML;
+	},
+
+	_setValueAttr: function(str){
+		// summary:
+		//		Over-ride to set the value of the status bar from the widget.
+		//		If no value is set, it is replaced with a non-blocking space.
+		// str: String
+		//		The string to set as the status bar content.
+		// tags:
+		//		protected
+		if(str){
+			str = dojo.trim(str);
+			if(!str){
+				str = "&nbsp;";
+			}
+		}else{
+			str = "&nbsp;";
+		}
+		this.barContent.innerHTML = str;
+	}
 });
-return _9;
+
+var StatusBar = dojo.declare("dojox.editor.plugins.StatusBar", _Plugin, {
+	// summary:
+	//		This plugin provides StatusBar capability to the editor.
+	//		Basically a footer bar where status can be published.  It also
+	//		puts a resize handle on the status bar, allowing you to resize the
+	//		editor via mouse.
+
+	// statusBar: [protected]
+	//		The status bar and resizer.
+	statusBar: null,
+
+	// resizer: [public] Boolean
+	//		Flag indicating that a resizer should be shown or not.  Default is true.
+	//		There are cases (such as using center pane border container to autoresize the editor
+	//		That a resizer is not valued.
+	resizer: true,
+
+	setEditor: function(editor){
+		// summary:
+		//		Over-ride for the setting of the editor.
+		// editor: Object
+		//		The editor to configure for this plugin to use.
+		this.editor = editor;
+		this.statusBar = new _StatusBar();
+		if(this.resizer){
+			this.resizeHandle = new dojox.layout.ResizeHandle({targetId: this.editor, activeResize: true}, this.statusBar.handle);
+			this.resizeHandle.startup();
+		}else{
+			dojo.style(this.statusBar.handle.parentNode, "display", "none");
+		}
+		var pos = null;
+		if(editor.footer.lastChild){
+			pos = "after";
+		}
+		dojo.place(this.statusBar.domNode, editor.footer.lastChild || editor.footer, pos);
+		this.statusBar.startup();
+		this.editor.statusBar = this;
+
+		// Register a pub-sub event to listen for status bar messages, in addition to being available off
+		// the editor as a property 'statusBar'
+		this._msgListener = dojo.subscribe(this.editor.id + "_statusBar", dojo.hitch(this, this._setValueAttr));
+	},
+
+	_getValueAttr: function(){
+		// summary:
+		//		Over-ride to get the value of the status bar from the widget.
+		// tags:
+		//	protected
+		return this.statusBar.get("value");
+	},
+
+	_setValueAttr: function(str){
+		// summary:
+		//		Over-ride to set the value of the status bar from the widget.
+		//		If no value is set, it is replaced with a non-blocking space.
+		// str: String
+		//	The String value to set in the bar.
+		// tags:
+		//		protected
+		this.statusBar.set("value", str);
+	},
+
+	set: function(attr, val){
+		// summary:
+		//		Quick and dirty implementation of 'set' pattern
+		// attr:
+		//		The attribute to set.
+		// val:
+		//		The value to set it to.
+		if(attr){
+			var fName = "_set" + attr.charAt(0).toUpperCase() + attr.substring(1, attr.length) + "Attr";
+			if(dojo.isFunction(this[fName])){
+				this[fName](val);
+			}else{
+				this[attr] = val;
+			}
+		}
+	},
+
+	get: function(attr){
+		// summary:
+		//		Quick and dirty implementation of 'get' pattern
+		// attr:
+		//		The attribute to get.
+		if(attr){
+			var fName = "_get" + attr.charAt(0).toUpperCase() + attr.substring(1, attr.length) + "Attr";
+			var f = this[fName];
+			if(dojo.isFunction(f)){
+				return this[fName]();
+			}else{
+				return this[attr];
+			}
+		}
+		return null;
+	},
+
+	destroy: function(){
+		// summary:
+		//		Over-ride to clean up the breadcrumb toolbar.
+		if(this.statusBar){
+			this.statusBar.destroy();
+			delete this.statusBar;
+		}
+		if(this.resizeHandle){
+			this.resizeHandle.destroy();
+			delete this.resizeHandle;
+		}
+		if(this._msgListener){
+			dojo.unsubscribe(this._msgListener);
+			delete this._msgListener;
+		}
+		delete this.editor.statusBar;
+	}
+});
+
+// For monkey patching
+StatusBar._StatusBar = _StatusBar;
+
+// Register this plugin.
+dojo.subscribe(dijit._scopeName + ".Editor.getPlugin",null,function(o){
+	if(o.plugin){ return; }
+	var name = o.args.name.toLowerCase();
+	if(name === "statusbar"){
+		var resizer = ("resizer" in o.args)?o.args.resizer:true;
+		o.plugin = new StatusBar({resizer: resizer});
+	}
+});
+
+return StatusBar;
+
 });

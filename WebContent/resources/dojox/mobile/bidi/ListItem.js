@@ -1,66 +1,98 @@
-//>>built
-define("dojox/mobile/bidi/ListItem",["dojo/_base/declare","dojo/_base/array","dojo/dom-construct","./common","dojo/_base/window"],function(_1,_2,_3,_4,_5){
-return _1(null,{_applyAttributes:function(){
-if(!this.textDir&&this.getParent()&&this.getParent().get("textDir")){
-this.textDir=this.getParent().get("textDir");
-}
-this.inherited(arguments);
-if(this.textDir){
-this._applyTextDirToTextElements();
-}
-},_setRightTextAttr:function(_6){
-if(!this.templateString&&!this.rightTextNode){
-this.rightTextNode=_3.create("div",{className:"mblListItemRightText"},this.labelNode,"before");
-}
-if(this.rightTextNode){
-this.rightText=_6;
-this.rightTextNode.innerHTML=this._cv?this._cv(_6):_6;
-if(this.textDir){
-this.rightTextNode.innerHTML=_4.enforceTextDirWithUcc(this.rightTextNode.innerHTML,this.textDir);
-}
-}
-},_setLabelAttr:function(_7){
-this.inherited("_setLabelAttr",arguments);
-this.labelNode.innerHTML=_4.enforceTextDirWithUcc(this.labelNode.innerHTML,this.textDir);
-},_applyTextDirToTextElements:function(){
-if(this.labelNode.innerHTML){
-this.labelNode.innerHTML=_4.removeUCCFromText(this.labelNode.innerHTML);
-this.labelNode.innerHTML=_4.enforceTextDirWithUcc(this.labelNode.innerHTML,this.textDir);
-this.labelNode.style.cssText="text-align: start";
-return;
-}
-var _8=0;
-_2.forEach(this.domNode.childNodes,function(_9){
-if(_8===0){
-if(_9.nodeType===3&&(_9.nodeValue===_4.MARK.RLE||_9.nodeValue===_4.MARK.LRE)){
-_9.nodeValue=(_9.nodeValue===_4.MARK.RLE)?_4.MARK.LRE:_4.MARK.RLE;
-_8=2;
-return;
-}
-var _a=(_9.nodeType===1&&_9.childNodes.length===1)?_9.firstChild:_9;
-if(_a.nodeType===3&&_a.nodeValue){
-if(_a.nodeValue.search(/[.\S]/)!=-1){
-_8=1;
-textNode=_5.doc.createTextNode((this.getTextDir(_a.nodeValue).toLowerCase()==="rtl")?_4.MARK.RLE:_4.MARK.LRE);
-_3.place(textNode,_9,"before");
-}
-}
-}else{
-if(_8===1&&_9.nodeName.toLowerCase()==="div"){
-_8=2;
-textNode=_5.doc.createTextNode(_4.MARK.PDF);
-_3.place(textNode,_9,"before");
-}
-}
-},this);
-},_setTextDirAttr:function(_b){
-if(_b&&this.textDir!==_b){
-this.textDir=_b;
-this._applyTextDirToTextElements();
-if(this.rightTextNode){
-this.rightTextNode.innerHTML=_4.removeUCCFromText(this.rightTextNode.innerHTML);
-this.rightTextNode.innerHTML=_4.enforceTextDirWithUcc(this.rightTextNode.innerHTML,this.textDir);
-}
-}
-}});
+define([
+	"dojo/_base/declare",
+	"dojo/_base/array",
+	"dojo/dom-construct",
+	"./common",
+	"dojo/_base/window"
+], function(declare, array, domConstruct, common, win){
+
+	// module:
+	//		dojox/mobile/ListItem
+
+	return declare(null, {
+		// summary:
+		//		Support for control over text direction for mobile ListItem widget, using Unicode Control Characters to control text direction.
+		// description:
+		//		Implementation for text direction support for Label and RightText.
+		//		Text direction is also applied to ListItem's embedded nodes, containing text.
+		//		Complicated embedded nodes (like tables) are not supported.
+		//		This class should not be used directly.
+		//		Mobile ListItem widget loads this module when user sets "has: {'dojo-bidi': true }" in data-dojo-config.
+		_applyAttributes: function(){
+			if(!this.textDir && this.getParent() && this.getParent().get("textDir")){
+				this.textDir = this.getParent().get("textDir");
+			}
+			this.inherited( arguments);
+			if(this.textDir){
+			    this._applyTextDirToTextElements();
+			}    
+		},
+
+		_setRightTextAttr: function(text){
+			if(!this.templateString && !this.rightTextNode){
+				// When using a template, let the template create the element.
+				this.rightTextNode = domConstruct.create("div", {className:"mblListItemRightText"}, this.labelNode, "before");
+			}
+			if(this.rightTextNode){ // when using a template it may not contain a rightTextNode 
+				this.rightText = text;
+				this.rightTextNode.innerHTML = this._cv ? this._cv(text) : text;
+				if(this.textDir){
+					this.rightTextNode.innerHTML = common.enforceTextDirWithUcc(this.rightTextNode.innerHTML, this.textDir);
+				}
+			}
+		},
+
+		_setLabelAttr: function(/*String*/text){
+			this.inherited("_setLabelAttr",arguments);
+			this.labelNode.innerHTML = common.enforceTextDirWithUcc(this.labelNode.innerHTML, this.textDir);
+		},
+
+		_applyTextDirToTextElements: function(){
+			// summary:
+			//		Wrap child text nodes in directional UCC marks
+			if(this.labelNode.innerHTML){
+				this.labelNode.innerHTML = common.removeUCCFromText(this.labelNode.innerHTML);
+				this.labelNode.innerHTML = common.enforceTextDirWithUcc(this.labelNode.innerHTML, this.textDir);
+				this.labelNode.style.cssText = "text-align: start";
+				return;
+			}
+			var nEncount = 0;
+			array.forEach(this.domNode.childNodes, function(node){
+				if(nEncount === 0){
+					/* Replace content of directional text node, if found */
+					if(node.nodeType === 3 && (node.nodeValue === common.MARK.RLE || node.nodeValue === common.MARK.LRE)){
+						node.nodeValue = (node.nodeValue === common.MARK.RLE) ? common.MARK.LRE : common.MARK.RLE;
+						nEncount = 2;
+						return;      
+					}
+					var currentNode = (node.nodeType === 1 && node.childNodes.length === 1) ? node.firstChild : node;
+					if(currentNode.nodeType === 3 && currentNode.nodeValue){
+						/* Insert directional text node */
+						if(currentNode.nodeValue.search(/[.\S]/) != -1){
+							nEncount = 1;
+							textNode = win.doc.createTextNode((this.getTextDir(currentNode.nodeValue).toLowerCase() === 'rtl') ? common.MARK.RLE : common.MARK.LRE);    
+							domConstruct.place(textNode, node, "before");
+						}
+					}
+				}
+				/* Insert PDF text node, prevent further processing */
+				else if(nEncount === 1 && node.nodeName.toLowerCase() === "div"){
+						nEncount = 2;
+						textNode = win.doc.createTextNode(common.MARK.PDF);
+						domConstruct.place(textNode, node, "before");
+				}
+			}, this);
+		},
+
+		_setTextDirAttr: function(textDir){
+			if(textDir && this.textDir !== textDir){
+				this.textDir = textDir;
+				this._applyTextDirToTextElements();
+				if(this.rightTextNode){
+				    this.rightTextNode.innerHTML = common.removeUCCFromText(this.rightTextNode.innerHTML);
+				    this.rightTextNode.innerHTML = common.enforceTextDirWithUcc(this.rightTextNode.innerHTML, this.textDir);
+				}
+			}
+		}
+	});
 });

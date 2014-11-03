@@ -1,50 +1,116 @@
-//>>built
-define("dijit/form/_ButtonMixin",["dojo/_base/declare","dojo/dom","dojo/has","../registry"],function(_1,_2,_3,_4){
-var _5=_1("dijit.form._ButtonMixin"+(_3("dojo-bidi")?"_NoBidi":""),null,{label:"",type:"button",__onClick:function(e){
-e.stopPropagation();
-e.preventDefault();
-if(!this.disabled){
-this.valueNode.click(e);
-}
-return false;
-},_onClick:function(e){
-if(this.disabled){
-e.stopPropagation();
-e.preventDefault();
-return false;
-}
-if(this.onClick(e)===false){
-e.preventDefault();
-}
-var _6=e.defaultPrevented;
-if(!_6&&this.type=="submit"&&!(this.valueNode||this.focusNode).form){
-for(var _7=this.domNode;_7.parentNode;_7=_7.parentNode){
-var _8=_4.byNode(_7);
-if(_8&&typeof _8._onSubmit=="function"){
-_8._onSubmit(e);
-e.preventDefault();
-_6=true;
-break;
-}
-}
-}
-return !_6;
-},postCreate:function(){
-this.inherited(arguments);
-_2.setSelectable(this.focusNode,false);
-},onClick:function(){
-return true;
-},_setLabelAttr:function(_9){
-this._set("label",_9);
-var _a=this.containerNode||this.focusNode;
-_a.innerHTML=_9;
-}});
-if(_3("dojo-bidi")){
-_5=_1("dijit.form._ButtonMixin",_5,{_setLabelAttr:function(){
-this.inherited(arguments);
-var _b=this.containerNode||this.focusNode;
-this.applyTextDir(_b);
-}});
-}
-return _5;
+define([
+	"dojo/_base/declare", // declare
+	"dojo/dom", // dom.setSelectable
+	"dojo/has",
+	"../registry"        // registry.byNode
+], function(declare, dom, has, registry){
+
+	// module:
+	//		dijit/form/_ButtonMixin
+
+	var ButtonMixin = declare("dijit.form._ButtonMixin" + (has("dojo-bidi") ? "_NoBidi" : ""), null, {
+		// summary:
+		//		A mixin to add a thin standard API wrapper to a normal HTML button
+		// description:
+		//		A label should always be specified (through innerHTML) or the label attribute.
+		//
+		//		Attach points:
+		//
+		//		- focusNode (required): this node receives focus
+		//		- valueNode (optional): this node's value gets submitted with FORM elements
+		//		- containerNode (optional): this node gets the innerHTML assignment for label
+		// example:
+		// |	<button data-dojo-type="dijit/form/Button" onClick="...">Hello world</button>
+		// example:
+		// |	var button1 = new Button({label: "hello world", onClick: foo});
+		// |	dojo.body().appendChild(button1.domNode);
+
+		// label: HTML String
+		//		Content to display in button.
+		label: "",
+
+		// type: [const] String
+		//		Type of button (submit, reset, button, checkbox, radio)
+		type: "button",
+
+		__onClick: function(/*Event*/ e){
+			// summary:
+			//		Internal function to divert the real click onto the hidden INPUT that has a native default action associated with it
+			// type:
+			//		private
+			e.stopPropagation();
+			e.preventDefault();
+			if(!this.disabled){
+				// cannot use on.emit since button default actions won't occur
+				this.valueNode.click(e);
+			}
+			return false;
+		},
+
+		_onClick: function(/*Event*/ e){
+			// summary:
+			//		Internal function to handle click actions
+			if(this.disabled){
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}
+			if(this.onClick(e) === false){
+				e.preventDefault();
+			}
+			var cancelled = e.defaultPrevented;
+
+			// Signal Form/Dialog to submit/close.  For 2.0, consider removing this code and instead making the Form/Dialog
+			// listen for bubbled click events where evt.target.type == "submit" && !evt.defaultPrevented.
+			if(!cancelled && this.type == "submit" && !(this.valueNode || this.focusNode).form){
+				for(var node = this.domNode; node.parentNode; node = node.parentNode){
+					var widget = registry.byNode(node);
+					if(widget && typeof widget._onSubmit == "function"){
+						widget._onSubmit(e);
+						e.preventDefault(); // action has already occurred
+						cancelled = true;
+						break;
+					}
+				}
+			}
+
+			return !cancelled;
+		},
+
+		postCreate: function(){
+			this.inherited(arguments);
+			dom.setSelectable(this.focusNode, false);
+		},
+
+		onClick: function(/*Event*/ /*===== e =====*/){
+			// summary:
+			//		Callback for when button is clicked.
+			//		If type="submit", return true to perform submit, or false to cancel it.
+			// type:
+			//		callback
+			return true;		// Boolean
+		},
+
+		_setLabelAttr: function(/*String*/ content){
+			// summary:
+			//		Hook for set('label', ...) to work.
+			// description:
+			//		Set the label (text) of the button; takes an HTML string.
+			this._set("label", content);
+			var labelNode = this.containerNode || this.focusNode;
+			labelNode.innerHTML = content;
+		}
+	});
+
+	if(has("dojo-bidi")){
+		ButtonMixin = declare("dijit.form._ButtonMixin", ButtonMixin, {
+			_setLabelAttr: function(){
+				this.inherited(arguments);
+				var labelNode = this.containerNode || this.focusNode;
+				this.applyTextDir(labelNode);
+			}
+		});
+	}
+
+	return ButtonMixin;
 });

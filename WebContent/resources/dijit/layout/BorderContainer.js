@@ -1,201 +1,480 @@
-//>>built
-define("dijit/layout/BorderContainer",["dojo/_base/array","dojo/cookie","dojo/_base/declare","dojo/dom-class","dojo/dom-construct","dojo/dom-geometry","dojo/dom-style","dojo/keys","dojo/_base/lang","dojo/on","dojo/touch","../_WidgetBase","../_Widget","../_TemplatedMixin","./LayoutContainer","./utils"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,on,_a,_b,_c,_d,_e,_f){
-var _10=_3("dijit.layout._Splitter",[_c,_d],{live:true,templateString:"<div class=\"dijitSplitter\" data-dojo-attach-event=\"onkeydown:_onKeyDown,press:_startDrag,onmouseenter:_onMouse,onmouseleave:_onMouse\" tabIndex=\"0\" role=\"separator\"><div class=\"dijitSplitterThumb\"></div></div>",constructor:function(){
-this._handlers=[];
-},postMixInProperties:function(){
-this.inherited(arguments);
-this.horizontal=/top|bottom/.test(this.region);
-this._factor=/top|left/.test(this.region)?1:-1;
-this._cookieName=this.container.id+"_"+this.region;
-},buildRendering:function(){
-this.inherited(arguments);
-_4.add(this.domNode,"dijitSplitter"+(this.horizontal?"H":"V"));
-if(this.container.persist){
-var _11=_2(this._cookieName);
-if(_11){
-this.child.domNode.style[this.horizontal?"height":"width"]=_11;
-}
-}
-},_computeMaxSize:function(){
-var dim=this.horizontal?"h":"w",_12=_6.getMarginBox(this.child.domNode)[dim],_13=_1.filter(this.container.getChildren(),function(_14){
-return _14.region=="center";
-})[0];
-var _15=_6.getContentBox(_13.domNode)[dim]-10;
-return Math.min(this.child.maxSize,_12+_15);
-},_startDrag:function(e){
-if(!this.cover){
-this.cover=_5.place("<div class=dijitSplitterCover></div>",this.child.domNode,"after");
-}
-_4.add(this.cover,"dijitSplitterCoverActive");
-if(this.fake){
-_5.destroy(this.fake);
-}
-if(!(this._resize=this.live)){
-(this.fake=this.domNode.cloneNode(true)).removeAttribute("id");
-_4.add(this.domNode,"dijitSplitterShadow");
-_5.place(this.fake,this.domNode,"after");
-}
-_4.add(this.domNode,"dijitSplitterActive dijitSplitter"+(this.horizontal?"H":"V")+"Active");
-if(this.fake){
-_4.remove(this.fake,"dijitSplitterHover dijitSplitter"+(this.horizontal?"H":"V")+"Hover");
-}
-var _16=this._factor,_17=this.horizontal,_18=_17?"pageY":"pageX",_19=e[_18],_1a=this.domNode.style,dim=_17?"h":"w",_1b=_7.getComputedStyle(this.child.domNode),_1c=_6.getMarginBox(this.child.domNode,_1b)[dim],max=this._computeMaxSize(),min=Math.max(this.child.minSize,_6.getPadBorderExtents(this.child.domNode,_1b)[dim]+10),_1d=this.region,_1e=_1d=="top"||_1d=="bottom"?"top":"left",_1f=parseInt(_1a[_1e],10),_20=this._resize,_21=_9.hitch(this.container,"_layoutChildren",this.child.id),de=this.ownerDocument;
-this._handlers=this._handlers.concat([on(de,_a.move,this._drag=function(e,_22){
-var _23=e[_18]-_19,_24=_16*_23+_1c,_25=Math.max(Math.min(_24,max),min);
-if(_20||_22){
-_21(_25);
-}
-_1a[_1e]=_23+_1f+_16*(_25-_24)+"px";
-}),on(de,"dragstart",function(e){
-e.stopPropagation();
-e.preventDefault();
-}),on(this.ownerDocumentBody,"selectstart",function(e){
-e.stopPropagation();
-e.preventDefault();
-}),on(de,_a.release,_9.hitch(this,"_stopDrag"))]);
-e.stopPropagation();
-e.preventDefault();
-},_onMouse:function(e){
-var o=(e.type=="mouseover"||e.type=="mouseenter");
-_4.toggle(this.domNode,"dijitSplitterHover",o);
-_4.toggle(this.domNode,"dijitSplitter"+(this.horizontal?"H":"V")+"Hover",o);
-},_stopDrag:function(e){
-try{
-if(this.cover){
-_4.remove(this.cover,"dijitSplitterCoverActive");
-}
-if(this.fake){
-_5.destroy(this.fake);
-}
-_4.remove(this.domNode,"dijitSplitterActive dijitSplitter"+(this.horizontal?"H":"V")+"Active dijitSplitterShadow");
-this._drag(e);
-this._drag(e,true);
-}
-finally{
-this._cleanupHandlers();
-delete this._drag;
-}
-if(this.container.persist){
-_2(this._cookieName,this.child.domNode.style[this.horizontal?"height":"width"],{expires:365});
-}
-},_cleanupHandlers:function(){
-var h;
-while(h=this._handlers.pop()){
-h.remove();
-}
-},_onKeyDown:function(e){
-this._resize=true;
-var _26=this.horizontal;
-var _27=1;
-switch(e.keyCode){
-case _26?_8.UP_ARROW:_8.LEFT_ARROW:
-_27*=-1;
-case _26?_8.DOWN_ARROW:_8.RIGHT_ARROW:
-break;
-default:
-return;
-}
-var _28=_6.getMarginSize(this.child.domNode)[_26?"h":"w"]+this._factor*_27;
-this.container._layoutChildren(this.child.id,Math.max(Math.min(_28,this._computeMaxSize()),this.child.minSize));
-e.stopPropagation();
-e.preventDefault();
-},destroy:function(){
-this._cleanupHandlers();
-delete this.child;
-delete this.container;
-delete this.cover;
-delete this.fake;
-this.inherited(arguments);
-}});
-var _29=_3("dijit.layout._Gutter",[_c,_d],{templateString:"<div class=\"dijitGutter\" role=\"presentation\"></div>",postMixInProperties:function(){
-this.inherited(arguments);
-this.horizontal=/top|bottom/.test(this.region);
-},buildRendering:function(){
-this.inherited(arguments);
-_4.add(this.domNode,"dijitGutter"+(this.horizontal?"H":"V"));
-}});
-var _2a=_3("dijit.layout.BorderContainer",_e,{gutters:true,liveSplitters:true,persist:false,baseClass:"dijitBorderContainer",_splitterClass:_10,postMixInProperties:function(){
-if(!this.gutters){
-this.baseClass+="NoGutter";
-}
-this.inherited(arguments);
-},_setupChild:function(_2b){
-this.inherited(arguments);
-var _2c=_2b.region,ltr=_2b.isLeftToRight();
-if(_2c=="leading"){
-_2c=ltr?"left":"right";
-}
-if(_2c=="trailing"){
-_2c=ltr?"right":"left";
-}
-if(_2c){
-if(_2c!="center"&&(_2b.splitter||this.gutters)&&!_2b._splitterWidget){
-var _2d=_2b.splitter?this._splitterClass:_29;
-if(_9.isString(_2d)){
-_2d=_9.getObject(_2d);
-}
-var _2e=new _2d({id:_2b.id+"_splitter",container:this,child:_2b,region:_2c,live:this.liveSplitters});
-_2e.isSplitter=true;
-_2b._splitterWidget=_2e;
-var _2f=_2c=="bottom"||_2c==(this.isLeftToRight()?"right":"left");
-_5.place(_2e.domNode,_2b.domNode,_2f?"before":"after");
-_2e.startup();
-}
-}
-},layout:function(){
-this._layoutChildren();
-},removeChild:function(_30){
-var _31=_30._splitterWidget;
-if(_31){
-_31.destroy();
-delete _30._splitterWidget;
-}
-this.inherited(arguments);
-},getChildren:function(){
-return _1.filter(this.inherited(arguments),function(_32){
-return !_32.isSplitter;
-});
-},getSplitter:function(_33){
-return _1.filter(this.getChildren(),function(_34){
-return _34.region==_33;
-})[0]._splitterWidget;
-},resize:function(_35,_36){
-if(!this.cs||!this.pe){
-var _37=this.domNode;
-this.cs=_7.getComputedStyle(_37);
-this.pe=_6.getPadExtents(_37,this.cs);
-this.pe.r=_7.toPixelValue(_37,this.cs.paddingRight);
-this.pe.b=_7.toPixelValue(_37,this.cs.paddingBottom);
-_7.set(_37,"padding","0px");
-}
-this.inherited(arguments);
-},_layoutChildren:function(_38,_39){
-if(!this._borderBox||!this._borderBox.h){
-return;
-}
-var _3a=[];
-_1.forEach(this._getOrderedChildren(),function(_3b){
-_3a.push(_3b);
-if(_3b._splitterWidget){
-_3a.push(_3b._splitterWidget);
-}
-});
-var dim={l:this.pe.l,t:this.pe.t,w:this._borderBox.w-this.pe.w,h:this._borderBox.h-this.pe.h};
-_f.layoutChildren(this.domNode,dim,_3a,_38,_39);
-},destroyRecursive:function(){
-_1.forEach(this.getChildren(),function(_3c){
-var _3d=_3c._splitterWidget;
-if(_3d){
-_3d.destroy();
-}
-delete _3c._splitterWidget;
-});
-this.inherited(arguments);
-}});
-_2a.ChildWidgetProperties={splitter:false,minSize:0,maxSize:Infinity};
-_9.mixin(_2a.ChildWidgetProperties,_e.ChildWidgetProperties);
-_9.extend(_b,_2a.ChildWidgetProperties);
-_2a._Splitter=_10;
-_2a._Gutter=_29;
-return _2a;
+define([
+	"dojo/_base/array", // array.filter array.forEach array.map
+	"dojo/cookie", // cookie
+	"dojo/_base/declare", // declare
+	"dojo/dom-class", // domClass.add domClass.remove domClass.toggle
+	"dojo/dom-construct", // domConstruct.destroy domConstruct.place
+	"dojo/dom-geometry", // domGeometry.marginBox
+	"dojo/dom-style", // domStyle.style
+	"dojo/keys",
+	"dojo/_base/lang", // getObject() hitch() delegate()
+	"dojo/on",
+	"dojo/touch",
+	"../_WidgetBase",
+	"../_Widget",
+	"../_TemplatedMixin",
+	"./LayoutContainer",
+	"./utils"        // layoutUtils.layoutChildren
+], function(array, cookie, declare, domClass, domConstruct, domGeometry, domStyle, keys, lang, on, touch,
+			_WidgetBase, _Widget, _TemplatedMixin, LayoutContainer, layoutUtils){
+
+	// module:
+	//		dijit/layout/BorderContainer
+
+	var _Splitter = declare("dijit.layout._Splitter", [_Widget, _TemplatedMixin ], {
+		// summary:
+		//		A draggable spacer between two items in a `dijit/layout/BorderContainer`.
+		// description:
+		//		This is instantiated by `dijit/layout/BorderContainer`.  Users should not
+		//		create it directly.
+		// tags:
+		//		private
+
+		/*=====
+		 // container: [const] dijit/layout/BorderContainer
+		 //		Pointer to the parent BorderContainer
+		 container: null,
+
+		 // child: [const] dijit/layout/_LayoutWidget
+		 //		Pointer to the pane associated with this splitter
+		 child: null,
+
+		 // region: [const] String
+		 //		Region of pane associated with this splitter.
+		 //		"top", "bottom", "left", "right".
+		 region: null,
+		 =====*/
+
+		// live: [const] Boolean
+		//		If true, the child's size changes and the child widget is redrawn as you drag the splitter;
+		//		otherwise, the size doesn't change until you drop the splitter (by mouse-up)
+		live: true,
+
+		templateString: '<div class="dijitSplitter" data-dojo-attach-event="onkeydown:_onKeyDown,press:_startDrag,onmouseenter:_onMouse,onmouseleave:_onMouse" tabIndex="0" role="separator"><div class="dijitSplitterThumb"></div></div>',
+
+		constructor: function(){
+			this._handlers = [];
+		},
+
+		postMixInProperties: function(){
+			this.inherited(arguments);
+
+			this.horizontal = /top|bottom/.test(this.region);
+			this._factor = /top|left/.test(this.region) ? 1 : -1;
+			this._cookieName = this.container.id + "_" + this.region;
+		},
+
+		buildRendering: function(){
+			this.inherited(arguments);
+
+			domClass.add(this.domNode, "dijitSplitter" + (this.horizontal ? "H" : "V"));
+
+			if(this.container.persist){
+				// restore old size
+				var persistSize = cookie(this._cookieName);
+				if(persistSize){
+					this.child.domNode.style[this.horizontal ? "height" : "width"] = persistSize;
+				}
+			}
+		},
+
+		_computeMaxSize: function(){
+			// summary:
+			//		Return the maximum size that my corresponding pane can be set to
+
+			var dim = this.horizontal ? 'h' : 'w',
+				childSize = domGeometry.getMarginBox(this.child.domNode)[dim],
+				center = array.filter(this.container.getChildren(), function(child){
+					return child.region == "center";
+				})[0];
+
+			// Can expand until center is crushed.  But always leave room for center's padding + border,
+			//  otherwise on the next call domGeometry methods start to lie about size.
+			var spaceAvailable = domGeometry.getContentBox(center.domNode)[dim] - 10;
+
+			return Math.min(this.child.maxSize, childSize + spaceAvailable);
+		},
+
+		_startDrag: function(e){
+			if(!this.cover){
+				this.cover = domConstruct.place("<div class=dijitSplitterCover></div>", this.child.domNode, "after");
+			}
+			domClass.add(this.cover, "dijitSplitterCoverActive");
+
+			// Safeguard in case the stop event was missed.  Shouldn't be necessary if we always get the mouse up.
+			if(this.fake){
+				domConstruct.destroy(this.fake);
+			}
+			if(!(this._resize = this.live)){ //TODO: disable live for IE6?
+				// create fake splitter to display at old position while we drag
+				(this.fake = this.domNode.cloneNode(true)).removeAttribute("id");
+				domClass.add(this.domNode, "dijitSplitterShadow");
+				domConstruct.place(this.fake, this.domNode, "after");
+			}
+			domClass.add(this.domNode, "dijitSplitterActive dijitSplitter" + (this.horizontal ? "H" : "V") + "Active");
+			if(this.fake){
+				domClass.remove(this.fake, "dijitSplitterHover dijitSplitter" + (this.horizontal ? "H" : "V") + "Hover");
+			}
+
+			//Performance: load data info local vars for onmousevent function closure
+			var factor = this._factor,
+				isHorizontal = this.horizontal,
+				axis = isHorizontal ? "pageY" : "pageX",
+				pageStart = e[axis],
+				splitterStyle = this.domNode.style,
+				dim = isHorizontal ? 'h' : 'w',
+				childCS = domStyle.getComputedStyle(this.child.domNode),
+				childStart = domGeometry.getMarginBox(this.child.domNode, childCS)[dim],
+				max = this._computeMaxSize(),
+				min = Math.max(this.child.minSize, domGeometry.getPadBorderExtents(this.child.domNode, childCS)[dim] + 10),
+				region = this.region,
+				splitterAttr = region == "top" || region == "bottom" ? "top" : "left", // style attribute of splitter to adjust
+				splitterStart = parseInt(splitterStyle[splitterAttr], 10),
+				resize = this._resize,
+				layoutFunc = lang.hitch(this.container, "_layoutChildren", this.child.id),
+				de = this.ownerDocument;
+
+			this._handlers = this._handlers.concat([
+				on(de, touch.move, this._drag = function(e, forceResize){
+					var delta = e[axis] - pageStart,
+						childSize = factor * delta + childStart,
+						boundChildSize = Math.max(Math.min(childSize, max), min);
+
+					if(resize || forceResize){
+						layoutFunc(boundChildSize);
+					}
+					// TODO: setting style directly (usually) sets content box size, need to set margin box size
+					splitterStyle[splitterAttr] = delta + splitterStart + factor * (boundChildSize - childSize) + "px";
+				}),
+				on(de, "dragstart", function(e){
+					e.stopPropagation();
+					e.preventDefault();
+				}),
+				on(this.ownerDocumentBody, "selectstart", function(e){
+					e.stopPropagation();
+					e.preventDefault();
+				}),
+				on(de, touch.release, lang.hitch(this, "_stopDrag"))
+			]);
+			e.stopPropagation();
+			e.preventDefault();
+		},
+
+		_onMouse: function(e){
+			// summary:
+			//		Handler for onmouseenter / onmouseleave events
+			var o = (e.type == "mouseover" || e.type == "mouseenter");
+			domClass.toggle(this.domNode, "dijitSplitterHover", o);
+			domClass.toggle(this.domNode, "dijitSplitter" + (this.horizontal ? "H" : "V") + "Hover", o);
+		},
+
+		_stopDrag: function(e){
+			try{
+				if(this.cover){
+					domClass.remove(this.cover, "dijitSplitterCoverActive");
+				}
+				if(this.fake){
+					domConstruct.destroy(this.fake);
+				}
+				domClass.remove(this.domNode, "dijitSplitterActive dijitSplitter"
+					+ (this.horizontal ? "H" : "V") + "Active dijitSplitterShadow");
+				this._drag(e); //TODO: redundant with onmousemove?
+				this._drag(e, true);
+			}finally{
+				this._cleanupHandlers();
+				delete this._drag;
+			}
+
+			if(this.container.persist){
+				cookie(this._cookieName, this.child.domNode.style[this.horizontal ? "height" : "width"], {expires: 365});
+			}
+		},
+
+		_cleanupHandlers: function(){
+			var h;
+			while(h = this._handlers.pop()){
+				h.remove();
+			}
+		},
+
+		_onKeyDown: function(/*Event*/ e){
+			// should we apply typematic to this?
+			this._resize = true;
+			var horizontal = this.horizontal;
+			var tick = 1;
+			switch(e.keyCode){
+				case horizontal ? keys.UP_ARROW : keys.LEFT_ARROW:
+					tick *= -1;
+//				break;
+				case horizontal ? keys.DOWN_ARROW : keys.RIGHT_ARROW:
+					break;
+				default:
+//				this.inherited(arguments);
+					return;
+			}
+			var childSize = domGeometry.getMarginSize(this.child.domNode)[ horizontal ? 'h' : 'w' ] + this._factor * tick;
+			this.container._layoutChildren(this.child.id, Math.max(Math.min(childSize, this._computeMaxSize()), this.child.minSize));
+			e.stopPropagation();
+			e.preventDefault();
+		},
+
+		destroy: function(){
+			this._cleanupHandlers();
+			delete this.child;
+			delete this.container;
+			delete this.cover;
+			delete this.fake;
+			this.inherited(arguments);
+		}
+	});
+
+	var _Gutter = declare("dijit.layout._Gutter", [_Widget, _TemplatedMixin], {
+		// summary:
+		//		Just a spacer div to separate side pane from center pane.
+		//		Basically a trick to lookup the gutter/splitter width from the theme.
+		// description:
+		//		Instantiated by `dijit/layout/BorderContainer`.  Users should not
+		//		create directly.
+		// tags:
+		//		private
+
+		templateString: '<div class="dijitGutter" role="presentation"></div>',
+
+		postMixInProperties: function(){
+			this.inherited(arguments);
+			this.horizontal = /top|bottom/.test(this.region);
+		},
+
+		buildRendering: function(){
+			this.inherited(arguments);
+			domClass.add(this.domNode, "dijitGutter" + (this.horizontal ? "H" : "V"));
+		}
+	});
+
+	var BorderContainer = declare("dijit.layout.BorderContainer", LayoutContainer, {
+		// summary:
+		//		A BorderContainer is a `dijit/LayoutContainer` that can have draggable splitters between the children,
+		//		in order to adjust their sizes.
+		//
+		//		In addition, it automatically adds some space between the children even
+		//		if they don't have a draggable splitter between them, and space between the edge of the BorderContainer
+		//		and the children that are adjacent to the edge.  Note that the intended style is that all the children
+		//		have borders, but (despite the name) the BorderContainer itself does not.
+		//
+		//		See `BorderContainer.ChildWidgetProperties` for details on the properties that can be set on
+		//		children of a `BorderContainer`.
+
+		// gutters: [const] Boolean
+		//		Give each pane a border and margin.
+		//		Margin determined by domNode.paddingLeft.
+		//		When false, only resizable panes have a gutter (i.e. draggable splitter) for resizing.
+		gutters: true,
+
+		// liveSplitters: [const] Boolean
+		//		Specifies whether splitters resize as you drag (true) or only upon mouseup (false)
+		liveSplitters: true,
+
+		// persist: Boolean
+		//		Save splitter positions in a cookie.
+		persist: false,
+
+		baseClass: "dijitBorderContainer",
+
+		// _splitterClass: Function||String
+		//		Optional hook to override the default Splitter widget used by BorderContainer
+		_splitterClass: _Splitter,
+
+		postMixInProperties: function(){
+			// change class name to indicate that BorderContainer is being used purely for
+			// layout (like LayoutContainer) rather than for pretty formatting.
+			if(!this.gutters){
+				this.baseClass += "NoGutter";
+			}
+			this.inherited(arguments);
+		},
+
+		_setupChild: function(/*dijit/_WidgetBase*/ child){
+			// Override LayoutContainer._setupChild().
+
+			this.inherited(arguments);
+
+			var region = child.region, ltr = child.isLeftToRight();
+			if(region == "leading"){
+				region = ltr ? "left" : "right";
+			}
+			if(region == "trailing"){
+				region = ltr ? "right" : "left";
+			}
+
+			if(region){
+				// Create draggable splitter for resizing pane,
+				// or alternately if splitter=false but BorderContainer.gutters=true then
+				// insert dummy div just for spacing
+				if(region != "center" && (child.splitter || this.gutters) && !child._splitterWidget){
+					var _Splitter = child.splitter ? this._splitterClass : _Gutter;
+					if(lang.isString(_Splitter)){
+						_Splitter = lang.getObject(_Splitter);	// for back-compat, remove in 2.0
+					}
+					var splitter = new _Splitter({
+						id: child.id + "_splitter",
+						container: this,
+						child: child,
+						region: region,
+						live: this.liveSplitters
+					});
+					splitter.isSplitter = true;
+					child._splitterWidget = splitter;
+
+					// Make the tab order match the visual layout by placing the splitter before or after the pane,
+					// depending on where the splitter is visually compared to the pane.
+					var before = region == "bottom" || region == (this.isLeftToRight() ? "right" : "left");
+					domConstruct.place(splitter.domNode, child.domNode, before ? "before" : "after");
+
+					// Splitters aren't added as Contained children, so we need to call startup explicitly
+					splitter.startup();
+				}
+			}
+		},
+
+		layout: function(){
+			// Implement _LayoutWidget.layout() virtual method.
+			this._layoutChildren();
+		},
+
+		removeChild: function(/*dijit/_WidgetBase*/ child){
+			// Override _LayoutWidget.removeChild().
+
+			var splitter = child._splitterWidget;
+			if(splitter){
+				splitter.destroy();
+				delete child._splitterWidget;
+			}
+
+			this.inherited(arguments);
+		},
+
+		getChildren: function(){
+			// Override _LayoutWidget.getChildren() to only return real children, not the splitters.
+			return array.filter(this.inherited(arguments), function(widget){
+				return !widget.isSplitter;
+			});
+		},
+
+		// TODO: remove in 2.0
+		getSplitter: function(/*String*/region){
+			// summary:
+			//		Returns the widget responsible for rendering the splitter associated with region
+			// tags:
+			//		deprecated
+			return array.filter(this.getChildren(), function(child){
+				return child.region == region;
+			})[0]._splitterWidget;
+		},
+
+		resize: function(newSize, currentSize){
+			// Overrides _LayoutWidget.resize().
+
+			// resetting potential padding to 0px to provide support for 100% width/height + padding
+			// TODO: this hack doesn't respect the box model and is a temporary fix
+			if(!this.cs || !this.pe){
+				var node = this.domNode;
+				this.cs = domStyle.getComputedStyle(node);
+				this.pe = domGeometry.getPadExtents(node, this.cs);
+				this.pe.r = domStyle.toPixelValue(node, this.cs.paddingRight);
+				this.pe.b = domStyle.toPixelValue(node, this.cs.paddingBottom);
+
+				domStyle.set(node, "padding", "0px");
+			}
+
+			this.inherited(arguments);
+		},
+
+		_layoutChildren: function(/*String?*/ changedChildId, /*Number?*/ changedChildSize){
+			// summary:
+			//		This is the main routine for setting size/position of each child.
+			// description:
+			//		With no arguments, measures the height of top/bottom panes, the width
+			//		of left/right panes, and then sizes all panes accordingly.
+			//
+			//		With changedRegion specified (as "left", "top", "bottom", or "right"),
+			//		it changes that region's width/height to changedRegionSize and
+			//		then resizes other regions that were affected.
+			// changedChildId:
+			//		Id of the child which should be resized because splitter was dragged.
+			// changedChildSize:
+			//		The new width/height (in pixels) to make specified child
+
+			if(!this._borderBox || !this._borderBox.h){
+				// We are currently hidden, or we haven't been sized by our parent yet.
+				// Abort.   Someone will resize us later.
+				return;
+			}
+
+			// Combining the externally specified children with splitters and gutters
+			var childrenAndSplitters = [];
+			array.forEach(this._getOrderedChildren(), function(pane){
+				childrenAndSplitters.push(pane);
+				if(pane._splitterWidget){
+					childrenAndSplitters.push(pane._splitterWidget);
+				}
+			});
+
+			// Compute the box in which to lay out my children
+			var dim = {
+				l: this.pe.l,
+				t: this.pe.t,
+				w: this._borderBox.w - this.pe.w,
+				h: this._borderBox.h - this.pe.h
+			};
+
+			// Layout the children, possibly changing size due to a splitter drag
+			layoutUtils.layoutChildren(this.domNode, dim, childrenAndSplitters,
+				changedChildId, changedChildSize);
+		},
+
+		destroyRecursive: function(){
+			// Destroy splitters first, while getChildren() still works
+			array.forEach(this.getChildren(), function(child){
+				var splitter = child._splitterWidget;
+				if(splitter){
+					splitter.destroy();
+				}
+				delete child._splitterWidget;
+			});
+
+			// Then destroy the real children, and myself
+			this.inherited(arguments);
+		}
+	});
+
+	BorderContainer.ChildWidgetProperties = {
+		// summary:
+		//		These properties can be specified for the children of a BorderContainer.
+
+		// splitter: [const] Boolean
+		//		Parameter for children where region != "center".
+		//		If true, enables user to resize the widget by putting a draggable splitter between
+		//		this widget and the region=center widget.
+		splitter: false,
+
+		// minSize: [const] Number
+		//		Specifies a minimum size (in pixels) for this widget when resized by a splitter.
+		minSize: 0,
+
+		// maxSize: [const] Number
+		//		Specifies a maximum size (in pixels) for this widget when resized by a splitter.
+		maxSize: Infinity
+	};
+	lang.mixin(BorderContainer.ChildWidgetProperties, LayoutContainer.ChildWidgetProperties);
+
+	// Since any widget can be specified as a BorderContainer child, mix it
+	// into the base widget class.  (This is a hack, but it's effective.)
+	// This is for the benefit of the parser.   Remove for 2.0.  Also, hide from doc viewer.
+	lang.extend(_WidgetBase, /*===== {} || =====*/ BorderContainer.ChildWidgetProperties);
+
+	// For monkey patching
+	BorderContainer._Splitter = _Splitter;
+	BorderContainer._Gutter = _Gutter;
+
+	return BorderContainer;
 });

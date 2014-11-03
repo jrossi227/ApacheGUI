@@ -1,19 +1,48 @@
-//>>built
-define("dojox/widget/PortletDialogSettings",["dojo/_base/declare","dojo/_base/window","dojo/dom-style","./PortletSettings","dijit/Dialog"],function(_1,_2,_3,_4,_5){
-return _1("dojox.widget.PortletDialogSettings",[_4],{dimensions:null,constructor:function(_6,_7){
-this.dimensions=_6.dimensions||[300,100];
-},toggle:function(){
-if(!this.dialog){
-this.dialog=new _5({title:this.title});
-_2.body().appendChild(this.dialog.domNode);
-this.dialog.containerNode.appendChild(this.domNode);
-_3.set(this.dialog.domNode,{"width":this.dimensions[0]+"px","height":this.dimensions[1]+"px"});
-_3.set(this.domNode,"display","");
-}
-if(this.dialog.open){
-this.dialog.hide();
-}else{
-this.dialog.show(this.domNode);
-}
-}});
+define([
+	"dojo/_base/declare",
+	"dojo/_base/window",
+	"dojo/dom-style",
+	"./PortletSettings",
+	"dijit/Dialog"
+	], function(declare, window, domStyle, PortletSettings, Dialog){
+		
+	return declare("dojox.widget.PortletDialogSettings", [PortletSettings],{
+			// summary:
+			//		A settings widget to be used with a dojox.widget.Portlet, which displays
+			//		the contents of this widget in a dijit.Dialog box.
+
+			// dimensions: Array
+			//		The size of the dialog to display.	This defaults to [300, 300]
+			dimensions: null,
+
+			constructor: function(props, node){
+				this.dimensions = props.dimensions || [300, 100];
+			},
+
+			toggle: function(){
+				// summary:
+				//		Shows and hides the Dialog box.
+				
+				if(!this.dialog){
+					//require("dijit.Dialog");
+					this.dialog = new Dialog({title: this.title});
+
+					window.body().appendChild(this.dialog.domNode);
+
+					// Move this widget inside the dialog
+					this.dialog.containerNode.appendChild(this.domNode);
+
+					domStyle.set(this.dialog.domNode,{
+						"width" : this.dimensions[0] + "px",
+						"height" : this.dimensions[1] + "px"
+					});
+					domStyle.set(this.domNode, "display", "");
+				}
+				if(this.dialog.open){
+					this.dialog.hide();
+				}else{
+					this.dialog.show(this.domNode);
+				}
+			}
+	});
 });

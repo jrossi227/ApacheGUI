@@ -1,8 +1,9 @@
 .dijitFileInput {
 	position:relative;
 	height:1.3em;
-	
+	/*padding:2px;*/
 }
+
 .dijitFileInputReal {
 	position:absolute;
 	z-index:2;
@@ -14,17 +15,20 @@
 	right:0;
 }
 .dijitFileInputReal:hover { cursor:pointer; } 
+
 .dijitFileInputButton,
 .dijitFileInputText {
 	border:1px solid #333;
 	padding:2px 12px 2px 12px; 
 	cursor:pointer;
 }
+
 .dijitFileInputButton {
 	z-index:3;
 	visibility:hidden;
 }
 .dijitFakeInput { position:absolute; top:0; left:0; z-index:1; white-space: nowrap; }
+
 .dijitProgressOverlay {
 	display:none;
 	width:250px;
@@ -35,12 +39,14 @@
 	background:#cad2de url('../../../dijit/themes/tundra/images/dijitProgressBarAnim.gif') repeat-x top left;
 	padding:2px;	
 }
+
+/* tundra */
 .tundra .dijitProgressOverlay {
 	border:1px solid #84a3d1;
 	background-color:#cad2de;
 }
 .tundra .dijitFakeInput input {
-	
+	/*font-size: inherit;*/
 	padding: 0;
 	background:#fff url("../../../dijit/themes/tundra/images/validationInputBg.png") repeat-x top left;
 	border:1px solid #9b9b9b;
@@ -49,9 +55,11 @@
 .tundra .dijitFileInputButton, 
 .tundra .dijitFileInputText {
 	border:1px solid #9b9b9b;
-	padding:0px 12px 0px 12px; 
+	padding:0px 12px 0px 12px; /* .3em .4em .2em .4em; */
 	background:#e9e9e9 url("../../../dijit/themes/tundra/images/buttonEnabled.png") repeat-x top;
 }
+
+/* Soria */
 .soria .dijitProgressOverlay {
 	border:1px solid #8BA0BD;
 	background-color:#cad2de; 
@@ -69,6 +77,8 @@
 	padding:2px 12px 2px 12px;
 	background:#b7cdee url('../../../dijit/themes/soria/images/buttonEnabled.png') repeat-x; 
 }
+
+/* Nihilo */
 .nihilo .dijitProgressOverlay {
 	border:1px solid #DEDEDE;
 	background-color:#cad2de; 
@@ -86,6 +96,8 @@
 	padding:2px 12px 2px 12px;
 	background:#b7cdee url('../../../dijit/themes/nihilo/images/buttonEnabled.png') repeat-x; 
 }
+
+/* Claro */
 .claro .dijitProgressOverlay {
 	border:1px solid #769dc0;
 	background-color:#769dc0; 
@@ -101,6 +113,7 @@
 	line-height:normal;
 	padding:0.2em 0.3em;
 }
+
 .claro .dijitFileInputButton,
 .claro .dijitFileInputText {
 	background-image: -moz-linear-gradient(rgba(127, 127, 127, 0.2) 0%, rgba(127, 127, 127, 0) 2px);

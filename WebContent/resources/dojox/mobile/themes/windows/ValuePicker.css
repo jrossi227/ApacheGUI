@@ -1,71 +1,11 @@
+@import url("../common/domButtons/DomButtonGrayPlus.css");
 
-.mblDomButtonGrayPlus {
-  position: relative;
-  width: 29px;
-  height: 29px;
-}
-.mblDomButtonGrayPlus > div {
-  
-  position: absolute;
-  top: 12px;
-  left: 6px;
-  width: 18px;
-  height: 3px;
-  margin: 0px;
-  font-size: 1px;
-  background-color: #848684;
-  border-top: 1px solid #525152;
-  border-radius: 2px;
-}
-.mblDomButtonGrayPlus > div > div {
-  
-  position: absolute;
-  top: -8px;
-  left: 7px;
-  width: 3px;
-  height: 17px;
-  margin: 0px;
-  font-size: 1px;
-  background-color: #848684;
-  border-top: 1px solid #525152;
-  border-left: 1px solid #808080;
-  border-radius: 2px;
-}
-.mblDomButtonGrayMinus {
-  position: relative;
-  width: 29px;
-  height: 29px;
-}
-.mblDomButtonGrayMinus > div {
-  
-  position: absolute;
-  top: 12px;
-  left: 6px;
-  width: 18px;
-  height: 3px;
-  margin: 0px;
-  font-size: 1px;
-  background-color: #848684;
-  border-top: 1px solid #525152;
-  border-radius: 2px;
-}
-.mblToolBarButtonHasArrow-styles {
-  width: 27px;
-  height: 27px;
-  border-radius: 20px;
-  border: 2px solid #ffffff;
-  padding: 0px;
-  margin: 0px;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  background-image: url("images/dark/back.png");
-  background-position: 50% 50%;
-  background-size: 27px 27px;
-  background-repeat: no-repeat;
-}
+@import url("../common/domButtons/DomButtonGrayMinus.css");
+/* dojox.mobile.ValuePicker */
 .mblValuePicker {
   height: 126px;
 }
+/* dojox.mobile.ValuePickerSlot */
 .mblValuePicker > .mblValuePickerSlot {
   float: left;
   margin: 0 5px;
@@ -103,6 +43,7 @@
   background-color: transparent;
   font-size: 17pt;
 }
+/* dojox.mobile.ValuePickerTimePicker */
 .mblValuePickerTimePicker > .mblToolBarButton {
   top: 45px;
 }
