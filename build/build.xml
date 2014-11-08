@@ -6,6 +6,17 @@
 	<loadproperties srcFile="build.properties"/> 
 		
 	<property name="resources" value="../WebContent/resources"/>
+	<property name="lib" value="../WebContent/WEB-INF/lib"/>
+	    
+	<!-- clean -->
+	<target name="clean">
+	
+		<delete quiet="true">
+            <fileset dir="${resources}/release" includes="**/*"/>
+            <fileset dir="dist" includes="**/*"/>
+         </delete>
+		
+	</target>
 	
 	<!-- build js -->
 	<target name="buildjs">
@@ -20,24 +31,55 @@
 	
 	
 	<!-- remove less and uncompressed -->
+	<target name="deleteunused">
+	
+	     <delete>
+	        <fileset dir="${resources}/release" includes="**/*.less"/>
+	     	<fileset dir="${resources}/release" includes="**/*.uncompressed.js"/>
+	     </delete>
+	
+	</target>	
+	
+	<!-- copy resources to release directory -->
+	<target name="copyrelease">
+		<copy todir="${resources}/release">
+            <fileset dir="../WebContent">  
+                <include name="HistoryFiles/**"/>
+                <include name="search/**"/>
+            </fileset>
+        </copy>
+		<copy todir="${resources}/release/resources">
+    		<fileset dir="${resources}">  
+    			<include name="codemirror/**"/>
+                <include name="flot/**"/>
+                <include name="images/**"/>
+                <include name="jquery/**"/>
+                <include name="json/**"/>
+                <include name="style/**"/>
+    		</fileset>
+		</copy>
+	</target>
 	
 	<!-- build war -->
 	
-	<!-- copy war to webapps -->
-
-	<!-- delete release directory -->
-
-	<target name="war" description="Build the ApacheGUI war file" depends="buildjs">
-		<war destfile="myapp.war" webxml="WebContent/WEB-INF/web.xml">
-		  <fileset dir="src/html/myapp"/>
-		  <fileset dir="src/jsp/myapp"/>
-		  <lib dir="thirdparty/libs">
-		    <exclude name="jdbc1.jar"/>
-		  </lib>
-		  <classes dir="build/main"/>
-		  <zipfileset dir="src/graphics/images/gifs"
-		              prefix="images"/>
-		</war>
-	</target>	
+	<target name="war" description="Build the ApacheGUI war file" depends="clean,buildjs,deleteunused,copyrelease">
+        <war destfile="dist/ApacheGUI.war" webxml="../WebContent/WEB-INF/web.xml">
+          <fileset dir="${resources}/release"/>
+          <lib dir="${lib}"></lib>
+          <webinf dir="../WebContent/WEB-INF">
+               <include name="jsp/**"/>
+          	   <include name="spring-servlet.xml"/>
+          </webinf>	
+          <classes dir="classes"/>
+        </war>
+    </target>   
+	
+	
+	
+	<!-- move war to webapps -->
+	<target name="deploy">
+		<move file="dist/ApacheGUI.war" todir="${apachegui_home}/tomcat/webapps"/>
+	</target>
+	
 	
 </project>	

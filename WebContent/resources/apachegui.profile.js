@@ -1,8 +1,8 @@
 var profile = (function(){
     return {
         basePath: ".",
-        releaseDir: ".",
-        releaseName: "release",
+        releaseDir: "release",
+        releaseName: "resources",
         action: "release",
         layerOptimize: "shrinksafe",
         optimize: "shrinksafe",
