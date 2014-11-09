@@ -9,13 +9,12 @@ define([ "dojo/_base/declare",
          "dijit/Tooltip",
          "dijit/form/Button",
          "dojo/_base/array",
-         "dijit/registry",
          'dojo/dom-style',
          "dojo/query",
          "dojo/dom-attr",
          "dojo/_base/xhr",
          "ca/apachegui/Control"
-], function(declare, dom, registry, on, request, json, ItemFileWriteStore, DataGrid, Tooltip, Button, array, registry, domStyle, query, domAttr, xhr, Control){
+], function(declare, dom, registry, on, request, json, ItemFileWriteStore, DataGrid, Tooltip, Button, array, domStyle, query, domAttr, xhr, Control){
 	
 	declare("ca.apachegui.History", null,{
 		initialized: false,

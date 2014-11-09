@@ -203,13 +203,13 @@ return declare("dojox.layout.ExpandoPane", [ContentPane, TemplatedMixin, Contain
 					var c = parseInt(n.style[also], 10);
 					return c - showSize + hideSize; 
 				}
-			}
+			};
 			hideProps[also] = {
 				end: function(n){
 					var c = parseInt(n.style[also], 10);
 					return c + showSize - hideSize;
 				}
-			}
+			};
 		}
 		
 		this._showAnim = baseFx.animateProperty(lang.mixin(_common,{

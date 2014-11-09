@@ -7,7 +7,7 @@ define([ "dojo/_base/declare",
 ], function(declare, TitlePane, dojo, lang, array, registry){ 
     
    
-    declare("ca.apachegui.TitlePane", [dijit.TitlePane], {
+    return declare("ca.apachegui.TitlePane", [dijit.TitlePane], {
         toggle : function() {                                                                                                                                                                                                                                                        
             this.inherited(arguments);     
             

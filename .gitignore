@@ -1,3 +1,4 @@
 /build/classes
-/build/dist
+/build/dist/ApacheGUI.war
+/build/release
 /WebContent/resources/release

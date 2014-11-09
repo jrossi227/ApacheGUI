@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 <project name="ApacheConfParser" default="war" basedir=".">
 
-	<!-- ./util/buildscripts/build.sh bin=node profile=apachegui.profile.js action=release-->
-
 	<loadproperties srcFile="build.properties"/> 
 		
-	<property name="resources" value="../WebContent/resources"/>
-	<property name="lib" value="../WebContent/WEB-INF/lib"/>
+	<property name="resources.dir" value="../WebContent/resources"/>
+	<property name="release.dir" value="release"/>
+	<property name="dist.dir" value="dist"/>
+	<property name="lib.dir" value="../WebContent/WEB-INF/lib"/>
 	    
 	<!-- clean -->
 	<target name="clean">
 	
-		<delete quiet="true">
-            <fileset dir="${resources}/release" includes="**/*"/>
-            <fileset dir="dist" includes="**/*"/>
+		<delete quiet="true" includeemptydirs="true">
+            <fileset dir="${release.dir}" includes="**/*"/>
+            <fileset dir="${dist.dir}" includes="**/*"/>
          </delete>
 		
 	</target>
@@ -21,7 +21,7 @@
 	<!-- build js -->
 	<target name="buildjs">
 	
-		<exec dir="${resources}" executable="util/buildscripts/build.sh">
+		<exec dir="${resources.dir}" executable="util/buildscripts/build.sh">
 		       <arg line="bin=node"/>
 		       <arg line="profile=apachegui.profile.js"/>
 		       <arg line="action=release"/>
@@ -34,22 +34,22 @@
 	<target name="deleteunused">
 	
 	     <delete>
-	        <fileset dir="${resources}/release" includes="**/*.less"/>
-	     	<fileset dir="${resources}/release" includes="**/*.uncompressed.js"/>
+	        <fileset dir="${release.dir}" includes="**/*.less"/>
+	     	<fileset dir="${release.dir}" includes="**/*.uncompressed.js"/>
 	     </delete>
 	
 	</target>	
 	
 	<!-- copy resources to release directory -->
 	<target name="copyrelease">
-		<copy todir="${resources}/release">
+		<copy todir="${release.dir}">
             <fileset dir="../WebContent">  
                 <include name="HistoryFiles/**"/>
                 <include name="search/**"/>
             </fileset>
         </copy>
-		<copy todir="${resources}/release/resources">
-    		<fileset dir="${resources}">  
+		<copy todir="${release.dir}/resources">
+    		<fileset dir="${resources.dir}">  
     			<include name="codemirror/**"/>
                 <include name="flot/**"/>
                 <include name="images/**"/>
@@ -63,9 +63,9 @@
 	<!-- build war -->
 	
 	<target name="war" description="Build the ApacheGUI war file" depends="clean,buildjs,deleteunused,copyrelease">
-        <war destfile="dist/ApacheGUI.war" webxml="../WebContent/WEB-INF/web.xml">
-          <fileset dir="${resources}/release"/>
-          <lib dir="${lib}"></lib>
+        <war destfile="${dist.dir}/ApacheGUI.war" webxml="../WebContent/WEB-INF/web.xml">
+          <fileset dir="${release.dir}"/>
+          <lib dir="${lib.dir}"></lib>
           <webinf dir="../WebContent/WEB-INF">
                <include name="jsp/**"/>
           	   <include name="spring-servlet.xml"/>
@@ -78,7 +78,7 @@
 	
 	<!-- move war to webapps -->
 	<target name="deploy">
-		<move file="dist/ApacheGUI.war" todir="${apachegui_home}/tomcat/webapps"/>
+		<move file="${dist.dir}/ApacheGUI.war" todir="${apachegui_home}/tomcat/webapps"/>
 	</target>
 	
 	

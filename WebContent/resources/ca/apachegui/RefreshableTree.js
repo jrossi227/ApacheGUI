@@ -4,7 +4,7 @@ define([ "dojo/_base/declare",
          "dojo/_base/lang"
 ], function(declare, Tree, dojo, lang){	
  	
- 	declare("ca.apachegui.RefreshableTree", [dijit.Tree], {	
+ 	return declare("ca.apachegui.RefreshableTree", [dijit.Tree], {	
 		_reloadPaths: null, 
 		_reloadOnLoadConnect: null, 
 		

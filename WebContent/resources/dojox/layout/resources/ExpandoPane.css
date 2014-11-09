@@ -1,5 +1,4 @@
-	/* dojox.layout.ExpandoPane */
-
+	
 	.dojoxExpandoPane {
 		overflow:hidden;
 		z-index:440 !important;
@@ -8,38 +7,31 @@
 	.dojoxExpandoPane .dojoxExpandoWrapper {
 		overflow:hidden;
 	}
-
 	.dojoxExpandoClosed .dojoxExpandoTitleNode {
 		display:none;
 	}
-
-	/* hide all layout children scrollbars when closed */
+	
 	.dojoxExpandoClosed .dojoxExpandoWrapper * {
 		overflow:hidden !important;
 	}
-
 	.dojoxExpandoTitleNode {
 		padding-right:6px; 
 		padding-left:6px;
 	}
-
 	.dojoxExpandoIcon .a11yNode {
 		display:none;
 		visibility:hidden;
 	}
-
 	.dojoxExpandoBottom .dojoxExpandoIcon,
 	.dojoxExpandoTop .dojoxExpandoIcon,
 	.dojoxExpandoLeft .dojoxExpandoIcon {
 		float:right;
 		margin-right:2px;
 	}
-
 	.dojoxExpandoRight .dojoxExpandoIcon {
 		float:left;
 		margin-left:2px;
 	}
-
 	.dojoxExpandoIcon {
 		width:14px;
 		cursor:pointer;
@@ -47,7 +39,6 @@
 		background-repeat: no-repeat;
 		height:14px;
 	}
-
 	.dojoxExpandoClosed .dojoxExpandoIcon {
 		background-position: 0px 0px;
 		margin:0 auto;
@@ -56,9 +47,7 @@
 	.dijitBorderContainer-dijitExpandoPane {
 		border: none !important; 
 	}
-
-	/* soria definitions */
-
+	
 	.soria .dojoxExpandoTitle {
 		height:16px;
 		font-size:0.9em;
@@ -66,9 +55,11 @@
 		padding:3px;
 		padding-top:6px;
 		padding-bottom:5px;
-		background:#F0F4FC url("../../../dijit/themes/soria/images/tabContainerSprite.gif") repeat-x scroll 0pt -50px;
+		/*background:#F0F4FC url("../../../dijit/themes/soria/images/tabContainerSprite.gif") repeat-x scroll 0pt -50px;
 		border-left: 1px solid #B1BADF;
-		border-right: 1px solid #B1BADF;
+		border-right: 1px solid #B1BADF;*/
+		border: 1px solid #B1BADF;
+		border-bottom: 0;
 	}
 	
 	.soria .dojoxExpandoClosed .dojoxExpandoTitle {
@@ -83,6 +74,11 @@
 		border: 1px solid #B1BADF !important;
 	}
 	
+	.soria .dojoxExpandoPane .dojoxExpandoWrapper {
+		border: 1px solid #B1BADF !important;
+		padding-top: 5px;
+	}
+	
 	.soria .dojoxExpandoIcon {
 		background-image: url('../../../dijit/themes/soria/images/spriteRoundedIconsSmall.png');
 	}
@@ -91,7 +87,7 @@
 		background-image: url('../../../dijit/themes/soria/images/spriteRoundedIconsSmall.gif');
 	}
 		
-	/* tundra styles */
+	
 	.tundra .dojoxExpandoTitle {
 		font-weight: bold;
 		padding: 5px;
@@ -115,7 +111,11 @@
 		background-color: #fafafa;
 		border: 1px solid #ccc !important;
 	}
-
+	
+	.tundra .dojoxExpandoPane .dojoxExpandoWrapper {
+		border: 1px solid #ccc !important;
+	}
+	
 	.tundra .dojoxExpandoRight .dojoxExpandoTitle,
 	.tundra .dojoxExpandoLeft .dojoxExpandoTitle,
 	.tundra .dojoxExpandoClosed .dojoxExpandoTitle,
@@ -134,17 +134,17 @@
 		margin-top: 3px;
 	}
 	
-	/* claro styles */
+	
 	.claro .dojoxExpandoTitle {
 		font-weight: bold;
-		border:1px solid #769DC0;
+		border:1px solid #B5BCC7;
 		border-bottom:none;
         background-color:#cde8ff;
 		background-image: url("../../../dijit/themes/claro/images/standardGradient.png");
         background-position:0px 0px;
         background-repeat:repeat-x;
 		padding: 5px 7px 2px 7px;
-        min-height:17px;
+        min-height:10px;
         color:#4a4a4a;
 	}
 		
@@ -158,9 +158,12 @@
 	.claro .dojoxExpandoClosed {
 		background: none;
 		background-color: #E6E6E7;
-		border: 1px solid #769DC0 !important;
+		border: 1px solid #B5BCC7 !important;
 	}
-
+	.claro .dojoxExpandoPane .dojoxExpandoWrapper {
+		border: 1px solid #B5BCC7 !important;
+	}
+	
 	.claro .dojoxExpandoRight .dojoxExpandoTitle,
 	.claro .dojoxExpandoLeft .dojoxExpandoTitle,
 	.claro .dojoxExpandoClosed .dojoxExpandoTitle{
@@ -171,10 +174,7 @@
 		background-position:0 0;
 	}
 	
-	/* FIXME: use tundra spriteRoundedIconsSmall for now,
-	because there is no compatible image files in claro (15x15
-	icon, and icons are arranged in the same order as in 
-	spriteRoundedIconsSmall.gif */
+	
 	.claro .dojoxExpandoIcon {
 		background-image: url('../../../dijit/themes/tundra/images/spriteRoundedIconsSmall.gif');
 	}
@@ -186,7 +186,7 @@
 		margin-top: 3px;
 	}
 	
-	/* nihilo theme styles */
+	
 	.nihilo .dojoxExpandoPane {
 		background: #fafafa;
 	}
@@ -215,6 +215,10 @@
 		border: 1px solid #ccc !important;
 	}
 	
+	.nihilo .dojoxExpandoPane .dojoxExpandoWrapper {
+		border: 1px solid #ccc !important;
+	}
+	
 	.nihilo .dojoxExpandoIcon {
 		background-image: url('../../../dijit/themes/nihilo/images/spriteRoundedIconsSmall.png');
 	}
@@ -229,7 +233,7 @@
 		border-right:1px solid #ccc; 
 	}
 	
-	/* open/closed states */
+	
 	
 	.dojoxExpandoClosed .dojoxExpandoIcon {
 		margin-right:4px;

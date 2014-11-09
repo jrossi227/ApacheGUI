@@ -1,11 +1,11 @@
 var profile = (function(){
     return {
         basePath: ".",
-        releaseDir: "release",
+        releaseDir: "../../build/release",
         releaseName: "resources",
         action: "release",
-        layerOptimize: "shrinksafe",
-        optimize: "shrinksafe",
+        layerOptimize: "closure",
+        optimize: "closure",
         cssOptimize: "comments",
         mini: true,
         stripConsole: "warn",
@@ -69,14 +69,21 @@ var profile = (function(){
         }],
  
         layers: {
+        	/**
             "dojo/dojo": {
-                include: [ "dojo/dojo", "dojo/i18n", "dojo/domReady"],
+                include: [ "dojo/dojo", 
+                           "dojo/i18n", 
+                           "dojo/domReady"
+                ],
                 customBase: true,
                 boot: true
             }, 
-	    "ca/apachegui/prod": {
-                include: [ "ca/apachegui/Control" ]
+	        "ca/apachegui/common": {
+                include: [ 
+
+                 ]
             }
+            **/
         }
     };
 
