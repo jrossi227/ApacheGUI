@@ -4,56 +4,28 @@ var profile = (function(){
         releaseDir: "../../build/release",
         releaseName: "resources",
         action: "release",
-        layerOptimize: "closure",
-        optimize: "closure",
+        layerOptimize: "shrinksafe",
+        optimize: "shrinksafe",
         cssOptimize: "comments",
         mini: true,
         stripConsole: "warn",
         selectorEngine: "lite",
  
-        defaultConfig: {
-            hasCache:{
-                "dojo-built": 1,
-                "dojo-loader": 1,
-                "dom": 1,
-                "host-browser": 1,
-                "config-selectorEngine": "lite"
-            },
-            async: 1
-        },
- 
         staticHasFeatures: {
-            "config-deferredInstrumentation": 0,
-            "config-dojo-loader-catches": 0,
-            "config-tlmSiblingOfDojo": 0,
-            "dojo-amd-factory-scan": 0,
-            "dojo-combo-api": 0,
-            "dojo-config-api": 1,
-            "dojo-config-require": 0,
-            "dojo-debug-messages": 0,
-            "dojo-dom-ready-api": 1,
-            "dojo-firebug": 0,
-            "dojo-guarantee-console": 1,
-            "dojo-has-api": 1,
-            "dojo-inject-api": 1,
-            "dojo-loader": 1,
-            "dojo-log-api": 0,
-            "dojo-modulePaths": 0,
-            "dojo-moduleUrl": 0,
-            "dojo-publish-privates": 0,
-            "dojo-requirejs-api": 0,
-            "dojo-sniff": 1,
-            "dojo-sync-loader": 0,
-            "dojo-test-sniff": 0,
-            "dojo-timeout-api": 0,
-            "dojo-trace-api": 0,
-            "dojo-undef-api": 0,
-            "dojo-v1x-i18n-Api": 1,
-            "dom": 1,
-            "host-browser": 1,
-            "extend-dojo": 1
-        },
- 
+	    	// The trace & log APIs are used for debugging the loader, so we do not need them in the build.
+	    	'dojo-trace-api': true,
+	    	'dojo-log-api': true,
+	    	// This causes normally private loader data to be exposed for debugging. In a release build, we do not need
+	    	// that either.
+	    	'dojo-publish-privates': true,
+	    	// This application is pure AMD, so get rid of the legacy loader.
+	    	'dojo-sync-loader': true,
+	    	// `dojo-xhr-factory` relies on `dojo-sync-loader`, which we have removed.
+	    	'dojo-xhr-factory': true,
+	    	// We are not loading tests in production, so we can get rid of some test sniffing code.
+	    	'dojo-test-sniff': false
+    	},
+        
         packages:[{
             name: "dojo",
             location: "dojo"
@@ -78,12 +50,51 @@ var profile = (function(){
                 customBase: true,
                 boot: true
             }, 
+            **/
 	        "ca/apachegui/common": {
                 include: [ 
-
-                 ]
+                          
+						  "dojo/dom",
+						  "dojo/parser",
+						  "dojo/data/ItemFileWriteStore",
+						  "dojo/_base/window",
+						  
+						  "dijit/ProgressBar",
+ 				          "dijit/form/Select",
+                          "dijit/Dialog",
+                          "dijit/form/Form",
+                          "dijit/form/Button",
+                          "dijit/form/TextBox",
+                          "dijit/form/ValidationTextBox",
+                          "dijit/Menu",
+                          "dijit/MenuItem",
+                          "dijit/layout/BorderContainer",
+                          "dijit/layout/ContentPane",
+                          "dijit/Tree",
+                          "dijit/form/DateTextBox",
+     			 		  "dijit/form/TimeTextBox",
+     			 		  "dijit/form/NumberSpinner",
+     			 		  "dijit/form/DropDownButton",
+     			 		  "dijit/TooltipDialog",
+     			 		  "dijit/Tooltip",
+                          
+                          "dojox/layout/ExpandoPane",
+                          "dojox/data/JsonRestStore",
+                          "dojox/form/Uploader",
+                          "dojox/form/uploader/FileList",
+                          "dojox/grid/DataGrid",
+ 				          
+ 				          "ca/apachegui/GUISettings",
+                          "ca/apachegui/Main",
+                          "ca/apachegui/Init",
+                          "ca/apachegui/NoCloseDialog",
+                          "ca/apachegui/Menu",
+                          "ca/apachegui/Settings",
+                          "ca/apachegui/RefreshableTree"
+                ],
+                includeLocales: [ 'en-us' ]
             }
-            **/
+            
         }
     };
 
