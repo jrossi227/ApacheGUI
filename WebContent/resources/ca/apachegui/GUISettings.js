@@ -265,7 +265,7 @@ define([ "dojo/_base/declare",
 			
 			if(id==ca.apachegui.Settings.getInstance().settingsMap.theme)
 			{	
-				var change=ca.apachegui.Settings.getInstance().setSetting(ca.apachegui.Settings.getInstance().settingsMap.theme,query("input:radio[name=themeType]:checked")[0].value);
+				var change=ca.apachegui.Settings.getInstance().setSetting(ca.apachegui.Settings.getInstance().settingsMap.theme,query("input[name=themeType]:checked")[0].value);
 				if(change===true) {
 					window.location.reload();
 				}
