@@ -8,7 +8,7 @@ var profile = (function(){
         optimize: "shrinksafe",
         cssOptimize: "comments",
         mini: true,
-        stripConsole: "warn",
+        stripConsole: "none",
         selectorEngine: "lite",
  
         staticHasFeatures: {
@@ -41,7 +41,8 @@ var profile = (function(){
         }],
  
         layers: {
-        	/**
+        	
+            /**
             "dojo/dojo": {
                 include: [ "dojo/dojo", 
                            "dojo/i18n", 
@@ -51,6 +52,7 @@ var profile = (function(){
                 boot: true
             }, 
             **/
+            
 	        "ca/apachegui/common": {
                 include: [ 
                           

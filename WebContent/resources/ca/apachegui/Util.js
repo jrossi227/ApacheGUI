@@ -11,20 +11,19 @@ require([ "dojo/_base/window",
 		return {
 			alert: function(txtTitle, txtContent){
 				var thisdialog = new Dialog({ title: txtTitle, content: txtContent});
-				win.body().appendChild(thisdialog.domNode);
 				
 				var div = document.createElement('div');
 				div.className='dijitDialogPaneActionBar';
 				
 				var okButton = new Button({ label: 'OK', onClick: function(){
-					thisdialog.hide();
-					thisdialog.destroyRecursive();
+					thisdialog.hide().then(function(){ 
+					    thisdialog.destroyRecursive(); 
+					});
 				}});
 				
 				thisdialog.containerNode.appendChild(div);
 				div.appendChild(okButton.domNode);
 				
-				thisdialog.startup(); 
 				thisdialog.show();
 			},
 			
@@ -37,15 +36,13 @@ require([ "dojo/_base/window",
 				
 				var yesButton = new Button({ label: 'Yes', onClick: function(){
 					callbackFn(true);
-					errorDialog.hide();
-					errorDialog.destroyRecursive();
+					errorDialog.remove();
 				}});
 				
 				
 				var noButton = new Button({ label: 'No', onClick: function(){
 					callbackFn(false);
-					errorDialog.hide();
-					errorDialog.destroyRecursive();
+					errorDialog.remove();
 				}});
 				
 				errorDialog.containerNode.appendChild(div);
@@ -67,8 +64,6 @@ require([ "dojo/_base/window",
 			
 			noCloseDialog: function(title, content) {
 				var thisdialog = new NoCloseDialog({ title: title, content: content});
-				win.body().appendChild(thisdialog.domNode);
-				thisdialog.startup(); 
 				
 				return thisdialog;
 			}

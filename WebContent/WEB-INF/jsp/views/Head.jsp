@@ -14,7 +14,19 @@
 <link rel="stylesheet" type="text/css" href="../resources/dojox/form/resources/FileInput.css?version=${version}" />
 <link rel="stylesheet" href="../resources/style/style.css?version=${version}" media="screen" type="text/css">
 
-<script src="../resources/dojo/dojo.js?version=${version}" data-dojo-config="isDebug: false,parseOnLoad: false, cacheBust: true"></script>
+<script>
+
+//Dojo configuration needs to be included before script import
+var dojoConfig = {
+	isDebug: false,
+	cacheBust: true,
+	parseOnLoad: false,
+	locale: "en-us"
+};
+
+</script>
+
+<script src="../resources/dojo/dojo.js?version=${version}"></script>
 <script src="../resources/ca/apachegui/common.js?version=${version}"></script>
 
 <script src="../resources/ca/apachegui/Util.js?version=${version}"></script>
