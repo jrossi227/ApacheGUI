@@ -36,6 +36,7 @@
 	     <delete>
 	        <fileset dir="${release.dir}" includes="**/*.less"/>
 	     	<fileset dir="${release.dir}" includes="**/*.uncompressed.js"/>
+	     	<fileset dir="${release.dir}" includes="**/*.js.map"/>
 	     </delete>
 	
 	</target>	
