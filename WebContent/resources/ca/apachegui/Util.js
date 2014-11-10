@@ -1,18 +1,22 @@
 var ca = (ca || {});
 ca.apachegui = (ca.apachegui || {});
 
-require([ "dojo/_base/window"], function(win){	
+require([ "dojo/_base/window",
+          "dijit/Dialog",
+          "dijit/form/Button",
+          "ca/apachegui/NoCloseDialog"
+], function(win, Dialog, Button, NoCloseDialog){	
 	ca.apachegui.Util = (function() {
 		
 		return {
 			alert: function(txtTitle, txtContent){
-				var thisdialog = new dijit.Dialog({ title: txtTitle, content: txtContent});
+				var thisdialog = new Dialog({ title: txtTitle, content: txtContent});
 				win.body().appendChild(thisdialog.domNode);
 				
 				var div = document.createElement('div');
 				div.className='dijitDialogPaneActionBar';
 				
-				var okButton = new dijit.form.Button({ label: 'OK', onClick: function(){
+				var okButton = new Button({ label: 'OK', onClick: function(){
 					thisdialog.hide();
 					thisdialog.destroyRecursive();
 				}});
@@ -26,19 +30,19 @@ require([ "dojo/_base/window"], function(win){
 			
 			confirmDialog: function(title, question, callbackFn) {
 	
-				var errorDialog = new ca.apachegui.NoCloseDialog({ title: title, content: question});
+				var errorDialog = new NoCloseDialog({ title: title, content: question});
 				
 				var div = document.createElement('div');
 				div.className='dijitDialogPaneActionBar';
 				
-				var yesButton = new dijit.form.Button({ label: 'Yes', onClick: function(){
+				var yesButton = new Button({ label: 'Yes', onClick: function(){
 					callbackFn(true);
 					errorDialog.hide();
 					errorDialog.destroyRecursive();
 				}});
 				
 				
-				var noButton = new dijit.form.Button({ label: 'No', onClick: function(){
+				var noButton = new Button({ label: 'No', onClick: function(){
 					callbackFn(false);
 					errorDialog.hide();
 					errorDialog.destroyRecursive();
@@ -62,7 +66,7 @@ require([ "dojo/_base/window"], function(win){
 			},
 			
 			noCloseDialog: function(title, content) {
-				var thisdialog = new ca.apachegui.NoCloseDialog({ title: title, content: content});
+				var thisdialog = new NoCloseDialog({ title: title, content: content});
 				win.body().appendChild(thisdialog.domNode);
 				thisdialog.startup(); 
 				

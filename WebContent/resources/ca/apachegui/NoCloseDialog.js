@@ -4,7 +4,7 @@ define([ "dojo/_base/declare",
          "dojo/keys"
 ], function(declare, Dialog, domStyle, keys){	
  	
- 	declare("ca.apachegui.NoCloseDialog", [dijit.Dialog], {	
+ 	return declare("ca.apachegui.NoCloseDialog", [dijit.Dialog], {	
  
     	// summary:
     	// extended version of the dojo Dialog widget with the option to disable
