@@ -16,5 +16,5 @@
     },
     "main": "resources",
     "homepage": "http://apachegui.net/",
-    "dojoBuild": "ca.profile.js"
+    "dojoBuild": "net.profile.js"
 }
