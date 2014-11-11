@@ -27,7 +27,6 @@ var dojoConfig = {
 </script>
 
 <script src="../resources/dojo/dojo.js?version=${version}"></script>
-<script src="../resources/ca/apachegui/common.js?version=${version}"></script>
 
 <script src="../resources/ca/apachegui/Util.js?version=${version}"></script>
 <script src="../resources/ca/apachegui/String.js?version=${version}"></script>

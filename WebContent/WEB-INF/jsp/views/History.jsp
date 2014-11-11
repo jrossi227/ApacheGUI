@@ -23,7 +23,7 @@
 			 		 "ca/apachegui/TitlePane",
 			 		 "dijit/ProgressBar",
 			 		 "dojox/grid/DataGrid",
-			 		"dijit/layout/TabContainer",
+			 		 "dijit/layout/TabContainer",
 			 		 "dojo/data/ItemFileWriteStore",
 			 		 "dojo/dom",
 			         "dojo/parser",
