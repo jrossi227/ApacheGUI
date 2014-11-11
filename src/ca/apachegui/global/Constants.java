@@ -170,9 +170,9 @@ public class Constants {
 
     // Constants used for gui info
     public final static String version = "1.9.5";
-    public final static String supportAddress = "apachegui.ca@gmail.com";
-    public final static String supportWebsite = "http://forum.apachegui.ca";
-    public final static String website = "http://apachegui.ca";
+    public final static String supportAddress = "apachegui.net@gmail.com";
+    public final static String supportWebsite = "http://forum.apachegui.net";
+    public final static String website = "http://apachegui.net";
 
     // Constants used for Global Setting
     public final static String restartWarning = "If the server is currently running then it must be restarted for any changes to take effect.";
