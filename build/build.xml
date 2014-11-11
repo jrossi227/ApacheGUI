@@ -37,7 +37,7 @@
 	
 	
 	<!-- remove less and uncompressed -->
-	<target name="deleteunused">
+	<target name="deleteunusedjs">
 	
 	     <delete>
 	        <fileset dir="${release.dir}" includes="**/*.less"/>
@@ -91,7 +91,7 @@
 	
 	<!-- build war -->
 	
-	<target name="war" description="Build the ApacheGUI war file" depends="clean,buildjs,deleteunused,copyrelease,compile">
+	<target name="war" description="Build the ApacheGUI war file" depends="clean,buildjs,deleteunusedjs,copyrelease,compile">
         <war destfile="${dist.dir}/ApacheGUI.war" webxml="../WebContent/WEB-INF/web.xml">
           <fileset dir="${release.dir}"/>
           <lib dir="${lib.dir}"></lib>
