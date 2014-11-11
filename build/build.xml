@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <project name="ApacheConfParser" default="war" basedir=".">
 
+	<property name="ant.build.javac.source" value="1.6"/>
+	<property name="ant.build.javac.target" value="1.6"/>
+	
 	<loadproperties srcFile="build.properties"/> 
 		
 	<property name="resources.dir" value="../WebContent/resources"/>
