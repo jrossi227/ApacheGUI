@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
-<div dojoType="ca.apachegui.NoCloseDialog" id="initDialogInstallationType" title="How was Apache installed?" style="display: none">
+<div dojoType="net.apachegui.NoCloseDialog" id="initDialogInstallationType" title="How was Apache installed?" style="display: none">
     <form dojoType="dijit.form.Form" id="initFormInstallationType">
         <table>
         	<tr class="dijitDialogPaneContentArea">
@@ -32,7 +32,7 @@
         </div>
     </form>
 </div>
-<div dojoType="ca.apachegui.NoCloseDialog" id="initDialogSource" title="Apache Source Parameters" style="display: none">
+<div dojoType="net.apachegui.NoCloseDialog" id="initDialogSource" title="Apache Source Parameters" style="display: none">
     <form dojoType="dijit.form.Form" id="initFormSource">
         <table>
         	<tr class="dijitDialogPaneContentArea">
@@ -90,7 +90,7 @@
         </div>
     </form>
 </div>
-<div dojoType="ca.apachegui.NoCloseDialog" id="initDialogPackage" title="Apache Package Parameters" style="display: none">
+<div dojoType="net.apachegui.NoCloseDialog" id="initDialogPackage" title="Apache Package Parameters" style="display: none">
     <form dojoType="dijit.form.Form" id="initFormPackage">
         <table>
         	<tr class="dijitDialogPaneContentArea">

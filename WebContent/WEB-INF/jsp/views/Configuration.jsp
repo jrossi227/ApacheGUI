@@ -16,7 +16,7 @@
  			<jsp:include page="/jsp/RequireIncludes.jsp" flush="true" />     
  		], function() {
  			require([
- 			         "ca/apachegui/Configuration",
+ 			         "net/apachegui/Configuration",
  			         "dijit/MenuBar",
  			    	 "dijit/PopupMenuBarItem",
  			    	 "dijit/Toolbar",
@@ -27,7 +27,7 @@
  			], function(Configuration, MenuBar, PopupMenuBarItem, Toolbar, Select, dom, parser) {
  				parser.parse();
  				
- 				var configuration = ca.apachegui.Configuration.getInstance();
+ 				var configuration = net.apachegui.Configuration.getInstance();
  				
  				configuration.setEditor('fileTextArea', ${mode});
  				configuration.setOpenTime(${openTime});
@@ -36,7 +36,7 @@
  				editorDiv.height('100%');
  				editorDiv.width('100%');
 
- 				ca.apachegui.Main.getInstance().init('Configuration-' + ca.apachegui.Util.getQueryParam('file'));
+ 				net.apachegui.Main.getInstance().init('Configuration-' + net.apachegui.Util.getQueryParam('file'));
  				
  				dom.byId("configurationBody").style.visibility='visible';
  			});

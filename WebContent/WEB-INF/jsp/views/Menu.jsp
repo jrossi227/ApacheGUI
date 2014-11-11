@@ -45,7 +45,7 @@
 			rootId="apacheRoot" rootLabel="Apache" childrenAttrs="children" deferItemLoadingUntilExpand="true" >
 		</div>
 		
-		<div dojoType="ca.apachegui.RefreshableTree" id="menuTree" model="apacheModel" openOnClick="true" showRoot="false" persist="true"></div>
+		<div dojoType="net.apachegui.RefreshableTree" id="menuTree" model="apacheModel" openOnClick="true" showRoot="false" persist="true"></div>
 </div>
 <div dojoType="dijit.Dialog" id="newFileDialog" title="New File" style="display: none">
     <form dojoType="dijit.form.Form" id="newFileForm">
@@ -269,7 +269,7 @@
     </form>
 </div>
 
-<div dojoType="ca.apachegui.NoCloseDialog" id="searchProgressDialog" title="Searching" style="display: none; width: 450px;">
+<div dojoType="net.apachegui.NoCloseDialog" id="searchProgressDialog" title="Searching" style="display: none; width: 450px;">
     
     <div id="searchProgressMessage" style="text-align:center"></div>
 

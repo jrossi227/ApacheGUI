@@ -1,12 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     
-"ca/apachegui/Main",
-"ca/apachegui/Init",
-"ca/apachegui/NoCloseDialog",
-"ca/apachegui/Menu",
-"ca/apachegui/Settings",
-"ca/apachegui/RefreshableTree",
+"net/apachegui/Main",
+"net/apachegui/Init",
+"net/apachegui/NoCloseDialog",
+"net/apachegui/Menu",
+"net/apachegui/Settings",
+"net/apachegui/RefreshableTree",
 
 "dijit/Dialog",
 "dijit/form/Form",

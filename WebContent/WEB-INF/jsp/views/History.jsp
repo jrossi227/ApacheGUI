@@ -12,7 +12,7 @@
 			<jsp:include page="/jsp/RequireIncludes.jsp" flush="true" />     
 		], function() {
 			require([
-			         "ca/apachegui/History",
+			         "net/apachegui/History",
 			         "dijit/form/DateTextBox",
 			 		 "dijit/form/TimeTextBox",
 			 		 "dijit/form/Select",
@@ -20,7 +20,7 @@
 			 		 "dijit/form/DropDownButton",
 			 		 "dijit/TooltipDialog",
 			 		 "dijit/Tooltip",
-			 		 "ca/apachegui/TitlePane",
+			 		 "net/apachegui/TitlePane",
 			 		 "dijit/ProgressBar",
 			 		 "dojox/grid/DataGrid",
 			 		 "dijit/layout/TabContainer",
@@ -31,7 +31,7 @@
 			], function(History, DateTextBox, TimeTextBox, Select, NumberSpinner, DropDownButton, TooltipDialog, Tooltip, TitlePane, ProgressBar, DataGrid, TabContainer, ItemFileWriteStore, dom, parser) {
 				 parser.parse();
 				
-				 ca.apachegui.Main.getInstance().init('History');
+				 net.apachegui.Main.getInstance().init('History');
 					
 				 dom.byId("historyBody").style.visibility='visible';
 			});
@@ -233,7 +233,7 @@
 		 					</tr>
 						<tr>
 							<td colspan="2">
-								<div id="history_enable_container" data-dojo-type="ca/apachegui/TitlePane" data-dojo-props="title: 'Enabled', open: false">
+								<div id="history_enable_container" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'Enabled', open: false">
 									<div id="history_enable_loading_container">
 										Loading ...
 										<div data-dojo-type="dijit/ProgressBar" data-dojo-props="indeterminate: true" style="width:300px"></div>
@@ -252,7 +252,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div id="history_disable_container" data-dojo-type="ca/apachegui/TitlePane" data-dojo-props="title: 'Disabled', open: false">
+								<div id="history_disable_container" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'Disabled', open: false">
 									<div id="history_disable_loading_container">
 										Loading ...
 										<div data-dojo-type="dijit/ProgressBar" data-dojo-props="indeterminate: true" style="width:300px"></div>

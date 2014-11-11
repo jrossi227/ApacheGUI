@@ -17,7 +17,7 @@
  			<jsp:include page="/jsp/RequireIncludes.jsp" flush="true" />     
  		], function() {
  			require([
- 			         "ca/apachegui/Documents",
+ 			         "net/apachegui/Documents",
  			         "dijit/MenuBar",
  			    	 "dijit/PopupMenuBarItem",
  			    	 "dijit/Toolbar",
@@ -29,7 +29,7 @@
  				parser.parse();
  				
  				<c:if test="${fileType == 'text'}">
- 					var documents=ca.apachegui.Documents.getInstance();
+ 					var documents=net.apachegui.Documents.getInstance();
  				
  					documents.setIsText(true);
  					documents.setEditor('fileTextArea', ${mode});
@@ -41,7 +41,7 @@
  				
  				</c:if>
  				
- 				ca.apachegui.Main.getInstance().init('Documents-${filePath}');
+ 				net.apachegui.Main.getInstance().init('Documents-${filePath}');
  				
  				dom.byId("documentsBody").style.visibility='visible';
  			});

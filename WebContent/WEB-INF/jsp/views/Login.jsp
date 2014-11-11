@@ -20,11 +20,11 @@
 				dom.byId("loginBody").style.visibility='visible';
 					
 				<c:if test="${advisory == true}">
-				ca.apachegui.Util.alert('Advisory','<b>Username:</b> admin <br/><b>Password:</b> admin <br/><b>Please change your credentials when you log in.</b>');
+				net.apachegui.Util.alert('Advisory','<b>Username:</b> admin <br/><b>Password:</b> admin <br/><b>Please change your credentials when you log in.</b>');
 				</c:if>
 				
 				<c:if test="${supportedBrowser == false}">
-				ca.apachegui.Util.alert('Unsupported Browser','<p><b>Warning</b><br/> Your browser does not appear to be supported.<br/> Some content might not render correctly.<br/> Please use a browser from the list below.</p>' +
+				net.apachegui.Util.alert('Unsupported Browser','<p><b>Warning</b><br/> Your browser does not appear to be supported.<br/> Some content might not render correctly.<br/> Please use a browser from the list below.</p>' +
 					'<h4>Supported Browsers</h4>' +
 					'<img alt="Google Chrome" src="../resources/images/chrome.jpg"/>' +
 					'<img alt="Firefox" src="../resources/images/firefox.gif"/>' +
@@ -32,7 +32,7 @@
 				</c:if>
 				
 				<c:if test="${error == true}">
-				ca.apachegui.Util.alert('Login Failure','You have entered invalid credentials');
+				net.apachegui.Util.alert('Login Failure','You have entered invalid credentials');
 				</c:if>
 				
 			});

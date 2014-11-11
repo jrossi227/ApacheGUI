@@ -44,7 +44,7 @@
             state.marked.push(cm.markText(cursor.from(), cursor.to(), "CodeMirror-searching"));
           }
         } else {
-        	ca.apachegui.Util.alert('Document is too large','Sorry, this function is only available for files that are less than 5000 lines');
+        	net.apachegui.Util.alert('Document is too large','Sorry, this function is only available for files that are less than 5000 lines');
         }
         state.posFrom = state.posTo = cm.getCursor();
         findNext(cm, rev);
@@ -57,7 +57,7 @@
     if (!cursor.find(rev)) {
       cursor = getSearchCursor(cm, state.query, rev ? {line: cm.lineCount() - 1} : {line: 0, ch: 0});
       if (!cursor.find(rev)) {
-    	  ca.apachegui.Util.alert('Not Found','The search term was not found');
+    	  net.apachegui.Util.alert('Not Found','The search term was not found');
     	  return;
       }
     }

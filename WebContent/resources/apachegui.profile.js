@@ -38,8 +38,8 @@ var profile = (function(){
             name: "dojox",
             location: "dojox"
         },{
-		    name: "ca",
-		    location: "ca"
+		    name: "net",
+		    location: "net"
         }],
  
         layers: {
@@ -104,22 +104,22 @@ var profile = (function(){
                            "dojox/form/uploader/FileList",
                            "dojox/grid/DataGrid",
   				          
-                           "ca/apachegui/Editor",
-                           "ca/apachegui/VirtualHosts",
-      			 		   "ca/apachegui/History",
-      			 		   "ca/apachegui/Logs",
-   	    				   "ca/apachegui/TitlePane",
-   	    				   "ca/apachegui/globalsettings/GlobalSettings",
-                           "ca/apachegui/Documents",
-                           "ca/apachegui/Control",
-                           "ca/apachegui/Configuration",
-  				           "ca/apachegui/GUISettings",
-                           "ca/apachegui/Main",
-                           "ca/apachegui/Init",
-                           "ca/apachegui/NoCloseDialog",
-                           "ca/apachegui/Menu",
-                           "ca/apachegui/Settings",
-                           "ca/apachegui/RefreshableTree"
+                           "net/apachegui/Editor",
+                           "net/apachegui/VirtualHosts",
+      			 		   "net/apachegui/History",
+      			 		   "net/apachegui/Logs",
+   	    				   "net/apachegui/TitlePane",
+   	    				   "net/apachegui/globalsettings/GlobalSettings",
+                           "net/apachegui/Documents",
+                           "net/apachegui/Control",
+                           "net/apachegui/Configuration",
+  				           "net/apachegui/GUISettings",
+                           "net/apachegui/Main",
+                           "net/apachegui/Init",
+                           "net/apachegui/NoCloseDialog",
+                           "net/apachegui/Menu",
+                           "net/apachegui/Settings",
+                           "net/apachegui/RefreshableTree"
                 ],
                 customBase: true,
                 boot: true,

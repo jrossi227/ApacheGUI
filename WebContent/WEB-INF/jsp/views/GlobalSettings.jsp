@@ -22,9 +22,9 @@
 	    				"dijit/Tooltip",
 	    				"dijit/TooltipDialog",
 	    				"dijit/form/DropDownButton",
-	    				"ca/apachegui/TitlePane",
-	    				"ca/apachegui/globalsettings/GlobalSettings",
-						"ca/apachegui/Control",
+	    				"net/apachegui/TitlePane",
+	    				"net/apachegui/globalsettings/GlobalSettings",
+						"net/apachegui/Control",
 	 			        "dojo/dom",
 	 			        "dojo/parser",
 	 			        "dojo/domReady!"
@@ -32,7 +32,7 @@
 	 						Networking, Modules, Mime, Control, dom, parser) {
 	 				dojo.parser.parse();
 	 				
-	 				ca.apachegui.Main.getInstance().init('Global_Settings');
+	 				net.apachegui.Main.getInstance().init('Global_Settings');
 	 				
 	 				dojo.byId("GlobalSettingsBody").style.visibility='visible';
 	 			});

@@ -8,7 +8,7 @@
   <absolute-ordering/>
   
   <listener>
-    <listener-class>ca.apachegui.global.ServerContextListener</listener-class>
+    <listener-class>net.apachegui.global.ServerContextListener</listener-class>
   </listener>
     
   <mime-mapping>
@@ -54,7 +54,7 @@
 
   <filter>
     <filter-name>SharedModuleFilter</filter-name>
-    <filter-class>ca.apachegui.modules.SharedModuleFilter</filter-class>
+    <filter-class>net.apachegui.modules.SharedModuleFilter</filter-class>
   </filter>
 
   <filter-mapping>

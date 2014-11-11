@@ -13,7 +13,7 @@
 			<jsp:include page="/jsp/RequireIncludes.jsp" flush="true" />     
 		], function() {
 			require([
-			         "ca/apachegui/GUISettings",
+			         "net/apachegui/GUISettings",
 			         "dojox/grid/DataGrid",
 			         "dojo/data/ItemFileWriteStore",
 			         "dijit/ProgressBar",
@@ -24,7 +24,7 @@
 			], function(GUISettings, DataGrid, ItemFileWriteStore, ProgressBar, Select, dom, parser) {
 				 parser.parse();
 				
-				 ca.apachegui.Main.getInstance().init('GUISettings');
+				 net.apachegui.Main.getInstance().init('GUISettings');
 				 
 				 dom.byId("guiSettingsBody").style.visibility='visible';
 			});
@@ -367,7 +367,7 @@
             </button>
         </div>	
 	</div> 
-	<div dojoType="ca.apachegui.NoCloseDialog" id="updateGUIDialog" title="Updating" style="width: 351px; display: none">
+	<div dojoType="net.apachegui.NoCloseDialog" id="updateGUIDialog" title="Updating" style="width: 351px; display: none">
     	<p id="updateStatusAdvisory">The update has started please do not close this window.</p>
     	<p style="text-align: center"><span style="display: inline-block" class="dijitContentPaneLoading" id="updateStatusText"></span></p>
     	<div id="progressContainer" style="display:none">

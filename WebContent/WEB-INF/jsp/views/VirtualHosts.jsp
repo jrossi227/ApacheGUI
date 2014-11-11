@@ -15,14 +15,14 @@
 			<jsp:include page="/jsp/RequireIncludes.jsp" flush="true" />     
 		], function() {
 			require([
-			         "ca/apachegui/VirtualHosts",
+			         "net/apachegui/VirtualHosts",
 			         "dojo/dom",
 			         "dojo/parser",
 			         "dojo/domReady!"
 			], function(VirtualHosts, dom, parser) {
 				 parser.parse();
 				
-				 ca.apachegui.Main.getInstance().init('Virtual_Hosts');
+				 net.apachegui.Main.getInstance().init('Virtual_Hosts');
 				 
 				 dom.byId("virtualHostsBody").style.visibility='visible';
 			});

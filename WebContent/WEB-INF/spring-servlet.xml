@@ -22,7 +22,7 @@
 		http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
 	<mvc:annotation-driven />
-	<context:component-scan base-package="ca.apachegui.web" />
+	<context:component-scan base-package="net.apachegui.web" />
 
 	 <!-- Handles HTTP GET requests for /resources/** by efficiently serving 
         up static resources in the ${webappRoot}/resources directory -->
@@ -57,19 +57,19 @@
 		
 	</bean>
 	
-	<bean id="JdbcConnection" class="ca.apachegui.db.JdbcConnection">
+	<bean id="JdbcConnection" class="net.apachegui.db.JdbcConnection">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	
-	<bean id="logDataDao" class="ca.apachegui.db.LogDataDao">
+	<bean id="logDataDao" class="net.apachegui.db.LogDataDao">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	
-	<bean id="settingsDao" class="ca.apachegui.db.SettingsDao">
+	<bean id="settingsDao" class="net.apachegui.db.SettingsDao">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	
-	<bean id="usersDao" class="ca.apachegui.db.UsersDao">
+	<bean id="usersDao" class="net.apachegui.db.UsersDao">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	
@@ -80,11 +80,11 @@
 	    <property name="WaitForTasksToCompleteOnShutdown" value="true" />
 	</bean>
 	
-	<bean id="search" class="ca.apachegui.global.SearchTaskExecutor">
+	<bean id="search" class="net.apachegui.global.SearchTaskExecutor">
 	    <constructor-arg ref="taskExecutor" />
 	</bean>
     
-    <bean id="historyMaintenance" class="ca.apachegui.history.HistoryMaintenance"></bean>
+    <bean id="historyMaintenance" class="net.apachegui.history.HistoryMaintenance"></bean>
     
     <task:scheduled-tasks scheduler="historyScheduler">
     	<task:scheduled ref="historyMaintenance" method="clean" fixed-rate="3600000"/>

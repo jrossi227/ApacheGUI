@@ -15,7 +15,7 @@
 			<jsp:include page="/jsp/RequireIncludes.jsp" flush="true" />     
 		], function() {
 			require([
-			         "ca/apachegui/Control",
+			         "net/apachegui/Control",
 			         "dojox/grid/DataGrid",
 			         "dojo/data/ItemFileWriteStore",
 			         "dijit/form/NumberSpinner",
@@ -25,7 +25,7 @@
 			], function(Control, DataGrid, ItemFileWriteStore, NumberSpinner, dom, parser) {
 				 parser.parse();
 				
-				 ca.apachegui.Main.getInstance().init('Control');
+				 net.apachegui.Main.getInstance().init('Control');
 				 
 				 dom.byId("controlBody").style.visibility='visible';
 			});

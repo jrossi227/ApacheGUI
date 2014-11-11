@@ -16,7 +16,7 @@
  			<jsp:include page="/jsp/RequireIncludes.jsp" flush="true" />     
  		], function() {
  			require([
- 			         "ca/apachegui/Logs",
+ 			         "net/apachegui/Logs",
  			 		 "dijit/form/Select",
  			 		 "dojo/dom",
  			         "dojo/parser",
@@ -24,10 +24,10 @@
  			], function(Logs, Select, dom, parser) {
  				parser.parse();
   				   	
- 		   		ca.apachegui.Main.getInstance().init('Logs-${filePath}');
+ 		   		net.apachegui.Main.getInstance().init('Logs-${filePath}');
  				dom.byId('tailLogButton').innerHTML='Start Tail';
  				
- 		   		var logs=ca.apachegui.Logs.getInstance();
+ 		   		var logs=net.apachegui.Logs.getInstance();
  				
  				logs.setSearchTextArea(CodeMirror.fromTextArea(document.getElementById("searchTextArea"), {mode: 'text/plain'}));
  				logs.setTailTextArea(CodeMirror.fromTextArea(document.getElementById("tailTextArea"), {mode: 'text/plain'}));

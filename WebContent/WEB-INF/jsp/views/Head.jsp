@@ -28,14 +28,14 @@ var dojoConfig = {
 
 <script src="../resources/dojo/dojo.js?version=${version}"></script>
 
-<script src="../resources/ca/apachegui/Util.js?version=${version}"></script>
-<script src="../resources/ca/apachegui/String.js?version=${version}"></script>
-<script src="../resources/ca/apachegui/Interval.js?version=${version}"></script>
+<script src="../resources/net/apachegui/Util.js?version=${version}"></script>
+<script src="../resources/net/apachegui/String.js?version=${version}"></script>
+<script src="../resources/net/apachegui/Interval.js?version=${version}"></script>
 
 <script>
-require([ "ca/apachegui/Main"
+require([ "net/apachegui/Main"
 ], function(Main){	
-	ca.apachegui.Main.getInstance().setApacheGuiVersion('${version}');
-	ca.apachegui.Main.getInstance().setIsWindows(${windows});
+	net.apachegui.Main.getInstance().setApacheGuiVersion('${version}');
+	net.apachegui.Main.getInstance().setIsWindows(${windows});
 });
 </script>
