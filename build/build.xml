@@ -11,7 +11,8 @@
 	<property name="resources.dir" value="../WebContent/resources"/>
 	<property name="release.dir" value="release"/>
 	<property name="dist.dir" value="dist"/>
-	<property name="lib.dir" value="../WebContent/WEB-INF/lib"/>
+	<property name="web.lib.dir" value="../WebContent/WEB-INF/lib"/>
+	<property name="tomcat.lib.dir" value="../lib/tomcat7"/>
 	    
 	<!-- clean classes -->
 	<target name="clean.classes">
@@ -106,10 +107,10 @@
     </target>
 	
 	<path id="weblibraries.path">    
-        <fileset dir="${lib.dir}">
+        <fileset dir="${web.lib.dir}">
             <include name="*.jar"/>
         </fileset>
-		<fileset dir="${apachegui_home}/tomcat/lib">
+		<fileset dir="${tomcat.lib.dir}">
             <include name="*.jar"/>
         </fileset>
     </path>
@@ -141,7 +142,7 @@
     <target name="war" description="Build the ApacheGUI war file" depends="compile">
         <war destfile="${dist.dir}/ApacheGUI.war" webxml="../WebContent/WEB-INF/web.xml">
           <fileset dir="${release.dir}"/>
-          <lib dir="${lib.dir}"></lib>
+          <lib dir="${web.lib.dir}"></lib>
           <webinf dir="../WebContent/WEB-INF">
                <include name="jsp/**"/>
                <include name="spring-servlet.xml"/>

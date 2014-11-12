@@ -1,7 +1,5 @@
 package net.apachegui.server;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 
 import net.apachegui.db.SettingsDao;

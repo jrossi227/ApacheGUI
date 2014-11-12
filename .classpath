@@ -1,10 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ApacheGUI"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Tomcat"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/TOMCAT"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Java1.6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/tomcat7/annotations-api.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/catalina-ant.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/catalina-ha.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/catalina-tribes.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/catalina.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/cos.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derby.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyclient.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyLocale_cs.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyLocale_de_DE.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyLocale_es.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyLocale_fr.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyLocale_hu.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyLocale_it.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyLocale_ja_JP.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyLocale_ko_KR.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyLocale_pl.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyLocale_pt_BR.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyLocale_ru.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyLocale_zh_CN.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyLocale_zh_TW.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbynet.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbyrun.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/derbytools.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/ecj-P20140317-1600.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/el-api.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/jasper-el.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/jasper.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/jsoup-1.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/jsp-api.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/log4j.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/servlet-api.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/tomcat-api.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/tomcat-coyote.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/tomcat-dbcp.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/tomcat-i18n-es.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/tomcat-i18n-fr.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/tomcat-i18n-ja.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/tomcat-jdbc.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/tomcat-util.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/tomcat7-websocket.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat7/websocket-api.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
