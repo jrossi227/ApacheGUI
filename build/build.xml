@@ -163,8 +163,43 @@
 	
 	<!-- move war to webapps -->
 	<target name="deploy">
-		<move file="${dist.dir}/ApacheGUI.war" todir="${apachegui_home}/tomcat/webapps"/>
+		<move file="${dist.dir}/ApacheGUI.war" todir="${apachegui.home}/tomcat/webapps"/>
 	</target>
 	
+	<!-- package ready for release -->
+	<target name="package">
+	
+		<exec dir="${apachegui.home}/bin" executable="sudo">
+			<arg line="./stop.sh"/>
+        </exec>
+		
+		<mkdir dir="${package.dir}/ApacheGUI-${version}"/>
+		
+		<delete includeemptydirs="true">
+		    <fileset dir="${package.dir}/ApacheGUI-${version}" includes="**/*"/>
+        </delete>
+		
+		<echo message="Copying project"/>
+		<exec executable="cp">
+		    <arg line="-R ${apachegui.home}/ ${package.dir}/ApacheGUI-${version}/"/>
+		</exec>
+		
+		<delete includeemptydirs="true">
+			<fileset dir="${package.dir}/ApacheGUI-${version}" includes="**/*.log"/>
+			<fileset dir="${package.dir}/ApacheGUI-${version}/tomcat/logs" includes="**/*"/>
+			<fileset dir="${package.dir}/ApacheGUI-${version}/bin/apacheGUI" includes="**/*"/>
+		</delete>	
+		
+		<echo message="Copying database"/>
+		<exec executable="cp">
+            <arg line="-R db/apacheGUI/ ${package.dir}/ApacheGUI-${version}/bin/apacheGUI/"/>
+        </exec>
+		
+		<echo message="Creating archive"/>
+		<exec dir="${package.dir}" executable="tar">
+            <arg line="cvzf ApacheGUI-${version}.tar.gz ApacheGUI-${version}"/>
+        </exec>
+		
+	</target>
 	
 </project>	
