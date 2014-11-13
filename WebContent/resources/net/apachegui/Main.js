@@ -201,93 +201,44 @@ define([ "dojo/_base/declare",
 				
 				menuInstance.init();
 				menuInstance.setCurrentMenuId(option);
+				menuInstance.focusMenuOption(option);
 				
-				var vtree = registry.byId('menuTree');
 				if(menuInstance.isGUISettings(option))
 				{
-					vtree.set('path', ['apacheRoot','GUISettings']);
 					net.apachegui.GUISettings.getInstance().init();
 				}
 				
 				if(menuInstance.isHistory(option))
 				{
-					vtree.set('path', ['apacheRoot','History']);
 					net.apachegui.History.getInstance().init();
 				}
 				
 				if(menuInstance.isControl(option))
 				{
-					vtree.set('path', ['apacheRoot','Control']);
 					net.apachegui.Control.getInstance().init();
 				}
 				
 				if(menuInstance.isGlobalSettings(option))
 				{
-					vtree.set('path', ['apacheRoot','Global_Settings']);
 					net.apachegui.globalsettings.GlobalSettings.getInstance().init();
 				}
 				
 				if(menuInstance.isVirtualHosts(option))
 				{
-					vtree.set('path', ['apacheRoot','Virtual_Hosts']);
 					net.apachegui.VirtualHosts.getInstance().init();
 				}
 				
-				var pathArray;
-				var subOption;
-				var i;
 				if(menuInstance.isLogs(option)) {
-					
-					//vtree.set('path', ['apacheRoot','Logs',option]);
-					pathArray=new Array();
-					var logFilePath=this.getLogDirectoryPath();
-					subOption=option.substring(5);
-						
-					pathArray.push('apacheRoot');
-					pathArray.push('Logs-' + logFilePath);
-					i=0;
-					for(i=logFilePath.length + 1; i<=subOption.length; i++)
-					{
-						if(i==subOption.length)
-						{
-							pathArray.push('Logs-' + subOption);
-						}	
-						else if(subOption.charAt(i)=='/')
-						{
-							pathArray.push('Logs-' + subOption.substring(0, i));
-						}	
-					}
-					vtree.set('path', pathArray);
 					net.apachegui.Logs.getInstance().init();
 				}
 				
+				var subOption;
 				if(menuInstance.isDocuments(option)) {
 					var documents = net.apachegui.Documents.getInstance();
-					
-					pathArray=new Array();
-					
-					//We need to start with the windows drive eg C:/
-					var docFilePath=this.isWindows() ? this.getDocDirectoryPath() : "/";
 					
 					subOption=option.substring(10);
 					if(this.validateFileExists(subOption))
 					{		
-						pathArray.push('apacheRoot');
-						pathArray.push('Documents-' + docFilePath);
-						i=0;
-						for(i=docFilePath.length + 1; i<=subOption.length; i++)
-						{
-							if(i==subOption.length)
-							{
-								pathArray.push('Documents-' + subOption);
-							}	
-							else if(subOption.charAt(i)=='/')
-							{
-								pathArray.push('Documents-' + subOption.substring(0, i));
-							}	
-						}
-						vtree.set('path', pathArray);
-						
 						if(documents.getIsText()) {
 							documents.init();
 							documents.setEditorFromFile('../web/Documents',subOption);
@@ -311,27 +262,9 @@ define([ "dojo/_base/declare",
 					var configuration = net.apachegui.Configuration.getInstance();
 					configuration.init();
 					
-					pathArray=new Array();
-					var confFilePath=this.getConfDirectoryPath();
 					subOption=option.substring(14);
 					if(this.validateFileExists(subOption))
 					{	
-						pathArray.push('apacheRoot');
-						pathArray.push('Configuration-' + confFilePath);
-						i=0;
-						for(i=confFilePath.length + 1; i<=subOption.length; i++)
-						{
-							if(i==subOption.length)
-							{
-								pathArray.push('Configuration-' + subOption);
-							}	
-							else if(subOption.charAt(i)=='/')
-							{
-								pathArray.push('Configuration-' + subOption.substring(0, i));
-							}	
-						}
-						vtree.set('path', pathArray);
-						
 						configuration.setEditorFromFile('../web/Configuration', subOption);
 					}
 					else

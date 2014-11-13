@@ -173,31 +173,31 @@
 			<arg line="./stop.sh"/>
         </exec>
 		
-		<mkdir dir="${package.dir}/ApacheGUI-${version}"/>
+		<mkdir dir="${package.dir}"/>
 		
 		<delete includeemptydirs="true">
-		    <fileset dir="${package.dir}/ApacheGUI-${version}" includes="**/*"/>
+		    <fileset dir="${package.dir}" includes="**/*"/>
         </delete>
 		
 		<echo message="Copying project"/>
 		<exec executable="cp">
-		    <arg line="-R ${apachegui.home}/ ${package.dir}/ApacheGUI-${version}/"/>
+		    <arg line="-R ${apachegui.home} ${package.dir}"/>
 		</exec>
 		
 		<delete includeemptydirs="true">
-			<fileset dir="${package.dir}/ApacheGUI-${version}" includes="**/*.log"/>
-			<fileset dir="${package.dir}/ApacheGUI-${version}/tomcat/logs" includes="**/*"/>
-			<fileset dir="${package.dir}/ApacheGUI-${version}/bin/apacheGUI" includes="**/*"/>
+			<fileset dir="${package.dir}" includes="**/*.log"/>
+			<fileset dir="${package.dir}/ApacheGUI/tomcat/logs" includes="**/*"/>
+			<fileset dir="${package.dir}/ApacheGUI/bin/apacheGUI"/>
 		</delete>	
 		
 		<echo message="Copying database"/>
 		<exec executable="cp">
-            <arg line="-R db/apacheGUI/ ${package.dir}/ApacheGUI-${version}/bin/apacheGUI/"/>
+            <arg line="-R db/apacheGUI ${package.dir}/ApacheGUI/bin"/>
         </exec>
 		
 		<echo message="Creating archive"/>
 		<exec dir="${package.dir}" executable="tar">
-            <arg line="cvzf ApacheGUI-${version}.tar.gz ApacheGUI-${version}"/>
+            <arg line="cvzf ApacheGUI-${version}.tar.gz ApacheGUI"/>
         </exec>
 		
 	</target>

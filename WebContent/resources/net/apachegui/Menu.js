@@ -601,11 +601,124 @@ define([ "dojo/_base/declare",
 		refresh: function () {
 			
 			registry.byId('menuTree').reload();
-			net.apachegui.Main.getInstance().init(net.apachegui.Main.getInstance().getCurrentOption());
+			this.focusMenuOption(net.apachegui.Main.getInstance().getCurrentOption());
+		},
+		
+		focusMenuOption: function(option) {
+						
+			this.setCurrentMenuId(option);
+			
+			var mainInstance = net.apachegui.Main.getInstance();
+			
+			var vtree = registry.byId('menuTree');
+			if(this.isGUISettings(option))
+			{
+				vtree.set('path', ['apacheRoot','GUISettings']);
+			}
+			
+			if(this.isHistory(option))
+			{
+				vtree.set('path', ['apacheRoot','History']);
+			}
+			
+			if(this.isControl(option))
+			{
+				vtree.set('path', ['apacheRoot','Control']);
+			}
+			
+			if(this.isGlobalSettings(option))
+			{
+				vtree.set('path', ['apacheRoot','Global_Settings']);
+			}
+			
+			if(this.isVirtualHosts(option))
+			{
+				vtree.set('path', ['apacheRoot','Virtual_Hosts']);
+			}
+			
+			var pathArray;
+			var subOption;
+			var i;
+			if(this.isLogs(option)) {
+				
+				pathArray=new Array();
+				var logFilePath = mainInstance.getLogDirectoryPath();
+				subOption=option.substring(5);
+					
+				pathArray.push('apacheRoot');
+				pathArray.push('Logs-' + logFilePath);
+				i=0;
+				for(i=logFilePath.length + 1; i<=subOption.length; i++)
+				{
+					if(i==subOption.length)
+					{
+						pathArray.push('Logs-' + subOption);
+					}	
+					else if(subOption.charAt(i)=='/')
+					{
+						pathArray.push('Logs-' + subOption.substring(0, i));
+					}	
+				}
+				vtree.set('path', pathArray);
+			}
+			
+			if(this.isDocuments(option)) {
+				
+				pathArray=new Array();
+				
+				//We need to start with the windows drive eg C:/
+				var docFilePath = mainInstance.isWindows() ? mainInstance.getDocDirectoryPath() : "/";
+				
+				subOption=option.substring(10);
+				if(mainInstance.validateFileExists(subOption))
+				{		
+					pathArray.push('apacheRoot');
+					pathArray.push('Documents-' + docFilePath);
+					i=0;
+					for(i=docFilePath.length + 1; i<=subOption.length; i++)
+					{
+						if(i==subOption.length)
+						{
+							pathArray.push('Documents-' + subOption);
+						}	
+						else if(subOption.charAt(i)=='/')
+						{
+							pathArray.push('Documents-' + subOption.substring(0, i));
+						}	
+					}
+					vtree.set('path', pathArray);
+				}
+			}
+			
+			if(this.isConfiguration(option)) {	
+				
+				pathArray=new Array();
+				var confFilePath = mainInstance.getConfDirectoryPath();
+				subOption=option.substring(14);
+				if(mainInstance.validateFileExists(subOption))
+				{	
+					pathArray.push('apacheRoot');
+					pathArray.push('Configuration-' + confFilePath);
+					i=0;
+					for(i=confFilePath.length + 1; i<=subOption.length; i++)
+					{
+						if(i==subOption.length)
+						{
+							pathArray.push('Configuration-' + subOption);
+						}	
+						else if(subOption.charAt(i)=='/')
+						{
+							pathArray.push('Configuration-' + subOption.substring(0, i));
+						}	
+					}
+					vtree.set('path', pathArray);
+					
+				}
+			}
+			
 		},
 		
 		menuClick: function (id, type) {
-			 var stype=type.toString();
 			 var sid=id.toString();
 			 
 			 if(this.isGUISettings(sid))
