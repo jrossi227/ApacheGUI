@@ -6,6 +6,7 @@ var profile = (function(){
         action: "release",
         layerOptimize: "closure",
         optimize: "closure",
+        useSourceMaps: false,
 //        layerOptimize: "shrinksafe",
 //        optimize: "shrinksafe",
         cssOptimize: "comments",

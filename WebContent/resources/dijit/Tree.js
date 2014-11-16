@@ -649,6 +649,8 @@ define([
 		//		Parameter to dndController, see `dijit/tree/dndSource.onDndDrop()`.
 		//		Generally this doesn't need to be set.
 		onDndDrop: null,
+		
+		handlers: [],
 
 		itemCreator: null,
 		/*=====
@@ -777,37 +779,47 @@ define([
 		postCreate: function(){
 			this._initState();
 
+			for( i in this.handlers) {
+				this.handlers[i].remove();
+			}
+			
+			this.handlers = [];
+			
+			this.handlers.push(
+					on(this.containerNode, on.selector(".dijitTreeNode", touch.enter), function(evt){
+						self._onNodeMouseEnter(registry.byNode(this), evt);
+					}),
+					on(this.containerNode, on.selector(".dijitTreeNode", touch.leave), function(evt){
+						self._onNodeMouseLeave(registry.byNode(this), evt);
+					}),
+					on(this.containerNode, on.selector(".dijitTreeRow", a11yclick.press), function(evt){
+						self._onNodePress(registry.getEnclosingWidget(this), evt);
+					}),
+					on(this.containerNode, on.selector(".dijitTreeRow", a11yclick), function(evt){
+						self._onClick(registry.getEnclosingWidget(this), evt);
+					}),
+					on(this.containerNode, on.selector(".dijitTreeRow", "dblclick"), function(evt){
+						self._onDblClick(registry.getEnclosingWidget(this), evt);
+					})
+			);
+			
 			// Catch events on TreeNodes
 			var self = this;
-			this.own(
-				on(this.containerNode, on.selector(".dijitTreeNode", touch.enter), function(evt){
-					self._onNodeMouseEnter(registry.byNode(this), evt);
-				}),
-				on(this.containerNode, on.selector(".dijitTreeNode", touch.leave), function(evt){
-					self._onNodeMouseLeave(registry.byNode(this), evt);
-				}),
-				on(this.containerNode, on.selector(".dijitTreeRow", a11yclick.press), function(evt){
-					self._onNodePress(registry.getEnclosingWidget(this), evt);
-				}),
-				on(this.containerNode, on.selector(".dijitTreeRow", a11yclick), function(evt){
-					self._onClick(registry.getEnclosingWidget(this), evt);
-				}),
-				on(this.containerNode, on.selector(".dijitTreeRow", "dblclick"), function(evt){
-					self._onDblClick(registry.getEnclosingWidget(this), evt);
-				})
-			);
 
 			// Create glue between store and Tree, if not specified directly by user
 			if(!this.model){
 				this._store2model();
 			}
 
-			// monitor changes to items
-			this.own(
-				aspect.after(this.model, "onChange", lang.hitch(this, "_onItemChange"), true),
-				aspect.after(this.model, "onChildrenChange", lang.hitch(this, "_onItemChildrenChange"), true),
-				aspect.after(this.model, "onDelete", lang.hitch(this, "_onItemDelete"), true)
-			);
+			this.handlers.push(
+					aspect.after(this.model, "onChange", lang.hitch(this, "_onItemChange"), true),
+					aspect.after(this.model, "onChildrenChange", lang.hitch(this, "_onItemChildrenChange"), true),
+					aspect.after(this.model, "onDelete", lang.hitch(this, "_onItemDelete"), true)
+			);		
+			
+			for( i in this.handlers) {
+				this.own(this.handlers[i]);
+			}
 
 			this.inherited(arguments);
 
