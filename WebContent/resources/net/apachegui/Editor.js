@@ -22,6 +22,7 @@ define([ "dojo/_base/declare",
 		currMode: null,
 		openTime: -1,
 		refreshUpdateTimerHandler: null,
+		reloadDialogOpen: false,
 		
 		modes : {
 			'plain'			:	'text/plain',
@@ -402,12 +403,17 @@ define([ "dojo/_base/declare",
 					if(time > that.getOpenTime()) {
 						that.setOpenTime(time);
 						
-						net.apachegui.Util.confirmDialog("Reload", "This file has been modified outside of this editor. Would you like to reload?", function confirm(conf) {
-							if(conf)
-							{
-								window.location.reload();
-							}
-						});
+						if(!that.reloadDialogOpen) {
+							
+							that.reloadDialogOpen = true;
+    						net.apachegui.Util.confirmDialog("Reload", "This file has been modified outside of this editor. Would you like to reload?", function confirm(conf) {
+    							if(conf) {
+    								window.location.reload();
+    							} else {
+    								that.reloadDialogOpen = false;
+    							}
+    						});
+						}
 					}
 				},
 				function(error) {
