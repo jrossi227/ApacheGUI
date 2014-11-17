@@ -1,11 +1,11 @@
 var profile = (function(){
-	
-	return {
-		resourceTags:{
+    
+    return {
+        resourceTags:{
 
-			amd: function(filename, mid){
-				return /\.js$/.test(filename);
-			}
-		}
-	};
+            amd: function(filename, mid){
+                return /\.js$/.test(filename);
+            }
+        }
+    };
 })();
