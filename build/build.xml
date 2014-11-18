@@ -38,13 +38,34 @@
 	</target>	
 	
 	<!-- build js -->
-	<target name="build.js">
+	<condition property="isWindows">
+		<os family="windows" />
+	</condition>
+	
+	<condition property="isUnix">
+		<os family="unix" />
+	</condition>
+	
+	<target name="build.js" if="isUnix">
 	
 		<exec dir="${resources.dir}" executable="util/buildscripts/build.sh">
 		       <arg line="bin=node"/>
 		       <arg line="profile=apachegui.profile.js"/>
 		       <arg line="action=release"/>
 		</exec>
+		
+	</target>
+	
+	<target name="windows.build.js" if="isWindows">
+		
+		<exec dir="${resources.dir}" executable="cmd">
+			    <arg value="/c"/>
+				<arg value="call"/>
+			    <arg value="util/buildscripts/build.bat"/>
+				<arg line="bin=node"/>
+		        <arg line="profile=apachegui.profile.js"/>
+				<arg line="action=release"/>
+		</exec>			
 		
 	</target>
 	
@@ -134,7 +155,7 @@
 	</target>	
 	
 	<!-- build js -->
-	<target name="package.js" description="Package the javascript" depends="clean.js,build.js,delete.unused.js,copy.release">
+	<target name="package.js" description="Package the javascript" depends="clean.js,build.js,windows.build.js,delete.unused.js,copy.release">
 	    
     </target>   
 	
@@ -162,12 +183,37 @@
     </target>   
 	
 	<!-- move war to webapps -->
-	<target name="deploy">
+	<target name="unix.deploy" if="isUnix">
 		<move file="${dist.dir}/ApacheGUI.war" todir="${apachegui.home}/tomcat/webapps"/>
 	</target>
 	
+	<target name="windows.deploy" if="isWindows">
+		<exec dir="${apachegui.home}/bin" executable="cmd">
+			    <arg value="/c"/>
+			    <arg value="stop.bat"/>
+		</exec>		
+		
+		<delete includeemptydirs="true">
+			<fileset dir="${apachegui.home}/tomcat/webapps">
+				<include name="ApacheGUI.war"/>
+			</fileset>
+			
+			<fileset dir="${apachegui.home}/tomcat/webapps/ApacheGUI"/>
+         </delete>
+		
+		<move file="${dist.dir}/ApacheGUI.war" todir="${apachegui.home}/tomcat/webapps"/>
+		
+		<exec dir="${apachegui.home}/bin" executable="cmd">
+			    <arg value="/c"/>
+			    <arg value="run.bat"/>
+		</exec>	
+
+	</target>
+	
+	<target name="deploy" depends="unix.deploy,windows.deploy"></target>
+	
 	<!-- package ready for release -->
-	<target name="package">
+	<target name="package" description="Build the ApacheGUI tar package. This is Unix specific">
 	
 		<exec dir="${apachegui.home}/bin" executable="sudo">
 			<arg line="./stop.sh"/>
