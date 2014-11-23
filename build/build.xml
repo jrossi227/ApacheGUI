@@ -1,110 +1,88 @@
 <?xml version="1.0"?>
 <project name="ApacheConfParser" default="war.all" basedir=".">
 
-	<property name="ant.build.javac.source" value="1.6"/>
-	<property name="ant.build.javac.target" value="1.6"/>
-	
-	<loadproperties srcFile="build.properties"/> 
-		
-	<property name="classes.dir" value="classes"/>
-	<property name="source.dir" value="../src"/>
-	<property name="resources.dir" value="../WebContent/resources"/>
-	<property name="release.dir" value="release"/>
-	<property name="dist.dir" value="dist"/>
-	<property name="web.lib.dir" value="../WebContent/WEB-INF/lib"/>
-	<property name="tomcat.lib.dir" value="../lib/tomcat7"/>
-	    
-	<!-- clean classes -->
-	<target name="clean.classes">
-	    
+    <property name="ant.build.javac.source" value="1.6"/>
+    <property name="ant.build.javac.target" value="1.6"/>
+    
+    <loadproperties srcFile="build.properties"/> 
+        
+    <property name="classes.dir" value="classes"/>
+    <property name="source.dir" value="../src"/>
+    <property name="resources.dir" value="../WebContent/resources"/>
+    <property name="release.dir" value="release"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="web.lib.dir" value="../WebContent/WEB-INF/lib"/>
+    <property name="tomcat.lib.dir" value="../lib/tomcat7"/>
+        
+    <!-- clean classes -->
+    <target name="clean.classes">
+        
         <delete quiet="true" includeemptydirs="true">
             <fileset dir="${classes.dir}" includes="**/*"/>
          </delete>
         
     </target>
-	
-	<!-- clean js -->
-	<target name="clean.js">
-	
-		<delete quiet="true" includeemptydirs="true">
+    
+    <!-- clean js -->
+    <target name="clean.js">
+    
+        <delete quiet="true" includeemptydirs="true">
             <fileset dir="${release.dir}" includes="**/*"/>
             <fileset dir="${dist.dir}" includes="**/*"/>
          </delete>
-		
-	</target>
-	
-	<!-- clean all -->
-	<target name="clean" depends="clean.classes,clean.js">
-	</target>	
-	
-	<!-- build js -->
-	<condition property="isWindows">
-		<os family="windows" />
-	</condition>
-	
-	<condition property="isUnix">
-		<os family="unix" />
-	</condition>
-	
-	<target name="build.js" if="isUnix">
-	
-		<exec dir="${resources.dir}" executable="util/buildscripts/build.sh">
-		       <arg line="bin=node"/>
-		       <arg line="profile=apachegui.profile.js"/>
-		       <arg line="action=release"/>
-		</exec>
-		
-	</target>
-	
-	<target name="windows.build.js" if="isWindows">
-		
-		<exec dir="${resources.dir}" executable="cmd">
-			    <arg value="/c"/>
-				<arg value="call"/>
-			    <arg value="util/buildscripts/build.bat"/>
-				<arg line="bin=node"/>
-		        <arg line="profile=apachegui.profile.js"/>
-				<arg line="action=release"/>
-		</exec>			
-		
-	</target>
-	
-	
-	<!-- remove less and uncompressed -->
-	<target name="delete.unused.js">
-	
-	     <delete>
-	        <fileset dir="${release.dir}" includes="**/*.less"/>
-	     	<fileset dir="${release.dir}" includes="**/*.uncompressed.js"/>
-	     	<fileset dir="${release.dir}" includes="**/*.js.map"/>
-	     </delete>
-	
-	</target>	
-	
-	<!-- copy resources to release directory -->
-	<target name="copy.release">
-		<copy todir="${release.dir}">
-            <fileset dir="../WebContent">  
-                <include name="HistoryFiles/**"/>
-                <include name="search/**"/>
-            </fileset>
-        </copy>
-		<copy todir="${release.dir}/resources">
-    		<fileset dir="${resources.dir}">  
-    			<include name="codemirror/**"/>
-                <include name="flot/**"/>
-                <include name="images/**"/>
-                <include name="jquery/**"/>
-                <include name="json/**"/>
-                <include name="style/**"/>
-    		</fileset>
-		</copy>
-		<delete>
-			  <fileset dir="${release.dir}/resources" includes="build-report.txt"/>
-		</delete>	
-	</target>
-	
-	<target name="copy.release.dev">
+        
+    </target>
+    
+    <!-- clean all -->
+    <target name="clean" depends="clean.classes,clean.js">
+    </target>    
+    
+    <!-- build js -->
+    <condition property="isWindows">
+        <os family="windows" />
+    </condition>
+    
+    <condition property="isUnix">
+        <os family="unix" />
+    </condition>
+    
+    <target name="build.js" if="isUnix">
+    
+        <exec dir="${resources.dir}" executable="util/buildscripts/build.sh">
+               <arg line="bin=node"/>
+               <arg line="profile=apachegui.profile.js"/>
+               <arg line="action=release"/>
+        </exec>
+        
+    </target>
+    
+    <target name="windows.build.js" if="isWindows">
+        
+        <exec dir="${resources.dir}" executable="cmd">
+                <arg value="/c"/>
+                <arg value="call"/>
+                <arg value="util/buildscripts/build.bat"/>
+                <arg line="bin=node"/>
+                <arg line="profile=apachegui.profile.js"/>
+                <arg line="action=release"/>
+        </exec>            
+        
+    </target>
+    
+    
+    <!-- remove less and uncompressed -->
+    <target name="delete.unused.js">
+    
+         <delete>
+            <fileset dir="${release.dir}" includes="**/*.less"/>
+             <fileset dir="${release.dir}" includes="**/*.uncompressed.js"/>
+             <fileset dir="${release.dir}" includes="**/*.js.map"/>
+         </delete>
+    
+    </target>    
+    
+    <!-- copy resources to release directory -->
+    <target name="copy.release">
         <copy todir="${release.dir}">
             <fileset dir="../WebContent">  
                 <include name="HistoryFiles/**"/>
@@ -119,47 +97,69 @@
                 <include name="jquery/**"/>
                 <include name="json/**"/>
                 <include name="style/**"/>
-            	<include name="net/**"/>
+            </fileset>
+        </copy>
+        <delete>
+              <fileset dir="${release.dir}/resources" includes="build-report.txt"/>
+        </delete>    
+    </target>
+    
+    <target name="copy.release.dev">
+        <copy todir="${release.dir}">
+            <fileset dir="../WebContent">  
+                <include name="HistoryFiles/**"/>
+                <include name="search/**"/>
+            </fileset>
+        </copy>
+        <copy todir="${release.dir}/resources">
+            <fileset dir="${resources.dir}">  
+                <include name="codemirror/**"/>
+                <include name="flot/**"/>
+                <include name="images/**"/>
+                <include name="jquery/**"/>
+                <include name="json/**"/>
+                <include name="style/**"/>
+                <include name="net/**"/>
                 <include name="dojo/**"/>
-            	<include name="dijit/**"/>
-            	<include name="dojox/**"/>
+                <include name="dijit/**"/>
+                <include name="dojox/**"/>
             </fileset>
         </copy>
     </target>
-	
-	<path id="weblibraries.path">    
+    
+    <path id="weblibraries.path">    
         <fileset dir="${web.lib.dir}">
             <include name="*.jar"/>
         </fileset>
-		<fileset dir="${tomcat.lib.dir}">
+        <fileset dir="${tomcat.lib.dir}">
             <include name="*.jar"/>
         </fileset>
     </path>
-	
-	<!-- compile java --> 
-	
-	<target name="compile" depends="clean.classes">
-    	<javac srcdir="${source.dir}" destdir="${classes.dir}" debug="true">
+    
+    <!-- compile java --> 
+    
+    <target name="compile" depends="clean.classes">
+        <javac srcdir="${source.dir}" destdir="${classes.dir}" debug="true">
             <classpath refid="weblibraries.path"/>
         </javac>
-		<copy todir="${classes.dir}">
-			<fileset dir="${source.dir}"> 
-				<include name="log4j.properties"/>
-			</fileset>	
-		</copy>	
-	</target>	
-	
-	<!-- build dev js -->
-	<target name="package.js.dev" description="Package the javascript" depends="clean.js,copy.release.dev">
-	
-	</target>	
-	
-	<!-- build js -->
-	<target name="package.js" description="Package the javascript" depends="clean.js,build.js,windows.build.js,delete.unused.js,copy.release">
-	    
+        <copy todir="${classes.dir}">
+            <fileset dir="${source.dir}"> 
+                <include name="log4j.properties"/>
+            </fileset>    
+        </copy>    
+    </target>    
+    
+    <!-- build dev js -->
+    <target name="package.js.dev" description="Package the javascript" depends="clean.js,copy.release.dev">
+    
+    </target>    
+    
+    <!-- build js -->
+    <target name="package.js" description="Package the javascript" depends="clean.js,build.js,windows.build.js,delete.unused.js,copy.release">
+        
     </target>   
-	
-	<!-- build war only -->
+    
+    <!-- build war only -->
     <target name="war" description="Build the ApacheGUI war file" depends="compile">
         <war destfile="${dist.dir}/ApacheGUI.war" webxml="../WebContent/WEB-INF/web.xml">
           <fileset dir="${release.dir}"/>
@@ -170,82 +170,82 @@
           </webinf> 
           <classes dir="classes"/>
         </war>
-    </target> 	
-	
-	<!-- build dev war -->
-	<target name="war.all.dev" description="Build the ApacheGUI war file" depends="package.js.dev,compile,war">
+    </target>     
+    
+    <!-- build dev war -->
+    <target name="war.all.dev" description="Build the ApacheGUI war file" depends="package.js.dev,compile,war">
         
     </target>   
-	
-	<!-- build release war -->
-	<target name="war.all" description="Build the ApacheGUI war file" depends="package.js,compile,war">
+    
+    <!-- build release war -->
+    <target name="war.all" description="Build the ApacheGUI war file" depends="package.js,compile,war">
         
     </target>   
-	
-	<!-- move war to webapps -->
-	<target name="unix.deploy" if="isUnix">
-		<move file="${dist.dir}/ApacheGUI.war" todir="${apachegui.home}/tomcat/webapps"/>
-	</target>
-	
-	<target name="windows.deploy" if="isWindows">
-		<exec dir="${apachegui.home}/bin" executable="cmd">
-			    <arg value="/c"/>
-			    <arg value="stop.bat"/>
-		</exec>		
-		
-		<delete includeemptydirs="true">
-			<fileset dir="${apachegui.home}/tomcat/webapps">
-				<include name="ApacheGUI.war"/>
-			</fileset>
-			
-			<fileset dir="${apachegui.home}/tomcat/webapps/ApacheGUI"/>
+    
+    <!-- move war to webapps -->
+    <target name="unix.deploy" if="isUnix">
+        <move file="${dist.dir}/ApacheGUI.war" todir="${apachegui.home}/tomcat/webapps"/>
+    </target>
+    
+    <target name="windows.deploy" if="isWindows">
+        <exec dir="${apachegui.home}/bin" executable="cmd">
+                <arg value="/c"/>
+                <arg value="stop.bat"/>
+        </exec>        
+        
+        <delete includeemptydirs="true">
+            <fileset dir="${apachegui.home}/tomcat/webapps">
+                <include name="ApacheGUI.war"/>
+            </fileset>
+            
+            <fileset dir="${apachegui.home}/tomcat/webapps/ApacheGUI"/>
          </delete>
-		
-		<move file="${dist.dir}/ApacheGUI.war" todir="${apachegui.home}/tomcat/webapps"/>
-		
-		<exec dir="${apachegui.home}/bin" executable="cmd">
-			    <arg value="/c"/>
-			    <arg value="run.bat"/>
-		</exec>	
+        
+        <move file="${dist.dir}/ApacheGUI.war" todir="${apachegui.home}/tomcat/webapps"/>
+        
+        <exec dir="${apachegui.home}/bin" executable="cmd">
+                <arg value="/c"/>
+                <arg value="run.bat"/>
+        </exec>    
 
-	</target>
-	
-	<target name="deploy" depends="unix.deploy,windows.deploy"></target>
-	
-	<!-- package ready for release -->
-	<target name="package" description="Build the ApacheGUI tar package. This is Unix specific">
-	
-		<exec dir="${apachegui.home}/bin" executable="sudo">
-			<arg line="./stop.sh"/>
+    </target>
+    
+    <target name="deploy" depends="unix.deploy,windows.deploy"></target>
+    
+    <!-- package ready for release -->
+    <target name="package" description="Build the ApacheGUI tar package. This is Unix specific">
+    
+        <exec dir="${apachegui.home}/bin" executable="sudo">
+            <arg line="./stop.sh"/>
         </exec>
-		
-		<mkdir dir="${package.dir}"/>
-		
-		<delete includeemptydirs="true">
-		    <fileset dir="${package.dir}" includes="**/*"/>
+        
+        <mkdir dir="${package.dir}"/>
+        
+        <delete includeemptydirs="true">
+            <fileset dir="${package.dir}" includes="**/*"/>
         </delete>
-		
-		<echo message="Copying project"/>
-		<exec executable="cp">
-		    <arg line="-R ${apachegui.home} ${package.dir}"/>
-		</exec>
-		
-		<delete includeemptydirs="true">
-			<fileset dir="${package.dir}" includes="**/*.log"/>
-			<fileset dir="${package.dir}/ApacheGUI/tomcat/logs" includes="**/*"/>
-			<fileset dir="${package.dir}/ApacheGUI/bin/apacheGUI"/>
-		</delete>	
-		
-		<echo message="Copying database"/>
-		<exec executable="cp">
+        
+        <echo message="Copying project"/>
+        <exec executable="cp">
+            <arg line="-R ${apachegui.home} ${package.dir}"/>
+        </exec>
+        
+        <delete includeemptydirs="true">
+            <fileset dir="${package.dir}" includes="**/*.log"/>
+            <fileset dir="${package.dir}/ApacheGUI/tomcat/logs" includes="**/*"/>
+            <fileset dir="${package.dir}/ApacheGUI/bin/apacheGUI"/>
+        </delete>    
+        
+        <echo message="Copying database"/>
+        <exec executable="cp">
             <arg line="-R db/apacheGUI ${package.dir}/ApacheGUI/bin"/>
         </exec>
-		
-		<echo message="Creating archive"/>
-		<exec dir="${package.dir}" executable="tar">
+        
+        <echo message="Creating archive"/>
+        <exec dir="${package.dir}" executable="tar">
             <arg line="cvzf ApacheGUI-${version}.tar.gz ApacheGUI"/>
         </exec>
-		
-	</target>
-	
-</project>	
+        
+    </target>
+    
+</project>    
