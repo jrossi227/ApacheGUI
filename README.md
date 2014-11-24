@@ -1,7 +1,7 @@
 Website 
 ---------------
 
-The ApacheGUI website is located here (http://apachegui.net). Questions and comments can be sent to apachegui.net@gmail.com
+The ApacheGUI website is located here (http://apachegui.net). Questions and comments can be sent to apachegui.net@gmail.com or by creating an issue.
 
 Packages
 ----------------
@@ -41,5 +41,5 @@ Building ApacheGUI
 ######Ant options
 - *ant war.all* minifies required javascript and builds a new war under *build/dist* 
 - *ant war.dev* copies required javascript without minification and builds a new war under *build/dist* 
-- *ant deploy* moves the war from *build/dist* to *apachegui.home/tomcat/webapps* this will re-depoly the application.
+- *ant deploy* moves the war from *build/dist* to *apachegui.home/tomcat/webapps*. This will re-depoly the application.
 - *ant package* stops ApacheGUI and builds a new .tar.gz package. The file is put into the *package.dir* directory that is specified in *build/build.properties*.
