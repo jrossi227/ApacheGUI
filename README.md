@@ -42,7 +42,7 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 
 ######Ant options
 - *ant war.all* minifies required javascript and builds a new war under *build/dist* 
-- *ant war.dev* copies required javascript without minification and builds a new war under *build/dist* 
+- *ant war.all.dev* copies required javascript without minification and builds a new war under *build/dist* 
 - *ant deploy* moves the war from *build/dist* to *apachegui.home/tomcat/webapps*. This will re-depoly the application.
 - *ant package* stops ApacheGUI and builds a new .tar.gz package. The file is put into the *package.dir* directory that is specified in *build/build.properties*.
 
@@ -56,5 +56,5 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 
 ######Ant options
 - *ant war.all* minifies required javascript and builds a new war under *build/dist* 
-- *ant war.dev* copies required javascript without minification and builds a new war under *build/dist* 
+- *ant war.all.dev* copies required javascript without minification and builds a new war under *build/dist* 
 - *ant deploy* stops ApacheGUI moves the war from *build/dist* to *apachegui.home/tomcat/webapps* and starts ApacheGUI. This will re-depoly the application.
