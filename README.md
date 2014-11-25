@@ -24,6 +24,8 @@ ApacheGUI is dependant on the following project(s). It is not required to downlo
 Building ApacheGUI
 ----------------
 
+Although Windows is fully supported, it is recommended to use a Linux or Mac OSX distribution when developing ApacheGUI. This is because Apache and Tomcat run more smoothly on IX based distributions.
+
 ####Build Dependancies
 
 - Node js
@@ -43,3 +45,16 @@ Building ApacheGUI
 - *ant war.dev* copies required javascript without minification and builds a new war under *build/dist* 
 - *ant deploy* moves the war from *build/dist* to *apachegui.home/tomcat/webapps*. This will re-depoly the application.
 - *ant package* stops ApacheGUI and builds a new .tar.gz package. The file is put into the *package.dir* directory that is specified in *build/build.properties*.
+
+####Windows
+
+1. Download the latest package from the package site (https://sourceforge.net/projects/apachegui/files/). A Package will follow the naming convention *ApacheGUI-Windows{architecture}-{version}.msi*.
+2. Install the ApacheGUI msi.
+3. Edit *build/build.properties* and set *apachegui.home* to the install location in step 2. This is usually located under *C:\Program Files\ApacheGUI*
+4. Navigate to the *build* directory.
+5. Run the Ant options below.
+
+######Ant options
+- *ant war.all* minifies required javascript and builds a new war under *build/dist* 
+- *ant war.dev* copies required javascript without minification and builds a new war under *build/dist* 
+- *ant deploy* stops ApacheGUI moves the war from *build/dist* to *apachegui.home/tomcat/webapps* and starts ApacheGUI. This will re-depoly the application.
