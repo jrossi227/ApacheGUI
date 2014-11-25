@@ -65,7 +65,12 @@ public class ExtendedStatus {
      * 
      * Example extended status enclosure:
      *
-     * <Location /server-status> SetHandler server-status Order deny,allow Deny from all Allow from 127.0.0.1 ::1 # Allow from 192.0.2.0/24 </Location>
+     * <Location /server-status> <br/>
+     *      SetHandler server-status <br/>
+     *      Order deny,allow <br/>
+     *      Deny from all <br/>
+     *      Allow from 127.0.0.1 ::1 <br/>
+     * </Location> <br/>
      * 
      * @return
      * @throws Exception
@@ -79,9 +84,7 @@ public class ExtendedStatus {
         for (int i = 0; i < enclosure.length; i++) {
             directives = enclosure[i].getDirectives();
             for (int j = 0; j < directives.length; j++) {
-                if (directives[j].getType().equals(Constants.setHandlerDirectiveString))
-                    ;
-                {
+                if (directives[j].getType().equals(Constants.setHandlerDirectiveString)) {
                     log.trace("Found " + Constants.setHandlerDirectiveString);
                     if (directives[j].getValues().length > 0) {
                         log.trace(Constants.setHandlerDirectiveString + " has value " + directives[j].getValues()[0]);
@@ -128,7 +131,12 @@ public class ExtendedStatus {
      * 
      * Example definition of server status location:
      * 
-     * <Location /server-status> SetHandler server-status Order deny,allow Deny from all Allow from 127.0.0.1 ::1 # Allow from 192.0.2.0/24 </Location>
+     * <Location /server-status> <br/>
+     *      SetHandler server-status <br/>
+     *      Order deny,allow <br/>
+     *      Deny from all <br/>
+     *      Allow from 127.0.0.1 ::1 <br/>
+     * </Location> <br/>
      * 
      * @return the absolute url for obtaining server status information
      * @throws Exception
@@ -154,9 +162,7 @@ public class ExtendedStatus {
             directives = enclosure[i].getDirectives();
             for (int j = 0; j < directives.length; j++) {
                 log.trace("Directive " + directives[j].getType());
-                if (directives[j].getType().equals(Constants.setHandlerDirectiveString))
-                    ;
-                {
+                if (directives[j].getType().equals(Constants.setHandlerDirectiveString)) {
                     log.trace("Found " + Constants.setHandlerDirectiveString);
                     if (directives[j].getValues().length > 0) {
                         log.trace(Constants.setHandlerDirectiveString + " has value " + directives[j].getValues()[0] + " Checking if it matches " + Constants.serverInfoString);
@@ -169,9 +175,10 @@ public class ExtendedStatus {
                 }
             }
         }
-        if (foundDirective)
+        if (foundDirective) {
             URL = rootURL + path;
-
+        }
+        
         return URL;
     }
 }
