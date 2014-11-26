@@ -1,12 +1,12 @@
 Website 
 ---------------
 
-The ApacheGUI website is located here (http://apachegui.net). Questions and comments can be sent to apachegui.net@gmail.com or by creating an issue.
+The ApacheGUI website is located here [http://apachegui.net](http://apachegui.net). Questions and comments can be sent to apachegui.net@gmail.com or by creating an issue.
 
 Packages
 ----------------
 
-ApacheGUI Packages are hosted on sourceforge. They can be accessed from the following link https://sourceforge.net/projects/apachegui/
+ApacheGUI Packages are hosted on sourceforge. They can be accessed from the following link [https://sourceforge.net/projects/apachegui/](https://sourceforge.net/projects/apachegui/)
 
 
 Development Environment
@@ -19,12 +19,12 @@ Project Dependancies
 
 ApacheGUI is dependant on the following project(s). It is not required to download these projects however a large amount of source code uses classes and methods in these projects.
 
-- ApacheConfParser (https://github.com/jrossi227/ApacheConfParser). The code from this project is included in *WebContent/WEB-INF/lib/ApacheConfParser-{version}.jar*.
+- ApacheConfParser ([https://github.com/jrossi227/ApacheConfParser](https://github.com/jrossi227/ApacheConfParser)). The code from this project is included in *WebContent/WEB-INF/lib/ApacheConfParser-{version}.jar*.
 
 Building ApacheGUI
 ----------------
 
-Although Windows is fully supported, it is recommended to use a Linux or Mac OSX distribution when developing ApacheGUI. This is because Apache and Tomcat run more smoothly on IX based distributions.
+Although Windows is fully supported, it is recommended to use a Linux or Mac OSX distribution when developing ApacheGUI. This is because Apache and Tomcat run more efficiently on IX based distributions.
 
 ####Build Dependancies
 
@@ -36,8 +36,8 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 ####Linux / Mac OSX build steps
 1. Download the latest package from the package site (https://sourceforge.net/projects/apachegui/files/). A Package will follow the naming convention *ApacheGUI-{version}.tar.gz*.
 2. Extract the package to a directory of your choice.
-3. Edit *build/build.properties* and set *apachegui.home* to the location in step 2.
-4. Navigate to the *build* directory.
+3. Edit *build/build.properties* in the source project and set *apachegui.home* to the location in step 2.
+4. Navigate to the *build* directory in the source project.
 5. Run the Ant options below.
 
 ######Ant options
@@ -50,8 +50,8 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 
 1. Download the latest package from the package site (https://sourceforge.net/projects/apachegui/files/). A Package will follow the naming convention *ApacheGUI-Windows{architecture}-{version}.msi*.
 2. Install the ApacheGUI msi.
-3. Edit *build/build.properties* and set *apachegui.home* to the install location in step 2. This is usually located under *C:\Program Files\ApacheGUI*
-4. Navigate to the *build* directory.
+3. Edit *build/build.properties* in the source project and set *apachegui.home* to the install location in step 2. The install location is usually located under *C:\Program Files\ApacheGUI*
+4. Navigate to the *build* directory in the source project.
 5. Run the Ant options below.
 
 ######Ant options
