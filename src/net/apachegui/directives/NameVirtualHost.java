@@ -18,7 +18,7 @@ import apache.conf.parser.EnclosureParser;
  * 
  */
 
-public class NameVirtualHost extends FactoryDirective {
+public class NameVirtualHost extends GlobalFactoryDirective {
 
     private String address;
     private String port;
@@ -119,7 +119,7 @@ public class NameVirtualHost extends FactoryDirective {
      * @throws Exception
      */
     public static NameVirtualHost[] getAllNameVirtualHosts() throws Exception {
-        return (new NameVirtualHost().getAllConfigured());
+        return (new NameVirtualHost().getAllGlobalConfigured());
     }
 
     /**
@@ -129,7 +129,7 @@ public class NameVirtualHost extends FactoryDirective {
      * @throws Exception
      */
     @Override
-    public NameVirtualHost[] getAllConfigured() throws Exception {
+    public NameVirtualHost[] getAllGlobalConfigured() throws Exception {
         ArrayList<NameVirtualHost> currNameVirtualHosts = new ArrayList<NameVirtualHost>();
 
         String nameVirtualHosts[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
@@ -151,8 +151,8 @@ public class NameVirtualHost extends FactoryDirective {
      * @throws Exception
      */
     @Override
-    public void addBeforeOrAfterFirstFoundToConfiguration(boolean before, boolean includeVHosts) throws Exception {
-        NameVirtualHost nameVirtualHosts[] = getAllConfigured();
+    public void addBeforeOrAfterFirstFoundToGlobalConfiguration(boolean before, boolean includeVHosts) throws Exception {
+        NameVirtualHost nameVirtualHosts[] = getAllGlobalConfigured();
 
         // First we check if someones already Listening on the ip, port and protocol
         for (int i = 0; i < nameVirtualHosts.length; i++) {

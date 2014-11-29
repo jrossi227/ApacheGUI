@@ -16,7 +16,7 @@ import apache.conf.parser.DirectiveParser;
  * 
  */
 
-public class Listen extends FactoryDirective {
+public class Listen extends GlobalFactoryDirective {
 
     private String ip;
     private int port;
@@ -153,7 +153,7 @@ public class Listen extends FactoryDirective {
      * @throws Exception
      */
     public static Listen[] getAllListening() throws Exception {
-        return (new Listen().getAllConfigured());
+        return (new Listen().getAllGlobalConfigured());
     }
 
     /**
@@ -163,7 +163,7 @@ public class Listen extends FactoryDirective {
      * @throws Exception
      */
     @Override
-    public Listen[] getAllConfigured() throws Exception {
+    public Listen[] getAllGlobalConfigured() throws Exception {
 
         ArrayList<Listen> listening = new ArrayList<Listen>();
 

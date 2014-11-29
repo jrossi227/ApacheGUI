@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import apache.conf.parser.DirectiveParser;
 
-public class MaxKeepAliveRequests extends SingletonDirective {
+public class MaxKeepAliveRequests extends GlobalSingletonDirective {
     private static Logger log = Logger.getLogger(MaxKeepAliveRequests.class);
 
     private int numberOfRequests;
@@ -62,7 +62,7 @@ public class MaxKeepAliveRequests extends SingletonDirective {
      * @throws Exception
      */
     public static MaxKeepAliveRequests getMaxKeepAliveRequests() throws Exception {
-        return (new MaxKeepAliveRequests().getConfigured());
+        return (new MaxKeepAliveRequests().getGlobalConfigured());
     }
 
     /**
@@ -72,7 +72,7 @@ public class MaxKeepAliveRequests extends SingletonDirective {
      * @throws Exception
      */
     @Override
-    public MaxKeepAliveRequests getConfigured() throws Exception {
+    public MaxKeepAliveRequests getGlobalConfigured() throws Exception {
         String maxKeepAliveRequests[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.maxKeepAliveRequestsDirective, false);
 

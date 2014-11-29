@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import apache.conf.parser.DirectiveParser;
 
-public class KeepAliveTimeout extends SingletonDirective {
+public class KeepAliveTimeout extends GlobalSingletonDirective {
 
     private static Logger log = Logger.getLogger(KeepAliveTimeout.class);
 
@@ -62,7 +62,7 @@ public class KeepAliveTimeout extends SingletonDirective {
      * @throws Exception
      */
     public static KeepAliveTimeout getKeepAliveTimeout() throws Exception {
-        return (new KeepAliveTimeout().getConfigured());
+        return (new KeepAliveTimeout().getGlobalConfigured());
     }
 
     /**
@@ -72,7 +72,7 @@ public class KeepAliveTimeout extends SingletonDirective {
      * @throws Exception
      */
     @Override
-    public KeepAliveTimeout getConfigured() throws Exception {
+    public KeepAliveTimeout getGlobalConfigured() throws Exception {
         String keepAliveTimeout[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.keepAliveTimeoutDirective, false);
 

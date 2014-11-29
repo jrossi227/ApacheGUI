@@ -6,7 +6,7 @@ import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
 import apache.conf.parser.DirectiveParser;
 
-public class DocumentRoot extends SingletonDirective {
+public class DocumentRoot extends GlobalSingletonDirective {
 
     private String directory;
 
@@ -51,11 +51,11 @@ public class DocumentRoot extends SingletonDirective {
      * @throws Exception
      */
     public static DocumentRoot getDocumentRoot() throws Exception {
-        return (new DocumentRoot().getConfigured());
+        return (new DocumentRoot().getGlobalConfigured());
     }
 
     @Override
-    public DocumentRoot getConfigured() throws Exception {
+    public DocumentRoot getGlobalConfigured() throws Exception {
         String documentRoot[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.documentRootDirectiveString, false);
 

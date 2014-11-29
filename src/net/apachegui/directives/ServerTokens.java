@@ -6,7 +6,7 @@ import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
 import apache.conf.parser.DirectiveParser;
 
-public class ServerTokens extends SingletonDirective {
+public class ServerTokens extends GlobalSingletonDirective {
 
     private String token;
 
@@ -65,7 +65,7 @@ public class ServerTokens extends SingletonDirective {
      * @throws Exception
      */
     public static ServerTokens getServerTokens() throws Exception {
-        return (new ServerTokens().getConfigured());
+        return (new ServerTokens().getGlobalConfigured());
     }
 
     /**
@@ -75,7 +75,7 @@ public class ServerTokens extends SingletonDirective {
      * @throws Exception
      */
     @Override
-    public ServerTokens getConfigured() throws Exception {
+    public ServerTokens getGlobalConfigured() throws Exception {
         String serverTokens[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 

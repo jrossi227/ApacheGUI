@@ -6,7 +6,7 @@ import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
 import apache.conf.parser.DirectiveParser;
 
-public class Group extends SingletonDirective {
+public class Group extends GlobalSingletonDirective {
 
     private String group;
 
@@ -42,7 +42,7 @@ public class Group extends SingletonDirective {
      * @throws Exception
      */
     public static Group getServerGroup() throws Exception {
-        return (new Group().getConfigured());
+        return (new Group().getGlobalConfigured());
     }
 
     /**
@@ -52,7 +52,7 @@ public class Group extends SingletonDirective {
      * @throws Exception
      */
     @Override
-    Group getConfigured() throws Exception {
+    Group getGlobalConfigured() throws Exception {
         String group[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 

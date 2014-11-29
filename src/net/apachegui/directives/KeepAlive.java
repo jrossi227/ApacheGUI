@@ -6,7 +6,7 @@ import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
 import apache.conf.parser.DirectiveParser;
 
-public class KeepAlive extends SingletonDirective {
+public class KeepAlive extends GlobalSingletonDirective {
     private boolean status;
 
     public KeepAlive() {
@@ -60,7 +60,7 @@ public class KeepAlive extends SingletonDirective {
      * @throws Exception
      */
     public static KeepAlive getKeepAlive() throws Exception {
-        return (new KeepAlive().getConfigured());
+        return (new KeepAlive().getGlobalConfigured());
     }
 
     /**
@@ -70,7 +70,7 @@ public class KeepAlive extends SingletonDirective {
      * @throws Exception
      */
     @Override
-    public KeepAlive getConfigured() throws Exception {
+    public KeepAlive getGlobalConfigured() throws Exception {
         String keepAlive[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 

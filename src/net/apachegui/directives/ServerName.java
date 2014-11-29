@@ -6,7 +6,7 @@ import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
 import apache.conf.parser.DirectiveParser;
 
-public class ServerName extends SingletonDirective {
+public class ServerName extends GlobalSingletonDirective {
 
     private String scheme;
     private String domain;
@@ -101,11 +101,11 @@ public class ServerName extends SingletonDirective {
      * @throws Exception
      */
     public static ServerName getServerName() throws Exception {
-        return (new ServerName().getConfigured());
+        return (new ServerName().getGlobalConfigured());
     }
 
     @Override
-    public ServerName getConfigured() throws Exception {
+    public ServerName getGlobalConfigured() throws Exception {
         String serverName[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 

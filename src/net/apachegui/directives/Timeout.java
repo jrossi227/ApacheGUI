@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 
 import apache.conf.parser.DirectiveParser;
 
-public class Timeout extends SingletonDirective {
+public class Timeout extends GlobalSingletonDirective {
     private static Logger log = Logger.getLogger(Timeout.class);
 
     private int seconds;
@@ -74,7 +74,7 @@ public class Timeout extends SingletonDirective {
      * @throws Exception
      */
     public static Timeout getTimeout() throws Exception {
-        return (new Timeout().getConfigured());
+        return (new Timeout().getGlobalConfigured());
     }
 
     /**
@@ -84,7 +84,7 @@ public class Timeout extends SingletonDirective {
      * @throws Exception
      */
     @Override
-    public Timeout getConfigured() throws Exception {
+    public Timeout getGlobalConfigured() throws Exception {
         String timeout[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.timeoutDirective, false);
 

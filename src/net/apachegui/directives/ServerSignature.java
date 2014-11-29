@@ -6,7 +6,7 @@ import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
 import apache.conf.parser.DirectiveParser;
 
-public class ServerSignature extends SingletonDirective {
+public class ServerSignature extends GlobalSingletonDirective {
 
     private String signature;
 
@@ -55,7 +55,7 @@ public class ServerSignature extends SingletonDirective {
      * @throws Exception
      */
     public static ServerSignature getServerSignature() throws Exception {
-        return (new ServerSignature().getConfigured());
+        return (new ServerSignature().getGlobalConfigured());
     }
 
     /**
@@ -65,7 +65,7 @@ public class ServerSignature extends SingletonDirective {
      * @throws Exception
      */
     @Override
-    public ServerSignature getConfigured() throws Exception {
+    public ServerSignature getGlobalConfigured() throws Exception {
         String serverSignature[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 

@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import apache.conf.parser.DirectiveParser;
 
-public class ListenBackLog extends SingletonDirective {
+public class ListenBackLog extends GlobalSingletonDirective {
 
     private static Logger log = Logger.getLogger(ListenBackLog.class);
 
@@ -62,7 +62,7 @@ public class ListenBackLog extends SingletonDirective {
      * @throws Exception
      */
     public static ListenBackLog getListenBackLog() throws Exception {
-        return (new ListenBackLog().getConfigured());
+        return (new ListenBackLog().getGlobalConfigured());
     }
 
     /**
@@ -72,7 +72,7 @@ public class ListenBackLog extends SingletonDirective {
      * @throws Exception
      */
     @Override
-    public ListenBackLog getConfigured() throws Exception {
+    public ListenBackLog getGlobalConfigured() throws Exception {
         String listenBackLog[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.listenBackLogDirective, false);
 

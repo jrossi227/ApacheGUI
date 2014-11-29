@@ -9,7 +9,7 @@ import net.apachegui.modules.StaticModuleHandler;
 import apache.conf.global.Utils;
 import apache.conf.parser.DirectiveParser;
 
-public class AddType extends FactoryDirective {
+public class AddType extends GlobalFactoryDirective {
 
     private String type;
     private String[] extensions;
@@ -89,7 +89,7 @@ public class AddType extends FactoryDirective {
      * @throws Exception
      */
     public static AddType[] getAllAddTypes() throws Exception {
-        return (new AddType().getAllConfigured());
+        return (new AddType().getAllGlobalConfigured());
     }
 
     /**
@@ -99,7 +99,7 @@ public class AddType extends FactoryDirective {
      * @throws Exception
      */
     @Override
-    public AddType[] getAllConfigured() throws Exception {
+    public AddType[] getAllGlobalConfigured() throws Exception {
         ArrayList<AddType> addTypes = new ArrayList<AddType>();
 
         String allAddTypes[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
@@ -112,7 +112,7 @@ public class AddType extends FactoryDirective {
     }
 
     @Override
-    public String getReplaceValue() {
+    public String getGlobalReplaceValue() {
         return type;
     }
 

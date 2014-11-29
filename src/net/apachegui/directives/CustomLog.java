@@ -18,7 +18,7 @@ import apache.conf.parser.DirectiveParser;
  * 
  */
 
-public class CustomLog extends FactoryDirective {
+public class CustomLog extends GlobalFactoryDirective {
 
     Logger log = Logger.getLogger(CustomLog.class);
 
@@ -104,7 +104,7 @@ public class CustomLog extends FactoryDirective {
      * @throws Exception
      */
     public static CustomLog[] getAllCustomLogs() throws Exception {
-        return (new CustomLog().getAllConfigured());
+        return (new CustomLog().getAllGlobalConfigured());
     }
 
     /**
@@ -114,7 +114,7 @@ public class CustomLog extends FactoryDirective {
      * @throws Exception
      */
     @Override
-    CustomLog[] getAllConfigured() throws Exception {
+    CustomLog[] getAllGlobalConfigured() throws Exception {
         ArrayList<CustomLog> customLog = new ArrayList<CustomLog>();
 
         String customLogs[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),

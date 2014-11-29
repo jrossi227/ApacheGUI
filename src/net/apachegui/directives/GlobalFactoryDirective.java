@@ -9,13 +9,13 @@ import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
 import apache.conf.parser.DirectiveParser;
 
-public abstract class FactoryDirective extends BaseDirective {
+public abstract class GlobalFactoryDirective extends BaseDirective {
 
-    public FactoryDirective(String directiveName) {
+    public GlobalFactoryDirective(String directiveName) {
         super(directiveName);
     }
 
-    abstract FactoryDirective[] getAllConfigured() throws Exception;
+    abstract GlobalFactoryDirective[] getAllGlobalConfigured() throws Exception;
 
     /**
      * Creates an apache directive String and adds it to the current Apache configuration. The directive is added directly before or after the first configured Matching directive.
@@ -26,8 +26,8 @@ public abstract class FactoryDirective extends BaseDirective {
      *            flag to indicate whether to include directives in VirtualHosts
      * @throws Exception
      */
-    public void addBeforeOrAfterFirstFoundToConfiguration(boolean before, boolean includeVHosts) throws Exception {
-        FactoryDirective all[] = getAllConfigured();
+    public void addBeforeOrAfterFirstFoundToGlobalConfiguration(boolean before, boolean includeVHosts) throws Exception {
+        GlobalFactoryDirective all[] = getAllGlobalConfigured();
 
         // First we check if the directive is already configured
         for (int i = 0; i < all.length; i++) {
@@ -47,8 +47,8 @@ public abstract class FactoryDirective extends BaseDirective {
      * 
      * @throws Exception
      */
-    public void addToConfiguration(boolean add, boolean includeVHosts) throws Exception {
-        FactoryDirective all[] = getAllConfigured();
+    public void addToGlobalConfiguration(boolean add, boolean includeVHosts) throws Exception {
+        GlobalFactoryDirective all[] = getAllGlobalConfigured();
 
         for (int i = 0; i < all.length; i++) {
             if (this.equals(all[i])) {
@@ -63,10 +63,10 @@ public abstract class FactoryDirective extends BaseDirective {
 
         boolean found = false;
         for (int i = 0; i < directive.length; i++) {
-            if (directive[i].contains(getReplaceValue())) {
-                String file = parser.getDirectiveFile(directiveName, Pattern.compile(getReplaceValue()), includeVHosts);
+            if (directive[i].contains(getGlobalReplaceValue())) {
+                String file = parser.getDirectiveFile(directiveName, Pattern.compile(getGlobalReplaceValue()), includeVHosts);
 
-                parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), Pattern.compile(getReplaceValue()), add, includeVHosts);
+                parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), Pattern.compile(getGlobalReplaceValue()), add, includeVHosts);
                 found = true;
             }
         }
@@ -82,13 +82,13 @@ public abstract class FactoryDirective extends BaseDirective {
      * 
      * @throws Exception
      */
-    public void removeFromConfiguration(boolean includeVHosts) throws Exception {
+    public void removeFromGlobalConfiguration(boolean includeVHosts) throws Exception {
         DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 
-        String file = parser.getDirectiveFile(directiveName, Pattern.compile(getReplaceValue()), includeVHosts);
+        String file = parser.getDirectiveFile(directiveName, Pattern.compile(getGlobalReplaceValue()), includeVHosts);
 
-        parser.removeDirectiveFromFile(directiveName, file, Pattern.compile(getReplaceValue()), false, includeVHosts);
+        parser.removeDirectiveFromFile(directiveName, file, Pattern.compile(getGlobalReplaceValue()), false, includeVHosts);
     }
 
     /**
@@ -96,7 +96,7 @@ public abstract class FactoryDirective extends BaseDirective {
      * 
      * @return - the replacement value.
      */
-    public String getReplaceValue() {
+    public String getGlobalReplaceValue() {
         return getDirectiveValue();
     }
 

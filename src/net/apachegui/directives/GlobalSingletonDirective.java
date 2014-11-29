@@ -9,20 +9,20 @@ import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
 import apache.conf.parser.DirectiveParser;
 
-public abstract class SingletonDirective extends BaseDirective {
+public abstract class GlobalSingletonDirective extends BaseDirective {
 
-    public SingletonDirective(String directiveName) {
+    public GlobalSingletonDirective(String directiveName) {
         super(directiveName);
     }
 
-    abstract SingletonDirective getConfigured() throws Exception;
+    abstract GlobalSingletonDirective getGlobalConfigured() throws Exception;
 
     /**
      * Replaces the current directive with a new value in the configuration.
      * 
      * @throws Exception
      */
-    public void saveToConfiguration(boolean includeVHosts) throws Exception {
+    public void saveToGlobalConfiguration(boolean includeVHosts) throws Exception {
 
         DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
@@ -30,15 +30,15 @@ public abstract class SingletonDirective extends BaseDirective {
         String keepAliveDirective[] = parser.getDirectiveValue(directiveName, includeVHosts);
 
         if (keepAliveDirective.length > 0) {
-            String file = parser.getDirectiveFile(directiveName, Pattern.compile(getReplaceValue()), includeVHosts);
+            String file = parser.getDirectiveFile(directiveName, Pattern.compile(getGlobalReplaceValue()), includeVHosts);
 
-            parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), Pattern.compile(getReplaceValue()), true, includeVHosts);
+            parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), Pattern.compile(getGlobalReplaceValue()), true, includeVHosts);
         } else {
             ConfFiles.appendToGUIConfigFile(toString());
         }
     }
 
-    public String getReplaceValue() {
+    public String getGlobalReplaceValue() {
         return "";
     }
 

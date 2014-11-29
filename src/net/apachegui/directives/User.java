@@ -6,7 +6,7 @@ import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
 import apache.conf.parser.DirectiveParser;
 
-public class User extends SingletonDirective {
+public class User extends GlobalSingletonDirective {
 
     private String user;
 
@@ -42,7 +42,7 @@ public class User extends SingletonDirective {
      * @throws Exception
      */
     public static User getServerUser() throws Exception {
-        return (new User().getConfigured());
+        return (new User().getGlobalConfigured());
     }
 
     /**
@@ -52,7 +52,7 @@ public class User extends SingletonDirective {
      * @throws Exception
      */
     @Override
-    User getConfigured() throws Exception {
+    User getGlobalConfigured() throws Exception {
         String user[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 
