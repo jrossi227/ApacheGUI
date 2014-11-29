@@ -1,4 +1,4 @@
-package net.apachegui.globaldirectives;
+package net.apachegui.directives;
 
 import java.util.ArrayList;
 

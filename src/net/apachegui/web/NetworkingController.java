@@ -1,16 +1,16 @@
 package net.apachegui.web;
 
-import net.apachegui.globaldirectives.Group;
-import net.apachegui.globaldirectives.KeepAlive;
-import net.apachegui.globaldirectives.KeepAliveTimeout;
-import net.apachegui.globaldirectives.Listen;
-import net.apachegui.globaldirectives.ListenBackLog;
-import net.apachegui.globaldirectives.MaxKeepAliveRequests;
-import net.apachegui.globaldirectives.NameVirtualHost;
-import net.apachegui.globaldirectives.ServerSignature;
-import net.apachegui.globaldirectives.ServerTokens;
-import net.apachegui.globaldirectives.Timeout;
-import net.apachegui.globaldirectives.User;
+import net.apachegui.directives.Group;
+import net.apachegui.directives.KeepAlive;
+import net.apachegui.directives.KeepAliveTimeout;
+import net.apachegui.directives.Listen;
+import net.apachegui.directives.ListenBackLog;
+import net.apachegui.directives.MaxKeepAliveRequests;
+import net.apachegui.directives.NameVirtualHost;
+import net.apachegui.directives.ServerSignature;
+import net.apachegui.directives.ServerTokens;
+import net.apachegui.directives.Timeout;
+import net.apachegui.directives.User;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

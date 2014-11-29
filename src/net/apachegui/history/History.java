@@ -3,9 +3,9 @@ package net.apachegui.history;
 import java.util.ArrayList;
 
 import net.apachegui.conf.ConfFiles;
+import net.apachegui.directives.CustomLog;
 import net.apachegui.global.Constants;
 import net.apachegui.global.Utilities;
-import net.apachegui.globaldirectives.CustomLog;
 import apache.conf.global.Utils;
 import apache.conf.parser.Directive;
 import apache.conf.parser.File;

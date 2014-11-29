@@ -1,4 +1,4 @@
-package net.apachegui.globaldirectives;
+package net.apachegui.directives;
 
 import net.apachegui.db.SettingsDao;
 import net.apachegui.global.Constants;

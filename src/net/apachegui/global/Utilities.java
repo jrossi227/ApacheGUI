@@ -10,7 +10,7 @@ import java.text.StringCharacterIterator;
 import javax.servlet.ServletContext;
 
 import net.apachegui.db.SettingsDao;
-import net.apachegui.globaldirectives.Listen;
+import net.apachegui.directives.Listen;
 
 import org.apache.log4j.Logger;
 

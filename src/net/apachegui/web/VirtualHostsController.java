@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import net.apachegui.globaldirectives.DocumentRoot;
-import net.apachegui.globaldirectives.ServerName;
+import net.apachegui.directives.DocumentRoot;
+import net.apachegui.directives.ServerName;
 import net.apachegui.virtualhosts.NetworkInfo;
 import net.apachegui.virtualhosts.VirtualHost;
 import net.apachegui.virtualhosts.VirtualHosts;

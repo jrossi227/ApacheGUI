@@ -2,7 +2,7 @@ package net.apachegui.conf;
 
 import java.util.ArrayList;
 
-import net.apachegui.globaldirectives.AddType;
+import net.apachegui.directives.AddType;
 
 /**
  * Class used to add Mime types to apache configuration. Mimes can take the following format:
