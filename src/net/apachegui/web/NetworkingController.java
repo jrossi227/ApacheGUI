@@ -87,7 +87,7 @@ public class NetworkingController {
         Listen listen = new Listen(ip, port, protocol);
 
         // Add to file here
-        listen.addBeforeOrAfterFirstFoundToGlobalConfiguration(false, false);
+        listen.addBeforeOrAfterFirstFoundToGlobalConfiguration(false);
 
         return printSuccess();
     }
@@ -101,7 +101,7 @@ public class NetworkingController {
         Listen listen = new Listen(ip, port, protocol);
 
         // Add to file here
-        listen.removeFromGlobalConfiguration(false);
+        listen.removeFromGlobalConfiguration();
 
         return printSuccess();
     }
@@ -112,7 +112,7 @@ public class NetworkingController {
         NameVirtualHost nameVirtualHost = new NameVirtualHost(address, port);
 
         // Add to file here
-        nameVirtualHost.addBeforeOrAfterFirstFoundToGlobalConfiguration(true, false);
+        nameVirtualHost.addBeforeOrAfterFirstFoundToGlobalConfiguration(true);
 
         return printSuccess();
     }
@@ -123,7 +123,7 @@ public class NetworkingController {
 
         NameVirtualHost nameVirtualHost = new NameVirtualHost(address, port);
 
-        nameVirtualHost.removeFromGlobalConfiguration(false);
+        nameVirtualHost.removeFromGlobalConfiguration();
 
         return printSuccess();
     }
@@ -131,7 +131,7 @@ public class NetworkingController {
     @RequestMapping(method = RequestMethod.POST, params = "option=modifyKeepAliveStatus", produces = "application/json;charset=UTF-8")
     public String modifyKeepAliveStatus(@RequestParam(value = "status") String status) throws Exception {
 
-        new KeepAlive(status.equals("on") ? true : false).saveToGlobalConfiguration(false);
+        new KeepAlive(status.equals("on") ? true : false).saveToGlobalConfiguration();
 
         return printSuccess();
     }
@@ -139,7 +139,7 @@ public class NetworkingController {
     @RequestMapping(method = RequestMethod.POST, params = "option=modifyKeepAliveTimeout", produces = "application/json;charset=UTF-8")
     public String modifyKeepAliveTimeout(@RequestParam(value = "seconds") int seconds) throws Exception {
 
-        new KeepAliveTimeout(seconds).saveToGlobalConfiguration(false);
+        new KeepAliveTimeout(seconds).saveToGlobalConfiguration();
 
         return printSuccess();
     }
@@ -147,7 +147,7 @@ public class NetworkingController {
     @RequestMapping(method = RequestMethod.POST, params = "option=modifyMaxKeepAliveRequests", produces = "application/json;charset=UTF-8")
     public String modifyMaxKeepAliveRequests(@RequestParam(value = "numberOfRequests") int numberOfRequests) throws Exception {
 
-        new MaxKeepAliveRequests(numberOfRequests).saveToGlobalConfiguration(false);
+        new MaxKeepAliveRequests(numberOfRequests).saveToGlobalConfiguration();
 
         return printSuccess();
     }
@@ -155,7 +155,7 @@ public class NetworkingController {
     @RequestMapping(method = RequestMethod.POST, params = "option=modifyRequestTimeout", produces = "application/json;charset=UTF-8")
     public String modifyRequestTimeout(@RequestParam(value = "seconds") int seconds) throws Exception {
 
-        new Timeout(seconds).saveToGlobalConfiguration(false);
+        new Timeout(seconds).saveToGlobalConfiguration();
 
         return printSuccess();
     }
@@ -163,7 +163,7 @@ public class NetworkingController {
     @RequestMapping(method = RequestMethod.POST, params = "option=modifyListenBackLog", produces = "application/json;charset=UTF-8")
     public String modifyListenBackLog(@RequestParam(value = "backLogLength") int backLogLength) throws Exception {
 
-        new ListenBackLog(backLogLength).saveToGlobalConfiguration(false);
+        new ListenBackLog(backLogLength).saveToGlobalConfiguration();
 
         return printSuccess();
     }
@@ -171,7 +171,7 @@ public class NetworkingController {
     @RequestMapping(method = RequestMethod.POST, params = "option=modifyServerTokens", produces = "application/json;charset=UTF-8")
     public String modifyServerTokens(@RequestParam(value = "serverTokens") String serverTokens) throws Exception {
 
-        new ServerTokens(serverTokens).saveToGlobalConfiguration(false);
+        new ServerTokens(serverTokens).saveToGlobalConfiguration();
 
         return printSuccess();
     }
@@ -179,7 +179,7 @@ public class NetworkingController {
     @RequestMapping(method = RequestMethod.POST, params = "option=modifyServerSignature", produces = "application/json;charset=UTF-8")
     public String modifyServerSignature(@RequestParam(value = "serverSignature") String serverSignature) throws Exception {
 
-        new ServerSignature(serverSignature).saveToGlobalConfiguration(false);
+        new ServerSignature(serverSignature).saveToGlobalConfiguration();
 
         return printSuccess();
     }
@@ -187,7 +187,7 @@ public class NetworkingController {
     @RequestMapping(method = RequestMethod.POST, params = "option=modifyUser", produces = "application/json;charset=UTF-8")
     public String modifyUser(@RequestParam(value = "user") String user) throws Exception {
 
-        new User(user).saveToGlobalConfiguration(false);
+        new User(user).saveToGlobalConfiguration();
 
         return printSuccess();
     }
@@ -195,7 +195,7 @@ public class NetworkingController {
     @RequestMapping(method = RequestMethod.POST, params = "option=modifyGroup", produces = "application/json;charset=UTF-8")
     public String modifyGroup(@RequestParam(value = "group") String group) throws Exception {
 
-        new Group(group).saveToGlobalConfiguration(false);
+        new Group(group).saveToGlobalConfiguration();
 
         return printSuccess();
     }

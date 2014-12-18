@@ -54,7 +54,7 @@ public class AddedMime extends Mime {
             }
         }
 
-        addType.addToGlobalConfiguration(true, false);
+        addType.addToGlobalConfiguration(true);
     }
 
     /**
@@ -81,7 +81,7 @@ public class AddedMime extends Mime {
             throw new Exception("The specified MIME type was not found in the configuration.");
         }
 
-        addType.addToGlobalConfiguration(true, false);
+        addType.addToGlobalConfiguration(true);
     }
 
     /**
@@ -93,6 +93,6 @@ public class AddedMime extends Mime {
      */
     public static void remove(AddedMime mime) throws Exception {
         AddType addType = new AddType(mime.getType(), mime.getExtensions());
-        addType.removeFromGlobalConfiguration(false);
+        addType.removeFromGlobalConfiguration();
     }
 }

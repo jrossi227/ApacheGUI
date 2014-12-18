@@ -21,12 +21,10 @@ public abstract class GlobalFactoryDirective extends BaseDirective {
      * Creates an apache directive String and adds it to the current Apache configuration. The directive is added directly before or after the first configured Matching directive.
      * 
      * @param before
-     *            - A boolean indicating if the directive should be added before the first matching directive.
-     * @param includeVHosts
-     *            flag to indicate whether to include directives in VirtualHosts
+     *            A boolean indicating if the directive should be added before the first matching directive.
      * @throws Exception
      */
-    public void addBeforeOrAfterFirstFoundToGlobalConfiguration(boolean before, boolean includeVHosts) throws Exception {
+    public void addBeforeOrAfterFirstFoundToGlobalConfiguration(boolean before) throws Exception {
         GlobalFactoryDirective all[] = getAllGlobalConfigured();
 
         // First we check if the directive is already configured
@@ -38,16 +36,16 @@ public abstract class GlobalFactoryDirective extends BaseDirective {
 
         // Add Listen after first found listener
         new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(),
-                SharedModuleHandler.getSharedModules()).insertDirectiveBeforeOrAfterFirstFound(directiveName, toString(), before, includeVHosts);
+                SharedModuleHandler.getSharedModules()).insertDirectiveBeforeOrAfterFirstFound(directiveName, toString(), before, false);
     }
 
     /**
-     * Adds or replaces the current directive in the apache configuration. The replace value is configured through the getReplaceValue function. This function should be overridden if your require a
+     * Adds or replaces the current directive in the apache configuration. The replace value is configured through the getGlobalReplaceValue function. This function should be overridden if your require a
      * custom replace value. If a replacement is not found then the directive is added to the apache gui configuration file.
      * 
      * @throws Exception
      */
-    public void addToGlobalConfiguration(boolean add, boolean includeVHosts) throws Exception {
+    public void addToGlobalConfiguration(boolean add) throws Exception {
         GlobalFactoryDirective all[] = getAllGlobalConfigured();
 
         for (int i = 0; i < all.length; i++) {
@@ -59,14 +57,14 @@ public abstract class GlobalFactoryDirective extends BaseDirective {
         DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 
-        String directive[] = parser.getDirectiveValue(directiveName, includeVHosts);
+        String directive[] = parser.getDirectiveValue(directiveName, false);
 
         boolean found = false;
         for (int i = 0; i < directive.length; i++) {
             if (directive[i].contains(getGlobalReplaceValue())) {
-                String file = parser.getDirectiveFile(directiveName, Pattern.compile(getGlobalReplaceValue()), includeVHosts);
+                String file = parser.getDirectiveFile(directiveName, Pattern.compile(getGlobalReplaceValue()), false);
 
-                parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), Pattern.compile(getGlobalReplaceValue()), add, includeVHosts);
+                parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), Pattern.compile(getGlobalReplaceValue()), add, false);
                 found = true;
             }
         }
@@ -82,13 +80,13 @@ public abstract class GlobalFactoryDirective extends BaseDirective {
      * 
      * @throws Exception
      */
-    public void removeFromGlobalConfiguration(boolean includeVHosts) throws Exception {
+    public void removeFromGlobalConfiguration() throws Exception {
         DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 
-        String file = parser.getDirectiveFile(directiveName, Pattern.compile(getGlobalReplaceValue()), includeVHosts);
+        String file = parser.getDirectiveFile(directiveName, Pattern.compile(getGlobalReplaceValue()), false);
 
-        parser.removeDirectiveFromFile(directiveName, file, Pattern.compile(getGlobalReplaceValue()), false, includeVHosts);
+        parser.removeDirectiveFromFile(directiveName, file, Pattern.compile(getGlobalReplaceValue()), false, false);
     }
 
     /**

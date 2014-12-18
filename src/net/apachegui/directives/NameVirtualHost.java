@@ -151,7 +151,7 @@ public class NameVirtualHost extends GlobalFactoryDirective {
      * @throws Exception
      */
     @Override
-    public void addBeforeOrAfterFirstFoundToGlobalConfiguration(boolean before, boolean includeVHosts) throws Exception {
+    public void addBeforeOrAfterFirstFoundToGlobalConfiguration(boolean before) throws Exception {
         NameVirtualHost nameVirtualHosts[] = getAllGlobalConfigured();
 
         // First we check if someones already Listening on the ip, port and protocol

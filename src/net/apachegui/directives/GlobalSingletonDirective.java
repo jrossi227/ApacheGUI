@@ -22,17 +22,17 @@ public abstract class GlobalSingletonDirective extends BaseDirective {
      * 
      * @throws Exception
      */
-    public void saveToGlobalConfiguration(boolean includeVHosts) throws Exception {
+    public void saveToGlobalConfiguration() throws Exception {
 
         DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 
-        String keepAliveDirective[] = parser.getDirectiveValue(directiveName, includeVHosts);
+        String keepAliveDirective[] = parser.getDirectiveValue(directiveName, false);
 
         if (keepAliveDirective.length > 0) {
-            String file = parser.getDirectiveFile(directiveName, Pattern.compile(getGlobalReplaceValue()), includeVHosts);
+            String file = parser.getDirectiveFile(directiveName, Pattern.compile(getGlobalReplaceValue()), false);
 
-            parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), Pattern.compile(getGlobalReplaceValue()), true, includeVHosts);
+            parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), Pattern.compile(getGlobalReplaceValue()), true, false);
         } else {
             ConfFiles.appendToGUIConfigFile(toString());
         }
