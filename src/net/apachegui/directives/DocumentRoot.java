@@ -26,7 +26,8 @@ public class DocumentRoot extends GlobalSingletonDirective {
     public DocumentRoot(String directiveValue) {
         super(Constants.documentRootDirectiveString);
 
-        this.directory = directiveValue;
+        //remove trailing and leading quotes
+        this.directory = directiveValue.replaceAll("^\"|\"$", "");;
     }
 
     /**

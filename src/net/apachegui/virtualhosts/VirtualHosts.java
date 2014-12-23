@@ -3,6 +3,8 @@ package net.apachegui.virtualhosts;
 import java.util.ArrayList;
 
 import net.apachegui.db.SettingsDao;
+import net.apachegui.directives.DocumentRoot;
+import net.apachegui.directives.ServerName;
 import net.apachegui.global.Constants;
 import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
@@ -44,9 +46,9 @@ public class VirtualHosts {
             directives = virtualHostEnclosure.getDirectives();
             for (Directive directive : directives) {
                 if (directive.getType().equals(Constants.serverNameDirectiveString)) {
-                    virtualHost.setServerName(directive.getValues()[0]);
+                    virtualHost.setServerName(new ServerName(directive.getValues()[0]));
                 } else if (directive.getType().equals(Constants.documentRootDirectiveString)) {
-                    virtualHost.setDocumentRoot(directive.getValues()[0]);
+                    virtualHost.setDocumentRoot(new DocumentRoot(directive.getValues()[0]));
                 } else {
                     virtualHost.addDirective(directive);
                 }

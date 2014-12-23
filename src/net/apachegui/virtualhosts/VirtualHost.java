@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.apachegui.directives.DocumentRoot;
+import net.apachegui.directives.ServerName;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -25,8 +28,8 @@ public class VirtualHost {
     private int lineOfStart;
     private int lineOfEnd;
     private List<NetworkInfo> networkInfo;
-    private String documentRoot;
-    private String serverName;
+    private DocumentRoot documentRoot;
+    private ServerName serverName;
     private ArrayList<Directive> directives;
     private ArrayList<Enclosure> enclosures;
 
@@ -35,8 +38,8 @@ public class VirtualHost {
         lineOfStart = -1;
         lineOfEnd = -1;
         networkInfo = new ArrayList<NetworkInfo>();
-        documentRoot = "";
-        serverName = "";
+        documentRoot = new DocumentRoot();
+        serverName = new ServerName();
         directives = new ArrayList<Directive>();
         enclosures = new ArrayList<Enclosure>();
     }
@@ -73,19 +76,19 @@ public class VirtualHost {
         this.networkInfo = Arrays.asList(networkInfo);
     }
 
-    public String getDocumentRoot() {
+    public DocumentRoot getDocumentRoot() {
         return documentRoot;
     }
 
-    public void setDocumentRoot(String documentRoot) {
+    public void setDocumentRoot(DocumentRoot documentRoot) {
         this.documentRoot = documentRoot;
     }
 
-    public String getServerName() {
+    public ServerName getServerName() {
         return serverName;
     }
 
-    public void setServerName(String serverName) {
+    public void setServerName(ServerName serverName) {
         this.serverName = serverName;
     }
 
@@ -121,8 +124,8 @@ public class VirtualHost {
 
         json.put("NetworkInfo", networkInfoArray);
 
-        json.put("DocumentRoot", documentRoot);
-        json.put("ServerName", serverName);
+        json.put("DocumentRoot", documentRoot.getValue());
+        json.put("ServerName", serverName.getValue());        
 
         return json.toString();
     }
@@ -139,8 +142,8 @@ public class VirtualHost {
             virtualHostBuffer.append("NetworkInfo: " + info.toString() + "\n");
         }
 
-        virtualHostBuffer.append("DocumentRoot: " + documentRoot + "\n");
-        virtualHostBuffer.append("ServerName: " + serverName + "\n");
+        virtualHostBuffer.append("DocumentRoot: " + documentRoot.getValue() + "\n");
+        virtualHostBuffer.append("ServerName: " + serverName.getValue() + "\n");
 
         return virtualHostBuffer.toString();
     }
