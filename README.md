@@ -1,7 +1,7 @@
 Website 
 ---------------
 
-The ApacheGUI website is located here [http://apachegui.net](http://apachegui.net). Questions and comments can be sent to apachegui.net@gmail.com or by creating an issue.
+The ApacheGUI website is located here [http://apachegui.net](http://apachegui.net). Questions and comments can be posted on the [forum](http://forum.apachegui.net) or sent directly to apachegui.net@gmail.com.
 
 Packages
 ----------------
