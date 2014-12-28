@@ -13,7 +13,6 @@ import org.json.JSONObject;
 
 import apache.conf.parser.Directive;
 import apache.conf.parser.Enclosure;
-import apache.conf.parser.File;
 
 /**
  * File used to model an Apache Virtual Host Virtual Host takes on the following format: <VirtualHost addr[:port] [addr[:port]] ...> ... </VirtualHost>
@@ -24,7 +23,7 @@ import apache.conf.parser.File;
 
 public class VirtualHost {
 
-    private File file;
+    private String file;
     private int lineOfStart;
     private int lineOfEnd;
     private List<NetworkInfo> networkInfo;
@@ -44,11 +43,11 @@ public class VirtualHost {
         enclosures = new ArrayList<Enclosure>();
     }
 
-    public File getFile() {
+    public String getFile() {
         return file;
     }
 
-    public void setFile(File file) {
+    public void setFile(String file) {
         this.file = file;
     }
 
@@ -112,7 +111,7 @@ public class VirtualHost {
 
         JSONObject json = new JSONObject();
 
-        json.put("file", file.getAbsolutePath());
+        json.put("file", file);
         json.put("lineOfStart", lineOfStart);
         json.put("lineOfEnd", lineOfEnd);
 
@@ -134,7 +133,7 @@ public class VirtualHost {
     public String toString() {
 
         StringBuffer virtualHostBuffer = new StringBuffer();
-        virtualHostBuffer.append("\nFile: " + file == null ? "" : file.getAbsolutePath() + "\n");
+        virtualHostBuffer.append("\nFile: " + file == null ? "" : file + "\n");
         virtualHostBuffer.append("LineOfStart: " + lineOfStart + "\n");
         virtualHostBuffer.append("LineOfEnd: " + lineOfEnd + "\n");
 

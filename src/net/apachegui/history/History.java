@@ -74,11 +74,11 @@ public class History {
     }
 
     public static void enable(VirtualHost host) throws Exception {
-        ConfFiles.writeToConfigFile(host.getFile(), getIncludeString(), host.getLineOfEnd());
+        ConfFiles.writeToConfigFile(new File(host.getFile()), getIncludeString(), host.getLineOfEnd());
     }
 
     public static void disable(VirtualHost host) throws Exception {
-        ConfFiles.deleteFromConfigFile(".*" + Constants.historyLogHolder + ".*", host.getFile(), host.getLineOfStart(), host.getLineOfEnd(), true);
+        ConfFiles.deleteFromConfigFile(".*" + Constants.historyLogHolder + ".*", new File(host.getFile()), host.getLineOfStart(), host.getLineOfEnd(), true);
     }
 
     /**

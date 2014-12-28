@@ -49,9 +49,9 @@ public class VirtualHosts {
                     virtualHost.setServerName(new ServerName(directive.getValues()[0]));
                 } else if (directive.getType().equals(Constants.documentRootDirectiveString)) {
                     virtualHost.setDocumentRoot(new DocumentRoot(directive.getValues()[0]));
-                } else {
-                    virtualHost.addDirective(directive);
-                }
+                } 
+                
+                virtualHost.addDirective(directive);
             }
 
             enclosures = virtualHostEnclosure.getEnclosures();
@@ -65,7 +65,7 @@ public class VirtualHosts {
         return virtualHosts.toArray(new VirtualHost[virtualHosts.size()]);
     }
 
-    public static NetworkInfo extractNetworkInfo(String value) {
+    private static NetworkInfo extractNetworkInfo(String value) {
 
         NetworkInfo networkInfo = new NetworkInfo();
 
