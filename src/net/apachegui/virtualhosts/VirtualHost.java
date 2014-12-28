@@ -11,7 +11,6 @@ import net.apachegui.directives.ServerName;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import apache.conf.parser.Directive;
 import apache.conf.parser.Enclosure;
 
 /**
@@ -23,48 +22,23 @@ import apache.conf.parser.Enclosure;
 
 public class VirtualHost {
 
-    private String file;
-    private int lineOfStart;
-    private int lineOfEnd;
+    private Enclosure enclosure;
     private List<NetworkInfo> networkInfo;
     private DocumentRoot documentRoot;
     private ServerName serverName;
-    private ArrayList<Directive> directives;
-    private ArrayList<Enclosure> enclosures;
 
     public VirtualHost() {
-        file = null;
-        lineOfStart = -1;
-        lineOfEnd = -1;
         networkInfo = new ArrayList<NetworkInfo>();
         documentRoot = new DocumentRoot();
         serverName = new ServerName();
-        directives = new ArrayList<Directive>();
-        enclosures = new ArrayList<Enclosure>();
     }
 
-    public String getFile() {
-        return file;
+    public Enclosure getEnclosure() {
+        return enclosure;
     }
 
-    public void setFile(String file) {
-        this.file = file;
-    }
-
-    public int getLineOfStart() {
-        return this.lineOfStart;
-    }
-
-    public void setLineOfStart(int lineOfStart) {
-        this.lineOfStart = lineOfStart;
-    }
-
-    public int getLineOfEnd() {
-        return this.lineOfEnd;
-    }
-
-    public void setLineOfEnd(int lineOfEnd) {
-        this.lineOfEnd = lineOfEnd;
+    public void setEnclosure(Enclosure enclosure) {
+        this.enclosure = enclosure;
     }
 
     public NetworkInfo[] getNetworkInfo() {
@@ -91,29 +65,13 @@ public class VirtualHost {
         this.serverName = serverName;
     }
 
-    public void addDirective(Directive directive) {
-        directives.add(directive);
-    }
-
-    public Directive[] getDirectives() {
-        return directives.toArray(new Directive[directives.size()]);
-    }
-
-    public void addEnclosure(Enclosure enclosure) {
-        enclosures.add(enclosure);
-    }
-
-    public Enclosure[] getEnclosures() {
-        return enclosures.toArray(new Enclosure[enclosures.size()]);
-    }
-
     public String toJSON() throws ParseException {
 
         JSONObject json = new JSONObject();
 
-        json.put("file", file);
-        json.put("lineOfStart", lineOfStart);
-        json.put("lineOfEnd", lineOfEnd);
+        json.put("file", this.enclosure.getFile());
+        json.put("lineOfStart", this.enclosure.getLineOfStart());
+        json.put("lineOfEnd", this.enclosure.getLineOfEnd());
 
         JSONArray networkInfoArray = new JSONArray();
 
@@ -133,9 +91,9 @@ public class VirtualHost {
     public String toString() {
 
         StringBuffer virtualHostBuffer = new StringBuffer();
-        virtualHostBuffer.append("\nFile: " + file == null ? "" : file + "\n");
-        virtualHostBuffer.append("LineOfStart: " + lineOfStart + "\n");
-        virtualHostBuffer.append("LineOfEnd: " + lineOfEnd + "\n");
+        virtualHostBuffer.append("\nFile: " + this.enclosure.getFile() == null ? "" : this.enclosure.getFile() + "\n");
+        virtualHostBuffer.append("LineOfStart: " + this.enclosure.getLineOfStart() + "\n");
+        virtualHostBuffer.append("LineOfEnd: " + this.enclosure.getLineOfEnd() + "\n");
 
         for (NetworkInfo info : networkInfo) {
             virtualHostBuffer.append("NetworkInfo: " + info.toString() + "\n");

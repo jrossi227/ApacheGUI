@@ -74,11 +74,11 @@ public class History {
     }
 
     public static void enable(VirtualHost host) throws Exception {
-        ConfFiles.writeToConfigFile(new File(host.getFile()), getIncludeString(), host.getLineOfEnd());
+        ConfFiles.writeToConfigFile(new File(host.getEnclosure().getFile()), getIncludeString(), host.getEnclosure().getLineOfEnd());
     }
 
     public static void disable(VirtualHost host) throws Exception {
-        ConfFiles.deleteFromConfigFile(".*" + Constants.historyLogHolder + ".*", new File(host.getFile()), host.getLineOfStart(), host.getLineOfEnd(), true);
+        ConfFiles.deleteFromConfigFile(".*" + Constants.historyLogHolder + ".*", new File(host.getEnclosure().getFile()), host.getEnclosure().getLineOfStart(), host.getEnclosure().getLineOfEnd(), true);
     }
 
     /**
@@ -97,7 +97,7 @@ public class History {
         String values[];
 
         OUTER: for (VirtualHost virtualHost : virtualHosts) {
-            directives = virtualHost.getDirectives();
+            directives = virtualHost.getEnclosure().getDirectives();
 
             for (Directive directive : directives) {
                 if (directive.getType().equals(Constants.customLogDirective)) {
@@ -136,7 +136,7 @@ public class History {
         OUTER: for (VirtualHost virtualHost : virtualHosts) {
 
             containsCustomLog = false;
-            directives = virtualHost.getDirectives();
+            directives = virtualHost.getEnclosure().getDirectives();
 
             for (Directive directive : directives) {
                 if (directive.getType().equals(Constants.customLogDirective)) {
@@ -177,7 +177,7 @@ public class History {
 
         for (VirtualHost virtualHost : virtualHosts) {
             containsCustomLog = false;
-            directives = virtualHost.getDirectives();
+            directives = virtualHost.getEnclosure().getDirectives();
 
             for (Directive directive : directives) {
                 if (directive.getType().equals(Constants.customLogDirective)) {

@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import apache.conf.parser.ConfigurationLine;
+
 @RestController
 @RequestMapping("/web/History")
 public class HistoryController {
@@ -162,7 +164,7 @@ public class HistoryController {
         for (int i = 0; i < serverVirtualHosts.length; i++) {
             for (int j = 0; j < hosts.length(); j++) {
 
-                if (serverVirtualHosts[i].getServerName().equals(hosts.getJSONObject(j).getString("ServerName"))) {
+                if (serverVirtualHosts[i].getServerName().getValue().equals(hosts.getJSONObject(j).getString("ServerName"))) {
 
                     NetworkInfo[] serverNetworkInfo = serverVirtualHosts[i].getNetworkInfo();
                     JSONArray clientNetworkInfo = hosts.getJSONObject(j).getJSONArray("NetworkInfo");
@@ -185,21 +187,27 @@ public class HistoryController {
                     }
 
                     if (foundNetworkInfo) {
+                        
                         affectedHosts.add(serverVirtualHosts[i]);
 
                         if (option.equals("enable")) {
                             net.apachegui.history.History.enable(serverVirtualHosts[i]);
+                            
                             for (int k = 0; k < serverVirtualHosts.length; k++) {
-                                serverVirtualHosts[k].setLineOfStart(serverVirtualHosts[k].getLineOfStart() + 3);
-                                serverVirtualHosts[k].setLineOfEnd(serverVirtualHosts[k].getLineOfEnd() + 3);
+                                for (ConfigurationLine configurationLine : serverVirtualHosts[k].getEnclosure().getConfigurationLines()) {
+                                    configurationLine.setLineOfStart(configurationLine.getLineOfStart() + 3);
+                                    configurationLine.setLineOfEnd(configurationLine.getLineOfEnd() + 3);
+                                }
                             }
 
                         } else {
                             net.apachegui.history.History.disable(serverVirtualHosts[i]);
 
                             for (int k = 0; k < serverVirtualHosts.length; k++) {
-                                serverVirtualHosts[k].setLineOfStart(serverVirtualHosts[k].getLineOfStart() - 3);
-                                serverVirtualHosts[k].setLineOfEnd(serverVirtualHosts[k].getLineOfEnd() - 3);
+                                for (ConfigurationLine configurationLine : serverVirtualHosts[k].getEnclosure().getConfigurationLines()) {
+                                    configurationLine.setLineOfStart(configurationLine.getLineOfStart() - 3);
+                                    configurationLine.setLineOfEnd(configurationLine.getLineOfEnd() - 3);
+                                }
                             }
                         }
                     }
