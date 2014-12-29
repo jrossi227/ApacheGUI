@@ -10,6 +10,7 @@ import net.apachegui.virtualhosts.NetworkInfo;
 import net.apachegui.virtualhosts.VirtualHost;
 import net.apachegui.virtualhosts.VirtualHosts;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/web/VirtualHosts")
 public class VirtualHostsController {
 
+    private static Logger log = Logger.getLogger(VirtualHostsController.class);
+    
     /**
      * 
      * @return
@@ -37,6 +40,8 @@ public class VirtualHostsController {
 
         for (VirtualHost host : hosts) {
 
+            log.info(host.toTreeJSON());
+            
             for (NetworkInfo info : host.getNetworkInfo()) {
 
                 ArrayList<String> json = hostBuckets.get(info);
