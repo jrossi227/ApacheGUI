@@ -168,7 +168,7 @@ public class ExtendedStatus {
                         log.trace(Constants.setHandlerDirectiveString + " has value " + directives[j].getValues()[0] + " Checking if it matches " + Constants.serverInfoString);
                         if (directives[j].getValues()[0].equals(Constants.serverInfoString)) {
                             log.trace(Constants.setHandlerDirectiveString + " has value " + directives[j].getValues()[0] + " Setting path " + enclosure[i].getValue());
-                            path = enclosure[i].getValue();
+                            path = enclosure[i].getValue().replaceAll("\"", "");
                             foundDirective = true;
                         }
                     }

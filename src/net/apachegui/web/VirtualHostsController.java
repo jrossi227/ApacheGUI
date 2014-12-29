@@ -39,8 +39,6 @@ public class VirtualHostsController {
         HashMap<NetworkInfo, ArrayList<String>> hostBuckets = new HashMap<NetworkInfo, ArrayList<String>>();
 
         for (VirtualHost host : hosts) {
-
-            log.info(host.toTreeJSON());
             
             for (NetworkInfo info : host.getNetworkInfo()) {
 

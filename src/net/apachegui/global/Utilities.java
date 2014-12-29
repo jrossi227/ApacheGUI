@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
+import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
 
@@ -238,5 +239,35 @@ public class Utilities {
         String serverRoot = SettingsDao.getInstance().getSetting(Constants.serverRoot);
 
         return serverRoot.substring(0, serverRoot.indexOf("/") + 1);
+    }
+    
+    public static String join(String parts[], String delimeter) {
+        
+        StringBuffer concat = new StringBuffer();
+        
+        for(int i=0; i<parts.length; i++) {
+            
+            if(i!=0) {
+                concat.append(delimeter);
+            }
+            
+            concat.append(parts[i]);
+            
+        }
+        
+        return concat.toString();
+    }
+    
+    public static String[] removeItemFromArray(String[] list, int index) {
+        
+        ArrayList<String> newList = new ArrayList<String>();
+        
+        for(int i=0; i<list.length; i++) {
+            if(i!=index) {
+                newList.add(list[i]);
+            }
+        }
+        
+        return newList.toArray(new String[newList.size()]);
     }
 }

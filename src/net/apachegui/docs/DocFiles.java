@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import net.apachegui.db.SettingsDao;
+import net.apachegui.directives.DocumentRoot;
 import net.apachegui.global.Constants;
 import net.apachegui.global.Utilities;
 import net.apachegui.modules.SharedModuleHandler;
@@ -39,31 +40,37 @@ public class DocFiles {
 
         ArrayList<String> docFiles = new ArrayList<String>();
 
+        String directory;
         for (int i = 0; i < directories.length; i++) {
             // if(log.isTraceEnabled())
-            log.trace("docFile " + directories[i].getValue());
+            directory = directories[i].getValue().replaceAll("\"", "");
+            
+            log.trace("docFile " + directory);
 
-            log.trace("Checking if the directories value " + directories[i].getValue() + " is not / and that the directory exists");
-            if (!directories[i].getValue().trim().equals("/") && (new File(directories[i].getValue()).exists())) {
-                docFiles.add(new File(directories[i].getValue()).getAbsolutePath());
+            log.trace("Checking if the directories value " + directory + " is not / and that the directory exists");
+            if (!directory.trim().equals("/") && (new File(directory).exists())) {
+                docFiles.add(new File(directory).getAbsolutePath());
             } else {
                 log.trace("Check did not pass");
             }
         }
 
         // get DocumentRoot(s) here
-        String documentRoot[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        String documentRoots[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.documentRootDirectiveString, true);
 
-        for (int i = 0; i < documentRoot.length; i++) {
-
-            if ((!Utils.isWindows() && documentRoot[i].startsWith("/")) || (Utils.isWindows() && documentRoot[i].contains(":"))) {
-                if (new File(documentRoot[i]).exists()) {
-                    docFiles.add(new File(documentRoot[i]).getAbsolutePath());
+        String documentRoot;
+        for (int i = 0; i < documentRoots.length; i++) {
+            documentRoot = new DocumentRoot(documentRoots[i]).getValue();
+            
+            
+            if ((!Utils.isWindows() && documentRoot.startsWith("/")) || (Utils.isWindows() && documentRoot.contains(":"))) {
+                if (new File(documentRoot).exists()) {
+                    docFiles.add(new File(documentRoot).getAbsolutePath());
                 }
             } else {
-                if (new File(serverRoot, documentRoot[i]).exists()) {
-                    docFiles.add(new File(serverRoot, documentRoot[i]).getAbsolutePath());
+                if (new File(serverRoot, documentRoot).exists()) {
+                    docFiles.add(new File(serverRoot, documentRoot).getAbsolutePath());
                 }
             }
         }

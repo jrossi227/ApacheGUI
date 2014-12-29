@@ -7,12 +7,15 @@ import java.util.List;
 
 import net.apachegui.directives.DocumentRoot;
 import net.apachegui.directives.ServerName;
+import net.apachegui.global.Utilities;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import apache.conf.parser.ConfigurationLine;
+import apache.conf.parser.DirectiveParser;
 import apache.conf.parser.Enclosure;
+import apache.conf.parser.EnclosureParser;
 import apache.conf.parser.Parser;
 
 /**
@@ -85,21 +88,37 @@ public class VirtualHost {
 
         json.put("DocumentRoot", documentRoot.getValue());
         json.put("ServerName", serverName.getValue());        
-
+        json.put("tree",toTreeJSON());
+        
         return json.toString();
     }
 
-    public String toTreeJSON() {
+    public JSONObject toTreeJSON() {
         
         JSONObject tree = new JSONObject();
         tree.put("identifier", "id");
         tree.put("label", "name");
         
-        JSONArray items = toTreeJSON(enclosure, 0);
+        JSONArray items = new JSONArray();
         
+        String line = enclosure.getConfigurationLines()[0].getProcessedLine();
+        
+        String parts[] = EnclosureParser.extractEnclosureToParts(line);
+        String name = Utilities.join(parts, " ");
+        
+        JSONObject children = new JSONObject(); 
+        children.put("id", 0);
+        children.put("name", name);
+        children.put("type", parts[0]);
+        children.put("value", name.substring(name.indexOf(" ") + 1));
+        children.put("lineOfStart", enclosure.getConfigurationLines()[0].getLineOfStart());
+        children.put("lineOfEnd", enclosure.getConfigurationLines()[0].getLineOfEnd());
+        children.put("children", toTreeJSON(enclosure, 1));
+        items.put(children);
+                       
         tree.put("items", items);
         
-        return tree.toString();
+        return tree;
     }
     
     //meat and bones of processing here
@@ -116,20 +135,38 @@ public class VirtualHost {
             
             line = configurationLines[i].getProcessedLine();
             
-            if(Parser.isEnclosureMatch(line) && !Parser.isVHostMatch(line) && i > 0) {
-                JSONObject children = new JSONObject();
-                children.put("id", lineNum + "-" + line);
-                children.put("name", line);
+            if(Parser.isEnclosureMatch(line) && i > 0) {
+                String parts[] = EnclosureParser.extractEnclosureToParts(line);
+                String name = Utilities.join(parts, " ");
+                
+                JSONObject children = new JSONObject(); 
+                children.put("id", lineNum);
+                children.put("name", name);
+                children.put("type", parts[0]);
+                children.put("value", name.substring(name.indexOf(" ") + 1));
+                children.put("lineOfStart", configurationLines[i].getLineOfStart());
+                children.put("lineOfEnd", configurationLines[i].getLineOfEnd());
                 children.put("children", toTreeJSON(enclosure.getEnclosures()[enclosureCount], lineNum));
+                
+                //iterate the line counter with the number of lines in the enclosure
+                lineNum += (enclosure.getEnclosures()[enclosureCount].getLineOfEnd() - enclosure.getEnclosures()[enclosureCount].getLineOfStart());
+                
                 enclosureArray.put(children);
                 enclosureCount ++;
-            } else {
+            } else if((!Parser.isEnclosureMatch(line) && !Parser.isCloseEnclosureMatch(line))) {
+                String parts[] = DirectiveParser.extractDirectiveToParts(line);
+                String name = Utilities.join(parts, " ");
                 
                 JSONObject directive = new JSONObject();
-                directive.put("id", lineNum + "-" + line);
-                directive.put("name", line);
+                directive.put("id", lineNum);
+                directive.put("name", name);
+                directive.put("type", parts[0]);
+                directive.put("value", name.substring(name.indexOf(" ") + 1));
+                directive.put("lineOfStart", configurationLines[i].getLineOfStart());
+                directive.put("lineOfEnd", configurationLines[i].getLineOfEnd());
                 
                 enclosureArray.put(directive);
+                
             }
         }
         
