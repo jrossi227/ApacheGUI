@@ -16,8 +16,11 @@ define([ "dojo/_base/declare",
     declare("net.apachegui.VirtualHosts", null, {
         
         currentHierarchicalHostSummaryCount: 0,
+       
         currentTreeSummaryCount: 0,
         currentTreeId: '',
+        trees: [],
+        
         initialized: false,
         
         init : function() {
@@ -28,27 +31,62 @@ define([ "dojo/_base/declare",
             }
         },
         
+        compareNetworkInfo: function(info1, info2) {
+          
+            return false;
+        },
+        
         //------------------TREE VIRTUAL HOSTS-------------------------//
         
         updateAllTreeProperties: function(hosts) {
             
             //compare network info and ServerName
             
-            //reset line of start
-            
-            //reset line of end
+            //reload the host property, this has up to date lineOfStart and lineOfEnd            
                         
         },
         
-        reloadTree: function(tree) {
+        reloadTreeHost: function(tree) {
             //request all virtual hosts
+            var that = this;
             
-            // compare network info and ServerName to matching tree 
+            var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Tree Host...');
+            thisdialog.show();
             
-            // tree.model.store= new ItemFileWriteStore({});
+            request.get('../web/VirtualHosts', {
+                query:     {
+                    option: 'getTreeHosts'
+                },
+                handleAs: 'json',
+                preventCache: true,
+                sync: false
+            }).response.then(
+                function(response) {
+                    var data = response.data;
+                    
+                    var hosts = data.hosts;
+                    var globalServerName = data.ServerName;
+                    
+                    var host;
+                    for(var i=0; i<hosts.length; i++) {                       
+                        host = hosts[i];
+                                                
+                        // compare network info and ServerName to matching tree 
+                        
+                        //if we find a matching host
+                        // tree.model.store= new ItemFileWriteStore({host.tree});
+                        tree.reload();
+                        that.updateAllTreeProperties();
+                    }
+                                        
+                    thisdialog.remove();
+                },
+                function(error) {
+                    thisdialog.remove();
+                    net.apachegui.Util.alert('Info',error.response.data.message);
+                }
+            );
             
-            tree.reload();
-            this.updateAllTreeProperties();
         },
         
         populateTreeVirtualHosts: function() {
@@ -86,9 +124,7 @@ define([ "dojo/_base/declare",
                    id: treeId
                });
                myTree.set({
-                   lineOfStart: host.lineOfStart,
-                   lineOfEnd: host.lineOfEnd,
-                   networkInfo: host.NetworkInfo
+                   host: host
                });
                
                var serverName = (host.ServerName == '' ? (globalServerName == '' ? 'unknown' : globalServerName)  : host.ServerName);
@@ -117,7 +153,7 @@ define([ "dojo/_base/declare",
                    label: "Delete",
                    onClick: function() {
                        console.log('i was clicked');
-                       that.reloadTree(myTree);
+                       that.reloadTreeHost(myTree);
                    }
                }));
                
@@ -139,6 +175,8 @@ define([ "dojo/_base/declare",
                               
                // when we right-click anywhere on the tree, make sure we open the menu
                //menu.bindDomNode(myTree.domNode);
+               
+               trees.push(myTree);
                
                that.currentTreeSummaryCount++;
            };

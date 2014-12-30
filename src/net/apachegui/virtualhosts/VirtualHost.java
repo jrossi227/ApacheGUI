@@ -144,6 +144,8 @@ public class VirtualHost {
                 children.put("name", name);
                 children.put("type", parts[0]);
                 children.put("value", name.substring(name.indexOf(" ") + 1));
+                children.put("lineOfStart", configurationLines[i].getLineOfStart());
+                children.put("lineOfEnd", configurationLines[i].getLineOfEnd());
                 children.put("children", toTreeJSON(enclosure.getEnclosures()[enclosureCount], lineNum));
                 
                 //iterate the line counter with the number of lines in the enclosure
@@ -160,6 +162,8 @@ public class VirtualHost {
                 directive.put("name", name);
                 directive.put("type", parts[0]);
                 directive.put("value", name.substring(name.indexOf(" ") + 1));
+                directive.put("lineOfStart", configurationLines[i].getLineOfStart());
+                directive.put("lineOfEnd", configurationLines[i].getLineOfEnd());
                 
                 enclosureArray.put(directive);
                 
