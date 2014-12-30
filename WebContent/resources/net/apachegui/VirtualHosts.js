@@ -32,19 +32,20 @@ define([ "dojo/_base/declare",
         
         updateAllTreeProperties: function(hosts) {
             
-            //compare network info
+            //compare network info and ServerName
             
             //reset line of start
             
             //reset line of end
-            
-            //reset network info
-            
+                        
         },
         
         reloadTree: function(tree) {
             //request all virtual hosts
-            //tree.model.store= new ItemFileWriteStore({});
+            
+            // compare network info and ServerName to matching tree 
+            
+            // tree.model.store= new ItemFileWriteStore({});
             
             tree.reload();
             this.updateAllTreeProperties();
