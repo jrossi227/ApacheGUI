@@ -5,22 +5,90 @@ define([ "dojo/_base/declare",
          "dojo/on",
          "dojo/data/ItemFileWriteStore",
          "dojox/grid/DataGrid",
-         "net/apachegui/TitlePane"
-], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane){
+         "net/apachegui/TitlePane",
+         "dijit/Tree",
+         "dijit/tree/ForestStoreModel"
+], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, Tree, ForestStoreModel){
     
     declare("net.apachegui.VirtualHosts", null, {
         
-        currentHostSummaryCount: 0,
+        currentHierarchicalHostSummaryCount: 0,
         initialized: false,
         
         init : function() {
             if(this.initialized===false) {
-                this.populateVirtualHosts();
+                this.populateTreeVirtualHosts();
+                this.populateHierarchicalVirtualHosts();
                 this.initialized = true;
             }
         },
         
-        populateVirtualHosts : function() {
+        populateTreeVirtualHosts: function() {
+           
+           var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Tree Hosts...');
+           thisdialog.show();
+           
+           request.get('../web/VirtualHosts', {
+               query:     {
+                   option: 'getTreeHosts'
+               },
+               handleAs: 'json',
+               preventCache: true,
+               sync: false
+           }).response.then(
+               function(response) {
+                   var data = response.data;
+                   
+                   var hosts = data.hosts;
+                   var globalServerName = data.ServerName;
+                   
+                   var host;
+                   for(var i=0; i<hosts.length; i++) {
+                       host = hosts[i];
+                       
+                     //build the tree
+                       var storeData = host.tree;
+                       var store = new ItemFileWriteStore({data: storeData});
+                       
+                       var treeModel = new ForestStoreModel({
+                           store: store,
+                           query: {"type": "VirtualHost"},
+                           rootId: 0,
+                           childrenAttrs: ["children"]
+                       });
+
+                       var myTree = new Tree({
+                           model: treeModel,
+                           showRoot: false
+                       });
+                       
+                       var serverName = (host.ServerName == '' ? (globalServerName == '' ? 'unknown' : globalServerName)  : host.ServerName);
+                       
+                       var networkInfoValue = '';
+                       var networkInfo = host.NetworkInfo;
+                       for(var j=0; j<networkInfo.length; j++) {
+                           networkInfoValue += networkInfo[j].value;
+                       }
+                       
+                       var div = document.createElement('div');
+                       div.innerHTML = '<h4>' + serverName + ' ' + networkInfoValue + '</h4>';
+                       div.appendChild(myTree.domNode);
+                       
+                       dom.byId('tree_virtual_host_container').appendChild(div);
+                       
+                       myTree.startup();
+                   }
+                                       
+                   thisdialog.remove();
+               },
+               function(error) {
+                   thisdialog.remove();
+                   net.apachegui.Util.alert('Info',error.response.data.message);
+               }
+           );
+        },
+        
+        populateHierarchicalVirtualHosts : function() {
             var that = this;
             
             var buildVirtualHost = function(name, vhost, containerId, globalServerName, globalDocumentRoot) {
@@ -81,7 +149,7 @@ define([ "dojo/_base/declare",
                 
                 
                 var grid = new DataGrid({
-                    id: 'grid-' + that.currentHostSummaryCount,
+                    id: 'grid-' + that.currentHierarchicalHostSummaryCount,
                     store: store,
                     structure: layout,
                     selectable: true,
@@ -97,16 +165,16 @@ define([ "dojo/_base/declare",
                 
                 grid.startup();        
                 
-                that.currentHostSummaryCount ++;
+                that.currentHierarchicalHostSummaryCount ++;
                 
             };
             
-            var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Virtual Hosts...');
+            var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Hierarchical Hosts...');
             thisdialog.show();
             
             request.get('../web/VirtualHosts', {
                 query:     {
-                    option: 'getAllVirtualHosts'
+                    option: 'getHierarchicalHosts'
                 },
                 handleAs: 'json',
                 preventCache: true,

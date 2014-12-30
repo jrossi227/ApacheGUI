@@ -15,11 +15,12 @@
 			<jsp:include page="/jsp/RequireIncludes.jsp" flush="true" />     
 		], function() {
 			require([
+			         "dijit/layout/TabContainer",
 			         "net/apachegui/VirtualHosts",
 			         "dojo/dom",
 			         "dojo/parser",
 			         "dojo/domReady!"
-			], function(VirtualHosts, dom, parser) {
+			], function(TabContainer, VirtualHosts, dom, parser) {
 				 parser.parse();
 				
 				 net.apachegui.Main.getInstance().init('Virtual_Hosts');
@@ -42,17 +43,32 @@
 		
 		<div id="centerPanel" class="centerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'center'">
 		
-			<h3 id="name_virtual_host_header">Name Virtual Hosts</h3>
-			<div id="name_virtual_host_container">
-				<p id="name_virtual_host_container_none">There are no configured Name Virtual Hosts</p>
-						
-			</div>
-			
-			<h3 id="other_virtual_host_header">Other Virtual Hosts</h3>
-			<div id="other_virtual_host_container">
-				<p id="other_virtual_host_container_none">There are no other configured Virtual Hosts</p>
-			
-			</div>
+		   <div data-dojo-type="dijit/layout/TabContainer" style="width: 100%; height: 100%;" id="virtualHostsTabs">
+                    <div data-dojo-type="dijit/layout/ContentPane" title="Tree View" id="treeTab">
+                        
+                        <div id="tree_virtual_host_container">
+                        
+                        </div>
+                        
+                    </div>
+                  
+                    <div data-dojo-type="dijit/layout/ContentPane" title="Hierarchical View" id="hierarchyTab">
+                        
+                        <h3 id="name_virtual_host_header">Name Virtual Hosts</h3>
+			            <div id="name_virtual_host_container">
+			                <p id="name_virtual_host_container_none">There are no configured Name Virtual Hosts</p>
+			                        
+			            </div>
+			            
+			            <h3 id="other_virtual_host_header">Other Virtual Hosts</h3>
+			            <div id="other_virtual_host_container">
+			                <p id="other_virtual_host_container_none">There are no other configured Virtual Hosts</p>
+			            
+			            </div>
+                             
+                    </div>
+                
+            </div> 
 
 		</div>
 	</div>

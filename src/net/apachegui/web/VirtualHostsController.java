@@ -10,7 +10,6 @@ import net.apachegui.virtualhosts.NetworkInfo;
 import net.apachegui.virtualhosts.VirtualHost;
 import net.apachegui.virtualhosts.VirtualHosts;
 
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,18 +19,28 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/web/VirtualHosts")
 public class VirtualHostsController {
-
-    private static Logger log = Logger.getLogger(VirtualHostsController.class);
     
-    /**
-     * 
-     * @return
-     * @throws NullPointerException
-     * @throws Exception
-     */
-
-    @RequestMapping(method = RequestMethod.GET, params = "option=getAllVirtualHosts", produces = "application/json;charset=UTF-8")
-    public String getAllVirtualHosts() throws NullPointerException, Exception {
+    @RequestMapping(method = RequestMethod.GET, params = "option=getTreeHosts", produces = "application/json;charset=UTF-8")
+    public String getTreeHosts() throws NullPointerException, Exception {
+        
+        VirtualHost hosts[] = VirtualHosts.getAllVirtualHosts();
+        
+        JSONArray jsonHosts = new JSONArray();
+        
+        for(VirtualHost host: hosts ) {
+            jsonHosts.put(new JSONObject(host.toJSON()));
+        }
+        
+        JSONObject summary = new JSONObject();
+        summary.put("ServerName", ServerName.getServerName().getValue());
+        summary.put("hosts", jsonHosts);
+        
+        return summary.toString();
+        
+    }
+    
+    @RequestMapping(method = RequestMethod.GET, params = "option=getHierarchicalHosts", produces = "application/json;charset=UTF-8")
+    public String getHierarchicalHosts() throws NullPointerException, Exception {
 
         VirtualHost hosts[] = VirtualHosts.getAllVirtualHosts();
 
