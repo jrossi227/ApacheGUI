@@ -326,3 +326,10 @@ body.editor #filename_container em {
     background-repeat: no-repeat !important; 
 }
 
+#virtualHostsBody #tree_virtual_host_container .example {
+    display: inline-block;
+    vertical-align: middle;
+    width: 16px;
+    height: 16px;
+}
+

@@ -59,7 +59,8 @@ define([ "dojo/_base/declare",
 
                        var myTree = new Tree({
                            model: treeModel,
-                           showRoot: false
+                           showRoot: false,
+                           autoExpand: true
                        });
                        
                        var serverName = (host.ServerName == '' ? (globalServerName == '' ? 'unknown' : globalServerName)  : host.ServerName);

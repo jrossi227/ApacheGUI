@@ -48,6 +48,8 @@
                         
                         <div id="tree_virtual_host_container">
                         
+	                        <p><span class="example dijitFolderOpened"></span> = Enclosure <span class="example dijitLeaf"></span> = Directive</p>
+                        
                         </div>
                         
                     </div>
