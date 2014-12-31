@@ -19,6 +19,7 @@ define([ "dojo/_base/declare",
        
         currentTreeSummaryCount: 0,
         currentTreeId: '',
+        currentTreeItem: null,
         trees: [],
         
         initialized: false,
@@ -31,23 +32,112 @@ define([ "dojo/_base/declare",
             }
         },
         
-        compareNetworkInfo: function(info1, info2) {
+        areHostsEqual: function(host1, host2) {
           
-            return false;
+            if(host1.ServerName != host2.ServerName) {
+                return false;
+            }
+            
+            var networkInfo1 = host1.NetworkInfo;
+            var networkInfo2 = host2.NetworkInfo;
+            
+            if(networkInfo1.length != networkInfo2.length) {
+                return false;
+            }
+            
+            var foundNetworkInfo = true;
+            
+            for(var i=0; i<networkInfo1.length && foundNetworkInfo; i++) {
+                
+                foundNetworkInfo = false;
+                for(var j=0; j<networkInfo2.length; j++) {
+                    if(networkInfo1[i].port == networkInfo2[j].port &&
+                       networkInfo1[i].address == networkInfo2[j].address) {
+                        foundNetworkInfo = true;
+                        break;
+                    }
+                }
+            }
+            
+            return foundNetworkInfo;
         },
         
         //------------------TREE VIRTUAL HOSTS-------------------------//
+        showOutOfDateError: function() {
+            net.apachegui.Util.alert('Error','It appears that the VirtualHost has been updated outside of the editor. Please reload the page to grab the latest Virtual Host Settings.');
+        },
         
-        updateAllTreeProperties: function(hosts) {
+        getItem: function(id,items) {
+          
+            console.log(id);
             
-            //compare network info and ServerName
+            var item = null;
             
-            //reload the host property, this has up to date lineOfStart and lineOfEnd            
-                        
+            for(var i=0; i<items.length; i++) {
+                
+                if(items[i].id == id) {
+                    item = items[i];
+                } else if(!!items[i].children) {
+                    item = this.getItem(id, items[i].children);
+                }
+                
+                if(!!item) {
+                    break;
+                }
+            }
+            
+            return item;
+        },
+        
+        deleteLine: function() {
+            var itemId = this.currentTreeItem.id;
+            var items = registry.byId(this.currentTreeId).get('host').tree.items;
+            
+            var item = this.getItem(itemId, items);
+            console.log('lineOfStart ' + item.lineOfStart);
+            console.log('tree name ' + this.currentTreeItem.name);
+            console.log('item name ' + item.name);
+            
+            if(this.currentTreeItem.name != item.name) {
+                this.showOutOfDateError();
+                
+                return;
+            }            
+        },
+        
+        editLine: function() {
+            
+        },
+        
+        add: function() {
+            
+        },
+        
+        updateAllTreeProperties : function(hosts) {
+
+            // compare network info and ServerName
+
+            // reload the host property, this has up to date lineOfStart and
+            // lineOfEnd
+            var host;
+            var treeHost;
+            for (var i = 0; i < hosts.length; i++) {
+                host = hosts[i];
+
+                for (var j = 0; j < this.trees.length; j++) {
+
+                    treeHost = this.trees[j].get('host');
+                    if (this.areHostsEqual(treeHost, host)) {
+                        this.trees[j].set('host', host);
+                    }
+
+                }
+            }
+
         },
         
         reloadTreeHost: function(tree) {
-            //request all virtual hosts
+            // request all virtual hosts
             var that = this;
             
             var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Tree Host...');
@@ -74,9 +164,14 @@ define([ "dojo/_base/declare",
                         // compare network info and ServerName to matching tree 
                         
                         //if we find a matching host
-                        // tree.model.store= new ItemFileWriteStore({host.tree});
-                        tree.reload();
-                        that.updateAllTreeProperties();
+                        if(that.areHostsEqual(tree.get('host'),host)) {
+                            tree.model.store= new ItemFileWriteStore({data: host.tree});
+                        
+                            tree.reload();
+                            that.updateAllTreeProperties(hosts);
+                            
+                            break;
+                        }
                     }
                                         
                     thisdialog.remove();
@@ -95,13 +190,9 @@ define([ "dojo/_base/declare",
            var buildTreeHost = function(host,globalServerName) {
                //build the tree
                var id = "tree-" + that.currentTreeSummaryCount;
-               
-               var storeId = 'store-' + id;
-               
-               var storeData = host.tree;
+                              
                var store = new ItemFileWriteStore({
-                   data: storeData,
-                   id: storeId
+                   data: host.tree
                });
                store = new Observable(store);
                
@@ -121,7 +212,8 @@ define([ "dojo/_base/declare",
                    model: treeModel,
                    showRoot: false,
                    autoExpand: true,
-                   id: treeId
+                   id: treeId,
+                   persist: true
                });
                myTree.set({
                    host: host
@@ -151,10 +243,13 @@ define([ "dojo/_base/declare",
                
                menu.addChild(new MenuItem({
                    label: "Delete",
-                   onClick: function() {
+                   onClick: that.deleteLine.bind(that)
+                   /**onClick: function() {
+                       
+                       
                        console.log('i was clicked');
                        that.reloadTreeHost(myTree);
-                   }
+                   }**/
                }));
                
                menu.addChild(new MenuItem({
@@ -166,6 +261,8 @@ define([ "dojo/_base/declare",
                
                on(menu, "focus", function(e) {
                    var tn = registry.getEnclosingWidget(this.currentTarget);
+                   that.currentTreeItem = tn.item;
+                   console.log(that.currentTreeItem);
                    console.log(tn.item.id);
                    console.log(tn.item.type);
                    console.log(tn.item.value);
@@ -176,7 +273,7 @@ define([ "dojo/_base/declare",
                // when we right-click anywhere on the tree, make sure we open the menu
                //menu.bindDomNode(myTree.domNode);
                
-               trees.push(myTree);
+               that.trees.push(myTree);
                
                that.currentTreeSummaryCount++;
            };

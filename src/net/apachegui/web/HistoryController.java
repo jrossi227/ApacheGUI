@@ -5,7 +5,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import net.apachegui.db.LogDataDao;
-import net.apachegui.virtualhosts.NetworkInfo;
 import net.apachegui.virtualhosts.VirtualHost;
 
 import org.apache.log4j.Logger;
@@ -164,54 +163,29 @@ public class HistoryController {
         for (int i = 0; i < serverVirtualHosts.length; i++) {
             for (int j = 0; j < hosts.length(); j++) {
 
-                if (serverVirtualHosts[i].getServerName().getValue().equals(hosts.getJSONObject(j).getString("ServerName"))) {
+                if(serverVirtualHosts[i].equals(hosts.getJSONObject(j))) {
+                    affectedHosts.add(serverVirtualHosts[i]);
 
-                    NetworkInfo[] serverNetworkInfo = serverVirtualHosts[i].getNetworkInfo();
-                    JSONArray clientNetworkInfo = hosts.getJSONObject(j).getJSONArray("NetworkInfo");
-
-                    boolean foundNetworkInfo = true;
-
-                    OUTER: for (int k = 0; k < serverNetworkInfo.length && foundNetworkInfo; k++) {
-                        foundNetworkInfo = false;
-
-                        for (int l = 0; l < clientNetworkInfo.length(); l++) {
-
-                            JSONObject currClientNetworkInfo = clientNetworkInfo.getJSONObject(l);
-                            NetworkInfo cmpInfo = new NetworkInfo(currClientNetworkInfo.getInt("port"), currClientNetworkInfo.getString("address"));
-
-                            if (serverNetworkInfo[k].equals(cmpInfo)) {
-                                foundNetworkInfo = true;
-                                continue OUTER;
-                            }
-                        }
-                    }
-
-                    if (foundNetworkInfo) {
+                    if (option.equals("enable")) {
+                        net.apachegui.history.History.enable(serverVirtualHosts[i]);
                         
-                        affectedHosts.add(serverVirtualHosts[i]);
-
-                        if (option.equals("enable")) {
-                            net.apachegui.history.History.enable(serverVirtualHosts[i]);
-                            
-                            for (int k = 0; k < serverVirtualHosts.length; k++) {
-                                for (ConfigurationLine configurationLine : serverVirtualHosts[k].getEnclosure().getConfigurationLines()) {
-                                    configurationLine.setLineOfStart(configurationLine.getLineOfStart() + 3);
-                                    configurationLine.setLineOfEnd(configurationLine.getLineOfEnd() + 3);
-                                }
+                        for (int k = 0; k < serverVirtualHosts.length; k++) {
+                            for (ConfigurationLine configurationLine : serverVirtualHosts[k].getEnclosure().getConfigurationLines()) {
+                                configurationLine.setLineOfStart(configurationLine.getLineOfStart() + 3);
+                                configurationLine.setLineOfEnd(configurationLine.getLineOfEnd() + 3);
                             }
+                        }
 
-                        } else {
-                            net.apachegui.history.History.disable(serverVirtualHosts[i]);
+                    } else {
+                        net.apachegui.history.History.disable(serverVirtualHosts[i]);
 
-                            for (int k = 0; k < serverVirtualHosts.length; k++) {
-                                for (ConfigurationLine configurationLine : serverVirtualHosts[k].getEnclosure().getConfigurationLines()) {
-                                    configurationLine.setLineOfStart(configurationLine.getLineOfStart() - 3);
-                                    configurationLine.setLineOfEnd(configurationLine.getLineOfEnd() - 3);
-                                }
+                        for (int k = 0; k < serverVirtualHosts.length; k++) {
+                            for (ConfigurationLine configurationLine : serverVirtualHosts[k].getEnclosure().getConfigurationLines()) {
+                                configurationLine.setLineOfStart(configurationLine.getLineOfStart() - 3);
+                                configurationLine.setLineOfEnd(configurationLine.getLineOfEnd() - 3);
                             }
                         }
                     }
-
                 }
             }
         }

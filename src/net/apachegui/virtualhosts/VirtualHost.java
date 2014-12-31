@@ -26,7 +26,7 @@ import apache.conf.parser.Parser;
  */
 
 public class VirtualHost {
-
+    
     private Enclosure enclosure;
     private List<NetworkInfo> networkInfo;
     private DocumentRoot documentRoot;
@@ -36,6 +36,7 @@ public class VirtualHost {
         networkInfo = new ArrayList<NetworkInfo>();
         documentRoot = new DocumentRoot();
         serverName = new ServerName();
+        enclosure = new Enclosure();
     }
 
     public Enclosure getEnclosure() {
@@ -113,6 +114,9 @@ public class VirtualHost {
         children.put("value", name.substring(name.indexOf(" ") + 1));
         children.put("lineOfStart", enclosure.getConfigurationLines()[0].getLineOfStart());
         children.put("lineOfEnd", enclosure.getConfigurationLines()[0].getLineOfEnd());
+        children.put("lineType", "enclosure");
+        children.put("enclosureLineOfStart", enclosure.getLineOfStart());
+        children.put("enclosureLineOfEnd", enclosure.getLineOfEnd());
         children.put("children", toTreeJSON(enclosure, 1));
         items.put(children);
                        
@@ -146,6 +150,9 @@ public class VirtualHost {
                 children.put("value", name.substring(name.indexOf(" ") + 1));
                 children.put("lineOfStart", configurationLines[i].getLineOfStart());
                 children.put("lineOfEnd", configurationLines[i].getLineOfEnd());
+                children.put("lineType", "enclosure");
+                children.put("enclosureLineOfStart", enclosure.getEnclosures()[enclosureCount].getLineOfStart());
+                children.put("enclosureLineOfEnd", enclosure.getEnclosures()[enclosureCount].getLineOfEnd());
                 children.put("children", toTreeJSON(enclosure.getEnclosures()[enclosureCount], lineNum));
                 
                 //iterate the line counter with the number of lines in the enclosure
@@ -164,6 +171,7 @@ public class VirtualHost {
                 directive.put("value", name.substring(name.indexOf(" ") + 1));
                 directive.put("lineOfStart", configurationLines[i].getLineOfStart());
                 directive.put("lineOfEnd", configurationLines[i].getLineOfEnd());
+                directive.put("lineType", "directive");
                 
                 enclosureArray.put(directive);
                 
@@ -189,6 +197,69 @@ public class VirtualHost {
         virtualHostBuffer.append("ServerName: " + serverName.getValue() + "\n");
 
         return virtualHostBuffer.toString();
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+
+        VirtualHost host = (VirtualHost) o;
+        if (!host.getServerName().getValue().equals(this.serverName.getValue())) {
+            return false;
+        }
+
+        NetworkInfo[] networkInfos = host.getNetworkInfo();
+
+        boolean foundNetworkInfo = true;
+
+        if (networkInfos.length != this.networkInfo.size()) {
+            foundNetworkInfo = false;
+        } else {
+            for (int i = 0; i < this.networkInfo.size() && foundNetworkInfo; i++) {
+                foundNetworkInfo = false;
+
+                for (int j = 0; j < networkInfos.length; j++) {
+                    if (this.networkInfo.get(i).equals(networkInfos[j])) {
+                        foundNetworkInfo = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return foundNetworkInfo;
+    }
+    
+    public boolean equals(JSONObject host) {
+        
+        if (!this.serverName.getValue().equals(host.getString("ServerName"))) {
+            return false;
+        }
+
+        NetworkInfo[] serverNetworkInfo = this.getNetworkInfo();
+        JSONArray clientNetworkInfo = host.getJSONArray("NetworkInfo");
+        
+        boolean foundNetworkInfo = true;
+
+        if (serverNetworkInfo.length != clientNetworkInfo.length()) {
+            foundNetworkInfo = false;
+        } else {
+            for (int i = 0; i < serverNetworkInfo.length && foundNetworkInfo; i++) {
+                foundNetworkInfo = false;
+
+                for (int j = 0; j < clientNetworkInfo.length(); j++) {
+
+                    JSONObject currClientNetworkInfo = clientNetworkInfo.getJSONObject(j);
+                    NetworkInfo cmpInfo = new NetworkInfo(currClientNetworkInfo.getInt("port"), currClientNetworkInfo.getString("address"));
+
+                    if (serverNetworkInfo[i].equals(cmpInfo)) {
+                        foundNetworkInfo = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return foundNetworkInfo;
     }
 
 }
