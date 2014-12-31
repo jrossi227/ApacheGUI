@@ -4,8 +4,8 @@ import apache.conf.global.Utils;
 import apache.conf.parser.File;
 
 import java.nio.charset.Charset;
-import java.util.regex.Pattern;
 
+import net.apachegui.conf.Configuration;
 import net.apachegui.db.SettingsDao;
 import net.apachegui.global.Constants;
 import net.apachegui.modules.SharedModuleHandler;
@@ -74,9 +74,7 @@ public class ConfigurationController {
         String status = net.apachegui.conf.Configuration.testServerConfiguration();
         log.trace("Status: " + status);
 
-        Pattern pattern = Pattern.compile("Syntax OK", Pattern.CASE_INSENSITIVE);
-        java.util.regex.Matcher patternMatcher = pattern.matcher(status);
-        if (!patternMatcher.find()) {
+        if(!Configuration.isServerConfigurationOk(status)) {
             throw new Exception("The save generated a configuration error: " + status);
         } else {
             SharedModuleHandler.updateSharedModules();

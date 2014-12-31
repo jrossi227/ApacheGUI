@@ -125,7 +125,7 @@ public class ModulesController {
 
         log.trace("Checking the server configuration");
         String status = Configuration.testServerConfiguration();
-        if (!status.matches(".*(?i:syntax ok).*")) {
+        if(!Configuration.isServerConfigurationOk(status)) {
             StringBuffer loadModules = new StringBuffer();
             loadModules.append("<br/>To revert uncomment the following directives:<br/>");
             for (int i = 0; i < removedModules.size(); i++) {

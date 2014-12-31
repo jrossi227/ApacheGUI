@@ -25,16 +25,12 @@ public class VirtualHosts {
 
         VirtualHost virtualHost;
         ArrayList<NetworkInfo> networkInfo;
-        Directive directives[];
-        Enclosure enclosures[];
         for (Enclosure virtualHostEnclosure : virtualHostEnclosures) {
 
             virtualHost = new VirtualHost();
 
-            virtualHost.setFile(virtualHostEnclosure.getFile());
-            virtualHost.setLineOfStart(virtualHostEnclosure.getLineOfStart());
-            virtualHost.setLineOfEnd(virtualHostEnclosure.getLineOfEnd());
-
+            virtualHost.setEnclosure(virtualHostEnclosure);
+           
             networkInfo = new ArrayList<NetworkInfo>();
             String values[] = virtualHostEnclosure.getValue().split(" ");
             for (String value : values) {
@@ -43,20 +39,12 @@ public class VirtualHosts {
 
             virtualHost.setNetworkInfo(networkInfo.toArray(new NetworkInfo[networkInfo.size()]));
 
-            directives = virtualHostEnclosure.getDirectives();
-            for (Directive directive : directives) {
+            for (Directive directive : virtualHostEnclosure.getDirectives()) {
                 if (directive.getType().equals(Constants.serverNameDirectiveString)) {
                     virtualHost.setServerName(new ServerName(directive.getValues()[0]));
                 } else if (directive.getType().equals(Constants.documentRootDirectiveString)) {
                     virtualHost.setDocumentRoot(new DocumentRoot(directive.getValues()[0]));
-                } else {
-                    virtualHost.addDirective(directive);
-                }
-            }
-
-            enclosures = virtualHostEnclosure.getEnclosures();
-            for (Enclosure enclosure : enclosures) {
-                virtualHost.addEnclosure(enclosure);
+                }                 
             }
 
             virtualHosts.add(virtualHost);
@@ -65,7 +53,7 @@ public class VirtualHosts {
         return virtualHosts.toArray(new VirtualHost[virtualHosts.size()]);
     }
 
-    public static NetworkInfo extractNetworkInfo(String value) {
+    private static NetworkInfo extractNetworkInfo(String value) {
 
         NetworkInfo networkInfo = new NetworkInfo();
 

@@ -39,6 +39,7 @@ public class NetworkInfo {
 
         info.put("port", port);
         info.put("address", address);
+        info.put("value", toString());
 
         return info.toString();
     }

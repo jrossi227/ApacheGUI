@@ -51,16 +51,16 @@
 			<jsp:include page="/jsp/Menu.jsp" 	flush="true" />
 			
 			<div id="centerPanel" class="centerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'center'">
-				<div dojoType="dijit.layout.TabContainer" style="width: 100%; height: 100%;" id="globalSettingsTabs">
-					<div dojoType="dijit.layout.ContentPane" title="Networking" id="networkingTab">
+				<div data-dojo-type="dijit/layout/TabContainer" style="width: 100%; height: 100%;" id="globalSettingsTabs">
+					<div data-dojo-type="dijit/layout/ContentPane" title="Networking" id="networkingTab">
 						
 					</div>
 				  
-					<div dojoType="dijit.layout.ContentPane" title="MIME Types" id="mimeTab">
+					<div data-dojo-type="dijit/layout/ContentPane" title="MIME Types" id="mimeTab">
 						
 					</div>
 					
-					<div dojoType="dijit.layout.ContentPane" title="Modules" id="modulesTab">
+					<div data-dojo-type="dijit/layout/ContentPane" title="Modules" id="modulesTab">
 						
 					</div>
 				

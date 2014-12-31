@@ -199,10 +199,8 @@ public class ConfFiles {
         Utils.writeStringBufferToFile(new File(file), fileBuffer, Charset.forName("UTF-8"));
     }
 
-    public static void deleteFromConfigFile(String regex, File file, int startLineNum, int endLineNum, boolean includeComments) throws Exception {
+    public static void deleteFromConfigFile(Pattern linePattern, File file, int startLineNum, int endLineNum, boolean includeComments) throws Exception {
         log.trace("ConfFiles.deleteFromConfigFiles called");
-        log.trace("Deleting " + regex + " from configuration files");
-        Pattern linePattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 
         boolean found = false;
         StringBuffer fileBuffer = new StringBuffer();

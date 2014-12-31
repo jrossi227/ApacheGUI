@@ -5,7 +5,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import net.apachegui.db.LogDataDao;
-import net.apachegui.virtualhosts.NetworkInfo;
 import net.apachegui.virtualhosts.VirtualHost;
 
 import org.apache.log4j.Logger;
@@ -16,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import apache.conf.parser.ConfigurationLine;
 
 @RestController
 @RequestMapping("/web/History")
@@ -162,48 +163,29 @@ public class HistoryController {
         for (int i = 0; i < serverVirtualHosts.length; i++) {
             for (int j = 0; j < hosts.length(); j++) {
 
-                if (serverVirtualHosts[i].getServerName().equals(hosts.getJSONObject(j).getString("ServerName"))) {
+                if(serverVirtualHosts[i].equals(hosts.getJSONObject(j))) {
+                    affectedHosts.add(serverVirtualHosts[i]);
 
-                    NetworkInfo[] serverNetworkInfo = serverVirtualHosts[i].getNetworkInfo();
-                    JSONArray clientNetworkInfo = hosts.getJSONObject(j).getJSONArray("NetworkInfo");
+                    if (option.equals("enable")) {
+                        net.apachegui.history.History.enable(serverVirtualHosts[i]);
+                        
+                        for (int k = 0; k < serverVirtualHosts.length; k++) {
+                            for (ConfigurationLine configurationLine : serverVirtualHosts[k].getEnclosure().getConfigurationLines()) {
+                                configurationLine.setLineOfStart(configurationLine.getLineOfStart() + 3);
+                                configurationLine.setLineOfEnd(configurationLine.getLineOfEnd() + 3);
+                            }
+                        }
 
-                    boolean foundNetworkInfo = true;
+                    } else {
+                        net.apachegui.history.History.disable(serverVirtualHosts[i]);
 
-                    OUTER: for (int k = 0; k < serverNetworkInfo.length && foundNetworkInfo; k++) {
-                        foundNetworkInfo = false;
-
-                        for (int l = 0; l < clientNetworkInfo.length(); l++) {
-
-                            JSONObject currClientNetworkInfo = clientNetworkInfo.getJSONObject(l);
-                            NetworkInfo cmpInfo = new NetworkInfo(currClientNetworkInfo.getInt("port"), currClientNetworkInfo.getString("address"));
-
-                            if (serverNetworkInfo[k].equals(cmpInfo)) {
-                                foundNetworkInfo = true;
-                                continue OUTER;
+                        for (int k = 0; k < serverVirtualHosts.length; k++) {
+                            for (ConfigurationLine configurationLine : serverVirtualHosts[k].getEnclosure().getConfigurationLines()) {
+                                configurationLine.setLineOfStart(configurationLine.getLineOfStart() - 3);
+                                configurationLine.setLineOfEnd(configurationLine.getLineOfEnd() - 3);
                             }
                         }
                     }
-
-                    if (foundNetworkInfo) {
-                        affectedHosts.add(serverVirtualHosts[i]);
-
-                        if (option.equals("enable")) {
-                            net.apachegui.history.History.enable(serverVirtualHosts[i]);
-                            for (int k = 0; k < serverVirtualHosts.length; k++) {
-                                serverVirtualHosts[k].setLineOfStart(serverVirtualHosts[k].getLineOfStart() + 3);
-                                serverVirtualHosts[k].setLineOfEnd(serverVirtualHosts[k].getLineOfEnd() + 3);
-                            }
-
-                        } else {
-                            net.apachegui.history.History.disable(serverVirtualHosts[i]);
-
-                            for (int k = 0; k < serverVirtualHosts.length; k++) {
-                                serverVirtualHosts[k].setLineOfStart(serverVirtualHosts[k].getLineOfStart() - 3);
-                                serverVirtualHosts[k].setLineOfEnd(serverVirtualHosts[k].getLineOfEnd() - 3);
-                            }
-                        }
-                    }
-
                 }
             }
         }
