@@ -47,6 +47,17 @@ public class Configuration {
         log.trace("returning " + output);
         return output;
     }
+    
+    public static boolean isServerConfigurationOk(String status) throws IOException, InterruptedException {
+        
+        Pattern pattern = Pattern.compile("Syntax OK", Pattern.CASE_INSENSITIVE);
+        java.util.regex.Matcher patternMatcher = pattern.matcher(status);
+        if (!patternMatcher.find()) {
+            return false;
+        } 
+        
+        return true;
+    }
 
     /**
      * Searches every file in the configuration directory for the input filter.

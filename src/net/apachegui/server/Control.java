@@ -56,10 +56,10 @@ public class Control {
 
         log.trace("Checking the server configuration before restarting");
         String status = Configuration.testServerConfiguration();
-        if (!status.matches(".*(?i:syntax ok).*")) {
+        if(!Configuration.isServerConfigurationOk(status)) {
             throw new Exception("The server was not restarted. There is an error with the configuration " + status);
         }
-
+     
         String command[] = Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.binFile) + ",-k,restart").split(",") : (SettingsDao.getInstance().getSetting(
                 Constants.binFile) + ",restart").split(",");
 

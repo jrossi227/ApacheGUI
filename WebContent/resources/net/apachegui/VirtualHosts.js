@@ -10,8 +10,9 @@ define([ "dojo/_base/declare",
          "dijit/tree/ForestStoreModel",
          "dojo/store/Observable",
          "dijit/Menu",
-         "dijit/MenuItem"
-], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, ForestStoreModel, Observable, Menu, MenuItem){
+         "dijit/MenuItem",
+         "dijit/PopupMenuItem"
+], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem){
     
     declare("net.apachegui.VirtualHosts", null, {
         
@@ -68,9 +69,7 @@ define([ "dojo/_base/declare",
         },
         
         getItem: function(id,items) {
-          
-            console.log(id);
-            
+                      
             var item = null;
             
             for(var i=0; i<items.length; i++) {
@@ -89,28 +88,71 @@ define([ "dojo/_base/declare",
             return item;
         },
         
-        deleteLine: function() {
+        getSelectedItem: function() {
             var itemId = this.currentTreeItem.id;
             var items = registry.byId(this.currentTreeId).get('host').tree.items;
             
             var item = this.getItem(itemId, items);
-            console.log('lineOfStart ' + item.lineOfStart);
-            console.log('tree name ' + this.currentTreeItem.name);
-            console.log('item name ' + item.name);
             
             if(this.currentTreeItem.name != item.name) {
                 this.showOutOfDateError();
                 
-                return;
-            }            
+                return null;
+            } 
+            
+            return item;
+        }, 
+        
+        deleteLine: function() {
+            var that = this;
+            
+            var item = this.getSelectedItem();
+            if(!!item) {
+                net.apachegui.Util.confirmDialog(
+                    "Please Confirm", 
+                    "Are you sure you want to delete the following " + item.lineType + ":<br/><br/>" + item.name,
+                    function confirm(conf) {
+                        if(conf) {
+                            var thisdialog = net.apachegui.Util.noCloseDialog('Deleting', 'Deleting Please Wait...');
+                            thisdialog.show();
+                            
+                            var tree = registry.byId(that.currentTreeId);
+                            request.post("../web/VirtualHosts", {
+                                data:     {
+                                    option: 'deleteLine',
+                                    file: tree.get('host').file,
+                                    lineOfStart: item.lineType == 'enclosure' ? item.enclosureLineOfStart : item.lineOfStart,
+                                    lineOfEnd: item.lineType == 'enclosure' ? item.enclosureLineOfEnd : item.lineOfEnd        
+                                },
+                                handleAs: 'json',
+                                sync: false
+                            }).response.then(
+                                function(response) {
+                                    that.reloadTreeHost(tree);
+                                    thisdialog.remove();
+                                }, function(error) {
+                                    thisdialog.remove();
+                                    net.apachegui.Util.alert('Error',error.response.data.message);
+                                }
+                            );
+                        }
+                    }
+                );
+            }
         },
         
         editLine: function() {
-            
+            var item = this.getSelectedItem();
+            if(!!item) {
+                
+            }
         },
         
         add: function() {
-            
+            var item = this.getSelectedItem();
+            if(!!item) {
+                
+            }
         },
         
         updateAllTreeProperties : function(hosts) {
@@ -155,7 +197,6 @@ define([ "dojo/_base/declare",
                     var data = response.data;
                     
                     var hosts = data.hosts;
-                    var globalServerName = data.ServerName;
                     
                     var host;
                     for(var i=0; i<hosts.length; i++) {                       
@@ -242,32 +283,31 @@ define([ "dojo/_base/declare",
                });
                
                menu.addChild(new MenuItem({
-                   label: "Delete",
-                   onClick: that.deleteLine.bind(that)
-                   /**onClick: function() {
-                       
-                       
-                       console.log('i was clicked');
-                       that.reloadTreeHost(myTree);
-                   }**/
+                   label: "Edit",
+                   onClick: that.editLine.bind(that)
                }));
                
                menu.addChild(new MenuItem({
-                   label: "Edit",
-                   onClick: function() {
-                       console.log('i was clicked');
-                   }
+                   label: "Delete",
+                   onClick: that.deleteLine.bind(that)
+               }));
+               
+               var subMenu = new Menu();
+               subMenu.addChild(new MenuItem({
+                   label: "New Enclosure"
+               }));
+               subMenu.addChild(new MenuItem({
+                   label: "New Directive"
+               }));
+               menu.addChild(new PopupMenuItem({
+                   label: "Add",
+                   popup: subMenu
                }));
                
                on(menu, "focus", function(e) {
                    var tn = registry.getEnclosingWidget(this.currentTarget);
                    that.currentTreeItem = tn.item;
-                   console.log(that.currentTreeItem);
-                   console.log(tn.item.id);
-                   console.log(tn.item.type);
-                   console.log(tn.item.value);
                    that.currentTreeId = treeId;
-                   console.log(that.currentTreeId);
                });
                               
                // when we right-click anywhere on the tree, make sure we open the menu

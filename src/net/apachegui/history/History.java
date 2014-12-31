@@ -1,6 +1,7 @@
 package net.apachegui.history;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import net.apachegui.conf.ConfFiles;
 import net.apachegui.directives.CustomLog;
@@ -78,7 +79,7 @@ public class History {
     }
 
     public static void disable(VirtualHost host) throws Exception {
-        ConfFiles.deleteFromConfigFile(".*" + Constants.historyLogHolder + ".*", new File(host.getEnclosure().getFile()), host.getEnclosure().getLineOfStart(), host.getEnclosure().getLineOfEnd(), true);
+        ConfFiles.deleteFromConfigFile(Pattern.compile(".*" + Constants.historyLogHolder + ".*", Pattern.CASE_INSENSITIVE), new File(host.getEnclosure().getFile()), host.getEnclosure().getLineOfStart(), host.getEnclosure().getLineOfEnd(), true);
     }
 
     /**
