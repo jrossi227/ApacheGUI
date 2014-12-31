@@ -35,6 +35,72 @@
 
 	<jsp:include page="/jsp/Init.jsp" 	flush="true" />
 	
+	<div data-dojo-type="dijit/Dialog" id="editDirectiveDialog" title="Edit Directive" style="width: 400px; display: none">
+	    <table>
+	        <tr class="dijitDialogPaneContentArea">
+	                <td>
+	                    <label for='editDirectiveType'>
+	                        Type:
+	                     </label>
+	                </td>
+	                <td>
+	                    <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="editDirectiveType" style="width: 330px;" />
+	                </td>
+	        </tr>
+	        <tr class="dijitDialogPaneContentArea">
+	                   <td>
+	                       <label for='editDirectiveValue'>
+	                           Value:
+	                        </label>
+	                   </td>
+	                   <td>
+	                       <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="editDirectiveValue" style="width: 330px;" />
+	                   </td>
+	           </tr>
+	    </table>
+	    <div class="dijitDialogPaneActionBar">
+	        <button id="editDirectiveSubmit" data-dojo-type="dijit.form.Button" type="button">
+	            Submit
+	        </button>
+	        <button id="editDirectiveCancel" data-dojo-type="dijit.form.Button" type="button">
+	            Cancel
+	        </button>
+	    </div>
+    </div>
+    
+    <div data-dojo-type="dijit/Dialog" id="editEnclosureDialog" title="Edit Enclosure" style="width: 400px; display: none">
+	    <table>
+	        <tr class="dijitDialogPaneContentArea">
+	                <td>
+	                    <label for='editEnclosureType'>
+	                        Type:
+	                     </label>
+	                </td>
+	                <td>
+	                    <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="editEnclosureType" style="width: 330px;" />
+	                </td>
+	        </tr>
+	        <tr class="dijitDialogPaneContentArea">
+	                <td>
+	                    <label for='editEnclosureValue'>
+	                        Value:
+	                     </label>
+	                </td>
+	                <td>
+	                    <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="editEnclosureValue" style="width: 330px;" />
+	                </td>
+	        </tr>
+	    </table>
+	    <div class="dijitDialogPaneActionBar">
+	        <button id="editEnclosureSubmit" data-dojo-type="dijit.form.Button" type="button">
+	            Submit
+	        </button>
+	        <button id="editEnclosureCancel" data-dojo-type="dijit.form.Button" type="button">
+	            Cancel
+	        </button>
+	    </div>
+    </div>
+	
 	<div id="appLayout" class="demoLayout" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline'">
 	
 		<jsp:include page="/jsp/Heading.jsp" 	flush="true" />

@@ -29,6 +29,7 @@ define([ "dojo/_base/declare",
             if(this.initialized===false) {
                 this.populateTreeVirtualHosts();
                 this.populateHierarchicalVirtualHosts();
+                this.addListeners();
                 this.initialized = true;
             }
         },
@@ -110,7 +111,7 @@ define([ "dojo/_base/declare",
             if(!!item) {
                 net.apachegui.Util.confirmDialog(
                     "Please Confirm", 
-                    "Are you sure you want to delete the following " + item.lineType + ":<br/><br/>" + item.name,
+                    "Are you sure you want to delete the following " + item.lineType + ":<br/><br/><strong>" + item.name + "</strong>",
                     function confirm(conf) {
                         if(conf) {
                             var thisdialog = net.apachegui.Util.noCloseDialog('Deleting', 'Deleting Please Wait...');
@@ -144,8 +145,20 @@ define([ "dojo/_base/declare",
         editLine: function() {
             var item = this.getSelectedItem();
             if(!!item) {
-                
+                if(item.lineType == 'enclosure') {
+                    dom.byId('editEnclosureType').value = item.type;
+                    dom.byId('editEnclosureValue').value = item.value;
+                    registry.byId('editEnclosureDialog').show();
+                } else {
+                    dom.byId('editDirectiveType').value = item.type;
+                    dom.byId('editDirectiveValue').value = item.value;
+                    registry.byId('editDirectiveDialog').show();
+                }
             }
+        },
+        
+        submitEditLine: function(type) {
+            //cover special case when editing virtual host network info
         },
         
         add: function() {
@@ -155,7 +168,7 @@ define([ "dojo/_base/declare",
             }
         },
         
-        updateAllTreeProperties : function(hosts) {
+        reloadAllTreeHosts : function(hosts) {
 
             // compare network info and ServerName
 
@@ -209,7 +222,7 @@ define([ "dojo/_base/declare",
                             tree.model.store= new ItemFileWriteStore({data: host.tree});
                         
                             tree.reload();
-                            that.updateAllTreeProperties(hosts);
+                            that.reloadAllTreeHosts(hosts);
                             
                             break;
                         }
@@ -501,10 +514,30 @@ define([ "dojo/_base/declare",
                 }
             );
             
-        }
+        },
         
         //------------------END OF HIERARCHICAL VIRTUAL HOSTS-------------------------//
     
+        addListeners: function() {
+            var that = this;
+            
+            on(registry.byId('editEnclosureSubmit'),'click', function() {
+                that.submitEditLine('enclosure');
+            });
+            
+            on(registry.byId('editEnclosureCancel'),'click', function() {
+                registry.byId('editEnclosureDialog').hide();
+            });
+            
+            on(registry.byId('editDirectiveSubmit'),'click', function() {
+                that.submitEditLine('directive');
+            });
+            
+            on(registry.byId('editDirectiveCancel'),'click', function() {
+                registry.byId('editDirectiveDialog').hide();
+            });
+        }
+        
     });
     
     net.apachegui.VirtualHosts.currentVirtualHosts=null;
