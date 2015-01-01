@@ -111,13 +111,11 @@
                         
                         <h3 id="name_virtual_host_header">Name Virtual Hosts</h3>
 			            <div id="name_virtual_host_container">
-			                <p id="name_virtual_host_container_none">There are no configured Name Virtual Hosts</p>
 			                        
 			            </div>
 			            
 			            <h3 id="other_virtual_host_header">Other Virtual Hosts</h3>
 			            <div id="other_virtual_host_container">
-			                <p id="other_virtual_host_container_none">There are no other configured Virtual Hosts</p>
 			            
 			            </div>
                              

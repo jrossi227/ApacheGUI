@@ -1,5 +1,23 @@
-define([ "dojo/_base/declare", "dojo/dom", "dojo/request", "dijit/registry", "dojo/on", "dojo/data/ItemFileWriteStore", "dojox/grid/DataGrid", "net/apachegui/TitlePane", "net/apachegui/RefreshableTree", "dijit/Tree", "dijit/tree/ForestStoreModel", "dojo/store/Observable", "dijit/Menu", "dijit/MenuItem", "dijit/PopupMenuItem", "dijit/form/Select", "dojox/fx/scroll", "dojo/query" ], function(
-        declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query) {
+define([ "dojo/_base/declare", 
+         "dojo/dom", 
+         "dojo/request", 
+         "dijit/registry", 
+         "dojo/on", 
+         "dojo/data/ItemFileWriteStore", 
+         "dojox/grid/DataGrid", 
+         "net/apachegui/TitlePane", 
+         "net/apachegui/RefreshableTree", 
+         "dijit/Tree", 
+         "dijit/tree/ForestStoreModel", 
+         "dojo/store/Observable", 
+         "dijit/Menu", 
+         "dijit/MenuItem", 
+         "dijit/PopupMenuItem", 
+         "dijit/form/Select", 
+         "dojox/fx/scroll", 
+         "dojo/query",
+         "dojo/_base/array"
+], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query, array) {
 
     declare("net.apachegui.VirtualHosts", null, {
 
@@ -16,7 +34,6 @@ define([ "dojo/_base/declare", "dojo/dom", "dojo/request", "dijit/registry", "do
         init : function() {
             if (this.initialized === false) {
                 this.populateTreeVirtualHosts();
-                this.populateHierarchicalVirtualHosts();
                 this.addListeners();
                 this.initialized = true;
             }
@@ -140,7 +157,8 @@ define([ "dojo/_base/declare", "dojo/dom", "dojo/request", "dijit/registry", "do
         },
 
         submitEditLine : function() {
-            //cover special case when editing virtual host network info
+            // cover special case when editing virtual host network info
+            // cover special case when editing servername
             var tree = registry.byId(that.currentTreeId);
             tree.get('host').file;
         },
@@ -172,6 +190,9 @@ define([ "dojo/_base/declare", "dojo/dom", "dojo/request", "dijit/registry", "do
 
                 }
             }
+            
+            //reload hierarchical hosts in the background
+            this.populateHierarchicalVirtualHosts();
 
         },
 
@@ -387,6 +408,8 @@ define([ "dojo/_base/declare", "dojo/dom", "dojo/request", "dijit/registry", "do
                 });
 
                 thisdialog.remove();
+                
+                that.populateHierarchicalVirtualHosts();
             }, function(error) {
                 thisdialog.remove();
                 net.apachegui.Util.alert('Info', error.response.data.message);
@@ -397,6 +420,7 @@ define([ "dojo/_base/declare", "dojo/dom", "dojo/request", "dijit/registry", "do
 
         //------------------HIERARCHICAL VIRTUAL HOSTS-------------------------//
 
+        // called after tree hosts are loaded or a tree host has been modified
         populateHierarchicalVirtualHosts : function() {
             var that = this;
 
@@ -474,8 +498,8 @@ define([ "dojo/_base/declare", "dojo/dom", "dojo/request", "dijit/registry", "do
 
             };
 
-            var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Hierarchical Hosts...');
-            thisdialog.show();
+            //var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Hierarchical Hosts...');
+            //thisdialog.show();
 
             request.get('../web/VirtualHosts', {
                 query : {
@@ -487,34 +511,48 @@ define([ "dojo/_base/declare", "dojo/dom", "dojo/request", "dijit/registry", "do
             }).response.then(function(response) {
                 var data = response.data;
 
+                var nameVirtualHostContainer = dom.byId('name_virtual_host_container');
+                var otherVirtualHostContainer = dom.byId('other_virtual_host_container');
+                
+                //clear the containers
+                array.forEach(registry.findWidgets(nameVirtualHostContainer), function(w) {
+                    w.destroyRecursive();
+                });
+                
+                nameVirtualHostContainer.innerHTML = '';
+                
+                array.forEach(registry.findWidgets(otherVirtualHostContainer), function(w) {
+                    w.destroyRecursive();
+                });
+                
+                otherVirtualHostContainer.innerHTML = '';
+                
                 var hosts = data.hosts;
                 var globalServerName = data.ServerName;
                 var globalDocumentRoot = data.DocumentRoot;
-
+                
                 for (host in hosts) {
 
                     var hostArray = hosts[host];
 
                     if (hostArray.length > 1) {
 
-                        dom.byId('name_virtual_host_container_none').style.display = 'none';
-
                         for (var i = 0; i < hostArray.length; i++) {
                             if (i == 0) {
 
                                 var div = document.createElement('div');
                                 div.innerHTML = '<h4>' + host + '</h4>';
-                                dom.byId('name_virtual_host_container').appendChild(div);
+                                nameVirtualHostContainer.appendChild(div);
 
                                 div = document.createElement('div');
                                 div.innerHTML = '<h5>Default</h5>';
-                                dom.byId('name_virtual_host_container').appendChild(div);
+                                nameVirtualHostContainer.appendChild(div);
 
                                 buildHierarchicalHost(host, hostArray[i], "name_virtual_host_container", globalServerName, globalDocumentRoot);
 
                                 div = document.createElement('div');
                                 div.innerHTML = '<h5>Other Virtual Hosts</h5>';
-                                dom.byId('name_virtual_host_container').appendChild(div);
+                                nameVirtualHostContainer.appendChild(div);
                             } else {
 
                                 buildHierarchicalHost(host, hostArray[i], "name_virtual_host_container", globalServerName, globalDocumentRoot);
@@ -522,18 +560,24 @@ define([ "dojo/_base/declare", "dojo/dom", "dojo/request", "dijit/registry", "do
                         }
 
                     } else {
-                        dom.byId('other_virtual_host_container_none').style.display = 'none';
-
                         var div = document.createElement('div');
                         div.innerHTML = '<h4>' + host + '</h4>';
-                        dom.byId('other_virtual_host_container').appendChild(div);
+                        otherVirtualHostContainer.appendChild(div);
 
                         buildHierarchicalHost(host, hostArray[0], "other_virtual_host_container", globalServerName, globalDocumentRoot);
                     }
 
                 }
+                
+                if(nameVirtualHostContainer.innerHTML.trim() == "") {
+                    nameVirtualHostContainer.innerHTML = '<p>There are no configured Name Virtual Hosts</p>';
+                }
+                
+                if(otherVirtualHostContainer.innerHTML.trim() == "") {
+                    otherVirtualHostContainer.innerHTML = '<p>There are no other configured Virtual Hosts</p>';
+                }
 
-                thisdialog.remove();
+                //thisdialog.remove();
             }, function(error) {
                 thisdialog.remove();
                 net.apachegui.Util.alert('Info', error.response.data.message);
