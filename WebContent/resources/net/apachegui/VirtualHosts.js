@@ -7,12 +7,16 @@ define([ "dojo/_base/declare",
          "dojox/grid/DataGrid",
          "net/apachegui/TitlePane",
          "net/apachegui/RefreshableTree",
+         "dijit/Tree",
          "dijit/tree/ForestStoreModel",
          "dojo/store/Observable",
          "dijit/Menu",
          "dijit/MenuItem",
-         "dijit/PopupMenuItem"
-], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem){
+         "dijit/PopupMenuItem",
+         "dijit/form/Select",
+         "dojox/fx/scroll",
+         "dojo/query"
+], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query){
     
     declare("net.apachegui.VirtualHosts", null, {
         
@@ -95,7 +99,7 @@ define([ "dojo/_base/declare",
             
             var item = this.getItem(itemId, items);
             
-            if(this.currentTreeItem.name != item.name) {
+            if(this.currentTreeItem.type != item.type && this.currentTreeItem.value != item.value) {
                 this.showOutOfDateError();
                 
                 return null;
@@ -111,7 +115,7 @@ define([ "dojo/_base/declare",
             if(!!item) {
                 net.apachegui.Util.confirmDialog(
                     "Please Confirm", 
-                    "Are you sure you want to delete the following " + item.lineType + ":<br/><br/><strong>" + item.name + "</strong>",
+                    "Are you sure you want to delete the following " + item.lineType + ":<br/><br/>" + item.name,
                     function confirm(conf) {
                         if(conf) {
                             var thisdialog = net.apachegui.Util.noCloseDialog('Deleting', 'Deleting Please Wait...');
@@ -145,19 +149,20 @@ define([ "dojo/_base/declare",
         editLine: function() {
             var item = this.getSelectedItem();
             if(!!item) {
-                if(item.lineType == 'enclosure') {
-                    dom.byId('editEnclosureType').value = item.type;
-                    dom.byId('editEnclosureValue').value = item.value;
-                    registry.byId('editEnclosureDialog').show();
-                } else {
-                    dom.byId('editDirectiveType').value = item.type;
-                    dom.byId('editDirectiveValue').value = item.value;
-                    registry.byId('editDirectiveDialog').show();
-                }
+                
+                dom.byId('editType').value = item.type;
+                dom.byId('editValue').value = item.value;
+                dom.byId('editLineType').value = item.lineType;
+                dom.byId('editLineOfStart').value = item.lineType == 'enclosure' ? item.enclosureLineOfStart : item.lineOfStart;
+                dom.byId('editLineOfEnd').value = item.lineType == 'enclosure' ? item.enclosureLineOfEnd : item.lineOfEnd;    
+                
+                var dialog = registry.byId('editDialog');
+                dialog.set('title', item.lineType == 'enclosure' ? 'Edit Enclosure' : 'Edit Directive');
+                dialog.show();
             }
         },
         
-        submitEditLine: function(type) {
+        submitEditLine: function() {
             //cover special case when editing virtual host network info
         },
         
@@ -241,7 +246,7 @@ define([ "dojo/_base/declare",
         populateTreeVirtualHosts: function() {
            var that = this;
             
-           var buildTreeHost = function(host,globalServerName) {
+           var buildTreeHost = function(host,serverName) {
                //build the tree
                var id = "tree-" + that.currentTreeSummaryCount;
                               
@@ -260,20 +265,26 @@ define([ "dojo/_base/declare",
                    id: modelId
                });
 
+               var HostTreeNode = declare(Tree._TreeNode, {
+                   _setLabelAttr: {node: "labelNode", type: "innerHTML"}
+               });
+               
                var treeId = 'tree-' + id;
                
-               var myTree = new RefreshableTree({
+               var hostTree = new RefreshableTree({
                    model: treeModel,
                    showRoot: false,
                    autoExpand: true,
+                   openOnClick: true,
                    id: treeId,
-                   persist: true
+                   persist: true,
+                   _createTreeNode: function(args){
+                       return new HostTreeNode(args);
+                   }
                });
-               myTree.set({
+               hostTree.set({
                    host: host
                });
-               
-               var serverName = (host.ServerName == '' ? (globalServerName == '' ? 'unknown' : globalServerName)  : host.ServerName);
                
                var networkInfoValue = '';
                var networkInfo = host.NetworkInfo;
@@ -284,11 +295,11 @@ define([ "dojo/_base/declare",
                var div = document.createElement('div');
                div.id = id;
                div.innerHTML = '<h4>' + serverName + ' ' + networkInfoValue + '</h4>';
-               div.appendChild(myTree.domNode);
+               div.appendChild(hostTree.domNode);
                
                dom.byId('tree_virtual_host_container').appendChild(div);
                
-               myTree.startup();
+               hostTree.startup();
                
                var menu = new Menu({
                    targetNodeIds: [id],
@@ -324,9 +335,9 @@ define([ "dojo/_base/declare",
                });
                               
                // when we right-click anywhere on the tree, make sure we open the menu
-               //menu.bindDomNode(myTree.domNode);
+               //menu.bindDomNode(hostTree.domNode);
                
-               that.trees.push(myTree);
+               that.trees.push(hostTree);
                
                that.currentTreeSummaryCount++;
            };
@@ -348,10 +359,51 @@ define([ "dojo/_base/declare",
                    var hosts = data.hosts;
                    var globalServerName = data.ServerName;
                    
+                   var options = [];
+                   options.push({
+                       label: 'Select',
+                       value: ''
+                   });
+                   
+                   var serverName;
+                   var networkInfoValue;
+                   var networkInfo;
                    for(var i=0; i<hosts.length; i++) {                       
-                       buildTreeHost(hosts[i],globalServerName);
+                       
+                       serverName = (hosts[i].ServerName == '' ? (globalServerName == '' ? 'unknown' : globalServerName)  : hosts[i].ServerName);
+                       
+                       networkInfoValue = '';
+                       networkInfo = hosts[i].NetworkInfo;
+                       for(var j=0; j<networkInfo.length; j++) {
+                           networkInfoValue += networkInfo[j].value;
+                       }
+                       
+                       options.push({
+                           label: serverName + ' ' + networkInfoValue,
+                           value: that.currentTreeSummaryCount.toString()
+                       });
+                       
+                       buildTreeHost(hosts[i],serverName);
                    }
-                                       
+                    
+                   var select = new Select({
+                       name: "host_select",
+                       id: "host_select",
+                       options: options
+                   },'select_host_box');
+                   select.startup();
+                                 
+                   on(select,"change", function(){
+                       var value = this.get("value");
+                       
+                       if(value != '') {
+                           dojox.fx.smoothScroll({
+                               node: query('#tree-' + value)[0],
+                               win: dom.byId('tree_virtual_host_content_pane')
+                           }).play();
+                       }
+                   });
+                   
                    thisdialog.remove();
                },
                function(error) {
@@ -521,21 +573,14 @@ define([ "dojo/_base/declare",
         addListeners: function() {
             var that = this;
             
-            on(registry.byId('editEnclosureSubmit'),'click', function() {
-                that.submitEditLine('enclosure');
+            on(registry.byId('editSubmit'),'click', function() {
+                that.submitEditLine();
             });
             
-            on(registry.byId('editEnclosureCancel'),'click', function() {
-                registry.byId('editEnclosureDialog').hide();
+            on(registry.byId('editCancel'),'click', function() {
+                registry.byId('editDialog').hide();
             });
             
-            on(registry.byId('editDirectiveSubmit'),'click', function() {
-                that.submitEditLine('directive');
-            });
-            
-            on(registry.byId('editDirectiveCancel'),'click', function() {
-                registry.byId('editDirectiveDialog').hide();
-            });
         }
         
     });

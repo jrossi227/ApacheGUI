@@ -313,23 +313,31 @@ body.editor #filename_container em {
 	margin-bottom: 35px;
 }
 
-#virtualHostsBody #tree_virtual_host_container .dijitFolderOpened,
-#virtualHostsBody #tree_virtual_host_container .dijitFolderClosed {
+#virtualHostsBody #treeTab .dijitFolderOpened,
+#virtualHostsBody #treeTab .dijitFolderClosed {
 	background: url('images/enclosure.png') !important;
 	background-position: center !important; 
     background-repeat: no-repeat !important; 
 }
 
-#virtualHostsBody #tree_virtual_host_container .dijitLeaf {
+#virtualHostsBody #treeTab .dijitLeaf {
     background: url('images/directive.png') !important;
     background-position: center !important; 
     background-repeat: no-repeat !important; 
 }
 
-#virtualHostsBody #tree_virtual_host_container .example {
+#virtualHostsBody #treeTab .example {
     display: inline-block;
     vertical-align: middle;
     width: 16px;
     height: 16px;
 }
+
+#virtualHostsBody #example_container,
+#virtualHostsBody #select_host_container {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 10px;
+}
+
 

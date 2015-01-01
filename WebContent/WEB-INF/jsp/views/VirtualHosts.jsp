@@ -35,67 +35,39 @@
 
 	<jsp:include page="/jsp/Init.jsp" 	flush="true" />
 	
-	<div data-dojo-type="dijit/Dialog" id="editDirectiveDialog" title="Edit Directive" style="width: 400px; display: none">
+	<div data-dojo-type="dijit/Dialog" id="editDialog" title="Edit " style="width: 400px; display: none">
 	    <table>
 	        <tr class="dijitDialogPaneContentArea">
 	                <td>
-	                    <label for='editDirectiveType'>
+	                    <label for='editType'>
 	                        Type:
 	                     </label>
 	                </td>
 	                <td>
-	                    <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="editDirectiveType" style="width: 330px;" />
+	                    <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="editType" style="width: 330px;" />
 	                </td>
 	        </tr>
 	        <tr class="dijitDialogPaneContentArea">
 	                   <td>
-	                       <label for='editDirectiveValue'>
+	                       <label for='editValue'>
 	                           Value:
 	                        </label>
 	                   </td>
 	                   <td>
-	                       <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="editDirectiveValue" style="width: 330px;" />
+	                       <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="editValue" style="width: 330px;" />
 	                   </td>
 	           </tr>
 	    </table>
+	    
+	    <input type="hidden" id="editLineType" value=""/>
+	    <input type="hidden" id="editLineOfStart" value=""/>
+	    <input type="hidden" id="editLineOfEnd" value=""/>
+	    
 	    <div class="dijitDialogPaneActionBar">
-	        <button id="editDirectiveSubmit" data-dojo-type="dijit.form.Button" type="button">
+	        <button id="editSubmit" data-dojo-type="dijit.form.Button" type="button">
 	            Submit
 	        </button>
-	        <button id="editDirectiveCancel" data-dojo-type="dijit.form.Button" type="button">
-	            Cancel
-	        </button>
-	    </div>
-    </div>
-    
-    <div data-dojo-type="dijit/Dialog" id="editEnclosureDialog" title="Edit Enclosure" style="width: 400px; display: none">
-	    <table>
-	        <tr class="dijitDialogPaneContentArea">
-	                <td>
-	                    <label for='editEnclosureType'>
-	                        Type:
-	                     </label>
-	                </td>
-	                <td>
-	                    <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="editEnclosureType" style="width: 330px;" />
-	                </td>
-	        </tr>
-	        <tr class="dijitDialogPaneContentArea">
-	                <td>
-	                    <label for='editEnclosureValue'>
-	                        Value:
-	                     </label>
-	                </td>
-	                <td>
-	                    <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="editEnclosureValue" style="width: 330px;" />
-	                </td>
-	        </tr>
-	    </table>
-	    <div class="dijitDialogPaneActionBar">
-	        <button id="editEnclosureSubmit" data-dojo-type="dijit.form.Button" type="button">
-	            Submit
-	        </button>
-	        <button id="editEnclosureCancel" data-dojo-type="dijit.form.Button" type="button">
+	        <button id="editCancel" data-dojo-type="dijit.form.Button" type="button">
 	            Cancel
 	        </button>
 	    </div>
@@ -112,12 +84,27 @@
 		   <div data-dojo-type="dijit/layout/TabContainer" style="width: 100%; height: 100%;" id="virtualHostsTabs">
                     <div data-dojo-type="dijit/layout/ContentPane" title="Tree View" id="treeTab">
                         
-                        <div id="tree_virtual_host_container">
+                        <div class="centerPanel" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region: 'center', tabPosition: 'top'">
                         
-	                        <p><span class="example dijitFolderOpened"></span> = Enclosure <span class="example dijitLeaf"></span> = Directive</p>
+	                        <div class="centerPanel" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'top', title:'Modify'">
+	                            <div id="example_container">
+	                               <span class="example dijitFolderOpened"></span> = Enclosure <span class="example dijitLeaf"></span> = Directive
+	                            </div>
+	                            <div id="select_host_container">
+	                               Host: <div id="select_host_box"></div>
+	                            </div>
+	                        </div>
+	                        
+	                        <div id="tree_virtual_host_content_pane" class="centerPanel" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'center', title:'Edit'" >
+	                        
+	                            <div id="tree_virtual_host_container">
+	                            
+	                            </div>
+	                        
+	                        </div>
                         
                         </div>
-                        
+
                     </div>
                   
                     <div data-dojo-type="dijit/layout/ContentPane" title="Hierarchical View" id="hierarchyTab">

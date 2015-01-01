@@ -94,6 +94,14 @@ public class VirtualHost {
         return json.toString();
     }
 
+    private String getNameFromParts(String parts[]) {
+        String name = Utilities.join(parts, " ");
+        
+        name = "<strong>" + name.replaceFirst(" ", "</strong> ");
+        
+        return name;
+    }
+    
     public JSONObject toTreeJSON() {
         
         JSONObject tree = new JSONObject();
@@ -105,7 +113,7 @@ public class VirtualHost {
         String line = enclosure.getConfigurationLines()[0].getProcessedLine();
         
         String parts[] = EnclosureParser.extractEnclosureToParts(line);
-        String name = Utilities.join(parts, " ");
+        String name = getNameFromParts(parts);
         
         JSONObject children = new JSONObject(); 
         children.put("id", 0);
@@ -141,7 +149,7 @@ public class VirtualHost {
             
             if(Parser.isEnclosureMatch(line) && i > 0) {
                 String parts[] = EnclosureParser.extractEnclosureToParts(line);
-                String name = Utilities.join(parts, " ");
+                String name = getNameFromParts(parts);
                 
                 JSONObject children = new JSONObject(); 
                 children.put("id", lineNum);
@@ -162,7 +170,7 @@ public class VirtualHost {
                 enclosureCount ++;
             } else if((!Parser.isEnclosureMatch(line) && !Parser.isCloseEnclosureMatch(line))) {
                 String parts[] = DirectiveParser.extractDirectiveToParts(line);
-                String name = Utilities.join(parts, " ");
+                String name = getNameFromParts(parts);
                 
                 JSONObject directive = new JSONObject();
                 directive.put("id", lineNum);

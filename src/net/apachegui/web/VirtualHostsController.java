@@ -46,7 +46,7 @@ public class VirtualHostsController {
     }
     
     @RequestMapping(method = RequestMethod.POST, params = "option=deleteLine", produces = "application/json;charset=UTF-8")
-    public String updateGlobal(@RequestParam(value = "file") String file, 
+    public String deleteLine(@RequestParam(value = "file") String file, 
                                @RequestParam(value = "lineOfStart") int lineOfStart, 
                                @RequestParam(value = "lineOfEnd") int lineOfEnd) throws Exception {
 
@@ -62,6 +62,15 @@ public class VirtualHostsController {
         result.put("result", "success");
 
         return result.toString();
+    }
+    
+    @RequestMapping(method = RequestMethod.POST, params = "option=editLine", produces = "application/json;charset=UTF-8")
+    public String editLine(@RequestParam(value = "file") String file, 
+                               @RequestParam(value = "lineOfStart") int lineOfStart, 
+                               @RequestParam(value = "lineOfEnd") int lineOfEnd) throws Exception {
+        
+    
+        return "";
     }
     
     @RequestMapping(method = RequestMethod.GET, params = "option=getHierarchicalHosts", produces = "application/json;charset=UTF-8")
