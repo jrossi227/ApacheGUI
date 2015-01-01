@@ -65,9 +65,12 @@ public class VirtualHostsController {
     }
     
     @RequestMapping(method = RequestMethod.POST, params = "option=editLine", produces = "application/json;charset=UTF-8")
-    public String editLine(@RequestParam(value = "file") String file, 
-                               @RequestParam(value = "lineOfStart") int lineOfStart, 
-                               @RequestParam(value = "lineOfEnd") int lineOfEnd) throws Exception {
+    public String editLine(@RequestParam(value = "type") String type, 
+                           @RequestParam(value = "value") String value, 
+                           @RequestParam(value = "lineType") String lineType, 
+                           @RequestParam(value = "file") String file, 
+                           @RequestParam(value = "lineOfStart") int lineOfStart, 
+                           @RequestParam(value = "lineOfEnd") int lineOfEnd) throws Exception {
         
     
         return "";

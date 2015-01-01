@@ -164,6 +164,8 @@ define([ "dojo/_base/declare",
         
         submitEditLine: function() {
             //cover special case when editing virtual host network info
+            var tree = registry.byId(that.currentTreeId);
+            tree.get('host').file;
         },
         
         add: function() {
