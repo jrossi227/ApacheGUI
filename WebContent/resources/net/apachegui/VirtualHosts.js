@@ -199,6 +199,8 @@ define([ "dojo/_base/declare",
                     var NetworkInfo = that.buildNetworkInfoArrayFromValue(value);
                     tree.get('host').NetworkInfo = NetworkInfo;
                     
+                    //update the heading with the new network info
+                    
                     console.log(NetworkInfo);
                 };
                 
