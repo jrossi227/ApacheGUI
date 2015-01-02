@@ -19,6 +19,7 @@ import net.apachegui.global.Constants;
 import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import apache.conf.parser.File;
@@ -176,8 +177,12 @@ public class ConfFiles {
         }
     }
 
-    public static void writeToConfigFile(File file, String lines, int startLine) throws IOException {
+    public static String writeToConfigFile(File file, String lines, int startLine) throws IOException {
 
+        //TODO make lines into an array and preserver spaces using startLine
+        
+        String originalContents = FileUtils.readFileToString(file, Charset.forName("UTF-8"));
+        
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 
         StringBuffer fileBuffer = new StringBuffer();
@@ -197,11 +202,46 @@ public class ConfFiles {
         br.close();
 
         Utils.writeStringBufferToFile(new File(file), fileBuffer, Charset.forName("UTF-8"));
+        
+        return originalContents;
     }
 
-    public static void deleteFromConfigFile(Pattern linePattern, File file, int startLineNum, int endLineNum, boolean includeComments) throws Exception {
+    public static String replaceLinesInConfigFile(File file, String lines, int startLine, int endLine) throws IOException {
+
+        //TODO make lines into an array and preserve spaces
+        
+        String originalContents = FileUtils.readFileToString(file, Charset.forName("UTF-8"));
+        
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+
+        StringBuffer fileBuffer = new StringBuffer();
+
+        String strLine;
+        int lineNum = 1;
+        while ((strLine = br.readLine()) != null) {
+            if (lineNum == startLine) {
+                fileBuffer.append(lines);
+            }
+
+            if(lineNum < startLine || lineNum > endLine) {
+                fileBuffer.append(strLine + Constants.newLine);
+            }
+
+            lineNum++;
+        }
+
+        br.close();
+
+        Utils.writeStringBufferToFile(new File(file), fileBuffer, Charset.forName("UTF-8"));
+        
+        return originalContents;
+    }
+    
+    public static String deleteFromConfigFile(Pattern linePattern, File file, int startLineNum, int endLineNum, boolean includeComments) throws Exception {
         log.trace("ConfFiles.deleteFromConfigFiles called");
 
+        String originalContents = FileUtils.readFileToString(file, Charset.forName("UTF-8"));
+        
         boolean found = false;
         StringBuffer fileBuffer = new StringBuffer();
 
@@ -228,7 +268,8 @@ public class ConfFiles {
             log.trace("Calling writeStringBufferToFile to rewrite file");
             Utils.writeStringBufferToFile(file, fileBuffer, Charset.forName("UTF-8"));
         }
-
+        
+        return originalContents;
     }
 
     /**

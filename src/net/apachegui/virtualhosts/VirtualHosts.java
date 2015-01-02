@@ -24,20 +24,12 @@ public class VirtualHosts {
         ArrayList<VirtualHost> virtualHosts = new ArrayList<VirtualHost>();
 
         VirtualHost virtualHost;
-        ArrayList<NetworkInfo> networkInfo;
         for (Enclosure virtualHostEnclosure : virtualHostEnclosures) {
 
             virtualHost = new VirtualHost();
 
             virtualHost.setEnclosure(virtualHostEnclosure);
-           
-            networkInfo = new ArrayList<NetworkInfo>();
-            String values[] = virtualHostEnclosure.getValue().split(" ");
-            for (String value : values) {
-                networkInfo.add(extractNetworkInfo(value));
-            }
-
-            virtualHost.setNetworkInfo(networkInfo.toArray(new NetworkInfo[networkInfo.size()]));
+            virtualHost.setNetworkInfo(NetworkInfo.buildNetworkInfo(virtualHostEnclosure.getValue().split(" ")));
 
             for (Directive directive : virtualHostEnclosure.getDirectives()) {
                 if (directive.getType().equals(Constants.serverNameDirectiveString)) {
@@ -51,44 +43,5 @@ public class VirtualHosts {
         }
 
         return virtualHosts.toArray(new VirtualHost[virtualHosts.size()]);
-    }
-
-    private static NetworkInfo extractNetworkInfo(String value) {
-
-        NetworkInfo networkInfo = new NetworkInfo();
-
-        // There is no port number
-        if (!value.contains(":") || (value.contains("[") && value.contains("]") && !value.contains("]:"))) {
-
-            String address;
-
-            if (value.contains("[") && value.contains("]")) {
-                address = value.substring(value.indexOf("[") + 1, value.indexOf("]"));
-            } else {
-                address = value;
-            }
-
-            networkInfo.setAddress(address);
-
-        } else {
-
-            String address;
-            int port;
-
-            if (value.contains("[") && value.contains("]")) {
-                address = value.substring(value.indexOf("[") + 1, value.indexOf("]"));
-                port = Integer.parseInt(value.substring(value.lastIndexOf(":") + 1));
-
-            } else {
-                String addressPort[] = value.split(":");
-                address = addressPort[0];
-                port = Integer.parseInt(addressPort[1]);
-            }
-
-            networkInfo.setAddress(address);
-            networkInfo.setPort(port);
-        }
-
-        return networkInfo;
     }
 }

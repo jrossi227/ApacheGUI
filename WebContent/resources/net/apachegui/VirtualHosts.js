@@ -108,6 +108,27 @@ define([ "dojo/_base/declare",
             return item;
         },
 
+        buildNetworkInfoArrayFromValue : function(value) {
+            
+            var NetworkInfo;
+            //use the server to build network info from input string
+            request.get('../web/VirtualHosts', {
+                query : {
+                    option : 'getNetworkInfoArrayFromValue',
+                    value : value 
+                },
+                handleAs : 'json',
+                preventCache : true,
+                sync : true
+            }).response.then(function(response) {
+                var data = response.data;
+
+                NetworkInfo = data.NetworkInfo;
+            });    
+            
+            return NetworkInfo;
+        }, 
+        
         deleteLine : function() {
             var that = this;
 
@@ -147,8 +168,8 @@ define([ "dojo/_base/declare",
                 dom.byId('editType').value = item.type;
                 dom.byId('editValue').value = item.value;
                 dom.byId('editLineType').value = item.lineType;
-                dom.byId('editLineOfStart').value = item.lineType == 'enclosure' ? item.enclosureLineOfStart : item.lineOfStart;
-                dom.byId('editLineOfEnd').value = item.lineType == 'enclosure' ? item.enclosureLineOfEnd : item.lineOfEnd;
+                dom.byId('editLineOfStart').value = item.lineOfStart;
+                dom.byId('editLineOfEnd').value = item.lineOfEnd;
 
                 var dialog = registry.byId('editDialog');
                 dialog.set('title', item.lineType == 'enclosure' ? 'Edit Enclosure' : 'Edit Directive');
@@ -157,10 +178,71 @@ define([ "dojo/_base/declare",
         },
 
         submitEditLine : function() {
-            // cover special case when editing virtual host network info
+            var that = this;
+            
             // cover special case when editing servername
             var tree = registry.byId(that.currentTreeId);
-            tree.get('host').file;
+            var file = tree.get('host').file;
+            
+            var type = dom.byId('editType').value;
+            var value = dom.byId('editValue').value;
+            var lineType = dom.byId('editLineType').value;
+            var lineOfStart = dom.byId('editLineOfStart').value;
+            var lineOfEnd = dom.byId('editLineOfEnd').value;
+            
+            // cover special case when editing virtual host network info
+            var callback;
+            if(type == "VirtualHost") {
+                
+                callback = function() {
+                    //set local network info to match the server host
+                    var NetworkInfo = that.buildNetworkInfoArrayFromValue(value);
+                    tree.get('host').NetworkInfo = NetworkInfo;
+                    
+                    console.log(NetworkInfo);
+                };
+                
+            } 
+            
+            if (type == "ServerName") {
+                
+                callback = function() {
+                    //set local servername to match the server host so we can reload
+                    tree.get('host').ServerName = value;
+                    
+                    console.log(value);
+                };
+                
+            }
+            
+            var thisdialog = net.apachegui.Util.noCloseDialog('Modifying', 'Modifying Please Wait...');
+            thisdialog.show();
+
+            request.post("../web/VirtualHosts", {
+                data : {
+                    option : 'editLine',
+                    type: type,
+                    value: value,
+                    lineType: lineType,
+                    file: file,
+                    lineOfStart: lineOfStart,
+                    lineOfEnd: lineOfEnd
+                },
+                handleAs : 'json',
+                sync : false
+            }).response.then(function(response) {
+                
+                if(!!callback) {
+                    callback();
+                }
+                
+                that.reloadTreeHost(tree);
+                thisdialog.remove();
+            }, function(error) {
+                thisdialog.remove();
+                net.apachegui.Util.alert('Error', error.response.data.message);
+            });
+            
         },
 
         add : function() {
@@ -498,9 +580,6 @@ define([ "dojo/_base/declare",
 
             };
 
-            //var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Hierarchical Hosts...');
-            //thisdialog.show();
-
             request.get('../web/VirtualHosts', {
                 query : {
                     option : 'getHierarchicalHosts'
@@ -577,7 +656,6 @@ define([ "dojo/_base/declare",
                     otherVirtualHostContainer.innerHTML = '<p>There are no other configured Virtual Hosts</p>';
                 }
 
-                //thisdialog.remove();
             }, function(error) {
                 thisdialog.remove();
                 net.apachegui.Util.alert('Info', error.response.data.message);

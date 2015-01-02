@@ -1,5 +1,7 @@
 package net.apachegui.virtualhosts;
 
+import java.util.ArrayList;
+
 import org.json.JSONObject;
 
 public class NetworkInfo {
@@ -33,6 +35,56 @@ public class NetworkInfo {
         this.address = address;
     }
 
+    public static NetworkInfo buildNetworkInfo(String value) {
+        NetworkInfo networkInfo = new NetworkInfo();
+
+        // There is no port number
+        if (!value.contains(":") || (value.contains("[") && value.contains("]") && !value.contains("]:"))) {
+
+            String address;
+
+            if (value.contains("[") && value.contains("]")) {
+                address = value.substring(value.indexOf("[") + 1, value.indexOf("]"));
+            } else {
+                address = value;
+            }
+
+            networkInfo.setAddress(address);
+
+        } else {
+
+            String address;
+            int port;
+
+            if (value.contains("[") && value.contains("]")) {
+                address = value.substring(value.indexOf("[") + 1, value.indexOf("]"));
+                port = Integer.parseInt(value.substring(value.lastIndexOf(":") + 1));
+
+            } else {
+                String addressPort[] = value.split(":");
+                address = addressPort[0];
+                port = Integer.parseInt(addressPort[1]);
+            }
+
+            networkInfo.setAddress(address);
+            networkInfo.setPort(port);
+        }
+        
+        return networkInfo;
+    }
+    
+    public static NetworkInfo[] buildNetworkInfo(String values[]) {
+
+        ArrayList<NetworkInfo> networkInfos = new ArrayList<NetworkInfo>();
+
+        for (String value : values) {
+            networkInfos.add(buildNetworkInfo(value));
+        }
+
+        return networkInfos.toArray(new NetworkInfo[networkInfos.size()]);
+    }
+    
+    
     public String toJSON() {
 
         JSONObject info = new JSONObject();
