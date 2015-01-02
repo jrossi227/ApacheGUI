@@ -33,20 +33,33 @@ public class History {
         return false;
     }
 
-    private static String getIncludeString() {
+    private static String[] getIncludeStrings() {
 
         File cat = new File(Utilities.getTomcatInstallDirectory());
         File java = new File(Utilities.getJavaHome(), "bin/java" + (Utils.isWindows() ? ".exe" : ""));
 
-        String includeString = "#This section is written by the apache gui do not manually edit " + Constants.historyLogHolder + Constants.newLine
-                + "LogFormat \"%h\\\",\\\"%{User-agent}i\\\",\\\"%r\\\",\\\"%>s\\\",\\\"%B\" " + Constants.historyLogHolder + Constants.newLine;
+        ArrayList<String> includeStrings = new ArrayList<String>();
+        includeStrings.add("#This section is written by the apache gui do not manually edit " + Constants.historyLogHolder);
+        includeStrings.add("LogFormat \"%h\\\",\\\"%{User-agent}i\\\",\\\"%r\\\",\\\"%>s\\\",\\\"%B\" " + Constants.historyLogHolder);
 
-        includeString += "CustomLog \"|\\\"" + java.getAbsolutePath() + "\\\" -jar \\\"" + (new File(cat, "bin/LogParser.jar")).getAbsolutePath() + "\\\" \\\""
-                + (new File(cat, "conf/server.xml")).getAbsolutePath() + "\\\"\" " + Constants.historyLogHolder + Constants.newLine;
+        includeStrings.add("CustomLog \"|\\\"" + java.getAbsolutePath() + "\\\" -jar \\\"" + (new File(cat, "bin/LogParser.jar")).getAbsolutePath() + "\\\" \\\""
+                + (new File(cat, "conf/server.xml")).getAbsolutePath() + "\\\"\" " + Constants.historyLogHolder);
 
-        return includeString;
+        return includeStrings.toArray(new String[includeStrings.size()]);
     }
 
+    private static String getIncludeString() {
+        
+        String includeString = "";
+        
+        String includeStrings[] = getIncludeStrings();
+        for(String include: includeStrings) {
+            includeString += include + Constants.newLine;
+        }
+        
+        return includeString;
+    }
+    
     /**
      * Method used to enable history.
      * 
@@ -75,7 +88,7 @@ public class History {
     }
 
     public static void enable(VirtualHost host) throws Exception {
-        ConfFiles.writeToConfigFile(new File(host.getEnclosure().getFile()), getIncludeString(), host.getEnclosure().getLineOfEnd());
+        ConfFiles.writeToConfigFile(new File(host.getEnclosure().getFile()), getIncludeStrings(), host.getEnclosure().getLineOfEnd(), true);
     }
 
     public static void disable(VirtualHost host) throws Exception {

@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 import net.apachegui.db.SettingsDao;
 import net.apachegui.global.Constants;
+import net.apachegui.global.Utilities;
 import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
 
@@ -177,41 +178,53 @@ public class ConfFiles {
         }
     }
 
-    public static String writeToConfigFile(File file, String lines, int startLine) throws IOException {
+    public static String writeToConfigFile(File file, String lines[], int startLine, boolean useWhitespaceBefore) throws IOException {
 
-        //TODO make lines into an array and preserver spaces using startLine
-        
         String originalContents = FileUtils.readFileToString(file, Charset.forName("UTF-8"));
-        
+
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 
         StringBuffer fileBuffer = new StringBuffer();
 
         String strLine;
         int lineNum = 1;
+        String whiteSpace = "";
         while ((strLine = br.readLine()) != null) {
+
+            if (!useWhitespaceBefore) {
+                if (!strLine.trim().equals("")) {
+                    whiteSpace = Utilities.getLeadingWhiteSpace(strLine);
+                }
+            }
+
             if (lineNum == startLine) {
-                fileBuffer.append(lines);
+                for (String line : lines) {
+                    fileBuffer.append(whiteSpace + line + Constants.newLine);
+                }
             }
 
             fileBuffer.append(strLine + Constants.newLine);
 
             lineNum++;
+
+            if (useWhitespaceBefore) {
+                if (!strLine.trim().equals("")) {
+                    whiteSpace = Utilities.getLeadingWhiteSpace(strLine);
+                }
+            }
         }
 
         br.close();
 
         Utils.writeStringBufferToFile(new File(file), fileBuffer, Charset.forName("UTF-8"));
-        
+
         return originalContents;
     }
 
-    public static String replaceLinesInConfigFile(File file, String lines, int startLine, int endLine) throws IOException {
+    public static String replaceLinesInConfigFile(File file, String lines[], int startLine, int endLine) throws IOException {
 
-        //TODO make lines into an array and preserve spaces
-        
         String originalContents = FileUtils.readFileToString(file, Charset.forName("UTF-8"));
-        
+
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 
         StringBuffer fileBuffer = new StringBuffer();
@@ -220,10 +233,12 @@ public class ConfFiles {
         int lineNum = 1;
         while ((strLine = br.readLine()) != null) {
             if (lineNum == startLine) {
-                fileBuffer.append(lines);
+                for (String line : lines) {
+                    fileBuffer.append(Utilities.getLeadingWhiteSpace(strLine) + line + Constants.newLine);
+                }
             }
 
-            if(lineNum < startLine || lineNum > endLine) {
+            if (lineNum < startLine || lineNum > endLine) {
                 fileBuffer.append(strLine + Constants.newLine);
             }
 
@@ -233,15 +248,15 @@ public class ConfFiles {
         br.close();
 
         Utils.writeStringBufferToFile(new File(file), fileBuffer, Charset.forName("UTF-8"));
-        
+
         return originalContents;
     }
-    
+
     public static String deleteFromConfigFile(Pattern linePattern, File file, int startLineNum, int endLineNum, boolean includeComments) throws Exception {
         log.trace("ConfFiles.deleteFromConfigFiles called");
 
         String originalContents = FileUtils.readFileToString(file, Charset.forName("UTF-8"));
-        
+
         boolean found = false;
         StringBuffer fileBuffer = new StringBuffer();
 
@@ -268,7 +283,7 @@ public class ConfFiles {
             log.trace("Calling writeStringBufferToFile to rewrite file");
             Utils.writeStringBufferToFile(file, fileBuffer, Charset.forName("UTF-8"));
         }
-        
+
         return originalContents;
     }
 

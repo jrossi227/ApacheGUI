@@ -270,4 +270,11 @@ public class Utilities {
         
         return newList.toArray(new String[newList.size()]);
     }
+    
+    public static String getLeadingWhiteSpace(String str) {
+        String rightTrim = str.replaceAll("\\s+$", "");
+        String allTrim = str.trim();
+        
+        return str.substring(0, rightTrim.length() - allTrim.length());
+    }
 }

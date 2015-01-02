@@ -87,10 +87,8 @@ public class VirtualHostsController {
         } else {
             line = type + " " + value;
         }
-        
-        line += "\n";
-        
-        String originalContents = ConfFiles.replaceLinesInConfigFile(new File(file), line, lineOfStart, lineOfEnd);
+                
+        String originalContents = ConfFiles.replaceLinesInConfigFile(new File(file), new String[]{line}, lineOfStart, lineOfEnd);
         
         testChanges(file, originalContents);
         

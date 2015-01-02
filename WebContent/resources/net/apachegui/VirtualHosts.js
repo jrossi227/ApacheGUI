@@ -136,6 +136,21 @@ define([ "dojo/_base/declare",
             if (!!item) {
                 net.apachegui.Util.confirmDialog("Please Confirm", "Are you sure you want to delete the following " + item.lineType + ":<br/><br/>" + item.name, function confirm(conf) {
                     if (conf) {
+                        
+                        var type = item.type;
+                        var callback;
+                        if(type == "VirtualHost") {
+                            callback = function() {
+                                //TODO remove from page
+                            };  
+                        } 
+                        
+                        if (type == "ServerName") {                 
+                            callback = function() {
+                               //TODO update network info
+                            };
+                        }
+                        
                         var thisdialog = net.apachegui.Util.noCloseDialog('Deleting', 'Deleting Please Wait...');
                         thisdialog.show();
 
@@ -150,6 +165,10 @@ define([ "dojo/_base/declare",
                             handleAs : 'json',
                             sync : false
                         }).response.then(function(response) {
+                            if(!!callback) {
+                                callback();
+                            }
+                            
                             that.reloadTreeHost(tree);
                             thisdialog.remove();
                         }, function(error) {
@@ -193,28 +212,24 @@ define([ "dojo/_base/declare",
             // cover special case when editing virtual host network info
             var callback;
             if(type == "VirtualHost") {
-                
                 callback = function() {
                     //set local network info to match the server host
                     var NetworkInfo = that.buildNetworkInfoArrayFromValue(value);
                     tree.get('host').NetworkInfo = NetworkInfo;
                     
-                    //update the heading with the new network info
+                    //TODO update the heading with the new network info
                     
                     console.log(NetworkInfo);
                 };
-                
             } 
             
             if (type == "ServerName") {
-                
                 callback = function() {
                     //set local servername to match the server host so we can reload
                     tree.get('host').ServerName = value;
                     
                     console.log(value);
                 };
-                
             }
             
             var thisdialog = net.apachegui.Util.noCloseDialog('Modifying', 'Modifying Please Wait...');
