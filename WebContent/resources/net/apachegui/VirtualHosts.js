@@ -24,10 +24,11 @@ define([ "dojo/_base/declare",
         currentHierarchicalHostSummaryCount : 0,
 
         currentTreeSummaryCount : 0,
-        currentTreeId : '',
+        currentTreeIndex: 0,
         currentTreeItem : null,
         trees : [],
         hostSelect : null,
+        globalServerName: '',
 
         initialized : false,
 
@@ -73,6 +74,30 @@ define([ "dojo/_base/declare",
             net.apachegui.Util.alert('Error', 'It appears that the VirtualHost has been updated outside of the editor. Please reload the page to grab the latest Virtual Host Settings.');
         },
 
+        getHostServerName: function(host) {
+            var serverName = (host.ServerName == '' ? (this.globalServerName == '' ? 'unknown' : this.globalServerName) : host.ServerName);
+            return serverName;
+        },
+        
+        getCurrentTreeContainerId: function() {
+            return 'tree-' + this.currentTreeIndex;
+        },
+        
+        getCurrentTreeId: function() {
+            return 'tree-' + this.getCurrentTreeContainerId();
+        },
+        
+        buildTreeHeadingFromHost: function(host) {
+            var serverName = this.getHostServerName(host);
+            var networkInfoValue = '';
+            var networkInfo = host.NetworkInfo;
+            for (var j = 0; j < networkInfo.length; j++) {
+                networkInfoValue += networkInfo[j].value;
+            }
+            
+            return serverName + ' ' + networkInfoValue;
+        },
+        
         getItem : function(id, items) {
 
             var item = null;
@@ -95,7 +120,7 @@ define([ "dojo/_base/declare",
 
         getSelectedItem : function() {
             var itemId = this.currentTreeItem.id;
-            var items = registry.byId(this.currentTreeId).get('host').tree.items;
+            var items = registry.byId(this.getCurrentTreeId()).get('host').tree.items;
 
             var item = this.getItem(itemId, items);
 
@@ -137,24 +162,28 @@ define([ "dojo/_base/declare",
                 net.apachegui.Util.confirmDialog("Please Confirm", "Are you sure you want to delete the following " + item.lineType + ":<br/><br/>" + item.name, function confirm(conf) {
                     if (conf) {
                         
+                        var tree = registry.byId(that.getCurrentTreeId());
+                        
                         var type = item.type;
                         var callback;
                         if(type == "VirtualHost") {
                             callback = function() {
                                 //TODO remove from page
+                                //this.trees
                             };  
                         } 
                         
                         if (type == "ServerName") {                 
                             callback = function() {
-                               //TODO update network info
+                               tree.get('host').ServerName = '';
+                               dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(tree.get('host'));
+                               //TODO rebuild select widget
                             };
                         }
                         
                         var thisdialog = net.apachegui.Util.noCloseDialog('Deleting', 'Deleting Please Wait...');
                         thisdialog.show();
 
-                        var tree = registry.byId(that.currentTreeId);
                         request.post("../web/VirtualHosts", {
                             data : {
                                 option : 'deleteLine',
@@ -200,7 +229,7 @@ define([ "dojo/_base/declare",
             var that = this;
             
             // cover special case when editing servername
-            var tree = registry.byId(that.currentTreeId);
+            var tree = registry.byId(that.getCurrentTreeId());
             var file = tree.get('host').file;
             
             var type = dom.byId('editType').value;
@@ -344,7 +373,7 @@ define([ "dojo/_base/declare",
         populateTreeVirtualHosts : function() {
             var that = this;
 
-            var buildTreeHost = function(host, serverName) {
+            var buildTreeHost = function(host) {
                 //build the tree
                 var id = "tree-" + that.currentTreeSummaryCount;
 
@@ -389,15 +418,9 @@ define([ "dojo/_base/declare",
                     host : host
                 });
 
-                var networkInfoValue = '';
-                var networkInfo = host.NetworkInfo;
-                for (var j = 0; j < networkInfo.length; j++) {
-                    networkInfoValue += networkInfo[j].value;
-                }
-
                 var div = document.createElement('div');
                 div.id = id;
-                div.innerHTML = '<h4>' + serverName + ' ' + networkInfoValue + '</h4>';
+                div.innerHTML = '<h4 id=heading-' + id + '>' + that.buildTreeHeadingFromHost(host) + '</h4>';
                 div.appendChild(hostTree.domNode);
 
                 dom.byId('tree_virtual_host_container').appendChild(div);
@@ -431,11 +454,14 @@ define([ "dojo/_base/declare",
                     popup : subMenu
                 }));
 
-                on(menu, "focus", function(e) {
-                    var tn = registry.getEnclosingWidget(this.currentTarget);
-                    that.currentTreeItem = tn.item;
-                    that.currentTreeId = treeId;
-                });
+                var generateFocusListener = function(index) {
+                    on(menu, "focus", function(e) {
+                        var tn = registry.getEnclosingWidget(this.currentTarget);
+                        that.currentTreeItem = tn.item;
+                        that.currentTreeIndex = index;
+                    });
+                };
+                generateFocusListener(that.currentTreeSummaryCount);
 
                 // when we right-click anywhere on the tree, make sure we open the menu
                 //menu.bindDomNode(hostTree.domNode);
@@ -459,7 +485,7 @@ define([ "dojo/_base/declare",
                 var data = response.data;
 
                 var hosts = data.hosts;
-                var globalServerName = data.ServerName;
+                that.globalServerName = data.ServerName;
 
                 var options = [];
                 options.push({
@@ -467,25 +493,14 @@ define([ "dojo/_base/declare",
                     value : ''
                 });
 
-                var serverName;
-                var networkInfoValue;
-                var networkInfo;
                 for (var i = 0; i < hosts.length; i++) {
 
-                    serverName = (hosts[i].ServerName == '' ? (globalServerName == '' ? 'unknown' : globalServerName) : hosts[i].ServerName);
-
-                    networkInfoValue = '';
-                    networkInfo = hosts[i].NetworkInfo;
-                    for (var j = 0; j < networkInfo.length; j++) {
-                        networkInfoValue += networkInfo[j].value;
-                    }
-
                     options.push({
-                        label : serverName + ' ' + networkInfoValue,
+                        label : that.buildTreeHeadingFromHost(hosts[i]),
                         value : that.currentTreeSummaryCount.toString()
                     });
 
-                    buildTreeHost(hosts[i], serverName);
+                    buildTreeHost(hosts[i]);
                 }
 
                 that.hostSelect = new Select({
