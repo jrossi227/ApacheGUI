@@ -340,4 +340,9 @@ body.editor #filename_container em {
 	margin-right: 10px;
 }
 
+#virtualHostsBody #select_host_container #select_host_box {
+	display: inline-block;
+	vertical-align: middle;
+}	
+
 

@@ -132,6 +132,56 @@ define([ "dojo/_base/declare",
 
             return item;
         },
+        
+        buildHostSelect : function() {
+            
+            var options = [];
+            options.push({
+                label : 'Select',
+                value : ''
+            });
+
+            var host;
+            for (var i = 0; i < this.trees.length; i++) {
+
+                if(!!this.trees[i]) {
+                    host = this.trees[i].get('host');
+                    options.push({
+                        label : this.buildTreeHeadingFromHost(host),
+                        value : i.toString()
+                    });
+                }
+            }
+
+            var currentValue;
+            if(!!this.hostSelect) {
+                currentValue = this.hostSelect.get('value');
+                this.hostSelect.destroyRecursive();
+            }
+            
+            this.hostSelect = new Select({
+                name : "host_select",
+                id : "host_select",
+                options : options
+            });
+            this.hostSelect.placeAt(dom.byId('select_host_box'));
+            this.hostSelect.startup();
+
+            if(!!currentValue) {
+                this.hostSelect.set('value', currentValue);
+            }
+            
+            on(this.hostSelect, "change", function() {
+                var value = this.get("value");
+
+                if (value != '') {
+                    dojox.fx.smoothScroll({
+                        node : query('#tree-' + value)[0],
+                        win : dom.byId('tree_virtual_host_content_pane')
+                    }).play();
+                }
+            });
+        },
 
         buildNetworkInfoArrayFromValue : function(value) {
             
@@ -177,7 +227,7 @@ define([ "dojo/_base/declare",
                             callback = function() {
                                tree.get('host').ServerName = '';
                                dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(tree.get('host'));
-                               //TODO rebuild select widget
+                               that.buildHostSelect();
                             };
                         }
                         
@@ -487,39 +537,12 @@ define([ "dojo/_base/declare",
                 var hosts = data.hosts;
                 that.globalServerName = data.ServerName;
 
-                var options = [];
-                options.push({
-                    label : 'Select',
-                    value : ''
-                });
-
                 for (var i = 0; i < hosts.length; i++) {
-
-                    options.push({
-                        label : that.buildTreeHeadingFromHost(hosts[i]),
-                        value : that.currentTreeSummaryCount.toString()
-                    });
 
                     buildTreeHost(hosts[i]);
                 }
 
-                that.hostSelect = new Select({
-                    name : "host_select",
-                    id : "host_select",
-                    options : options
-                }, 'select_host_box');
-                that.hostSelect.startup();
-
-                on(that.hostSelect, "change", function() {
-                    var value = this.get("value");
-
-                    if (value != '') {
-                        dojox.fx.smoothScroll({
-                            node : query('#tree-' + value)[0],
-                            win : dom.byId('tree_virtual_host_content_pane')
-                        }).play();
-                    }
-                });
+                that.buildHostSelect();
 
                 thisdialog.remove();
                 
