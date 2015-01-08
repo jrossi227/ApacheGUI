@@ -168,7 +168,7 @@ define([ "dojo/_base/declare",
             this.hostSelect.startup();
 
             if(!!currentValue) {
-                this.hostSelect.set('value', currentValue);
+                this.hostSelect.set('value', currentValue, false);
             }
             
             on(this.hostSelect, "change", function() {
