@@ -27,8 +27,8 @@ define([ "dojo/_base/declare",
         currentTreeIndex: 0,
         currentTreeItem : null,
         trees : [],
-        hostSelect : null,
-        globalServerName: '',
+        treeHostSelect : null,
+        treeGlobalServerName: '',
 
         initialized : false,
 
@@ -70,12 +70,12 @@ define([ "dojo/_base/declare",
         },
 
         //------------------TREE VIRTUAL HOSTS-------------------------//
-        showOutOfDateError : function() {
+        showTreeHostOutOfDateError : function() {
             net.apachegui.Util.alert('Error', 'It appears that the VirtualHost has been updated outside of the editor. Please reload the page to grab the latest Virtual Host Settings.');
         },
 
-        getHostServerName: function(host) {
-            var serverName = (host.ServerName == '' ? (this.globalServerName == '' ? 'unknown' : this.globalServerName) : host.ServerName);
+        getTreeHostServerName: function(host) {
+            var serverName = (host.ServerName == '' ? (this.treeGlobalServerName == '' ? 'unknown' : this.treeGlobalServerName) : host.ServerName);
             return serverName;
         },
         
@@ -88,7 +88,7 @@ define([ "dojo/_base/declare",
         },
         
         buildTreeHeadingFromHost: function(host) {
-            var serverName = this.getHostServerName(host);
+            var serverName = this.getTreeHostServerName(host);
             var networkInfoValue = '';
             var networkInfo = host.NetworkInfo;
             for (var j = 0; j < networkInfo.length; j++) {
@@ -98,7 +98,7 @@ define([ "dojo/_base/declare",
             return serverName + ' ' + networkInfoValue;
         },
         
-        getItem : function(id, items) {
+        getTreeItem : function(id, items) {
 
             var item = null;
 
@@ -107,7 +107,7 @@ define([ "dojo/_base/declare",
                 if (items[i].id == id) {
                     item = items[i];
                 } else if (!!items[i].children) {
-                    item = this.getItem(id, items[i].children);
+                    item = this.getTreeItem(id, items[i].children);
                 }
 
                 if (!!item) {
@@ -118,14 +118,14 @@ define([ "dojo/_base/declare",
             return item;
         },
 
-        getSelectedItem : function() {
+        getSelectedTreeItem : function() {
             var itemId = this.currentTreeItem.id;
             var items = registry.byId(this.getCurrentTreeId()).get('host').tree.items;
 
-            var item = this.getItem(itemId, items);
+            var item = this.getTreeItem(itemId, items);
 
             if (this.currentTreeItem.type != item.type && this.currentTreeItem.value != item.value) {
-                this.showOutOfDateError();
+                this.showTreeHostOutOfDateError();
 
                 return null;
             }
@@ -133,7 +133,7 @@ define([ "dojo/_base/declare",
             return item;
         },
         
-        buildHostSelect : function() {
+        buildTreeHostSelect : function() {
             
             var options = [];
             options.push({
@@ -154,24 +154,24 @@ define([ "dojo/_base/declare",
             }
 
             var currentValue;
-            if(!!this.hostSelect) {
-                currentValue = this.hostSelect.get('value');
-                this.hostSelect.destroyRecursive();
+            if(!!this.treeHostSelect) {
+                currentValue = this.treeHostSelect.get('value');
+                this.treeHostSelect.destroyRecursive();
             }
             
-            this.hostSelect = new Select({
+            this.treeHostSelect = new Select({
                 name : "host_select",
                 id : "host_select",
                 options : options
             });
-            this.hostSelect.placeAt(dom.byId('select_host_box'));
-            this.hostSelect.startup();
+            this.treeHostSelect.placeAt(dom.byId('select_host_box'));
+            this.treeHostSelect.startup();
 
             if(!!currentValue) {
-                this.hostSelect.set('value', currentValue, false);
+                this.treeHostSelect.set('value', currentValue, false);
             }
             
-            on(this.hostSelect, "change", function() {
+            on(this.treeHostSelect, "change", function() {
                 var value = this.get("value");
 
                 if (value != '') {
@@ -207,7 +207,7 @@ define([ "dojo/_base/declare",
         deleteLine : function() {
             var that = this;
 
-            var item = this.getSelectedItem();
+            var item = this.getSelectedTreeItem();
             if (!!item) {
                 net.apachegui.Util.confirmDialog("Please Confirm", "Are you sure you want to delete the following " + item.lineType + ":<br/><br/>" + item.name, function confirm(conf) {
                     if (conf) {
@@ -227,7 +227,7 @@ define([ "dojo/_base/declare",
                             callback = function() {
                                tree.get('host').ServerName = '';
                                dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(tree.get('host'));
-                               that.buildHostSelect();
+                               that.buildTreeHostSelect();
                             };
                         }
                         
@@ -260,7 +260,7 @@ define([ "dojo/_base/declare",
         },
 
         editLine : function() {
-            var item = this.getSelectedItem();
+            var item = this.getSelectedTreeItem();
             if (!!item) {
 
                 dom.byId('editType').value = item.type;
@@ -342,7 +342,7 @@ define([ "dojo/_base/declare",
         },
 
         add : function() {
-            var item = this.getSelectedItem();
+            var item = this.getSelectedTreeItem();
             if (!!item) {
 
             }
@@ -535,14 +535,14 @@ define([ "dojo/_base/declare",
                 var data = response.data;
 
                 var hosts = data.hosts;
-                that.globalServerName = data.ServerName;
+                that.treeGlobalServerName = data.ServerName;
 
                 for (var i = 0; i < hosts.length; i++) {
 
                     buildTreeHost(hosts[i]);
                 }
 
-                that.buildHostSelect();
+                that.buildTreeHostSelect();
 
                 thisdialog.remove();
                 
