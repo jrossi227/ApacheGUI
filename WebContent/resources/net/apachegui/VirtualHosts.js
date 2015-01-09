@@ -552,6 +552,8 @@ define([ "dojo/_base/declare",
                 var hosts = data.hosts;
                 that.treeGlobalServerName = data.ServerName;
 
+                //TODO handle case where theres no virtual host
+                
                 for (var i = 0; i < hosts.length; i++) {
 
                     buildTreeHost(hosts[i]);
