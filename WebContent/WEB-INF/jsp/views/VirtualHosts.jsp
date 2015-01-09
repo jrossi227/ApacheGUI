@@ -35,7 +35,7 @@
 
 	<jsp:include page="/jsp/Init.jsp" 	flush="true" />
 	
-	<div data-dojo-type="dijit/Dialog" id="editDialog" title="Edit " style="width: 400px; display: none">
+	<div data-dojo-type="dijit/Dialog" id="editDialog" title="Edit " style="width: 700px; display: none">
 	    <table>
 	        <tr class="dijitDialogPaneContentArea">
 	                <td>
@@ -54,7 +54,7 @@
 	                        </label>
 	                   </td>
 	                   <td>
-	                       <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="editValue" style="width: 330px;" />
+	                       <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="editValue" style="width: 630px;" />
 	                   </td>
 	           </tr>
 	    </table>
