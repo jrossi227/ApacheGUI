@@ -44,7 +44,7 @@
 	                     </label>
 	                </td>
 	                <td>
-	                    <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="editType" style="width: 330px;" />
+	                    <span id="editType"></span>
 	                </td>
 	        </tr>
 	        <tr class="dijitDialogPaneContentArea">

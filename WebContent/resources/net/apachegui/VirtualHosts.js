@@ -24,11 +24,11 @@ define([ "dojo/_base/declare",
         currentHierarchicalHostSummaryCount : 0,
 
         currentTreeSummaryCount : 0,
-        currentTreeIndex: 0,
+        currentTreeIndex : 0,
         currentTreeItem : null,
         trees : [],
         treeHostSelect : null,
-        treeGlobalServerName: '',
+        treeGlobalServerName : '',
 
         initialized : false,
 
@@ -74,30 +74,30 @@ define([ "dojo/_base/declare",
             net.apachegui.Util.alert('Error', 'It appears that the VirtualHost has been updated outside of the editor. Please reload the page to grab the latest Virtual Host Settings.');
         },
 
-        getTreeHostServerName: function(host) {
+        getTreeHostServerName : function(host) {
             var serverName = (host.ServerName == '' ? (this.treeGlobalServerName == '' ? 'unknown' : this.treeGlobalServerName) : host.ServerName);
             return serverName;
         },
-        
-        getCurrentTreeContainerId: function() {
+
+        getCurrentTreeContainerId : function() {
             return 'tree-' + this.currentTreeIndex;
         },
-        
-        getCurrentTreeId: function() {
+
+        getCurrentTreeId : function() {
             return 'tree-' + this.getCurrentTreeContainerId();
         },
-        
-        buildTreeHeadingFromHost: function(host) {
+
+        buildTreeHeadingFromHost : function(host) {
             var serverName = this.getTreeHostServerName(host);
             var networkInfoValue = '';
             var networkInfo = host.NetworkInfo;
             for (var j = 0; j < networkInfo.length; j++) {
                 networkInfoValue += networkInfo[j].value;
             }
-            
+
             return serverName + ' ' + networkInfoValue;
         },
-        
+
         getTreeItem : function(id, items) {
 
             var item = null;
@@ -132,9 +132,9 @@ define([ "dojo/_base/declare",
 
             return item;
         },
-        
+
         buildTreeHostSelect : function() {
-            
+
             var options = [];
             options.push({
                 label : 'Select',
@@ -144,7 +144,7 @@ define([ "dojo/_base/declare",
             var host;
             for (var i = 0; i < this.trees.length; i++) {
 
-                if(!!this.trees[i]) {
+                if (!!this.trees[i]) {
                     host = this.trees[i].get('host');
                     options.push({
                         label : this.buildTreeHeadingFromHost(host),
@@ -154,11 +154,11 @@ define([ "dojo/_base/declare",
             }
 
             var currentValue;
-            if(!!this.treeHostSelect) {
+            if (!!this.treeHostSelect) {
                 currentValue = this.treeHostSelect.get('value');
                 this.treeHostSelect.destroyRecursive();
             }
-            
+
             this.treeHostSelect = new Select({
                 name : "host_select",
                 id : "host_select",
@@ -167,10 +167,10 @@ define([ "dojo/_base/declare",
             this.treeHostSelect.placeAt(dom.byId('select_host_box'));
             this.treeHostSelect.startup();
 
-            if(!!currentValue) {
+            if (!!currentValue) {
                 this.treeHostSelect.set('value', currentValue, false);
             }
-            
+
             on(this.treeHostSelect, "change", function() {
                 var value = this.get("value");
 
@@ -184,13 +184,13 @@ define([ "dojo/_base/declare",
         },
 
         buildNetworkInfoArrayFromValue : function(value) {
-            
+
             var NetworkInfo;
             //use the server to build network info from input string
             request.get('../web/VirtualHosts', {
                 query : {
                     option : 'getNetworkInfoArrayFromValue',
-                    value : value 
+                    value : value
                 },
                 handleAs : 'json',
                 preventCache : true,
@@ -199,11 +199,11 @@ define([ "dojo/_base/declare",
                 var data = response.data;
 
                 NetworkInfo = data.NetworkInfo;
-            });    
-            
+            });
+
             return NetworkInfo;
-        }, 
-        
+        },
+
         deleteLine : function() {
             var that = this;
 
@@ -211,31 +211,31 @@ define([ "dojo/_base/declare",
             if (!!item) {
                 net.apachegui.Util.confirmDialog("Please Confirm", "Are you sure you want to delete the following " + item.lineType + ":<br/><br/>" + item.name, function confirm(conf) {
                     if (conf) {
-                        
+
                         var tree = registry.byId(that.getCurrentTreeId());
-                        
+
                         var type = item.type;
                         var callback;
-                        if(type == "VirtualHost") {
+                        if (type == "VirtualHost") {
                             callback = function() {
                                 tree.destroyRecursive();
                                 that.trees[that.currentTreeIndex] = null;
-                                
+
                                 var container = dom.byId(that.getCurrentTreeContainerId());
                                 container.parentNode.removeChild(container);
-                                
+
                                 that.buildTreeHostSelect();
-                            };  
-                        } 
-                        
-                        if (type == "ServerName") {                 
-                            callback = function() {
-                               tree.get('host').ServerName = '';
-                               dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(tree.get('host'));
-                               that.buildTreeHostSelect();
                             };
                         }
-                        
+
+                        if (type == "ServerName") {
+                            callback = function() {
+                                tree.get('host').ServerName = '';
+                                dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(tree.get('host'));
+                                that.buildTreeHostSelect();
+                            };
+                        }
+
                         var thisdialog = net.apachegui.Util.noCloseDialog('Deleting', 'Deleting Please Wait...');
                         thisdialog.show();
 
@@ -249,10 +249,10 @@ define([ "dojo/_base/declare",
                             handleAs : 'json',
                             sync : false
                         }).response.then(function(response) {
-                            if(!!callback) {
+                            if (!!callback) {
                                 callback();
                             }
-                            
+
                             that.reloadTreeHost(that.currentTreeIndex);
                             thisdialog.remove();
                         }, function(error) {
@@ -268,7 +268,7 @@ define([ "dojo/_base/declare",
             var item = this.getSelectedTreeItem();
             if (!!item) {
 
-                dom.byId('editType').value = item.type;
+                dom.byId('editType').innerHTML = item.type;
                 dom.byId('editValue').value = item.value;
                 dom.byId('editLineType').value = item.lineType;
                 dom.byId('editLineOfStart').value = item.lineOfStart;
@@ -282,74 +282,77 @@ define([ "dojo/_base/declare",
 
         submitEditLine : function() {
             var that = this;
-            
+
             // cover special case when editing servername
             var tree = registry.byId(that.getCurrentTreeId());
             var file = tree.get('host').file;
-            
-            var type = dom.byId('editType').value;
+
+            var type = dom.byId('editType').innerHTML;
             var value = dom.byId('editValue').value;
             var lineType = dom.byId('editLineType').value;
             var lineOfStart = dom.byId('editLineOfStart').value;
             var lineOfEnd = dom.byId('editLineOfEnd').value;
-            
+
             // cover special case when editing virtual host network info
             var callback;
-            if(type == "VirtualHost") {
+            if (type == "VirtualHost") {
                 callback = function() {
                     //set local network info to match the server host
                     var NetworkInfo = that.buildNetworkInfoArrayFromValue(value);
                     tree.get('host').NetworkInfo = NetworkInfo;
-                    
-                    //TODO update the heading with the new network info
-                    
-                    console.log(NetworkInfo);
-                };
-            } 
-            
-            if (type == "ServerName") {
-                callback = function() {
-                    //set local servername to match the server host so we can reload
-                    tree.get('host').ServerName = value;
-                    
-                    console.log(value);
+
+                    dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(tree.get('host'));
+                    that.buildTreeHostSelect();
+
                 };
             }
-            
+
+            if (type == "ServerName") {
+                callback = function() {
+                    
+                    tree.get('host').ServerName = value;
+                    dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(tree.get('host'));
+                    that.buildTreeHostSelect();
+                };
+            }
+
             var thisdialog = net.apachegui.Util.noCloseDialog('Modifying', 'Modifying Please Wait...');
             thisdialog.show();
 
             request.post("../web/VirtualHosts", {
                 data : {
                     option : 'editLine',
-                    type: type,
-                    value: value,
-                    lineType: lineType,
-                    file: file,
-                    lineOfStart: lineOfStart,
-                    lineOfEnd: lineOfEnd
+                    type : type,
+                    value : value,
+                    lineType : lineType,
+                    file : file,
+                    lineOfStart : lineOfStart,
+                    lineOfEnd : lineOfEnd
                 },
                 handleAs : 'json',
                 sync : false
             }).response.then(function(response) {
-                
-                if(!!callback) {
+
+                if (!!callback) {
                     callback();
                 }
-                
+
                 that.reloadTreeHost(that.currentTreeIndex);
                 thisdialog.remove();
+                registry.byId('editDialog').hide();
             }, function(error) {
                 thisdialog.remove();
                 net.apachegui.Util.alert('Error', error.response.data.message);
             });
-            
+
         },
 
         add : function() {
             var item = this.getSelectedTreeItem();
             if (!!item) {
 
+                //TODO implement adding directives and enclosures
+                
             }
         },
 
@@ -366,7 +369,7 @@ define([ "dojo/_base/declare",
 
                 for (var j = 0; j < this.trees.length; j++) {
 
-                    if(!!this.trees[j]) {
+                    if (!!this.trees[j]) {
                         treeHost = this.trees[j].get('host');
                         if (this.areHostsEqual(treeHost, host)) {
                             this.trees[j].set('host', host);
@@ -375,7 +378,7 @@ define([ "dojo/_base/declare",
 
                 }
             }
-            
+
             //reload hierarchical hosts in the background
             this.populateHierarchicalVirtualHosts();
 
@@ -401,22 +404,22 @@ define([ "dojo/_base/declare",
                 var hosts = data.hosts;
 
                 var tree = that.trees[index];
-                if(!!tree) {
+                if (!!tree) {
                     var host;
                     for (var i = 0; i < hosts.length; i++) {
                         host = hosts[i];
-    
+
                         // compare network info and ServerName to matching tree 
-    
+
                         //if we find a matching host
                         if (that.areHostsEqual(tree.get('host'), host)) {
                             tree.model.store = new ItemFileWriteStore({
                                 data : host.tree
                             });
-    
+
                             tree.reload();
                             that.reloadAllTreeHosts(hosts);
-    
+
                             break;
                         }
                     }
@@ -557,7 +560,7 @@ define([ "dojo/_base/declare",
                 that.buildTreeHostSelect();
 
                 thisdialog.remove();
-                
+
                 that.populateHierarchicalVirtualHosts();
             }, function(error) {
                 thisdialog.remove();
@@ -659,24 +662,24 @@ define([ "dojo/_base/declare",
 
                 var nameVirtualHostContainer = dom.byId('name_virtual_host_container');
                 var otherVirtualHostContainer = dom.byId('other_virtual_host_container');
-                
+
                 //clear the containers
                 array.forEach(registry.findWidgets(nameVirtualHostContainer), function(w) {
                     w.destroyRecursive();
                 });
-                
+
                 nameVirtualHostContainer.innerHTML = '';
-                
+
                 array.forEach(registry.findWidgets(otherVirtualHostContainer), function(w) {
                     w.destroyRecursive();
                 });
-                
+
                 otherVirtualHostContainer.innerHTML = '';
-                
+
                 var hosts = data.hosts;
                 var globalServerName = data.ServerName;
                 var globalDocumentRoot = data.DocumentRoot;
-                
+
                 for (host in hosts) {
 
                     var hostArray = hosts[host];
@@ -714,12 +717,12 @@ define([ "dojo/_base/declare",
                     }
 
                 }
-                
-                if(nameVirtualHostContainer.innerHTML.trim() == "") {
+
+                if (nameVirtualHostContainer.innerHTML.trim() == "") {
                     nameVirtualHostContainer.innerHTML = '<p>There are no configured Name Virtual Hosts</p>';
                 }
-                
-                if(otherVirtualHostContainer.innerHTML.trim() == "") {
+
+                if (otherVirtualHostContainer.innerHTML.trim() == "") {
                     otherVirtualHostContainer.innerHTML = '<p>There are no other configured Virtual Hosts</p>';
                 }
 
