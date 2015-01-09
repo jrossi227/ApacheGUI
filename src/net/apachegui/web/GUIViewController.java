@@ -212,7 +212,7 @@ public class GUIViewController {
             } else {
                 if (ext.matches(Utilities.extensionsToRegex(new String[] { "html", "htm", "xhtml", "shtml", "htt", "stm", "xht" }))) {
                     mode = "'html'";
-                } else if (ext.matches(Utilities.extensionsToRegex(new String[] { "conf" }))) {
+                } else if (ext.matches(Utilities.extensionsToRegex(new String[] { "conf", "htaccess" }))) {
                     mode = "'conf'";
                 } else if (ext.matches(Utilities.extensionsToRegex(new String[] { "css" }))) {
                     mode = "'css'";
@@ -270,7 +270,7 @@ public class GUIViewController {
         if (extension != -1) {
             String ext = file.getName().substring(extension + 1);
 
-            if (ext.matches(Utilities.extensionsToRegex(new String[] { "conf" }))) {
+            if (ext.matches(Utilities.extensionsToRegex(new String[] { "conf","htaccess" }))) {
                 mode = "'conf'";
             }
         }
