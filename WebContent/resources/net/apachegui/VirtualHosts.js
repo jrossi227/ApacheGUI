@@ -218,8 +218,13 @@ define([ "dojo/_base/declare",
                         var callback;
                         if(type == "VirtualHost") {
                             callback = function() {
-                                //TODO remove from page
-                                //this.trees
+                                tree.destroyRecursive();
+                                that.trees[that.currentTreeIndex] = null;
+                                
+                                var container = dom.byId(that.getCurrentTreeContainerId());
+                                container.parentNode.removeChild(container);
+                                
+                                that.buildTreeHostSelect();
                             };  
                         } 
                         
@@ -248,7 +253,7 @@ define([ "dojo/_base/declare",
                                 callback();
                             }
                             
-                            that.reloadTreeHost(tree);
+                            that.reloadTreeHost(that.currentTreeIndex);
                             thisdialog.remove();
                         }, function(error) {
                             thisdialog.remove();
@@ -332,7 +337,7 @@ define([ "dojo/_base/declare",
                     callback();
                 }
                 
-                that.reloadTreeHost(tree);
+                that.reloadTreeHost(that.currentTreeIndex);
                 thisdialog.remove();
             }, function(error) {
                 thisdialog.remove();
@@ -361,9 +366,11 @@ define([ "dojo/_base/declare",
 
                 for (var j = 0; j < this.trees.length; j++) {
 
-                    treeHost = this.trees[j].get('host');
-                    if (this.areHostsEqual(treeHost, host)) {
-                        this.trees[j].set('host', host);
+                    if(!!this.trees[j]) {
+                        treeHost = this.trees[j].get('host');
+                        if (this.areHostsEqual(treeHost, host)) {
+                            this.trees[j].set('host', host);
+                        }
                     }
 
                 }
@@ -374,7 +381,7 @@ define([ "dojo/_base/declare",
 
         },
 
-        reloadTreeHost : function(tree) {
+        reloadTreeHost : function(index) {
             // request all virtual hosts
             var that = this;
 
@@ -393,23 +400,28 @@ define([ "dojo/_base/declare",
 
                 var hosts = data.hosts;
 
-                var host;
-                for (var i = 0; i < hosts.length; i++) {
-                    host = hosts[i];
-
-                    // compare network info and ServerName to matching tree 
-
-                    //if we find a matching host
-                    if (that.areHostsEqual(tree.get('host'), host)) {
-                        tree.model.store = new ItemFileWriteStore({
-                            data : host.tree
-                        });
-
-                        tree.reload();
-                        that.reloadAllTreeHosts(hosts);
-
-                        break;
+                var tree = that.trees[index];
+                if(!!tree) {
+                    var host;
+                    for (var i = 0; i < hosts.length; i++) {
+                        host = hosts[i];
+    
+                        // compare network info and ServerName to matching tree 
+    
+                        //if we find a matching host
+                        if (that.areHostsEqual(tree.get('host'), host)) {
+                            tree.model.store = new ItemFileWriteStore({
+                                data : host.tree
+                            });
+    
+                            tree.reload();
+                            that.reloadAllTreeHosts(hosts);
+    
+                            break;
+                        }
                     }
+                } else {
+                    that.reloadAllTreeHosts(hosts);
                 }
 
                 thisdialog.remove();
