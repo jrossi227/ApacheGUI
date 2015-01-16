@@ -73,6 +73,44 @@
 	    </div>
     </div>
 	
+	<div data-dojo-type="dijit/Dialog" id="addDialog" title="Add " style="width: 700px; display: none">
+        <table>
+            <tr class="dijitDialogPaneContentArea">
+                    <td>
+                        <label for='addType'>
+                            Type:
+                         </label>
+                    </td>
+                    <td>
+                        <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="addType" style="width: 630px;" />
+                    </td>
+            </tr>
+            <tr class="dijitDialogPaneContentArea">
+                       <td>
+                           <label for='addValue'>
+                               Value:
+                            </label>
+                       </td>
+                       <td>
+                           <input data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="addValue" style="width: 630px;" />
+                       </td>
+               </tr>
+        </table>
+        
+        <input type="hidden" id="addBeforeLineType" value=""/>
+        <input type="hidden" id="addLineType" value=""/>
+        <input type="hidden" id="addLineOfStart" value=""/>
+        
+        <div class="dijitDialogPaneActionBar">
+            <button id="addSubmit" data-dojo-type="dijit.form.Button" type="button">
+                Submit
+            </button>
+            <button id="addCancel" data-dojo-type="dijit.form.Button" type="button">
+                Cancel
+            </button>
+        </div>
+    </div>
+	
 	<div id="appLayout" class="demoLayout" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline'">
 	
 		<jsp:include page="/jsp/Heading.jsp" 	flush="true" />

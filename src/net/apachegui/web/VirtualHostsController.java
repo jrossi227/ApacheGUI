@@ -98,6 +98,37 @@ public class VirtualHostsController {
         return result.toString();        
     }
     
+    @RequestMapping(method = RequestMethod.POST, params = "option=addLine", produces = "application/json;charset=UTF-8")
+    public String addLine(@RequestParam(value = "type") String type, 
+                           @RequestParam(value = "value") String value, 
+                           @RequestParam(value = "beforeLineType") String beforeLineType, 
+                           @RequestParam(value = "lineType") String lineType, 
+                           @RequestParam(value = "file") String file, 
+                           @RequestParam(value = "lineOfStart") int lineOfStart) throws Exception {
+        
+        String lines[];
+        if(lineType.equals("enclosure")) {
+            lines = new String[3];
+            lines[0] = "<" + type + " " + value + ">";
+            lines[1] = "";
+            lines[2] = "</" + type + ">";
+        } else {
+            lines = new String[1];
+            lines[0] = type + " " + value;
+        }
+                
+        boolean useWhitespaceBefore = beforeLineType.equals("directive");
+        
+        String originalContents = ConfFiles.writeToConfigFile(new File(file), lines, lineOfStart, useWhitespaceBefore);
+        
+        testChanges(file, originalContents);
+        
+        JSONObject result = new JSONObject();
+        result.put("result", "success");
+
+        return result.toString();        
+    }
+    
     @RequestMapping(method = RequestMethod.GET, params = "option=getNetworkInfoArrayFromValue", produces = "application/json;charset=UTF-8")
     public String getNetworkInfoArrayFromValue(@RequestParam(value = "value") String value) throws Exception {
         

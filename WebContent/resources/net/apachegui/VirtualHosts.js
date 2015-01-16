@@ -30,6 +30,16 @@ define([ "dojo/_base/declare",
         treeHostSelect : null,
         treeGlobalServerName : '',
 
+        //TODO finish last modified
+        /** Array of Objects 
+            {
+                file: '/home/jonathan',
+                lastModifiedTime: 10000
+            }
+        
+        **/
+        lastModifiedTimes : [],
+        
         initialized : false,
 
         init : function() {
@@ -95,7 +105,7 @@ define([ "dojo/_base/declare",
                 networkInfoValue += networkInfo[j].value;
             }
 
-            return serverName + ' ' + networkInfoValue;
+            return '<span class="network">' + serverName + ' ' + networkInfoValue + '</span>&nbsp;&nbsp;&nbsp;<span class="file">File: ' + host.file + ' Line: ' + host.lineOfStart + '</span>';
         },
 
         getTreeItem : function(id, items) {
@@ -133,6 +143,17 @@ define([ "dojo/_base/declare",
             return item;
         },
 
+        buildTreeHostSelectOption : function(host) {
+            var serverName = this.getTreeHostServerName(host);
+            var networkInfoValue = '';
+            var networkInfo = host.NetworkInfo;
+            for (var j = 0; j < networkInfo.length; j++) {
+                networkInfoValue += networkInfo[j].value;
+            }
+
+            return serverName + ' ' + networkInfoValue;
+        },
+        
         buildTreeHostSelect : function() {
 
             var options = [];
@@ -147,7 +168,7 @@ define([ "dojo/_base/declare",
                 if (!!this.trees[i]) {
                     host = this.trees[i].get('host');
                     options.push({
-                        label : this.buildTreeHeadingFromHost(host),
+                        label : this.buildTreeHostSelectOption(host),
                         value : i.toString()
                     });
                 }
@@ -288,7 +309,7 @@ define([ "dojo/_base/declare",
             var file = tree.get('host').file;
 
             var type = dom.byId('editType').innerHTML;
-            var value = dom.byId('editValue').value;
+            var value = dom.byId('editValue').value.trim();
             var lineType = dom.byId('editLineType').value;
             var lineOfStart = dom.byId('editLineOfStart').value;
             var lineOfEnd = dom.byId('editLineOfEnd').value;
@@ -347,13 +368,76 @@ define([ "dojo/_base/declare",
 
         },
 
-        add : function() {
+        addLine : function(type) {
             var item = this.getSelectedTreeItem();
             if (!!item) {
 
-                //TODO implement adding directives and enclosures
+                dom.byId('addType').value = '';
+                dom.byId('addValue').value = '';
+                dom.byId('addBeforeLineType').value = item.lineType;
+                dom.byId('addLineType').value = type;
+                dom.byId('addLineOfStart').value = (parseInt(item.lineOfEnd) + 1);
+
+                var dialog = registry.byId('addDialog');
+                dialog.set('title', type == 'enclosure' ? 'Add Enclosure' : 'Add Directive');
+                dialog.show();
                 
             }
+        },
+        
+        submitAddLine : function() {
+            
+            var that = this;
+
+            // cover special case when editing servername
+            var tree = registry.byId(that.getCurrentTreeId());
+            var file = tree.get('host').file;
+
+            var type = dom.byId('addType').value.trim();
+            var value = dom.byId('addValue').value.trim();
+            var beforeLineType = dom.byId('addBeforeLineType').value;
+            var lineType = dom.byId('addLineType').value;
+            var lineOfStart = dom.byId('addLineOfStart').value;
+            
+            var callback;
+            if (type == "ServerName") {
+                callback = function() {
+                    
+                    tree.get('host').ServerName = value;
+                    dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(tree.get('host'));
+                    that.buildTreeHostSelect();
+                };
+            }
+            
+            var thisdialog = net.apachegui.Util.noCloseDialog('Adding', 'Adding Please Wait...');
+            thisdialog.show();
+
+            request.post("../web/VirtualHosts", {
+                data : {
+                    option : 'addLine',
+                    type : type,
+                    value : value,
+                    lineType : lineType,
+                    beforeLineType : beforeLineType,
+                    file : file,
+                    lineOfStart : lineOfStart
+                },
+                handleAs : 'json',
+                sync : false
+            }).response.then(function(response) {
+
+                if (!!callback) {
+                    callback();
+                }
+
+                that.reloadTreeHost(that.currentTreeIndex);
+                thisdialog.remove();
+                registry.byId('addDialog').hide();
+            }, function(error) {
+                thisdialog.remove();
+                net.apachegui.Util.alert('Error', error.response.data.message);
+            });
+            
         },
 
         reloadAllTreeHosts : function(hosts) {
@@ -509,10 +593,16 @@ define([ "dojo/_base/declare",
 
                 var subMenu = new Menu();
                 subMenu.addChild(new MenuItem({
-                    label : "New Enclosure"
+                    label : "New Enclosure",
+                    onClick: function() {
+                        that.addLine('enclosure');
+                    }
                 }));
                 subMenu.addChild(new MenuItem({
-                    label : "New Directive"
+                    label : "New Directive",
+                    onClick: function() {
+                        that.addLine('directive');
+                    }
                 }));
                 menu.addChild(new PopupMenuItem({
                     label : "Add",
@@ -564,6 +654,14 @@ define([ "dojo/_base/declare",
                 thisdialog.remove();
 
                 that.populateHierarchicalVirtualHosts();
+                
+                //TODO add interval to check if any of the host files were updated and advise to reload
+                
+                // Grab initial last modified times
+                
+                
+                // setup timer to compare last modified to initial times
+                
             }, function(error) {
                 thisdialog.remove();
                 net.apachegui.Util.alert('Info', error.response.data.message);
@@ -747,7 +845,15 @@ define([ "dojo/_base/declare",
             on(registry.byId('editCancel'), 'click', function() {
                 registry.byId('editDialog').hide();
             });
+            
+            on(registry.byId('addSubmit'), 'click', function() {
+                that.submitAddLine();
+            });
 
+            on(registry.byId('addCancel'), 'click', function() {
+                registry.byId('addDialog').hide();
+            });
+            
         }
 
     });

@@ -345,4 +345,8 @@ body.editor #filename_container em {
 	vertical-align: middle;
 }	
 
+#virtualHostsBody  #tree_virtual_host_container h4 .file {
+    font-size: 12px !important;
+    font-weight: normal;
+}
 
