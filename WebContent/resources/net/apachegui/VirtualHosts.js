@@ -31,15 +31,14 @@ define([ "dojo/_base/declare",
         treeGlobalServerName : '',
 
         //TODO finish last modified
-        /** Array of Objects 
-         * 
-            [{
-                file: '/home/jonathan',
-                lastModifiedTime: 10000
-            }]
+        /** 
+            {
+                '/home/jonathan/file1' : 10000,
+                '/home/jonathan/file2' : 10001
+            }
         
         **/
-        lastModifiedTimes : [],
+        lastModifiedTimes : {},
         
         initialized : false,
 
