@@ -32,10 +32,11 @@ define([ "dojo/_base/declare",
 
         //TODO finish last modified
         /** Array of Objects 
-            {
+         * 
+            [{
                 file: '/home/jonathan',
                 lastModifiedTime: 10000
-            }
+            }]
         
         **/
         lastModifiedTimes : [],
@@ -285,7 +286,7 @@ define([ "dojo/_base/declare",
             }
         },
 
-        editLine : function() {
+        showEditLineDialog : function() {
             var item = this.getSelectedTreeItem();
             if (!!item) {
 
@@ -368,7 +369,7 @@ define([ "dojo/_base/declare",
 
         },
 
-        addLine : function(type) {
+        showAddLineDialog : function(type) {
             var item = this.getSelectedTreeItem();
             if (!!item) {
 
@@ -583,7 +584,7 @@ define([ "dojo/_base/declare",
 
                 menu.addChild(new MenuItem({
                     label : "Edit",
-                    onClick : that.editLine.bind(that)
+                    onClick : that.showEditLineDialog.bind(that)
                 }));
 
                 menu.addChild(new MenuItem({
@@ -595,13 +596,13 @@ define([ "dojo/_base/declare",
                 subMenu.addChild(new MenuItem({
                     label : "New Enclosure",
                     onClick: function() {
-                        that.addLine('enclosure');
+                        that.showAddLineDialog('enclosure');
                     }
                 }));
                 subMenu.addChild(new MenuItem({
                     label : "New Directive",
                     onClick: function() {
-                        that.addLine('directive');
+                        that.showAddLineDialog('directive');
                     }
                 }));
                 menu.addChild(new PopupMenuItem({
