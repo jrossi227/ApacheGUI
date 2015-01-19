@@ -39,6 +39,17 @@ public class VirtualHostsController {
         }
     }
     
+    private JSONObject populateFileModifiedResponse(String file) {
+        
+        JSONObject result = new JSONObject();
+        result.put("result", "success");
+        result.put("lastModifiedTime", new File(file).lastModified());
+        result.put("file", file);
+        
+        return result;
+        
+    }
+    
     @RequestMapping(method = RequestMethod.GET, params = "option=getTreeHosts", produces = "application/json;charset=UTF-8")
     public String getTreeHosts() throws NullPointerException, Exception {
         
@@ -67,9 +78,8 @@ public class VirtualHostsController {
         
         testChanges(file, originalContents);
         
-        JSONObject result = new JSONObject();
-        result.put("result", "success");
-
+        JSONObject result = populateFileModifiedResponse(file);
+      
         return result.toString();
     }
     
@@ -92,10 +102,9 @@ public class VirtualHostsController {
         
         testChanges(file, originalContents);
         
-        JSONObject result = new JSONObject();
-        result.put("result", "success");
-
-        return result.toString();        
+        JSONObject result = populateFileModifiedResponse(file);
+        
+        return result.toString();       
     }
     
     @RequestMapping(method = RequestMethod.POST, params = "option=addLine", produces = "application/json;charset=UTF-8")
@@ -123,10 +132,9 @@ public class VirtualHostsController {
         
         testChanges(file, originalContents);
         
-        JSONObject result = new JSONObject();
-        result.put("result", "success");
-
-        return result.toString();        
+        JSONObject result = populateFileModifiedResponse(file);
+        
+        return result.toString();      
     }
     
     @RequestMapping(method = RequestMethod.GET, params = "option=getNetworkInfoArrayFromValue", produces = "application/json;charset=UTF-8")

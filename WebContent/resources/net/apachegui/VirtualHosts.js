@@ -30,15 +30,8 @@ define([ "dojo/_base/declare",
         treeHostSelect : null,
         treeGlobalServerName : '',
 
-        //TODO finish last modified
-        /** 
-            {
-                file: '/home/jonathan/file1',
-                lastModifiedTime : 10000
-            }
-        
-        **/
         lastModifiedTimes : [],
+        checkModifiedTimes : true,
         isModifiedDialogShown : false,
         
         initialized : false,
@@ -93,6 +86,14 @@ define([ "dojo/_base/declare",
             return files;
         },
         
+        updateLastModifiedTime : function(file, lastModifiedTime) {
+            for(var i=0; i < this.lastModifiedTimes.length; i++) {
+                if(this.lastModifiedTimes[i].file == file) {
+                    this.lastModifiedTimes[i].lastModifiedTime = lastModifiedTime;
+                }
+            }
+        },
+        
         launchLastModifedUpdater : function() {
             var that = this;
             
@@ -115,32 +116,36 @@ define([ "dojo/_base/declare",
             
             net.apachegui.Interval.setInterval(function() {
                 
-                var files = that.getLastModifiedFileList();
+                if(that.checkModifiedTimes) {
                 
-                net.apachegui.Main.getInstance().getLastModifiedTimes(
-                        files, 
-                        function(response) {
-                            that.isModifiedDialogShown = false;
-                            
-                            for(var i=0; i<that.lastModifiedTimes.length; i++) {
-                                for(var j=0; j<response.lastModifiedTimes.length; j++) {
-                                    if(that.lastModifiedTimes[i].file == response.lastModifiedTimes[j].file) {
-                                        if(that.lastModifiedTimes[i].lastModifiedTime != response.lastModifiedTimes[i].lastModifiedTime) {
-                                            if(!that.isModifiedDialogShown) {
-                                                net.apachegui.Util.alert('Error', 'It appears that ' + that.lastModifiedTimes[i].file + ' has been updated outside of the editor. Please refresh the page to grab the latest Virtual Host Settings. You may not edit any virtual hosts until the page has been refreshed.');
-                                                that.isModifiedDialogShown = true;
-                                                that.disableTreeEditing();
+                    var files = that.getLastModifiedFileList();
+                    
+                    net.apachegui.Main.getInstance().getLastModifiedTimes(
+                            files, 
+                            function(response) {
+                                that.isModifiedDialogShown = false;
+                                
+                                for(var i=0; i<that.lastModifiedTimes.length; i++) {
+                                    for(var j=0; j<response.lastModifiedTimes.length; j++) {
+                                        if(that.lastModifiedTimes[i].file == response.lastModifiedTimes[j].file) {
+                                            if(that.lastModifiedTimes[i].lastModifiedTime != response.lastModifiedTimes[i].lastModifiedTime) {
+                                                if(!that.isModifiedDialogShown) {
+                                                    net.apachegui.Util.alert('Error', 'It appears that ' + that.lastModifiedTimes[i].file + ' has been updated outside of the editor. Please refresh the page to grab the latest Virtual Host Configuration. You may not edit any virtual hosts until the page has been refreshed.');
+                                                    that.isModifiedDialogShown = true;
+                                                    that.disableTreeEditing();
+                                                }
+                                                
+                                                that.lastModifiedTimes[i].lastModifiedTime = response.lastModifiedTimes[i].lastModifiedTime;
                                             }
-                                            
-                                            that.lastModifiedTimes[i].lastModifiedTime = response.lastModifiedTimes[i].lastModifiedTime;
                                         }
                                     }
                                 }
-                            }
-                        }, 
-                        function(response) {
-                            net.apachegui.Util.alert('Error',JSON.parse(response.response.data).message);
-                    });
+                            }, 
+                            function(response) {
+                                net.apachegui.Util.alert('Error',JSON.parse(response.response.data).message);
+                        });
+                
+                }
                 
             }, 5000);
             
@@ -150,7 +155,7 @@ define([ "dojo/_base/declare",
 
         //------------------TREE VIRTUAL HOSTS-------------------------//
         showTreeHostOutOfDateError : function() {
-            net.apachegui.Util.alert('Error', 'It appears that the VirtualHost has been updated outside of the editor. Please reload the page to grab the latest Virtual Host Settings.');
+            net.apachegui.Util.alert('Error', 'It appears that the VirtualHost has been updated outside of the editor. Please reload the page to grab the latest Virtual Host Configuration.');
         },
 
         getTreeHostServerName : function(host) {
@@ -295,7 +300,7 @@ define([ "dojo/_base/declare",
         },
 
         disableTreeEditing : function () {
-            
+            //TODO finish disable tree editing
         },
         
         deleteLine : function() {
@@ -333,6 +338,7 @@ define([ "dojo/_base/declare",
                         var thisdialog = net.apachegui.Util.noCloseDialog('Deleting', 'Deleting Please Wait...');
                         thisdialog.show();
 
+                        that.checkModifiedTimes = false;
                         request.post("../web/VirtualHosts", {
                             data : {
                                 option : 'deleteLine',
@@ -349,9 +355,14 @@ define([ "dojo/_base/declare",
 
                             that.reloadTreeHost(that.currentTreeIndex);
                             thisdialog.remove();
+                            
+                            var data = response.data;
+                            that.updateLastModifiedTime(data.file, data.lastModifiedTime);
+                            that.checkModifiedTimes = true;
                         }, function(error) {
                             thisdialog.remove();
                             net.apachegui.Util.alert('Error', error.response.data.message);
+                            that.checkModifiedTimes = true;
                         });
                     }
                 });
@@ -413,6 +424,7 @@ define([ "dojo/_base/declare",
             var thisdialog = net.apachegui.Util.noCloseDialog('Modifying', 'Modifying Please Wait...');
             thisdialog.show();
 
+            that.checkModifiedTimes = false;
             request.post("../web/VirtualHosts", {
                 data : {
                     option : 'editLine',
@@ -434,9 +446,14 @@ define([ "dojo/_base/declare",
                 that.reloadTreeHost(that.currentTreeIndex);
                 thisdialog.remove();
                 registry.byId('editDialog').hide();
+                
+                var data = response.data;
+                that.updateLastModifiedTime(data.file, data.lastModifiedTime);
+                that.checkModifiedTimes = true;
             }, function(error) {
                 thisdialog.remove();
                 net.apachegui.Util.alert('Error', error.response.data.message);
+                that.checkModifiedTimes = true;
             });
 
         },
@@ -485,6 +502,7 @@ define([ "dojo/_base/declare",
             var thisdialog = net.apachegui.Util.noCloseDialog('Adding', 'Adding Please Wait...');
             thisdialog.show();
 
+            that.checkModifiedTimes = false;
             request.post("../web/VirtualHosts", {
                 data : {
                     option : 'addLine',
@@ -506,9 +524,14 @@ define([ "dojo/_base/declare",
                 that.reloadTreeHost(that.currentTreeIndex);
                 thisdialog.remove();
                 registry.byId('addDialog').hide();
+                
+                var data = response.data;
+                that.updateLastModifiedTime(data.file, data.lastModifiedTime);
+                that.checkModifiedTimes = true;
             }, function(error) {
                 thisdialog.remove();
                 net.apachegui.Util.alert('Error', error.response.data.message);
+                that.checkModifiedTimes = true;
             });
             
         },
@@ -727,14 +750,8 @@ define([ "dojo/_base/declare",
                 thisdialog.remove();
 
                 that.populateHierarchicalVirtualHosts();
-                
-                //TODO add interval to check if any of the host files were updated and advise to reload
-                
-                // Grab initial last modified times
-                that.launchLastModifedUpdater();
-                
-                
-                // setup timer to compare last modified to initial times
+                                
+                that.launchLastModifedUpdater();                
                 
             }, function(error) {
                 thisdialog.remove();
