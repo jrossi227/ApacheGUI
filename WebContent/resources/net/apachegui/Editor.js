@@ -386,40 +386,31 @@ define([ "dojo/_base/declare",
             
             var path=net.apachegui.Util.getQueryParam('file');
             
-            request.get('../web/Main', {
-                query:     {
-                    option: 'lastModifiedTime', 
-                    path: path
-                },
-                handleAs: 'json',
-                sync: false,
-                preventCache: true
-            }).response.then(
-                function(response) {
-                
-                    var data = response.data;
-                    
-                    var time = parseInt(data.time);
-                    if(time > that.getOpenTime()) {
-                        that.setOpenTime(time);
+            net.apachegui.Main.getInstance().getLastModifiedTime(
+                    path, 
+                    function(response) {
+                        var data = response.data;
                         
-                        if(!that.reloadDialogOpen) {
+                        var time = parseInt(data.time);
+                        if(time > that.getOpenTime()) {
+                            that.setOpenTime(time);
                             
-                            that.reloadDialogOpen = true;
-                            net.apachegui.Util.confirmDialog("Reload", "This file has been modified outside of this editor. Would you like to reload?", function confirm(conf) {
-                                if(conf) {
-                                    window.location.reload();
-                                } else {
-                                    that.reloadDialogOpen = false;
-                                }
-                            });
+                            if(!that.reloadDialogOpen) {
+                                
+                                that.reloadDialogOpen = true;
+                                net.apachegui.Util.confirmDialog("Reload", "This file has been modified outside of this editor. Would you like to reload?", function confirm(conf) {
+                                    if(conf) {
+                                        window.location.reload();
+                                    } else {
+                                        that.reloadDialogOpen = false;
+                                    }
+                                });
+                            }
                         }
-                    }
-                },
-                function(error) {
-                    net.apachegui.Util.alert('Error',error.response.data.message);
-                }
-            );
+                    }, 
+                    function(error) {
+                        net.apachegui.Util.alert('Error',error.response.data.message);
+                });
         },
         
         addListeners: function() {

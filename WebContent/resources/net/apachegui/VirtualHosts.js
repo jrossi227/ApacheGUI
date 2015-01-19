@@ -33,12 +33,13 @@ define([ "dojo/_base/declare",
         //TODO finish last modified
         /** 
             {
-                '/home/jonathan/file1' : 10000,
-                '/home/jonathan/file2' : 10001
+                file: '/home/jonathan/file1',
+                lastModifiedTime : 10000
             }
         
         **/
-        lastModifiedTimes : {},
+        lastModifiedTimes : [],
+        isModifiedDialogShown : false,
         
         initialized : false,
 
@@ -78,6 +79,74 @@ define([ "dojo/_base/declare",
 
             return foundNetworkInfo;
         },
+        
+        //-----------------LAST MODIFIED TRACKING----------------------//
+        
+        getLastModifiedFileList : function() {
+            var files = [];
+            for(var i=0; i<this.trees.length; i++) {
+                if (!!this.trees[i]) {
+                    files.push(this.trees[i].get('host').file);
+                }
+            }
+            
+            return files;
+        },
+        
+        launchLastModifedUpdater : function() {
+            var that = this;
+            
+            var files = this.getLastModifiedFileList();
+          
+            net.apachegui.Main.getInstance().getLastModifiedTimes(
+                    files, 
+                    function(response) {
+                        that.lastModifiedTimes = response.lastModifiedTimes;
+                        that.launchLastModifedUpdaterInterval();
+                    }, 
+                    function(response) {
+                        net.apachegui.Util.alert('Error',JSON.parse(response.response.data).message);
+                });
+            
+        },
+        
+        launchLastModifedUpdaterInterval: function() {
+            var that = this;
+            
+            net.apachegui.Interval.setInterval(function() {
+                
+                var files = that.getLastModifiedFileList();
+                
+                net.apachegui.Main.getInstance().getLastModifiedTimes(
+                        files, 
+                        function(response) {
+                            that.isModifiedDialogShown = false;
+                            
+                            for(var i=0; i<that.lastModifiedTimes.length; i++) {
+                                for(var j=0; j<response.lastModifiedTimes.length; j++) {
+                                    if(that.lastModifiedTimes[i].file == response.lastModifiedTimes[j].file) {
+                                        if(that.lastModifiedTimes[i].lastModifiedTime != response.lastModifiedTimes[i].lastModifiedTime) {
+                                            if(!that.isModifiedDialogShown) {
+                                                net.apachegui.Util.alert('Error', 'It appears that ' + that.lastModifiedTimes[i].file + ' has been updated outside of the editor. Please refresh the page to grab the latest Virtual Host Settings. You may not edit any virtual hosts until the page has been refreshed.');
+                                                that.isModifiedDialogShown = true;
+                                                that.disableTreeEditing();
+                                            }
+                                            
+                                            that.lastModifiedTimes[i].lastModifiedTime = response.lastModifiedTimes[i].lastModifiedTime;
+                                        }
+                                    }
+                                }
+                            }
+                        }, 
+                        function(response) {
+                            net.apachegui.Util.alert('Error',JSON.parse(response.response.data).message);
+                    });
+                
+            }, 5000);
+            
+        },
+        
+        //-----------------END OF LAST MODIFIED TRACKING---------------//
 
         //------------------TREE VIRTUAL HOSTS-------------------------//
         showTreeHostOutOfDateError : function() {
@@ -225,6 +294,10 @@ define([ "dojo/_base/declare",
             return NetworkInfo;
         },
 
+        disableTreeEditing : function () {
+            
+        },
+        
         deleteLine : function() {
             var that = this;
 
@@ -658,6 +731,7 @@ define([ "dojo/_base/declare",
                 //TODO add interval to check if any of the host files were updated and advise to reload
                 
                 // Grab initial last modified times
+                that.launchLastModifedUpdater();
                 
                 
                 // setup timer to compare last modified to initial times

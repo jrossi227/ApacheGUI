@@ -5,7 +5,9 @@ import net.apachegui.db.SettingsDao;
 import net.apachegui.global.Constants;
 import net.apachegui.global.Utilities;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -68,6 +70,34 @@ public class MainController {
 
         result.put("time", Long.toString(lastModifiedTime));
 
+        return result.toString();
+    }
+    
+    @RequestMapping(value = "/lastModifiedTimes", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public String lastModifiedTimes(@RequestBody String jsonString) throws Exception {
+
+        JSONObject request = new JSONObject(jsonString);
+        JSONArray outFiles = new JSONArray();
+        
+        JSONArray requestFiles = request.getJSONArray("files");
+        File file;
+        long lastModifiedTime;
+        JSONObject currFile;
+        for (int i = 0; i < requestFiles.length(); i++) {
+            file = new File(requestFiles.getString(i));
+            lastModifiedTime = -1;
+            if (file.exists()) {
+                lastModifiedTime = file.lastModified();
+            }
+            
+            currFile = new JSONObject();
+            currFile.put("file", file.getAbsolutePath());
+            currFile.put("lastModifiedTime", lastModifiedTime);       
+            outFiles.put(currFile);
+        }
+        
+        JSONObject result = new JSONObject();
+        result.put("lastModifiedTimes", outFiles);
         return result.toString();
     }
 

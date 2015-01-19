@@ -1,8 +1,9 @@
 define([ "dojo/_base/declare",
          "dijit/registry",
          "dojo/request",
-         "dojo/_base/json"
-], function(declare, registry, request, json){    
+         "dojo/_base/json",
+         "dojo/_base/xhr"
+], function(declare, registry, request, json, xhr){    
     
     declare("net.apachegui.Main", null, {        
     
@@ -149,6 +150,42 @@ define([ "dojo/_base/declare",
             );
             
             return exists;
+        },
+        
+        getLastModifiedTime: function(file, successFunc, errorFunc) {
+            request.get('../web/Main', {
+                query:     {
+                    option: 'lastModifiedTime', 
+                    path: file
+                },
+                handleAs: 'json',
+                sync: false,
+                preventCache: true
+            }).response.then(
+                function(response) {
+                    successFunc(response);
+                },
+                function(error) {
+                    errorFunc(error);
+                }
+            );
+        },
+        
+        getLastModifiedTimes: function(files, successFunc, errorFunc) {
+            xhr.post({
+                url : "../web/Main/lastModifiedTimes", 
+                postData : JSON.stringify({'files' : files}),
+                handleAs: "json",
+                headers : {
+                     "Content-Type" : "application/json"
+                },
+                load: function(response,ioargs) {
+                    successFunc(response);
+                },
+                error : function(response,ioargs) {
+                    errorFunc(response);
+                }
+             });
         },
         
         checkSession: function() {
