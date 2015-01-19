@@ -87,10 +87,32 @@ define([ "dojo/_base/declare",
         },
         
         updateLastModifiedTime : function(file, lastModifiedTime) {
-            for(var i=0; i < this.lastModifiedTimes.length; i++) {
-                if(this.lastModifiedTimes[i].file == file) {
-                    this.lastModifiedTimes[i].lastModifiedTime = lastModifiedTime;
+            var that = this;
+            
+            var updateFileTime = function(lastModifiedTime) {
+                for(var i=0; i < that.lastModifiedTimes.length; i++) {
+                    if(that.lastModifiedTimes[i].file == file) {
+                        that.lastModifiedTimes[i].lastModifiedTime = lastModifiedTime;
+                    }
                 }
+                
+                that.checkModifiedTimes = true;
+            };
+            
+            if(!!lastModifiedTime) {
+                updateFileTime(lastModifiedTime);
+            } else {
+                net.apachegui.Main.getInstance().getLastModifiedTime(
+                        file,
+                        function(response) {
+                            var data = response.data;
+                            
+                            updateFileTime(data.time);
+                        }, 
+                        function(error) {
+                            net.apachegui.Util.alert('Error',error.response.data.message);
+                        }
+                );
             }
         },
         
@@ -339,10 +361,11 @@ define([ "dojo/_base/declare",
                         thisdialog.show();
 
                         that.checkModifiedTimes = false;
+                        var file = tree.get('host').file;
                         request.post("../web/VirtualHosts", {
                             data : {
                                 option : 'deleteLine',
-                                file : tree.get('host').file,
+                                file : file,
                                 lineOfStart : item.lineType == 'enclosure' ? item.enclosureLineOfStart : item.lineOfStart,
                                 lineOfEnd : item.lineType == 'enclosure' ? item.enclosureLineOfEnd : item.lineOfEnd
                             },
@@ -358,11 +381,10 @@ define([ "dojo/_base/declare",
                             
                             var data = response.data;
                             that.updateLastModifiedTime(data.file, data.lastModifiedTime);
-                            that.checkModifiedTimes = true;
                         }, function(error) {
                             thisdialog.remove();
                             net.apachegui.Util.alert('Error', error.response.data.message);
-                            that.checkModifiedTimes = true;
+                            that.updateLastModifiedTime(file);
                         });
                     }
                 });
@@ -449,11 +471,10 @@ define([ "dojo/_base/declare",
                 
                 var data = response.data;
                 that.updateLastModifiedTime(data.file, data.lastModifiedTime);
-                that.checkModifiedTimes = true;
             }, function(error) {
                 thisdialog.remove();
                 net.apachegui.Util.alert('Error', error.response.data.message);
-                that.checkModifiedTimes = true;
+                that.updateLastModifiedTime(file);
             });
 
         },
@@ -527,11 +548,10 @@ define([ "dojo/_base/declare",
                 
                 var data = response.data;
                 that.updateLastModifiedTime(data.file, data.lastModifiedTime);
-                that.checkModifiedTimes = true;
             }, function(error) {
                 thisdialog.remove();
                 net.apachegui.Util.alert('Error', error.response.data.message);
-                that.checkModifiedTimes = true;
+                that.updateLastModifiedTime(file);
             });
             
         },
