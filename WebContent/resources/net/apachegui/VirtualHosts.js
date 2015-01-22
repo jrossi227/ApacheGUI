@@ -122,15 +122,18 @@ define([ "dojo/_base/declare",
             
             var files = this.getLastModifiedFileList();
           
-            net.apachegui.Main.getInstance().getLastModifiedTimes(
-                    files, 
-                    function(response) {
-                        that.lastModifiedTimes = response.lastModifiedTimes;
-                        that.launchLastModifedUpdaterInterval();
-                    }, 
-                    function(response) {
-                        net.apachegui.Util.alert('Error',JSON.parse(response.response.data).message);
-                });
+            if(files.length > 0) {
+                net.apachegui.Main.getInstance().getLastModifiedTimes(
+                        files, 
+                        function(response) {
+                            that.lastModifiedTimes = response.lastModifiedTimes;
+                            that.launchLastModifedUpdaterInterval();
+                        }, 
+                        function(response) {
+                            net.apachegui.Util.alert('Error',JSON.parse(response.response.data).message);
+                    });
+                
+            }
             
         },
         
@@ -792,20 +795,20 @@ define([ "dojo/_base/declare",
                 var hosts = data.hosts;
                 that.treeGlobalServerName = data.ServerName;
 
-                //TODO handle case where theres no virtual host
-                
-                for (var i = 0; i < hosts.length; i++) {
-
-                    buildTreeHost(hosts[i]);
+                if(hosts.length == 0) {
+     
+                    dom.byId('tree_virtual_host_container').innerHTML = 'There are no configured Virtual Hosts';
+                    
+                } else {
+                    for (var i = 0; i < hosts.length; i++) {
+                        buildTreeHost(hosts[i]);
+                    }
                 }
-
+                
                 that.buildTreeHostSelect();
-
+                that.populateHierarchicalVirtualHosts();              
+                that.launchLastModifedUpdater();    
                 thisdialog.remove();
-
-                that.populateHierarchicalVirtualHosts();
-                                
-                that.launchLastModifedUpdater();                
                 
             }, function(error) {
                 thisdialog.remove();
