@@ -220,6 +220,26 @@ define([ "dojo/_base/declare",
             net.apachegui.Interval.setInterval(this.checkSession.bind(this), 5000);    
         },
         
+        checkServerSyntax: function() {
+            
+            request.get('../web/Main', {
+                query:     {
+                    option: 'checkServerSyntax'
+                },
+                handleAs: 'json',
+                preventCache: true,
+                sync: false
+            }).response.then(
+                function(response) {
+                    //be silent on success
+                },
+                function(error) {
+                    net.apachegui.Util.alert('Info',error.response.data.message);
+                }
+            );
+            
+        },
+        
         init: function(option)
         {
             this.currentOption=option;
@@ -233,6 +253,7 @@ define([ "dojo/_base/declare",
             else
             {    
                 this.startSessionTimer();
+                this.checkServerSyntax();
                 
                 var menuInstance = net.apachegui.Menu.getInstance();
                 

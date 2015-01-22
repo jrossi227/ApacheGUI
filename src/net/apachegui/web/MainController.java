@@ -1,6 +1,7 @@
 package net.apachegui.web;
 
 import apache.conf.parser.File;
+import net.apachegui.conf.Configuration;
 import net.apachegui.db.SettingsDao;
 import net.apachegui.global.Constants;
 import net.apachegui.global.Utilities;
@@ -105,6 +106,23 @@ public class MainController {
     public String checkSession() {
 
         return "active";
+    }
+    
+    @RequestMapping(method = RequestMethod.GET, params = "option=checkServerSyntax", produces = "application/json;charset=UTF-8")
+    public String checkServerSyntax() throws Exception {
+
+        String status = Configuration.testServerConfiguration();
+
+        if(!Configuration.isServerConfigurationOk(status)) {            
+            throw new Exception("The apache configuration currently contains syntax errors.<br/>"
+                              + "Some parts of the ApacheGUI application may not function correctly until these errors are fixed.<br/><br/>"
+                              + "Error Details : " + status);
+        }
+        
+        JSONObject result = new JSONObject();
+        result.put("status", "success");
+        
+        return result.toString();
     }
 
 }
