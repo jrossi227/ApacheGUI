@@ -131,6 +131,9 @@
 	                            <div id="select_host_container">
 	                               Host: <div id="select_host_box"></div>
 	                            </div>
+	                            <div id="add_host_container">
+	                               <button id="addHostButton" data-dojo-type="dijit/form/Button">Add Virtual Host</button>
+	                            </div>
 	                        </div>
 	                        
 	                        <div id="tree_virtual_host_content_pane" class="centerPanel" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'center', title:'Edit'" >

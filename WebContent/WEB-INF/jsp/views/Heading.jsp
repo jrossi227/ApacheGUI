@@ -3,7 +3,7 @@
 		<div id="titleContainer">
 			<div id="leftTitlePane">
 				<div><a href="http://www.apache.org/"><img alt="Apache Logo" src="../resources/images/apache-logo.png" /></a></div>
-				<div id="logoutButtonContainer"><button id="logoutButton" dojoType="dijit.form.Button" onclick="window.location.href='Logout.jsp'">Logout</button></div>
+				<div id="logoutButtonContainer"><button id="logoutButton" data-dojo-type="dijit/form/Button" onclick="window.location.href='Logout.jsp'">Logout</button></div>
 			</div>
 			<div id="mainHeading">
 				<h1>Apache GUI</h1>

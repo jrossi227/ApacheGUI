@@ -350,3 +350,7 @@ body.editor #filename_container em {
     font-weight: normal;
 }
 
+#virtualHostsBody #add_host_container {
+	float: right;
+}
+
