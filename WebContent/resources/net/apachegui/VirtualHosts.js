@@ -350,6 +350,11 @@ define([ "dojo/_base/declare",
                 net.apachegui.Util.confirmDialog("Please Confirm", "Are you sure you want to delete the following " + item.lineType + ":<br/><br/>" + item.name, function confirm(conf) {
                     if (conf) {
 
+                        if(that.disableEditing) {
+                            that.showDisabledError();
+                            return;
+                        }
+                        
                         var tree = registry.byId(that.getCurrentTreeId());
 
                         var type = item.type;
