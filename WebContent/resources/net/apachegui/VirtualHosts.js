@@ -16,8 +16,9 @@ define([ "dojo/_base/declare",
          "dijit/form/Select", 
          "dojox/fx/scroll", 
          "dojo/query",
-         "dojo/_base/array"
-], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query, array) {
+         "dojo/_base/array",
+         "dojo/_base/lang"
+], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query, array, lang) {
 
     declare("net.apachegui.VirtualHosts", null, {
 
@@ -178,8 +179,32 @@ define([ "dojo/_base/declare",
         //-----------------END OF LAST MODIFIED TRACKING---------------//
 
         //------------------TREE VIRTUAL HOSTS-------------------------//
+        getItemProperty : function(item,name) {
+            var val = item[name];
+            
+            if(lang.isArray(val)){
+                return val[0];
+            }
+            
+            return val;
+        },
+        
+        valueContainsLogHolder : function (value) {
+            if(value.indexOf('apacheguilogholder') > -1) {
+                return true;
+            }
+            
+            return false;
+        },
+        
+        showLogHolderError : function() {
+            net.apachegui.Util.alert('Error', 'The selected line is currently being used by the History functionality.<br/>' +
+                                              'To remove this line you must navigate to the History page and disable the selected Virtual Host.');
+        },
+        
         showTreeHostOutOfDateError : function() {
-            net.apachegui.Util.alert('Error', 'It appears that the VirtualHost has been updated outside of the editor. Please reload the page to grab the latest Virtual Host Configuration.');
+            net.apachegui.Util.alert('Error', 'It appears that the VirtualHost has been updated outside of the editor.<br/>' +
+                                              'Please reload the page to grab the latest Virtual Host Configuration.');
         },
         
         showDisabledError : function() {
@@ -247,7 +272,7 @@ define([ "dojo/_base/declare",
 
             var item = this.getTreeItem(itemId, items);
 
-            if (this.currentTreeItem.type != item.type && this.currentTreeItem.value != item.value) {
+            if (this.currentTreeItem.type != this.getItemProperty(item,'type') && this.currentTreeItem.value != this.getItemProperty(item, 'value')) {
                 this.showTreeHostOutOfDateError();
 
                 return null;
@@ -355,8 +380,16 @@ define([ "dojo/_base/declare",
             }
             
             var item = this.getSelectedTreeItem();
+            var type = this.getItemProperty(item, 'type');
+            var value = this.getItemProperty(item, 'value');
+            
+            if(this.valueContainsLogHolder(value)) {
+                this.showLogHolderError();
+                return;
+            }
+            
             if (!!item) {
-                net.apachegui.Util.confirmDialog("Please Confirm", "Are you sure you want to delete the following " + item.lineType + ":<br/><br/>" + item.name, function confirm(conf) {
+                net.apachegui.Util.confirmDialog("Please Confirm", "Are you sure you want to delete the following " + this.getItemProperty(item,'lineType') + ":<br/><br/>" + this.getItemProperty(item,'name'), function confirm(conf) {
                     if (conf) {
 
                         if(that.disableEditing) {
@@ -366,7 +399,6 @@ define([ "dojo/_base/declare",
                         
                         var tree = registry.byId(that.getCurrentTreeId());
 
-                        var type = item.type;
                         var callback;
                         if (type == "VirtualHost") {
                             callback = function() {
@@ -402,8 +434,8 @@ define([ "dojo/_base/declare",
                             data : {
                                 option : 'deleteLine',
                                 file : file,
-                                lineOfStart : item.lineType == 'enclosure' ? item.enclosureLineOfStart : item.lineOfStart,
-                                lineOfEnd : item.lineType == 'enclosure' ? item.enclosureLineOfEnd : item.lineOfEnd
+                                lineOfStart : that.getItemProperty(item,'lineType') == 'enclosure' ? that.getItemProperty(item,'enclosureLineOfStart') : that.getItemProperty(item,'lineOfStart'),
+                                lineOfEnd : that.getItemProperty(item,'lineType') == 'enclosure' ? that.getItemProperty(item,'enclosureLineOfEnd') : that.getItemProperty(item,'lineOfEnd'),
                             },
                             handleAs : 'json',
                             sync : false
@@ -437,14 +469,22 @@ define([ "dojo/_base/declare",
             var item = this.getSelectedTreeItem();
             if (!!item) {
 
-                dom.byId('editType').innerHTML = item.type;
-                dom.byId('editValue').value = item.value;
-                dom.byId('editLineType').value = item.lineType;
-                dom.byId('editLineOfStart').value = item.lineOfStart;
-                dom.byId('editLineOfEnd').value = item.lineOfEnd;
+                var type = this.getItemProperty(item, 'type');
+                var value = this.getItemProperty(item, 'value');
+                
+                if(this.valueContainsLogHolder(value)) {
+                    this.showLogHolderError();
+                    return;
+                }
+                
+                dom.byId('editType').innerHTML = type;
+                dom.byId('editValue').value = value;
+                dom.byId('editLineType').value = this.getItemProperty(item,'lineType');
+                dom.byId('editLineOfStart').value = this.getItemProperty(item,'lineOfStart');
+                dom.byId('editLineOfEnd').value = this.getItemProperty(item,'lineOfEnd');
 
                 var dialog = registry.byId('editDialog');
-                dialog.set('title', item.lineType == 'enclosure' ? 'Edit Enclosure' : 'Edit Directive');
+                dialog.set('title', this.getItemProperty(item,'lineType') == 'enclosure' ? 'Edit Enclosure' : 'Edit Directive');
                 dialog.show();
             }
         },
@@ -461,7 +501,7 @@ define([ "dojo/_base/declare",
             var lineType = dom.byId('editLineType').value;
             var lineOfStart = dom.byId('editLineOfStart').value;
             var lineOfEnd = dom.byId('editLineOfEnd').value;
-
+            
             // cover special case when editing virtual host network info
             var callback;
             if (type == "VirtualHost") {
@@ -533,9 +573,9 @@ define([ "dojo/_base/declare",
 
                 dom.byId('addType').value = '';
                 dom.byId('addValue').value = '';
-                dom.byId('addBeforeLineType').value = item.lineType;
+                dom.byId('addBeforeLineType').value = this.getItemProperty(item,'lineType');
                 dom.byId('addLineType').value = type;
-                dom.byId('addLineOfStart').value = (parseInt(item.lineOfEnd) + 1);
+                dom.byId('addLineOfStart').value = (parseInt(this.getItemProperty(item,'lineOfEnd')) + 1);
 
                 var dialog = registry.byId('addDialog');
                 dialog.set('title', type == 'enclosure' ? 'Add Enclosure' : 'Add Directive');
@@ -557,7 +597,7 @@ define([ "dojo/_base/declare",
             var beforeLineType = dom.byId('addBeforeLineType').value;
             var lineType = dom.byId('addLineType').value;
             var lineOfStart = dom.byId('addLineOfStart').value;
-            
+                        
             var callback;
             if (type == "ServerName") {
                 callback = function() {
