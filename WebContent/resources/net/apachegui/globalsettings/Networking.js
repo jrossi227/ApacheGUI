@@ -801,16 +801,8 @@ define([ "dojo/_base/declare",
         }
         
     });
-    
-    net.apachegui.globalsettings.Networking.currentNetworking=null;
-    //used globally to grab instance
-    net.apachegui.globalsettings.Networking.getInstance = function() {
-        if(!net.apachegui.globalsettings.Networking.currentNetworking) {
-            net.apachegui.globalsettings.Networking.currentNetworking=new net.apachegui.globalsettings.Networking();
-        }
-        
-        return net.apachegui.globalsettings.Networking.currentNetworking;
-    };
+   
+    net.apachegui.Util.setupSingletonInstance(net.apachegui.globalsettings.Networking);
     
 });
     

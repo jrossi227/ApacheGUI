@@ -33,6 +33,7 @@ define([ "dojo/_base/declare",
         lastModifiedTimes : [],
         checkModifiedTimes : true,
         isModifiedDialogShown : false,
+        disableEditing : false,
         
         initialized : false,
 
@@ -152,7 +153,7 @@ define([ "dojo/_base/declare",
                                         if(that.lastModifiedTimes[i].file == response.lastModifiedTimes[j].file) {
                                             if(that.lastModifiedTimes[i].lastModifiedTime != response.lastModifiedTimes[i].lastModifiedTime) {
                                                 if(!that.isModifiedDialogShown) {
-                                                    net.apachegui.Util.alert('Error', 'It appears that ' + that.lastModifiedTimes[i].file + ' has been updated outside of the editor. Please refresh the page to grab the latest Virtual Host Configuration. You may not edit any virtual hosts until the page has been refreshed.');
+                                                    net.apachegui.Util.alert('Error', 'It appears that ' + that.lastModifiedTimes[i].file + ' has been updated outside of the editor.<br/>Please refresh the page to grab the latest Virtual Host Configuration.<br/>You may not edit any virtual hosts until you have refreshed the page.');
                                                     that.isModifiedDialogShown = true;
                                                     that.disableTreeEditing();
                                                 }
@@ -178,6 +179,10 @@ define([ "dojo/_base/declare",
         //------------------TREE VIRTUAL HOSTS-------------------------//
         showTreeHostOutOfDateError : function() {
             net.apachegui.Util.alert('Error', 'It appears that the VirtualHost has been updated outside of the editor. Please reload the page to grab the latest Virtual Host Configuration.');
+        },
+        
+        showDisabledError : function() {
+            net.apachegui.Util.alert('Error', 'You may not edit any hosts until you refresh the page.');
         },
 
         getTreeHostServerName : function(host) {
@@ -322,12 +327,24 @@ define([ "dojo/_base/declare",
         },
 
         disableTreeEditing : function () {
-            //TODO finish disable tree editing
+            this.disableEditing = true;
+            
+            registry.byId('editValue').set('disabled', true);
+            registry.byId('editSubmit').set('disabled', true);
+            
+            registry.byId('addType').set('disabled', true);
+            registry.byId('addValue').set('disabled', true);
+            registry.byId('addSubmit').set('disabled', true);
         },
         
         deleteLine : function() {
             var that = this;
 
+            if(this.disableEditing) {
+                this.showDisabledError();
+                return;
+            }
+            
             var item = this.getSelectedTreeItem();
             if (!!item) {
                 net.apachegui.Util.confirmDialog("Please Confirm", "Are you sure you want to delete the following " + item.lineType + ":<br/><br/>" + item.name, function confirm(conf) {
@@ -392,6 +409,12 @@ define([ "dojo/_base/declare",
         },
 
         showEditLineDialog : function() {
+            
+            if(this.disableEditing) {
+                this.showDisabledError();
+                return;
+            }
+            
             var item = this.getSelectedTreeItem();
             if (!!item) {
 
@@ -480,6 +503,12 @@ define([ "dojo/_base/declare",
         },
 
         showAddLineDialog : function(type) {
+            
+            if(this.disableEditing) {
+                this.showDisabledError();
+                return;
+            }
+            
             var item = this.getSelectedTreeItem();
             if (!!item) {
 
@@ -969,14 +998,6 @@ define([ "dojo/_base/declare",
 
     });
 
-    net.apachegui.VirtualHosts.currentVirtualHosts = null;
-    //used globally to grab instance
-    net.apachegui.VirtualHosts.getInstance = function() {
-        if (!net.apachegui.VirtualHosts.currentVirtualHosts) {
-            net.apachegui.VirtualHosts.currentVirtualHosts = new net.apachegui.VirtualHosts();
-        }
-
-        return net.apachegui.VirtualHosts.currentVirtualHosts;
-    };
+    net.apachegui.Util.setupSingletonInstance(net.apachegui.VirtualHosts);
 
 });

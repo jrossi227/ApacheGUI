@@ -66,6 +66,18 @@ require([ "dojo/_base/window",
                 var thisdialog = new NoCloseDialog({ title: title, content: content});
                 
                 return thisdialog;
+            },
+            
+            setupSingletonInstance: function(classObj) {
+                classObj.current = null;
+                
+                classObj.getInstance = function() {
+                    if (!classObj.current) {
+                        classObj.current = new classObj();
+                    }
+
+                    return classObj.current;
+                };
             }
         };
         

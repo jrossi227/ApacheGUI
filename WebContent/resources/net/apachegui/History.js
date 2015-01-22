@@ -681,15 +681,7 @@ define([ "dojo/_base/declare",
             
         }
     });
-    
-    net.apachegui.History.currentHistory=null;
-    //used globally to grab instance
-    net.apachegui.History.getInstance = function() {
-        if(!net.apachegui.History.currentHistory) {
-            net.apachegui.History.currentHistory=new net.apachegui.History();
-        }
-        
-        return net.apachegui.History.currentHistory;
-    };
+   
+    net.apachegui.Util.setupSingletonInstance(net.apachegui.History);
     
 });

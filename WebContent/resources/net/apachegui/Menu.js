@@ -964,14 +964,6 @@ define([ "dojo/_base/declare",
         }
     });
     
-    net.apachegui.Menu.currentMenu=null;
-    //used globally to grab instance
-    net.apachegui.Menu.getInstance = function() {
-        if(!net.apachegui.Menu.currentMenu) {
-            net.apachegui.Menu.currentMenu=new net.apachegui.Menu();
-        }
-        
-        return net.apachegui.Menu.currentMenu;
-    };
+    net.apachegui.Util.setupSingletonInstance(net.apachegui.Menu);
     
 });

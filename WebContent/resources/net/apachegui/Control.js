@@ -971,13 +971,6 @@ define([ "dojo/_base/declare",
         }
     });
     
-    net.apachegui.Control.currentControl=null;
-    //used globally to grab instance
-    net.apachegui.Control.getInstance = function() {
-        if(!net.apachegui.Control.currentControl) {
-            net.apachegui.Control.currentControl=new net.apachegui.Control();
-        }
-        return net.apachegui.Control.currentControl;
-    };
+    net.apachegui.Util.setupSingletonInstance(net.apachegui.Control);
     
 });    

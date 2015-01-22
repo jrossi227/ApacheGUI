@@ -319,14 +319,7 @@ define([ "dojo/_base/declare",
         
     });
     
-    net.apachegui.Main.currentMain=null;
-    net.apachegui.Main.getInstance = function() {
-        if(!net.apachegui.Main.currentMain) {
-            net.apachegui.Main.currentMain=new net.apachegui.Main();
-        }
-        
-        return net.apachegui.Main.currentMain;
-    };
+    net.apachegui.Util.setupSingletonInstance(net.apachegui.Main);
     
 });
   

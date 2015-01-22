@@ -115,14 +115,6 @@ define([ "dojo/_base/declare",
         }
     });
     
-    net.apachegui.Documents.currentDocuments=null;
-    //used globally to grab instance
-    net.apachegui.Documents.getInstance = function() {
-        if(!net.apachegui.Documents.currentDocuments) {
-            net.apachegui.Documents.currentDocuments=new net.apachegui.Documents();
-        }
-        
-        return net.apachegui.Documents.currentDocuments;
-    };
+    net.apachegui.Util.setupSingletonInstance(net.apachegui.Documents);
     
 });

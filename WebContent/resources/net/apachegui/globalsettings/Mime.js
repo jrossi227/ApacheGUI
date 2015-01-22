@@ -256,14 +256,6 @@ define([ "dojo/_base/declare",
         
     });
     
-    net.apachegui.globalsettings.Mime.currentMimes=null;
-    //used globally to grab instance
-    net.apachegui.globalsettings.Mime.getInstance = function() {
-        if(!net.apachegui.globalsettings.Mime.currentMimes) {
-            net.apachegui.globalsettings.Mime.currentMimes=new net.apachegui.globalsettings.Mime();
-        }
-        
-        return net.apachegui.globalsettings.Mime.currentMimes;
-    };
+    net.apachegui.Util.setupSingletonInstance(net.apachegui.globalsettings.Mime);
     
 });    

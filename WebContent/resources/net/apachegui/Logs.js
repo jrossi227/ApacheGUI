@@ -242,15 +242,7 @@ define([ "dojo/_base/declare",
             });
         }
     });
-    
-    net.apachegui.Logs.currentLogger=null;
-    //used globally to grab instance
-    net.apachegui.Logs.getInstance = function() {
-        if(!net.apachegui.Logs.currentLogger) {
-            net.apachegui.Logs.currentLogger=new net.apachegui.Logs();
-        }
-        
-        return net.apachegui.Logs.currentLogger;
-    };
+   
+    net.apachegui.Util.setupSingletonInstance(net.apachegui.Logs);
     
 });

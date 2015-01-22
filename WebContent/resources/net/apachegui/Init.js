@@ -164,14 +164,6 @@ define([ "dojo/_base/declare",
         }
     });
     
-    net.apachegui.Init.currentInit=null;
-    //used globally to grab instance
-    net.apachegui.Init.getInstance = function() {
-        if(!net.apachegui.Init.currentInit) {
-            net.apachegui.Init.currentInit=new net.apachegui.Init();
-        }
-        
-        return net.apachegui.Init.currentInit;
-    };
+    net.apachegui.Util.setupSingletonInstance(net.apachegui.Init);
     
 });

@@ -77,15 +77,7 @@ define([ "dojo/_base/declare",
         }
     });
     
-    net.apachegui.Settings.currentSettings=null;
-    //used globally to grab instance
-    net.apachegui.Settings.getInstance = function() {
-        if(!net.apachegui.Settings.currentSettings) {
-            net.apachegui.Settings.currentSettings=new net.apachegui.Settings();
-        }
-        
-        return net.apachegui.Settings.currentSettings;
-    };
+    net.apachegui.Util.setupSingletonInstance(net.apachegui.Settings);
     
 });        
         

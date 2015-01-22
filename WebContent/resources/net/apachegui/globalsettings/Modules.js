@@ -209,14 +209,6 @@ define([ "dojo/_base/declare",
         } 
     });
     
-    net.apachegui.globalsettings.Modules.currentModules=null;
-    //used globally to grab instance
-    net.apachegui.globalsettings.Modules.getInstance = function() {
-        if(!net.apachegui.globalsettings.Modules.currentModules) {
-            net.apachegui.globalsettings.Modules.currentModules=new net.apachegui.globalsettings.Modules();
-        }
-        
-        return net.apachegui.globalsettings.Modules.currentModules;
-    };
+    net.apachegui.Util.setupSingletonInstance(net.apachegui.globalsettings.Modules);
     
 });    

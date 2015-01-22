@@ -151,13 +151,6 @@ define([ "dojo/_base/declare",
             
     });
     
-    net.apachegui.Configuration.currentConfiguration=null;
-    net.apachegui.Configuration.getInstance = function() {
-        if(!net.apachegui.Configuration.currentConfiguration) {
-            net.apachegui.Configuration.currentConfiguration=new net.apachegui.Configuration();
-        }
-        
-        return net.apachegui.Configuration.currentConfiguration;
-    };
+    net.apachegui.Util.setupSingletonInstance(net.apachegui.Configuration);
     
 });
