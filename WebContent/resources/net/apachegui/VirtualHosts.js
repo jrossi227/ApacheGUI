@@ -495,7 +495,7 @@ define([ "dojo/_base/declare",
                                 option : 'deleteLine',
                                 file : file,
                                 lineOfStart : that.getItemProperty(item,'lineType') == 'enclosure' ? that.getItemProperty(item,'enclosureLineOfStart') : that.getItemProperty(item,'lineOfStart'),
-                                lineOfEnd : that.getItemProperty(item,'lineType') == 'enclosure' ? that.getItemProperty(item,'enclosureLineOfEnd') : that.getItemProperty(item,'lineOfEnd'),
+                                lineOfEnd : that.getItemProperty(item,'lineType') == 'enclosure' ? that.getItemProperty(item,'enclosureLineOfEnd') : that.getItemProperty(item,'lineOfEnd')
                             },
                             handleAs : 'json',
                             sync : false
