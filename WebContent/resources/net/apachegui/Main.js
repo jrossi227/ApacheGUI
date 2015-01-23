@@ -188,6 +188,29 @@ define([ "dojo/_base/declare",
              });
         },
         
+        getActiveFileList: function(callback) {
+           
+            request.get('../web/Main', {
+                query:     {
+                    option: 'activeFileList'
+                },
+                handleAs: 'json',
+                sync: false,
+                preventCache: true
+            }).response.then(
+                function(response) {
+                
+                    var data = response.data;
+
+                    callback(data.files);
+                },
+                function(error) {
+                    thisdialog.remove();
+                    net.apachegui.Util.alert('Info',error.response.data.message);
+                }
+            );
+        },
+        
         checkSession: function() {
             var that = this;
             

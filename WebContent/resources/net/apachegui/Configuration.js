@@ -50,32 +50,16 @@ define([ "dojo/_base/declare",
             var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading ...');
             thisdialog.show();
             
-            request.get('../web/Configuration', {
-                query:     {
-                    option: 'activeFileList'
-                },
-                handleAs: 'json',
-                sync: false,
-                preventCache: true
-            }).response.then(
-                function(response) {
-                
-                    var data = response.data;
-
-                    var list='';
-                    for(var i in data.files) {
-                        list=list + data.files[i] + "<br/>";
-                    }
-                    
-                    net.apachegui.Util.alert('Active File List',list);
-                    
-                    thisdialog.remove();
-                },
-                function(error) {
-                    thisdialog.remove();
-                    net.apachegui.Util.alert('Info',error.response.data.message);
+            net.apachegui.Main.getInstance().getActiveFileList(function(files) {
+                var list='';
+                for(var i in files) {
+                    list=list + files[i] + "<br/>";
                 }
-            );
+                
+                net.apachegui.Util.alert('Active File List',list);
+                
+                thisdialog.remove();
+            });
         },
         
         save: function() {

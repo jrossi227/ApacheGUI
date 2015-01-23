@@ -400,6 +400,29 @@ define([ "dojo/_base/declare",
             registry.byId('addSubmit').set('disabled', true);
         },
         
+        submitAddHost : function() {
+            
+            var allIp=dom.byId('addHostAllAddress').checked;
+            var ip=registry.byId('addHostAddress').get('value').trim();
+            var port=registry.byId('addHostPort').get('value').trim();
+            
+            if(allIp == false &&  ip == "") {
+                net.apachegui.Util.alert('Error','You must specify either All IP Addresses or a specific IP Address.');
+                return;
+            }
+            
+            if(port == "") {
+                net.apachegui.Util.alert('Error','You must specify a Port');
+                return;
+            }
+            
+            if(isNaN(port)) {
+                net.apachegui.Util.alert('Error','The Port must be numeric');
+                return;
+            }
+
+        },
+        
         deleteLine : function() {
             var that = this;
 
@@ -514,13 +537,13 @@ define([ "dojo/_base/declare",
                     return;
                 }
                 
-                dom.byId('editType').innerHTML = type;
-                dom.byId('editValue').value = value;
-                dom.byId('editLineType').value = this.getItemProperty(item,'lineType');
-                dom.byId('editLineOfStart').value = this.getItemProperty(item,'lineOfStart');
-                dom.byId('editLineOfEnd').value = this.getItemProperty(item,'lineOfEnd');
+                dom.byId('editLineType').innerHTML = type;
+                dom.byId('editLineValue').value = value;
+                dom.byId('editLineLineType').value = this.getItemProperty(item,'lineType');
+                dom.byId('editLineLineOfStart').value = this.getItemProperty(item,'lineOfStart');
+                dom.byId('editLineLineOfEnd').value = this.getItemProperty(item,'lineOfEnd');
 
-                var dialog = registry.byId('editDialog');
+                var dialog = registry.byId('editLineDialog');
                 dialog.set('title', this.getItemProperty(item,'lineType') == 'enclosure' ? 'Edit Enclosure' : 'Edit Directive');
                 dialog.show();
             }
@@ -534,11 +557,11 @@ define([ "dojo/_base/declare",
             var host = tree.get('host');
             var file = host.file;
 
-            var type = dom.byId('editType').innerHTML;
-            var value = dom.byId('editValue').value.trim();
-            var lineType = dom.byId('editLineType').value;
-            var lineOfStart = dom.byId('editLineOfStart').value;
-            var lineOfEnd = dom.byId('editLineOfEnd').value;
+            var type = dom.byId('editLineType').innerHTML;
+            var value = dom.byId('editLineValue').value.trim();
+            var lineType = dom.byId('editLineLineType').value;
+            var lineOfStart = dom.byId('editLineLineOfStart').value;
+            var lineOfEnd = dom.byId('editLineLineOfEnd').value;
             
             // cover special case when editing virtual host network info
             var callback;
@@ -601,7 +624,7 @@ define([ "dojo/_base/declare",
 
                 that.reloadTreeHost(tree);
                 thisdialog.remove();
-                registry.byId('editDialog').hide();
+                registry.byId('editLineDialog').hide();
                 
                 var data = response.data;
                 that.updateLastModifiedTime(data.file, data.lastModifiedTime);
@@ -623,13 +646,13 @@ define([ "dojo/_base/declare",
             var item = this.getSelectedTreeItem();
             if (!!item) {
 
-                dom.byId('addType').value = '';
-                dom.byId('addValue').value = '';
-                dom.byId('addBeforeLineType').value = this.getItemProperty(item,'lineType');
-                dom.byId('addLineType').value = type;
-                dom.byId('addLineOfStart').value = (parseInt(this.getItemProperty(item,'lineOfEnd')) + 1);
+                dom.byId('addLineType').value = '';
+                dom.byId('addLineValue').value = '';
+                dom.byId('addLineBeforeLineType').value = this.getItemProperty(item,'lineType');
+                dom.byId('addLineLineType').value = type;
+                dom.byId('addLineLineOfStart').value = (parseInt(this.getItemProperty(item,'lineOfEnd')) + 1);
 
-                var dialog = registry.byId('addDialog');
+                var dialog = registry.byId('addLineDialog');
                 dialog.set('title', type == 'enclosure' ? 'Add Enclosure' : 'Add Directive');
                 dialog.show();
                 
@@ -645,11 +668,11 @@ define([ "dojo/_base/declare",
             var host = tree.get('host');
             
             var file = host.file;
-            var type = dom.byId('addType').value.trim();
-            var value = dom.byId('addValue').value.trim();
-            var beforeLineType = dom.byId('addBeforeLineType').value;
-            var lineType = dom.byId('addLineType').value;
-            var lineOfStart = dom.byId('addLineOfStart').value;
+            var type = dom.byId('addLineType').value.trim();
+            var value = dom.byId('addLineValue').value.trim();
+            var beforeLineType = dom.byId('addLineBeforeLineType').value;
+            var lineType = dom.byId('addLineLineType').value;
+            var lineOfStart = dom.byId('addLineLineOfStart').value;
                         
             var callback;
             if (type == "ServerName") {
@@ -692,7 +715,7 @@ define([ "dojo/_base/declare",
 
                 that.reloadTreeHost(tree);
                 thisdialog.remove();
-                registry.byId('addDialog').hide();
+                registry.byId('addLineDialog').hide();
                 
                 var data = response.data;
                 that.updateLastModifiedTime(data.file, data.lastModifiedTime);
@@ -1123,20 +1146,59 @@ define([ "dojo/_base/declare",
         addListeners : function() {
             var that = this;
 
-            on(registry.byId('editSubmit'), 'click', function() {
+            on(registry.byId('editLineSubmit'), 'click', function() {
                 that.submitEditLine();
             });
 
-            on(registry.byId('editCancel'), 'click', function() {
-                registry.byId('editDialog').hide();
+            on(registry.byId('editLineCancel'), 'click', function() {
+                registry.byId('editLineDialog').hide();
             });
             
-            on(registry.byId('addSubmit'), 'click', function() {
+            on(registry.byId('addLineSubmit'), 'click', function() {
                 that.submitAddLine();
             });
 
-            on(registry.byId('addCancel'), 'click', function() {
-                registry.byId('addDialog').hide();
+            on(registry.byId('addLineCancel'), 'click', function() {
+                registry.byId('addLineDialog').hide();
+            });
+            
+            on(registry.byId('addHostButton'), 'click', function() {
+                
+                var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Active Files ...');
+                thisdialog.show();
+                net.apachegui.Main.getInstance().getActiveFileList(function(files) {
+                    //TODO populate select box with files
+                    
+                    registry.byId('addHostDialog').show(); 
+                    
+                    thisdialog.remove();
+                });
+                
+            });
+            
+            on(dom.byId('addHostAllAddress'), "click", function() {
+                if(this.checked==true) {
+                    registry.byId('addHostAddress').set('value','');
+                    registry.byId('addHostAddress').set('disabled', true);
+                } else {
+                    registry.byId('addHostAddress').set('disabled', false);
+                }
+            });
+            
+            on(registry.byId('addHostAddress'), "change", function() {
+                if(this.value.trim() != "") {
+                    dom.byId('addHostAllAddress').disabled=true;
+                } else {
+                    dom.byId('addHostAllAddress').disabled=false;
+                }
+            });
+            
+            on(registry.byId('addHostCancel'), 'click', function() {
+                registry.byId('addHostDialog').hide(); 
+            });
+            
+            on(registry.byId('addHostSubmit'), 'click', function() {
+                that.submitAddHost();
             });
             
         }

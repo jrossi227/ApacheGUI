@@ -1,10 +1,13 @@
 package net.apachegui.web;
 
 import apache.conf.parser.File;
+import apache.conf.parser.Parser;
 import net.apachegui.conf.Configuration;
 import net.apachegui.db.SettingsDao;
 import net.apachegui.global.Constants;
 import net.apachegui.global.Utilities;
+import net.apachegui.modules.SharedModuleHandler;
+import net.apachegui.modules.StaticModuleHandler;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -122,6 +125,25 @@ public class MainController {
         JSONObject result = new JSONObject();
         result.put("status", "success");
         
+        return result.toString();
+    }
+    
+    @RequestMapping(method = RequestMethod.GET, params = "option=activeFileList", produces = "application/json;charset=UTF-8")
+    public String getActiveFileList() throws Exception {
+
+        String rootConfFile = SettingsDao.getInstance().getSetting(Constants.confFile);
+
+        String activeFileList[] = new Parser(rootConfFile, SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules())
+                .getActiveConfFileList();
+
+        JSONArray files = new JSONArray();
+        for (int i = 0; i < activeFileList.length; i++) {
+            files.put(activeFileList[i]);
+        }
+
+        JSONObject result = new JSONObject();
+        result.put("files", files);
+
         return result.toString();
     }
 

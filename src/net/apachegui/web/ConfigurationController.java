@@ -6,10 +6,8 @@ import apache.conf.parser.File;
 import java.nio.charset.Charset;
 
 import net.apachegui.conf.Configuration;
-import net.apachegui.db.SettingsDao;
 import net.apachegui.global.Constants;
 import net.apachegui.modules.SharedModuleHandler;
-import net.apachegui.modules.StaticModuleHandler;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import apache.conf.parser.Parser;
 
 @RestController
 @RequestMapping("/web/Configuration")
@@ -37,25 +34,6 @@ public class ConfigurationController {
         resultJSON.put("result", result);
 
         return resultJSON.toString();
-    }
-
-    @RequestMapping(method = RequestMethod.GET, params = "option=activeFileList", produces = "application/json;charset=UTF-8")
-    public String getActiveFileList() throws Exception {
-
-        String rootConfFile = SettingsDao.getInstance().getSetting(Constants.confFile);
-
-        String activeFileList[] = new Parser(rootConfFile, SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules())
-                .getActiveConfFileList();
-
-        JSONArray files = new JSONArray();
-        for (int i = 0; i < activeFileList.length; i++) {
-            files.put(activeFileList[i]);
-        }
-
-        JSONObject result = new JSONObject();
-        result.put("files", files);
-
-        return result.toString();
     }
 
     @RequestMapping(method = RequestMethod.POST, params = "option=save", produces = "application/json;charset=UTF-8")
