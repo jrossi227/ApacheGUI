@@ -351,6 +351,7 @@ body.editor #filename_container em {
 }
 
 #virtualHostsBody #add_host_container {
-	float: right;
+	display: inline-block;
+	vertical-align: middle;
 }
 
