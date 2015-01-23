@@ -334,7 +334,7 @@ define([ "dojo/_base/declare",
                 host = this.trees[i].get('host');
                 options.push({
                     label : this.buildTreeHostSelectOption(host),
-                    value : i.toString()
+                    value : this.trees[i].get('index').toString()
                 });
             }
 
