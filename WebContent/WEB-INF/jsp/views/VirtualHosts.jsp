@@ -163,10 +163,7 @@
                          </label>
                     </td>
                 <td>
-                    <select name="addHostFile" data-dojo-type="dijit/form/Select">
-                        <option value="">Select</option>
-                        
-                    </select>
+                    <div id="add_host_select_box"></div>
                 </td>
         </tr>
         <tr class="dijitDialogPaneContentArea">
@@ -176,7 +173,7 @@
                          </label>
                     </td>
                 <td>
-                    <div data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="addHostNewFile">
+                    <div data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: false" id="addHostNewFile">
                     </div>
                 </td>
         </tr>

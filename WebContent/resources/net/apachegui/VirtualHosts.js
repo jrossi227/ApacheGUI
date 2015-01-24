@@ -36,6 +36,8 @@ define([ "dojo/_base/declare",
         isModifiedDialogShown : false,
         disableEditing : false,
         
+        addHostFileSelect: null,
+        
         initialized : false,
 
         init : function() {
@@ -398,29 +400,6 @@ define([ "dojo/_base/declare",
             registry.byId('addType').set('disabled', true);
             registry.byId('addValue').set('disabled', true);
             registry.byId('addSubmit').set('disabled', true);
-        },
-        
-        submitAddHost : function() {
-            
-            var allIp=dom.byId('addHostAllAddress').checked;
-            var ip=registry.byId('addHostAddress').get('value').trim();
-            var port=registry.byId('addHostPort').get('value').trim();
-            
-            if(allIp == false &&  ip == "") {
-                net.apachegui.Util.alert('Error','You must specify either All IP Addresses or a specific IP Address.');
-                return;
-            }
-            
-            if(port == "") {
-                net.apachegui.Util.alert('Error','You must specify a Port');
-                return;
-            }
-            
-            if(isNaN(port)) {
-                net.apachegui.Util.alert('Error','The Port must be numeric');
-                return;
-            }
-
         },
         
         deleteLine : function() {
@@ -1141,8 +1120,81 @@ define([ "dojo/_base/declare",
 
         },
 
-        //------------------END OF HIERARCHICAL VIRTUAL HOSTS-------------------------//
+        //-----------------------END OF HIERARCHICAL VIRTUAL HOSTS--------------------//
 
+        //----------------------------ADDING VIRTUAL HOSTS----------------------------//
+        
+        buildAddHostFileSelect : function(files) {
+
+            var options = [];
+            options.push({
+                label : 'Select',
+                value : ''
+            });
+
+            for (var i = 0; i < files.length; i++) {
+                options.push({
+                    label : files[i],
+                    value : files[i]
+                });
+            }
+
+            if (!!this.addHostFileSelect) {
+                this.addHostFileSelect.destroyRecursive();
+            }
+
+            this.addHostFileSelect = new Select({
+                name : "addHostFile",
+                id : "addHostFile",
+                options : options
+            });
+            this.addHostFileSelect.placeAt(dom.byId('add_host_select_box'));
+            this.addHostFileSelect.startup();
+            
+            on(this.addHostFileSelect, "change", function() {
+                var value = this.get("value");
+
+                if (value != '') {
+                    registry.byId('addHostNewFile').set('value','');
+                    registry.byId('addHostNewFile').set('disabled', true);
+                } else {
+                    registry.byId('addHostNewFile').set('disabled', false);
+                }
+            });
+        },
+        
+        submitAddHost : function() {
+            
+            var allIp=dom.byId('addHostAllAddress').checked;
+            var ip=registry.byId('addHostAddress').get('value').trim();
+            var port=registry.byId('addHostPort').get('value').trim();
+            var file=this.addHostFileSelect.get('value');
+            var newFile=registry.byId('addHostNewFile').get('value').trim();
+            
+            if(allIp == false &&  ip == "") {
+                net.apachegui.Util.alert('Error','You must specify either All IP Addresses or a specific IP Address.');
+                return;
+            }
+            
+            if(port == "") {
+                net.apachegui.Util.alert('Error','You must specify a Port');
+                return;
+            }
+            
+            if(isNaN(port)) {
+                net.apachegui.Util.alert('Error','The Port must be numeric');
+                return;
+            }
+            
+            if(newFile == "" &&  file == "") {
+                net.apachegui.Util.alert('Error','You must specify a file');
+                return;
+            }
+
+        },
+        
+        //----------------------------------------------------------------------------//
+        
         addListeners : function() {
             var that = this;
 
@@ -1166,8 +1218,8 @@ define([ "dojo/_base/declare",
                 
                 var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Active Files ...');
                 thisdialog.show();
-                net.apachegui.Main.getInstance().getActiveFileList(function(files) {
-                    //TODO populate select box with files
+                net.apachegui.Main.getInstance().getActiveFileList(function(files) {                    
+                    that.buildAddHostFileSelect(files);
                     
                     registry.byId('addHostDialog').show(); 
                     
@@ -1185,12 +1237,24 @@ define([ "dojo/_base/declare",
                 }
             });
             
-            on(registry.byId('addHostAddress'), "change", function() {
-                if(this.value.trim() != "") {
-                    dom.byId('addHostAllAddress').disabled=true;
-                } else {
+            on(registry.byId('addHostAddress'), "focus", function() {
+                dom.byId('addHostAllAddress').disabled=true;
+            });
+            
+            on(registry.byId('addHostAddress'), "blur", function() {
+                if(registry.byId('addHostAddress').get('value').trim() == "") {
                     dom.byId('addHostAllAddress').disabled=false;
-                }
+                } 
+            });
+            
+            on(registry.byId('addHostNewFile'), "focus", function() {
+                registry.byId('addHostFile').set('disabled',true);
+            });
+            
+            on(registry.byId('addHostNewFile'), "blur", function() {
+                if(registry.byId('addHostNewFile').get('value').trim() == "") {
+                    registry.byId('addHostFile').set('disabled',false);
+                } 
             });
             
             on(registry.byId('addHostCancel'), 'click', function() {
