@@ -1219,6 +1219,16 @@ define([ "dojo/_base/declare",
                 var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Active Files ...');
                 thisdialog.show();
                 net.apachegui.Main.getInstance().getActiveFileList(function(files) {                    
+                    
+                    dom.byId('addHostAllAddress').checked = false;
+                    registry.byId('addHostAddress').set('value','');
+                    registry.byId('addHostAddress').set('disabled',false);
+                    
+                    registry.byId('addHostPort').set('value','');
+                    
+                    registry.byId('addHostNewFile').set('value','');
+                    registry.byId('addHostNewFile').set('disabled',false);
+                    
                     that.buildAddHostFileSelect(files);
                     
                     registry.byId('addHostDialog').show(); 
