@@ -23,16 +23,27 @@ define([ "dojo/_base/declare",
 
     declare("net.apachegui.VirtualHosts", null, {
 
+        /**
+        {
+            number: 0,
+            tree: __tree object__,
+            host: __host object,
+            lastModified : {
+                file: __file path__,
+                lastModifiedTime: 0
+            }
+        }
+        **/
+        virtualHosts : [],
+        
         currentHierarchicalHostSummaryCount : 0,
 
         currentTreeSummaryCount : 0,
-        currentTree : null,
+        currentVirtualHost : null,
         currentTreeItem : null,
-        trees : [],
         treeHostSelect : null,
         treeGlobalServerName : '',
 
-        lastModifiedTimes : [],
         checkModifiedTimes : true,
         isModifiedDialogShown : false,
         disableEditing : false,
@@ -82,8 +93,8 @@ define([ "dojo/_base/declare",
         
         getLastModifiedFileList : function() {
             var files = [];
-            for(var i=0; i<this.trees.length; i++) {
-                files.push(this.trees[i].get('host').file);
+            for(var i=0; i<this.virtualHosts.length; i++) {
+                files.push(this.virtualHosts[i].lastModified.file);
             }
             
             return files;
@@ -93,9 +104,9 @@ define([ "dojo/_base/declare",
             var that = this;
             
             var updateFileTime = function(lastModifiedTime) {
-                for(var i=0; i < that.lastModifiedTimes.length; i++) {
-                    if(that.lastModifiedTimes[i].file == file) {
-                        that.lastModifiedTimes[i].lastModifiedTime = lastModifiedTime;
+                for(var i=0; i < that.virtualHosts.length; i++) {
+                    if(that.virtualHosts[i].lastModified.file == file) {
+                        that.virtualHosts[i].lastModified.lastModifiedTime = lastModifiedTime;
                     }
                 }
                 
@@ -132,7 +143,11 @@ define([ "dojo/_base/declare",
                 net.apachegui.Main.getInstance().getLastModifiedTimes(
                         files, 
                         function(response) {
-                            that.lastModifiedTimes = response.lastModifiedTimes;
+                            
+                            for(var i=0; i<response.lastModifiedTimes.length; i++) {
+                                that.updateLastModifiedTime(response.lastModifiedTimes[i].file, response.lastModifiedTimes[i].lastModifiedTime);
+                            }
+                            
                             that.launchLastModifedUpdaterInterval();
                         }, 
                         function(response) {
@@ -160,14 +175,14 @@ define([ "dojo/_base/declare",
                                 function(response) {
                                     that.isModifiedDialogShown = false;
                                     
-                                    for(var i=0; i<that.lastModifiedTimes.length; i++) {
+                                    for(var i=0; i<that.virtualHosts.length; i++) {
                                         for(var j=0; j<response.lastModifiedTimes.length; j++) {
-                                            if(that.lastModifiedTimes[i].file == response.lastModifiedTimes[j].file) {
-                                                if(that.lastModifiedTimes[i].lastModifiedTime != response.lastModifiedTimes[j].lastModifiedTime) {
+                                            if(that.virtualHosts[i].lastModified.file == response.lastModifiedTimes[j].file) {
+                                                if(that.virtualHosts[i].lastModified.lastModifiedTime != response.lastModifiedTimes[j].lastModifiedTime) {
                                                     if(!that.isModifiedDialogShown) {
                                                         that.isModifiedDialogShown = true;
                                                         that.disableTreeEditing();
-                                                        net.apachegui.Util.confirmDialog("Reload", 'It appears that ' + that.lastModifiedTimes[i].file + ' has been updated outside of the editor.<br/>' +
+                                                        net.apachegui.Util.confirmDialog("Reload", 'It appears that ' + that.virtualHosts[i].lastModified.file + ' has been updated outside of the editor.<br/>' +
                                                                                                    'Please refresh the page to grab the latest Virtual Host Configuration.<br/>' +
                                                                                                    'You may not edit any virtual hosts until you have refreshed the page.<br/>' +
                                                                                                    'Would you like to refresh now?', function confirm(conf) {
@@ -177,7 +192,7 @@ define([ "dojo/_base/declare",
                                                         });
                                                     }
                                                     
-                                                    that.lastModifiedTimes[i].lastModifiedTime = response.lastModifiedTimes[j].lastModifiedTime;
+                                                    that.virtualHosts[i].lastModified.lastModifiedTime = response.lastModifiedTimes[j].lastModifiedTime;
                                                 }
                                             }
                                         }
@@ -236,7 +251,7 @@ define([ "dojo/_base/declare",
         },
 
         getCurrentTreeContainerId : function() {
-            return 'tree-' + this.currentTree.get('index');
+            return 'tree-' + this.currentVirtualHost.number;
         },
 
         getCurrentTreeId : function() {
@@ -244,10 +259,9 @@ define([ "dojo/_base/declare",
         },
 
         getTreePositionFromHost : function(host) {
-            for (var i = 0; i < this.trees.length; i++) {
+            for (var i = 0; i < this.virtualHosts.length; i++) {
 
-                var treeHost = this.trees[i].get('host');
-                if (this.areHostsEqual(treeHost, host)) {
+                if (this.areHostsEqual(this.virtualHosts[i].host, host)) {
                     return i;
                 }
 
@@ -260,9 +274,9 @@ define([ "dojo/_base/declare",
             newHost.ServerName = ServerName;
             newHost.NetworkInfo = NetworkInfo;
             
-            for (var i = 0; i < this.trees.length; i++) {
+            for (var i = 0; i < this.virtualHosts.length; i++) {
                 
-                var treeHost = this.trees[i].get('host');
+                var treeHost = this.virtualHosts[i].host;
                 if (this.areHostsEqual(treeHost, newHost)) {
                     return treeHost;
                 }
@@ -320,7 +334,7 @@ define([ "dojo/_base/declare",
 
         getSelectedTreeItem : function() {
             var itemId = this.currentTreeItem.id;
-            var items = registry.byId(this.getCurrentTreeId()).get('host').tree.items;
+            var items = this.currentVirtualHost.host.tree.items;
 
             var item = this.getTreeItem(itemId, items);
 
@@ -349,11 +363,11 @@ define([ "dojo/_base/declare",
             });
 
             var host;
-            for (var i = 0; i < this.trees.length; i++) {
-                host = this.trees[i].get('host');
+            for (var i = 0; i < this.virtualHosts.length; i++) {
+                host = this.virtualHosts[i].host;
                 options.push({
                     label : this.buildTreeHostSelectOption(host),
-                    value : this.trees[i].get('index').toString()
+                    value : this.virtualHosts[i].number.toString()
                 });
             }
 
@@ -442,8 +456,8 @@ define([ "dojo/_base/declare",
                             return;
                         }
                         
-                        var tree = registry.byId(that.getCurrentTreeId());
-                        var host = tree.get('host');
+                        var tree = that.currentVirtualHost.tree;
+                        var host = that.currentVirtualHost.host;
                         
                         var callback;
                         if (type == "VirtualHost") {
@@ -451,13 +465,12 @@ define([ "dojo/_base/declare",
                                 var index = that.getTreePositionFromHost(host);
                                 
                                 tree.destroyRecursive();
-                                tree = null;
-                                
-                                that.trees.splice(index,1);
-                                that.lastModifiedTimes.splice(index,1);
                                 
                                 var container = dom.byId(that.getCurrentTreeContainerId());
                                 container.parentNode.removeChild(container);
+                                
+                                that.virtualHosts.splice(index,1);
+                                that.currentVirtualHost = null;
 
                                 that.buildTreeHostSelect();
                             };
@@ -497,7 +510,7 @@ define([ "dojo/_base/declare",
                                 callback();
                             }
 
-                            that.reloadTreeHost(tree);
+                            that.reloadTreeHost(that.currentVirtualHost);
                             thisdialog.remove();
                             
                             var data = response.data;
@@ -546,8 +559,7 @@ define([ "dojo/_base/declare",
             var that = this;
 
             // cover special case when editing servername
-            var tree = registry.byId(that.getCurrentTreeId());
-            var host = tree.get('host');
+            var host = this.currentVirtualHost.host;
             var file = host.file;
 
             var type = dom.byId('editLineType').innerHTML;
@@ -615,7 +627,7 @@ define([ "dojo/_base/declare",
                     callback();
                 }
 
-                that.reloadTreeHost(tree);
+                that.reloadTreeHost(that.currentVirtualHost);
                 thisdialog.remove();
                 registry.byId('editLineDialog').hide();
                 
@@ -657,8 +669,7 @@ define([ "dojo/_base/declare",
             var that = this;
 
             // cover special case when editing servername
-            var tree = registry.byId(that.getCurrentTreeId());
-            var host = tree.get('host');
+            var host = this.currentVirtualHost.host;
             
             var file = host.file;
             var type = dom.byId('addLineType').value.trim();
@@ -706,7 +717,7 @@ define([ "dojo/_base/declare",
                     callback();
                 }
 
-                that.reloadTreeHost(tree);
+                that.reloadTreeHost(that.currentVirtualHost);
                 thisdialog.remove();
                 registry.byId('addLineDialog').hide();
                 
@@ -731,11 +742,11 @@ define([ "dojo/_base/declare",
             for (var i = 0; i < hosts.length; i++) {
                 host = hosts[i];
 
-                for (var j = 0; j < this.trees.length; j++) {
+                for (var j = 0; j < this.virtualHosts.length; j++) {
 
-                    treeHost = this.trees[j].get('host');
+                    treeHost = this.virtualHosts[j].host;
                     if (this.areHostsEqual(treeHost, host)) {
-                        this.trees[j].set('host', host);
+                        this.virtualHosts[j].host = host;
                     }
 
                 }
@@ -746,10 +757,10 @@ define([ "dojo/_base/declare",
 
         },
 
-        reloadTreeHost : function(tree) {
+        reloadTreeHost : function(virtualHost) {
             // request all virtual hosts
             var that = this;
-
+            
             var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Tree Host...');
             thisdialog.show();
 
@@ -765,21 +776,20 @@ define([ "dojo/_base/declare",
 
                 var hosts = data.hosts;
 
-                if (!!tree) {
+                if (!!virtualHost) {
                                         
                     var host;
                     for (var i = 0; i < hosts.length; i++) {
                         host = hosts[i];
 
-                        // compare network info and ServerName to matching tree 
-
-                        //if we find a matching host
-                        if (that.areHostsEqual(tree.get('host'), host)) {
-                            tree.model.store = new ItemFileWriteStore({
+                        if (that.areHostsEqual(virtualHost.host, host)) {
+                                                        
+                            virtualHost.tree.model.store = new ItemFileWriteStore({
                                 data : host.tree
                             });
-
-                            tree.reload();
+                            
+                            virtualHost.tree.reload();
+                                                        
                             that.reloadAllTreeHosts(hosts);
 
                             break;
@@ -840,11 +850,7 @@ define([ "dojo/_base/declare",
                     return new HostTreeNode(args);
                 }
             });
-            hostTree.set({
-                host : host,
-                index : this.currentTreeSummaryCount
-            });
-
+            
             var div = document.createElement('div');
             div.id = id;
             div.innerHTML = '<h4 id=heading-' + id + '>' + this.buildTreeHeadingFromHost(host) + '</h4>';
@@ -887,16 +893,25 @@ define([ "dojo/_base/declare",
                 popup : subMenu
             }));
 
+            var virtualHost = (function(num) {
+                return {
+                    number : num,
+                    tree : hostTree,
+                    host : host,
+                    lastModified : {
+                        file : host.file,
+                        lastModifiedTime : 0
+                    }
+                };
+            })(this.currentTreeSummaryCount);
+            
+            this.virtualHosts.push(virtualHost);
+            
             on(menu, "focus", function(e) {
                 var tn = registry.getEnclosingWidget(this.currentTarget);
                 that.currentTreeItem = tn.item;
-                that.currentTree = hostTree;
+                that.currentVirtualHost = virtualHost;
             });
-
-            // when we right-click anywhere on the tree, make sure we open the menu
-            //menu.bindDomNode(hostTree.domNode);
-
-            this.trees.push(hostTree);
 
             this.currentTreeSummaryCount++;
             
@@ -1244,10 +1259,10 @@ define([ "dojo/_base/declare",
 
                 var found = false;
                 var index = 0;
-                for (var i = 0; i < that.trees.length; i++) {
+                for (var i = 0; i < that.virtualHosts.length; i++) {
 
-                    if (!that.areHostsEqual(that.trees[i].get('host'), hosts[i])) {
-                        that.buildTreeHost(hosts[i], dom.byId('tree-' + that.trees[i].get('index')), 'before');
+                    if (!that.areHostsEqual(that.virtualHosts[i].host, hosts[i])) {
+                        that.buildTreeHost(hosts[i], dom.byId('tree-' + that.virtualHosts[i].number), 'before');
                         found = true;
                         index = i;
                         break;
@@ -1258,23 +1273,15 @@ define([ "dojo/_base/declare",
                     //last position in the array
                     index = hosts.length - 1;
                     that.buildTreeHost(hosts[hosts.length - 1], dom.byId('tree_virtual_host_container'), 'last');
-                    that.lastModifiedTimes.push({
-                        file : file,
-                        lastModifiedTime : 0
-                    });
+                    
                 } else {
                     // move the tree in the correct index
-                    var tempTree = that.trees[that.trees.length - 1];
-                    for (var i = that.trees.length - 1; i > index; i--) {
-                        that.trees[i] = that.trees[i - 1];
+                    var tempVirtualHost = that.virtualHosts[that.virtualHosts.length - 1];
+                    for (var i = that.virtualHosts.length - 1; i > index; i--) {
+                        that.virtualHosts[i] = that.virtualHosts[i - 1];
                     }
     
-                    that.trees[index] = tempTree;
-                    
-                    that.lastModifiedTimes.splice(index,0,{
-                        file : file,
-                        lastModifiedTime : 0
-                    });
+                    that.virtualHosts[index] = tempVirtualHost;
                 }
                 
                 that.buildTreeHostSelect();
@@ -1282,7 +1289,7 @@ define([ "dojo/_base/declare",
                 thisdialog.remove();
                 registry.byId('addHostDialog').hide();
                 
-                that.treeHostSelect.set('value', that.trees[index].get('index'));
+                that.treeHostSelect.set('value', that.virtualHosts[index].number);
                 
                 if(newFile != '') {
                     net.apachegui.Menu.getInstance().refresh();

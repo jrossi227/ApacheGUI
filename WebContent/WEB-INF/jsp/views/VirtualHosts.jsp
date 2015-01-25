@@ -227,6 +227,9 @@
                                 <div id="example_container">
                                    <span class="example dijitFolderOpened"></span> = Enclosure <span class="example dijitLeaf"></span> = Directive
                                 </div>
+                                
+                                <!-- TODO Add tooltip to explain right clicking -->
+                                
                                 <div id="select_host_container">
                                    Host: <div id="select_host_box"></div>
                                 </div>
