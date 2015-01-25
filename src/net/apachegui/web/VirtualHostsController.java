@@ -162,7 +162,8 @@ public class VirtualHostsController {
         NetworkInfo networkInfo = new NetworkInfo(portNum, hostAddress);
 
         String virtualHost = "<VirtualHost " + networkInfo.toString() + ">" + Constants.newLine + "" + Constants.newLine
-                + (serverName.equals("") ? "" : ("ServerName " + serverName + Constants.newLine)) + (documentRoot.equals("") ? "" : ("DocumentRoot " + documentRoot + Constants.newLine))
+                + (serverName.equals("") ? "" : ("ServerName " + serverName + Constants.newLine)) 
+                + (documentRoot.equals("") ? "" : ("DocumentRoot " + documentRoot + Constants.newLine))
                 + "</VirtualHost>" + Constants.newLine;
 
         File fileObj = new File(file);

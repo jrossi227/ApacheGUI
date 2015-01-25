@@ -89,7 +89,7 @@ define([ "dojo/_base/declare",
             return files;
         },
         
-        updateLastModifiedTime : function(file, lastModifiedTime) {
+        updateLastModifiedTime : function(file, lastModifiedTime, callback) {
             var that = this;
             
             var updateFileTime = function(lastModifiedTime) {
@@ -100,6 +100,10 @@ define([ "dojo/_base/declare",
                 }
                 
                 that.checkModifiedTimes = true;
+                
+                if(!!callback) {
+                    callback();
+                }
             };
             
             if(!!lastModifiedTime) {
@@ -1280,11 +1284,17 @@ define([ "dojo/_base/declare",
                 
                 that.treeHostSelect.set('value', that.trees[index].get('index'));
                 
-                that.updateLastModifiedTime(file);
-                
                 if(newFile != '') {
                     net.apachegui.Menu.getInstance().refresh();
-                    that.updateLastModifiedTime(net.apachegui.Settings.getInstance().getSetting(net.apachegui.Settings.getInstance().settingsMap.confFile));
+                    
+                    that.updateLastModifiedTime(file, null, function() {
+                        that.checkModifiedTimes = false;
+                        
+                        that.updateLastModifiedTime(net.apachegui.Settings.getInstance().getSetting(net.apachegui.Settings.getInstance().settingsMap.confFile));
+                    });
+                    
+                } else {
+                    that.updateLastModifiedTime(file);
                 }
                 
                 that.reloadTreeHost();
