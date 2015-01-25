@@ -142,11 +142,33 @@
         <tr class="dijitDialogPaneContentArea">
                 <td>
                     <label for='addHostPort'>
-                        <strong>Port:</strong>
+                        <strong>Port (Optional):</strong>
                          </label>
                     </td>
                 <td>
-                    <div data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: true" id="addHostPort" style="width: 4em;">
+                    <div data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: false" id="addHostPort" style="width: 4em;">
+                    </div>
+                </td>
+        </tr>
+        <tr class="dijitDialogPaneContentArea">
+                <td>
+                    <label for='addHostServerName'>
+                        <strong>ServerName (Optional):</strong>
+                         </label>
+                    </td>
+                <td>
+                    <div data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: false" id="addHostServerName">
+                    </div>
+                </td>
+        </tr>
+        <tr class="dijitDialogPaneContentArea">
+                <td>
+                    <label for='addHostDocumentRoot'>
+                        <strong>DocumentRoot (Optional):</strong>
+                         </label>
+                    </td>
+                <td>
+                    <div data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="required: false" id="addHostDocumentRoot">
                     </div>
                 </td>
         </tr>

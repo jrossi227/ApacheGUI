@@ -17,8 +17,9 @@ define([ "dojo/_base/declare",
          "dojox/fx/scroll", 
          "dojo/query",
          "dojo/_base/array",
-         "dojo/_base/lang"
-], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query, array, lang) {
+         "dojo/_base/lang",
+         "dojo/dom-construct"
+], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query, array, lang, domConstruct) {
 
     declare("net.apachegui.VirtualHosts", null, {
 
@@ -134,6 +135,8 @@ define([ "dojo/_base/declare",
                             net.apachegui.Util.alert('Error',JSON.parse(response.response.data).message);
                     });
                 
+            } else {
+                that.launchLastModifedUpdaterInterval();
             }
             
         },
@@ -147,30 +150,40 @@ define([ "dojo/_base/declare",
                 
                     var files = that.getLastModifiedFileList();
                     
-                    net.apachegui.Main.getInstance().getLastModifiedTimes(
-                            files, 
-                            function(response) {
-                                that.isModifiedDialogShown = false;
-                                
-                                for(var i=0; i<that.lastModifiedTimes.length; i++) {
-                                    for(var j=0; j<response.lastModifiedTimes.length; j++) {
-                                        if(that.lastModifiedTimes[i].file == response.lastModifiedTimes[j].file) {
-                                            if(that.lastModifiedTimes[i].lastModifiedTime != response.lastModifiedTimes[j].lastModifiedTime) {
-                                                if(!that.isModifiedDialogShown) {
-                                                    net.apachegui.Util.alert('Error', 'It appears that ' + that.lastModifiedTimes[i].file + ' has been updated outside of the editor.<br/>Please refresh the page to grab the latest Virtual Host Configuration.<br/>You may not edit any virtual hosts until you have refreshed the page.');
-                                                    that.isModifiedDialogShown = true;
-                                                    that.disableTreeEditing();
+                    if(files.length > 0) {
+                        net.apachegui.Main.getInstance().getLastModifiedTimes(
+                                files, 
+                                function(response) {
+                                    that.isModifiedDialogShown = false;
+                                    
+                                    for(var i=0; i<that.lastModifiedTimes.length; i++) {
+                                        for(var j=0; j<response.lastModifiedTimes.length; j++) {
+                                            if(that.lastModifiedTimes[i].file == response.lastModifiedTimes[j].file) {
+                                                if(that.lastModifiedTimes[i].lastModifiedTime != response.lastModifiedTimes[j].lastModifiedTime) {
+                                                    if(!that.isModifiedDialogShown) {
+                                                        that.isModifiedDialogShown = true;
+                                                        that.disableTreeEditing();
+                                                        net.apachegui.Util.confirmDialog("Reload", 'It appears that ' + that.lastModifiedTimes[i].file + ' has been updated outside of the editor.<br/>' +
+                                                                                                   'Please refresh the page to grab the latest Virtual Host Configuration.<br/>' +
+                                                                                                   'You may not edit any virtual hosts until you have refreshed the page.<br/>' +
+                                                                                                   'Would you like to refresh now?', function confirm(conf) {
+                                                            if(conf) {
+                                                                window.location.reload();
+                                                            } 
+                                                        });
+                                                    }
+                                                    
+                                                    that.lastModifiedTimes[i].lastModifiedTime = response.lastModifiedTimes[j].lastModifiedTime;
                                                 }
-                                                
-                                                that.lastModifiedTimes[i].lastModifiedTime = response.lastModifiedTimes[j].lastModifiedTime;
                                             }
                                         }
                                     }
-                                }
-                            }, 
-                            function(response) {
-                                net.apachegui.Util.alert('Error',JSON.parse(response.response.data).message);
-                        });
+                                }, 
+                                function(response) {
+                                    net.apachegui.Util.alert('Error',JSON.parse(response.response.data).message);
+                            });
+                        
+                    }
                 
                 }
                 
@@ -394,12 +407,9 @@ define([ "dojo/_base/declare",
         disableTreeEditing : function () {
             this.disableEditing = true;
             
-            registry.byId('editValue').set('disabled', true);
-            registry.byId('editSubmit').set('disabled', true);
-            
-            registry.byId('addType').set('disabled', true);
-            registry.byId('addValue').set('disabled', true);
-            registry.byId('addSubmit').set('disabled', true);
+            registry.byId('editLineSubmit').set('disabled', true);            
+            registry.byId('addLineSubmit').set('disabled', true);
+            registry.byId('addHostSubmit').set('disabled', true);
         },
         
         deleteLine : function() {
@@ -783,110 +793,114 @@ define([ "dojo/_base/declare",
 
         },
 
+        buildTreeHost : function(host, container, pos) {
+            var that = this;
+            
+            //build the tree
+            var id = "tree-" + this.currentTreeSummaryCount;
+
+            var store = new ItemFileWriteStore({
+                data : host.tree
+            });
+            store = new Observable(store);
+
+            var modelId = 'model-' + id;
+
+            var treeModel = new ForestStoreModel({
+                store : store,
+                query : {
+                    "type" : "VirtualHost"
+                },
+                rootId : 0,
+                childrenAttrs : [ "children" ],
+                id : modelId
+            });
+
+            var HostTreeNode = declare(Tree._TreeNode, {
+                _setLabelAttr : {
+                    node : "labelNode",
+                    type : "innerHTML"
+                }
+            });
+
+            var treeId = 'tree-' + id;
+
+            var hostTree = new RefreshableTree({
+                model : treeModel,
+                showRoot : false,
+                autoExpand : true,
+                openOnClick : true,
+                id : treeId,
+                persist : true,
+                _createTreeNode : function(args) {
+                    return new HostTreeNode(args);
+                }
+            });
+            hostTree.set({
+                host : host,
+                index : this.currentTreeSummaryCount
+            });
+
+            var div = document.createElement('div');
+            div.id = id;
+            div.innerHTML = '<h4 id=heading-' + id + '>' + this.buildTreeHeadingFromHost(host) + '</h4>';
+            div.appendChild(hostTree.domNode);
+            
+            domConstruct.place(div, container, pos);
+
+            hostTree.startup();
+
+            var menu = new Menu({
+                targetNodeIds : [ id ],
+                selector : ".dijitTreeNode"
+            });
+
+            menu.addChild(new MenuItem({
+                label : "Edit",
+                onClick : this.showEditLineDialog.bind(this)
+            }));
+
+            menu.addChild(new MenuItem({
+                label : "Delete",
+                onClick : this.deleteLine.bind(this)
+            }));
+
+            var subMenu = new Menu();
+            subMenu.addChild(new MenuItem({
+                label : "New Enclosure",
+                onClick: function() {
+                    that.showAddLineDialog('enclosure');
+                }
+            }));
+            subMenu.addChild(new MenuItem({
+                label : "New Directive",
+                onClick: function() {
+                    that.showAddLineDialog('directive');
+                }
+            }));
+            menu.addChild(new PopupMenuItem({
+                label : "Add",
+                popup : subMenu
+            }));
+
+            on(menu, "focus", function(e) {
+                var tn = registry.getEnclosingWidget(this.currentTarget);
+                that.currentTreeItem = tn.item;
+                that.currentTree = hostTree;
+            });
+
+            // when we right-click anywhere on the tree, make sure we open the menu
+            //menu.bindDomNode(hostTree.domNode);
+
+            this.trees.push(hostTree);
+
+            this.currentTreeSummaryCount++;
+            
+            return div;
+        },
+        
         populateTreeVirtualHosts : function() {
             var that = this;
-
-            var buildTreeHost = function(host) {
-                //build the tree
-                var id = "tree-" + that.currentTreeSummaryCount;
-
-                var store = new ItemFileWriteStore({
-                    data : host.tree
-                });
-                store = new Observable(store);
-
-                var modelId = 'model-' + id;
-
-                var treeModel = new ForestStoreModel({
-                    store : store,
-                    query : {
-                        "type" : "VirtualHost"
-                    },
-                    rootId : 0,
-                    childrenAttrs : [ "children" ],
-                    id : modelId
-                });
-
-                var HostTreeNode = declare(Tree._TreeNode, {
-                    _setLabelAttr : {
-                        node : "labelNode",
-                        type : "innerHTML"
-                    }
-                });
-
-                var treeId = 'tree-' + id;
-
-                var hostTree = new RefreshableTree({
-                    model : treeModel,
-                    showRoot : false,
-                    autoExpand : true,
-                    openOnClick : true,
-                    id : treeId,
-                    persist : true,
-                    _createTreeNode : function(args) {
-                        return new HostTreeNode(args);
-                    }
-                });
-                hostTree.set({
-                    host : host,
-                    index : that.currentTreeSummaryCount
-                });
-
-                var div = document.createElement('div');
-                div.id = id;
-                div.innerHTML = '<h4 id=heading-' + id + '>' + that.buildTreeHeadingFromHost(host) + '</h4>';
-                div.appendChild(hostTree.domNode);
-
-                dom.byId('tree_virtual_host_container').appendChild(div);
-
-                hostTree.startup();
-
-                var menu = new Menu({
-                    targetNodeIds : [ id ],
-                    selector : ".dijitTreeNode"
-                });
-
-                menu.addChild(new MenuItem({
-                    label : "Edit",
-                    onClick : that.showEditLineDialog.bind(that)
-                }));
-
-                menu.addChild(new MenuItem({
-                    label : "Delete",
-                    onClick : that.deleteLine.bind(that)
-                }));
-
-                var subMenu = new Menu();
-                subMenu.addChild(new MenuItem({
-                    label : "New Enclosure",
-                    onClick: function() {
-                        that.showAddLineDialog('enclosure');
-                    }
-                }));
-                subMenu.addChild(new MenuItem({
-                    label : "New Directive",
-                    onClick: function() {
-                        that.showAddLineDialog('directive');
-                    }
-                }));
-                menu.addChild(new PopupMenuItem({
-                    label : "Add",
-                    popup : subMenu
-                }));
-
-                on(menu, "focus", function(e) {
-                    var tn = registry.getEnclosingWidget(this.currentTarget);
-                    that.currentTreeItem = tn.item;
-                    that.currentTree = hostTree;
-                });
-
-                // when we right-click anywhere on the tree, make sure we open the menu
-                //menu.bindDomNode(hostTree.domNode);
-
-                that.trees.push(hostTree);
-
-                that.currentTreeSummaryCount++;
-            };
 
             var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Tree Hosts...');
             thisdialog.show();
@@ -939,7 +953,7 @@ define([ "dojo/_base/declare",
                     
                     if(!hostsError) {
                         for (var i = 0; i < hosts.length; i++) {
-                            buildTreeHost(hosts[i]);
+                            that.buildTreeHost(hosts[i],dom.byId('tree_virtual_host_container'),'last');
                         }
                     }
                 }
@@ -1164,24 +1178,22 @@ define([ "dojo/_base/declare",
         },
         
         submitAddHost : function() {
+            var that = this;
             
-            var allIp=dom.byId('addHostAllAddress').checked;
-            var ip=registry.byId('addHostAddress').get('value').trim();
+            var allHostAddress=dom.byId('addHostAllAddress').checked;
+            var hostAddress=registry.byId('addHostAddress').get('value').trim();
             var port=registry.byId('addHostPort').get('value').trim();
+            var serverName=registry.byId('addHostServerName').get('value').trim();
+            var documentRoot=registry.byId('addHostDocumentRoot').get('value').trim();
             var file=this.addHostFileSelect.get('value');
             var newFile=registry.byId('addHostNewFile').get('value').trim();
             
-            if(allIp == false &&  ip == "") {
-                net.apachegui.Util.alert('Error','You must specify either All IP Addresses or a specific IP Address.');
+            if(allHostAddress == false &&  hostAddress == "") {
+                net.apachegui.Util.alert('Error',"You must specify either All IP's and hosts or a specific IP or host.");
                 return;
             }
             
-            if(port == "") {
-                net.apachegui.Util.alert('Error','You must specify a Port');
-                return;
-            }
-            
-            if(isNaN(port)) {
+            if(port != "" && isNaN(port)) {
                 net.apachegui.Util.alert('Error','The Port must be numeric');
                 return;
             }
@@ -1190,7 +1202,98 @@ define([ "dojo/_base/declare",
                 net.apachegui.Util.alert('Error','You must specify a file');
                 return;
             }
+             
+            hostAddress = allHostAddress == true ? '*' : hostAddress; 
+            file = file == '' ? newFile :  file;
+            
+            var currHost = this.getHost(serverName, [{
+                "port": port == "" ? -1 : parseInt(port),
+                "address": hostAddress,
+                "value": ''
+            }]);
+            
+            if (!!currHost) {
+                this.showHostExistsError(currHost);
+                return;
+            }
+            
+            var thisdialog = net.apachegui.Util.noCloseDialog('Adding', 'Adding Please Wait...');
+            thisdialog.show();
 
+            this.checkModifiedTimes = false;
+            request.post("../web/VirtualHosts", {
+                data : {
+                    option : 'addHost',
+                    hostAddress : hostAddress,
+                    port : port,
+                    serverName : serverName,
+                    documentRoot : documentRoot,
+                    file : file
+                },
+                handleAs : 'json',
+                sync : false
+            }).response.then(function(response) {
+
+                // Add logic to insert host into page, response should be tree
+                // json
+                var hosts = response.data.hosts;
+
+                var found = false;
+                var index = 0;
+                for (var i = 0; i < that.trees.length; i++) {
+
+                    if (!that.areHostsEqual(that.trees[i].get('host'), hosts[i])) {
+                        that.buildTreeHost(hosts[i], dom.byId('tree-' + that.trees[i].get('index')), 'before');
+                        found = true;
+                        index = i;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    //last position in the array
+                    index = hosts.length - 1;
+                    that.buildTreeHost(hosts[hosts.length - 1], dom.byId('tree_virtual_host_container'), 'last');
+                    that.lastModifiedTimes.push({
+                        file : file,
+                        lastModifiedTime : 0
+                    });
+                } else {
+                    // move the tree in the correct index
+                    var tempTree = that.trees[that.trees.length - 1];
+                    for (var i = that.trees.length - 1; i > index; i--) {
+                        that.trees[i] = that.trees[i - 1];
+                    }
+    
+                    that.trees[index] = tempTree;
+                    
+                    that.lastModifiedTimes.splice(index,0,{
+                        file : file,
+                        lastModifiedTime : 0
+                    });
+                }
+                
+                that.buildTreeHostSelect();
+                
+                thisdialog.remove();
+                registry.byId('addHostDialog').hide();
+                
+                that.treeHostSelect.set('value', that.trees[index].get('index'));
+                
+                that.updateLastModifiedTime(file);
+                
+                if(newFile != '') {
+                    net.apachegui.Menu.getInstance().refresh();
+                    that.updateLastModifiedTime(net.apachegui.Settings.getInstance().getSetting(net.apachegui.Settings.getInstance().settingsMap.confFile));
+                }
+                
+                that.reloadTreeHost();
+            }, function(error) {
+                thisdialog.remove();
+                net.apachegui.Util.alert('Error', error.response.data.message);
+                that.updateLastModifiedTime(file);
+            });
+            
         },
         
         //----------------------------------------------------------------------------//
@@ -1216,6 +1319,11 @@ define([ "dojo/_base/declare",
             
             on(registry.byId('addHostButton'), 'click', function() {
                 
+                if(that.disableEditing) {
+                    that.showDisabledError();
+                    return;
+                }
+                
                 var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Active Files ...');
                 thisdialog.show();
                 net.apachegui.Main.getInstance().getActiveFileList(function(files) {                    
@@ -1225,6 +1333,8 @@ define([ "dojo/_base/declare",
                     registry.byId('addHostAddress').set('disabled',false);
                     
                     registry.byId('addHostPort').set('value','');
+                    registry.byId('addHostServerName').set('value','');
+                    registry.byId('addHostDocumentRoot').set('value','');
                     
                     registry.byId('addHostNewFile').set('value','');
                     registry.byId('addHostNewFile').set('disabled',false);
