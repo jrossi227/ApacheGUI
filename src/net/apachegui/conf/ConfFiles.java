@@ -33,7 +33,7 @@ public class ConfFiles {
      * Writes a newline then message to the end of the root config file.
      * 
      * @param message
-     *            - the meassage to write to the file
+     *            the meassage to write to the file
      * @throws IOException
      *             if root ConfigFile can't be found
      */
@@ -53,7 +53,7 @@ public class ConfFiles {
      * Writes a newline then message to the end of the gui specific config file. An include is written in the main config file if the gui Config file has not yet been included.
      * 
      * @param message
-     *            - the message to write to the file
+     *            the message to write to the file
      * @throws Exception
      */
     public static String appendToGUIConfigFile(String message) throws Exception {
@@ -100,7 +100,7 @@ public class ConfFiles {
      * Searches for lines that match a specific Regex in the gui config file. If the Regex is found then the lines are removed from the gui file.
      * 
      * @param regex
-     *            - lines matching the regex will be removed from the file
+     *            lines matching the regex will be removed from the file
      * @throws Exception
      *             If there is a file error.
      */
@@ -135,7 +135,7 @@ public class ConfFiles {
      * Deletes all lines matching a regex only from active config files. Will not delete commented results.
      * 
      * @param regex
-     *            - lines matching this regex will be removed from active config files
+     *            lines matching this regex will be removed from active config files
      * @throws Exception
      *             if a file error occurs
      */
@@ -291,7 +291,7 @@ public class ConfFiles {
      * Searches active config files for the existence of a regex. This method will not return commented results.
      * 
      * @param regex
-     *            - The regex to search for
+     *            The regex to search for
      * @return a boolean indicating if the regex was found
      * @throws IOException
      *             if a file error occurs
@@ -350,7 +350,7 @@ public class ConfFiles {
      * Used for Menu to get a nodes JSON.
      * 
      * @param path
-     *            - the path of the target config files.
+     *            the path of the target config files.
      * @return the json with the file information of the target path
      */
     public static String getNodeJson(String path) {
@@ -398,7 +398,7 @@ public class ConfFiles {
      * contained in a folder logs modules and run will be removed from confFiles.
      * 
      * @param confFiles
-     *            - the list of confFiles to sanitize
+     *            the list of confFiles to sanitize
      */
     public static String[] sanitizeConfFiles(String[] confFiles) {
         log.trace("ConfFiles.sanitizeConfFiles called");
