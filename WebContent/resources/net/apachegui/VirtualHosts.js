@@ -1297,6 +1297,8 @@ define([ "dojo/_base/declare",
                 
                 that.treeHostSelect.set('value', that.virtualHosts[index].number);
                 
+                file = that.virtualHosts[index].lastModified.file;
+                
                 if(newFile != '') {
                     net.apachegui.Menu.getInstance().refresh();
                     
@@ -1314,7 +1316,6 @@ define([ "dojo/_base/declare",
             }, function(error) {
                 thisdialog.remove();
                 net.apachegui.Util.alert('Error', error.response.data.message);
-                that.updateLastModifiedTime(file);
             });
             
         },
