@@ -108,7 +108,7 @@ public class Constants {
     public final static String idleWorkersRegex = "IdleWorkers";
 
     // Directive Strings To wrote to conf file
-    public final static String apacheGuiComment = Constants.newLine + Constants.newLine + "#This include was written by the apache gui program" + Constants.newLine;
+    public final static String apacheGuiComment = "#This include was written by the apache gui program";
     public final static String extendedStatusEnclosureTwoPointTwo = "<Location /server-status>" + Constants.newLine + "SetHandler server-status" + Constants.newLine + "Order deny,allow"
             + Constants.newLine + "Deny from all" + Constants.newLine + "Allow from 127.0.0.1 " + (Utils.isWindows() ? "" : "::1") + Constants.newLine + "</Location>" + Constants.newLine
             + Constants.newLine;
