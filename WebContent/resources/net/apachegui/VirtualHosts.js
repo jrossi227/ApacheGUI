@@ -563,7 +563,6 @@ define([ "dojo/_base/declare",
         submitEditLine : function() {
             var that = this;
 
-            // cover special case when editing servername
             var host = this.currentVirtualHost.host;
             var file = host.file;
 
@@ -673,7 +672,6 @@ define([ "dojo/_base/declare",
             
             var that = this;
 
-            // cover special case when editing servername
             var host = this.currentVirtualHost.host;
             
             var file = host.file;
@@ -738,10 +736,6 @@ define([ "dojo/_base/declare",
 
         reloadAllTreeHosts : function(hosts) {
 
-            // compare network info and ServerName
-
-            // reload the host property, this has up to date lineOfStart and
-            // lineOfEnd
             var host;
             var treeHost;
             if(hosts.length == 0) {
@@ -768,7 +762,6 @@ define([ "dojo/_base/declare",
         },
 
         reloadTreeHost : function(virtualHost) {
-            // request all virtual hosts
             var that = this;
             
             var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Tree Host...');
@@ -820,7 +813,6 @@ define([ "dojo/_base/declare",
         buildTreeHost : function(host, container, pos) {
             var that = this;
             
-            //build the tree
             var id = "tree-" + this.currentTreeSummaryCount;
 
             var store = new ItemFileWriteStore({
@@ -1095,7 +1087,6 @@ define([ "dojo/_base/declare",
                 var nameVirtualHostContainer = dom.byId('name_virtual_host_container');
                 var otherVirtualHostContainer = dom.byId('other_virtual_host_container');
 
-                //clear the containers
                 array.forEach(registry.findWidgets(nameVirtualHostContainer), function(w) {
                     w.destroyRecursive();
                 });
@@ -1270,8 +1261,6 @@ define([ "dojo/_base/declare",
                 sync : false
             }).response.then(function(response) {
 
-                // Add logic to insert host into page, response should be tree
-                // json
                 var hosts = response.data.hosts;
 
                 if(hosts.length == 1) {
