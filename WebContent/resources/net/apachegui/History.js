@@ -478,6 +478,9 @@ define([ "dojo/_base/declare",
             
             var sendRequest = function() {
             
+                var thisdialog = net.apachegui.Util.noCloseDialog('Updating', 'Updating Please Wait...');
+                thisdialog.show();
+                
                 xhr.post({
                        url : "../web/History/update", 
                        postData : JSON.stringify({'option' : type.toLowerCase(), 'hosts' : hosts}),
@@ -486,9 +489,11 @@ define([ "dojo/_base/declare",
                        },
                        load: function(response,ioargs) {
                            that.refreshHosts();
+                           thisdialog.remove();
                        },
                        error : function(response,ioargs) {
                            net.apachegui.Util.alert('Error',JSON.parse(response.response.data).message);
+                           thisdialog.remove();
                        }
                     });
             };

@@ -2,7 +2,6 @@ package net.apachegui.web;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 
 import net.apachegui.db.LogDataDao;
 import net.apachegui.virtualhosts.VirtualHost;
@@ -15,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import apache.conf.parser.ConfigurationLine;
 
 @RestController
 @RequestMapping("/web/History")
@@ -153,43 +150,33 @@ public class HistoryController {
 
         JSONArray hosts = request.getJSONArray("hosts");
         VirtualHost serverVirtualHosts[];
-        if (option.equals("enable")) {
-            serverVirtualHosts = net.apachegui.history.History.getDisabledHosts();
-        } else {
-            serverVirtualHosts = net.apachegui.history.History.getEnabledHosts();
-        }
-
-        ArrayList<VirtualHost> affectedHosts = new ArrayList<VirtualHost>();
-        for (int i = 0; i < serverVirtualHosts.length; i++) {
-            for (int j = 0; j < hosts.length(); j++) {
-
-                if(serverVirtualHosts[i].equals(hosts.getJSONObject(j))) {
-                    affectedHosts.add(serverVirtualHosts[i]);
-
-                    if (option.equals("enable")) {
-                        net.apachegui.history.History.enable(serverVirtualHosts[i]);
+        boolean foundModification = true;
+        while(foundModification) {
+        
+            foundModification = false;
+            
+            if (option.equals("enable")) {
+                serverVirtualHosts = net.apachegui.history.History.getDisabledHosts();
+            } else {
+                serverVirtualHosts = net.apachegui.history.History.getEnabledHosts();
+            }
+    
+            for (int i = 0; i < serverVirtualHosts.length; i++) {
+                for (int j = 0; j < hosts.length(); j++) {
+    
+                    if(serverVirtualHosts[i].equals(hosts.getJSONObject(j))) {
+                        foundModification = true;
                         
-                        for (int k = 0; k < serverVirtualHosts.length; k++) {
-                            for (ConfigurationLine configurationLine : serverVirtualHosts[k].getEnclosure().getConfigurationLines()) {
-                                configurationLine.setLineOfStart(configurationLine.getLineOfStart() + 3);
-                                configurationLine.setLineOfEnd(configurationLine.getLineOfEnd() + 3);
-                            }
-                        }
-
-                    } else {
-                        net.apachegui.history.History.disable(serverVirtualHosts[i]);
-
-                        for (int k = 0; k < serverVirtualHosts.length; k++) {
-                            for (ConfigurationLine configurationLine : serverVirtualHosts[k].getEnclosure().getConfigurationLines()) {
-                                configurationLine.setLineOfStart(configurationLine.getLineOfStart() - 3);
-                                configurationLine.setLineOfEnd(configurationLine.getLineOfEnd() - 3);
-                            }
+                        if (option.equals("enable")) {
+                            net.apachegui.history.History.enable(serverVirtualHosts[i]);
+                        } else {
+                            net.apachegui.history.History.disable(serverVirtualHosts[i]);
                         }
                     }
                 }
             }
         }
-
+        
         if (net.apachegui.server.Control.isServerRunning()) {
             String error = "";
             try {
@@ -199,18 +186,8 @@ public class HistoryController {
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                if (option.equals("enable")) {
-                    for (int i = 0; i < affectedHosts.size(); i++) {
-                        net.apachegui.history.History.disable(affectedHosts.get(i));
-                    }
-
-                } else {
-                    for (int i = 0; i < affectedHosts.size(); i++) {
-                        net.apachegui.history.History.enable(affectedHosts.get(i));
-                    }
-                }
-
-                throw new Exception("There was an error while trying to restart the server, the changes were reverted: " + error + " " + e.getMessage());
+                
+                throw new Exception("There was an error while trying to restart the server: " + error + " " + e.getMessage());
             }
         }
 
