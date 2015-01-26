@@ -245,6 +245,10 @@ define([ "dojo/_base/declare",
         showDisabledError : function() {
             net.apachegui.Util.alert('Error', 'You may not edit any hosts until you refresh the page.');
         },
+        
+        showNoConfiguredHosts : function() {
+            dom.byId('tree_virtual_host_container').innerHTML = 'There are no configured Virtual Hosts';
+        },
 
         getTreeHostServerName : function(host) {
             var serverName = (host.ServerName == '' ? (this.treeGlobalServerName == '' ? 'unknown' : this.treeGlobalServerName) : host.ServerName);
@@ -740,16 +744,21 @@ define([ "dojo/_base/declare",
             // lineOfEnd
             var host;
             var treeHost;
-            for (var i = 0; i < hosts.length; i++) {
-                host = hosts[i];
-
-                for (var j = 0; j < this.virtualHosts.length; j++) {
-
-                    treeHost = this.virtualHosts[j].host;
-                    if (this.areHostsEqual(treeHost, host)) {
-                        this.virtualHosts[j].host = host;
+            if(hosts.length == 0) {
+                this.showNoConfiguredHosts();
+            } else {
+            
+                for (var i = 0; i < hosts.length; i++) {
+                    host = hosts[i];
+    
+                    for (var j = 0; j < this.virtualHosts.length; j++) {
+    
+                        treeHost = this.virtualHosts[j].host;
+                        if (this.areHostsEqual(treeHost, host)) {
+                            this.virtualHosts[j].host = host;
+                        }
+    
                     }
-
                 }
             }
 
@@ -939,9 +948,7 @@ define([ "dojo/_base/declare",
                 that.treeGlobalServerName = data.ServerName;
 
                 if(hosts.length == 0) {
-     
-                    dom.byId('tree_virtual_host_container').innerHTML = 'There are no configured Virtual Hosts';
-                    
+                    that.showNoConfiguredHosts();
                 } else {
                     
                     var hostsError = false;
@@ -1263,6 +1270,10 @@ define([ "dojo/_base/declare",
                 // json
                 var hosts = response.data.hosts;
 
+                if(hosts.length == 1) {
+                    dom.byId('tree_virtual_host_container').innerHTML = '';
+                }
+                
                 var found = false;
                 var index = 0;
                 for (var i = 0; i < that.virtualHosts.length; i++) {
