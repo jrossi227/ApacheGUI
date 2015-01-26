@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.apachegui.directives.DocumentRoot;
+import net.apachegui.directives.ServerAlias;
 import net.apachegui.directives.ServerName;
 import net.apachegui.global.Utilities;
 
@@ -31,11 +32,13 @@ public class VirtualHost {
     private List<NetworkInfo> networkInfo;
     private DocumentRoot documentRoot;
     private ServerName serverName;
+    private ServerAlias serverAlias;
 
     public VirtualHost() {
         networkInfo = new ArrayList<NetworkInfo>();
         documentRoot = new DocumentRoot();
         serverName = new ServerName();
+        serverAlias = new ServerAlias();
         enclosure = new Enclosure();
     }
 
@@ -71,6 +74,14 @@ public class VirtualHost {
         this.serverName = serverName;
     }
 
+    public ServerAlias getServerAlias() {
+        return serverAlias;
+    }
+
+    public void setServerAlias(ServerAlias serverAlias) {
+        this.serverAlias = serverAlias;
+    }
+
     public String toJSON() throws ParseException {
 
         JSONObject json = new JSONObject();
@@ -88,7 +99,8 @@ public class VirtualHost {
         json.put("NetworkInfo", networkInfoArray);
 
         json.put("DocumentRoot", documentRoot.getValue());
-        json.put("ServerName", serverName.getValue());        
+        json.put("ServerName", serverName.getValue());       
+        json.put("ServerAlias", serverAlias.getValue());        
         json.put("tree",toTreeJSON());
         
         return json.toString();
@@ -203,6 +215,7 @@ public class VirtualHost {
 
         virtualHostBuffer.append("DocumentRoot: " + documentRoot.getValue() + "\n");
         virtualHostBuffer.append("ServerName: " + serverName.getValue() + "\n");
+        virtualHostBuffer.append("ServerAlias: " + serverAlias.getValue() + "\n");
 
         return virtualHostBuffer.toString();
     }

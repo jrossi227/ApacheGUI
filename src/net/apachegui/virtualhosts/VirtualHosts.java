@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import net.apachegui.db.SettingsDao;
 import net.apachegui.directives.DocumentRoot;
+import net.apachegui.directives.ServerAlias;
 import net.apachegui.directives.ServerName;
 import net.apachegui.global.Constants;
 import net.apachegui.modules.SharedModuleHandler;
@@ -31,14 +32,21 @@ public class VirtualHosts {
             virtualHost.setEnclosure(virtualHostEnclosure);
             virtualHost.setNetworkInfo(NetworkInfo.buildNetworkInfo(virtualHostEnclosure.getValue().split(" ")));
 
+            ServerAlias serverAlias = new ServerAlias();
             for (Directive directive : virtualHostEnclosure.getDirectives()) {
                 if (directive.getType().equals(Constants.serverNameDirectiveString)) {
                     virtualHost.setServerName(new ServerName(directive.getValues()[0]));
                 } else if (directive.getType().equals(Constants.documentRootDirectiveString)) {
                     virtualHost.setDocumentRoot(new DocumentRoot(directive.getValues()[0]));
-                }                 
+                } else if (directive.getType().equals(Constants.serverAliasDirectiveString)) {
+                    for(String directiveValue : directive.getValues()) {
+                        serverAlias.addHostname(directiveValue);
+                    }
+                }     
             }
 
+            virtualHost.setServerAlias(serverAlias);
+            
             virtualHosts.add(virtualHost);
         }
 

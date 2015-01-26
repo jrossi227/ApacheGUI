@@ -1036,6 +1036,10 @@ define([ "dojo/_base/declare",
                         id : 'servername',
                         name : 'ServerName',
                         value : serverName
+                    }, {
+                        id : 'serveralias',
+                        name : 'ServerAlias',
+                        value : vhost.ServerAlias
                     } ]
                 };
 
@@ -1127,7 +1131,7 @@ define([ "dojo/_base/declare",
 
                                 new Tooltip({
                                     connectId: ['default_dialog_' + that.currentHierarchicalHostSummaryCount],
-                                    label : "The default Virtual Host is used when a request comes in with a domain that does not match a ServerName for the specified address and port."
+                                    label : "The default Virtual Host is used when a request comes in with a domain that does not match a ServerName or ServerAlias for the specified address and port."
                                 });
                                 
                                 buildHierarchicalHost(host, hostArray[i], "name_virtual_host_container", globalServerName, globalDocumentRoot);

@@ -51,6 +51,7 @@ public class Constants {
     // Constants to search for apache directives
     public final static String documentRootDirectiveString = "DocumentRoot";
     public final static String serverNameDirectiveString = "ServerName";
+    public final static String serverAliasDirectiveString = "ServerAlias";
     public final static String locationDirectiveString = "Location";
     public final static String virtualHostDirectiveString = "VirtualHost";
     public final static String setHandlerDirectiveString = "SetHandler";
