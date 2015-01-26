@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import net.apachegui.conf.ConfFiles;
+import net.apachegui.conf.Configuration;
+import net.apachegui.db.SettingsDao;
 import net.apachegui.directives.CustomLog;
 import net.apachegui.global.Constants;
 import net.apachegui.global.Utilities;
@@ -70,7 +72,11 @@ public class History {
             return;
         }
 
-        ConfFiles.appendToGUIConfigFile(getIncludeString());
+        String originalContents = ConfFiles.appendToGUIConfigFile(getIncludeString());
+        
+        String confDirectory = SettingsDao.getInstance().getSetting(Constants.confDirectory);
+        File guiFile = (new File(confDirectory, Constants.guiConfFile));
+        Configuration.testChanges(guiFile.getAbsolutePath(), originalContents);
     }
 
     /**
@@ -83,16 +89,21 @@ public class History {
             return;
         }
 
-        ConfFiles.removeFromGUIConfigFile(".*" + Constants.historyLogHolder + ".*");
-
+        String originalContents = ConfFiles.removeFromGUIConfigFile(".*" + Constants.historyLogHolder + ".*");
+        
+        String confDirectory = SettingsDao.getInstance().getSetting(Constants.confDirectory);
+        File guiFile = (new File(confDirectory, Constants.guiConfFile));
+        Configuration.testChanges(guiFile.getAbsolutePath(), originalContents);
     }
 
     public static void enable(VirtualHost host) throws Exception {
-        ConfFiles.writeToConfigFile(new File(host.getEnclosure().getFile()), getIncludeStrings(), host.getEnclosure().getLineOfEnd(), true);
+        String originalContents = ConfFiles.writeToConfigFile(new File(host.getEnclosure().getFile()), getIncludeStrings(), host.getEnclosure().getLineOfEnd(), true);
+        Configuration.testChanges(host.getEnclosure().getFile(), originalContents);
     }
 
     public static void disable(VirtualHost host) throws Exception {
-        ConfFiles.deleteFromConfigFile(Pattern.compile(".*" + Constants.historyLogHolder + ".*", Pattern.CASE_INSENSITIVE), new File(host.getEnclosure().getFile()), host.getEnclosure().getLineOfStart(), host.getEnclosure().getLineOfEnd(), true);
+        String originalContents = ConfFiles.deleteFromConfigFile(Pattern.compile(".*" + Constants.historyLogHolder + ".*", Pattern.CASE_INSENSITIVE), new File(host.getEnclosure().getFile()), host.getEnclosure().getLineOfStart(), host.getEnclosure().getLineOfEnd(), true);
+        Configuration.testChanges(host.getEnclosure().getFile(), originalContents);
     }
 
     /**

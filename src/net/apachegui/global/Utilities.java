@@ -277,4 +277,5 @@ public class Utilities {
         
         return str.substring(0, rightTrim.length() - allTrim.length());
     }
+    
 }

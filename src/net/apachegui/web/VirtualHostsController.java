@@ -37,17 +37,6 @@ import apache.conf.parser.Parser;
 @RequestMapping("/web/VirtualHosts")
 public class VirtualHostsController {
     
-    private void testChanges(String file, String originalContents) throws Exception {
-        
-        String status = Configuration.testServerConfiguration();
-
-        if(!Configuration.isServerConfigurationOk(status)) {
-            FileUtils.writeStringToFile(new File(file), originalContents, Charset.forName("UTF-8"));
-            
-            throw new Exception("The changes generated a configuration error and have been reverted: " + status);
-        }
-    }
-    
     private JSONObject populateFileModifiedResponse(String file) {
         
         JSONObject result = new JSONObject();
@@ -90,7 +79,7 @@ public class VirtualHostsController {
 
         String originalContents = ConfFiles.deleteFromConfigFile(Pattern.compile(".*", Pattern.CASE_INSENSITIVE), new File(file), lineOfStart, lineOfEnd, true);
         
-        testChanges(file, originalContents);
+        Configuration.testChanges(file, originalContents);
         
         JSONObject result = populateFileModifiedResponse(file);
       
@@ -114,7 +103,7 @@ public class VirtualHostsController {
                 
         String originalContents = ConfFiles.replaceLinesInConfigFile(new File(file), new String[]{line}, lineOfStart, lineOfEnd);
         
-        testChanges(file, originalContents);
+        Configuration.testChanges(file, originalContents);
         
         JSONObject result = populateFileModifiedResponse(file);
         
@@ -144,7 +133,7 @@ public class VirtualHostsController {
         
         String originalContents = ConfFiles.writeToConfigFile(new File(file), lines, lineOfStart, useWhitespaceBefore);
         
-        testChanges(file, originalContents);
+        Configuration.testChanges(file, originalContents);
         
         JSONObject result = populateFileModifiedResponse(file);
         
@@ -161,9 +150,9 @@ public class VirtualHostsController {
         int portNum = port.equals("") ? -1 : Integer.parseInt(port);
         NetworkInfo networkInfo = new NetworkInfo(portNum, hostAddress);
 
-        String virtualHost = "<VirtualHost " + networkInfo.toString() + ">" + Constants.newLine + "" + Constants.newLine
-                + (serverName.equals("") ? "" : ("ServerName " + serverName + Constants.newLine)) 
-                + (documentRoot.equals("") ? "" : ("DocumentRoot " + documentRoot + Constants.newLine))
+        String virtualHost = "<VirtualHost " + networkInfo.toString() + ">" + Constants.newLine 
+                + (serverName.equals("") ? "" : ("    ServerName " + serverName + Constants.newLine)) 
+                + (documentRoot.equals("") ? "" : ("    DocumentRoot " + documentRoot + Constants.newLine))
                 + "</VirtualHost>" + Constants.newLine;
 
         File fileObj = new File(file);
@@ -202,9 +191,9 @@ public class VirtualHostsController {
                 ConfFiles.appendToRootConfigFile("Include " + path);
             }
 
-            testChanges(rootConfFile, originalContents);
+            Configuration.testChanges(rootConfFile, originalContents);
         } else {
-            testChanges(fileObj.getAbsolutePath(), originalContents);
+            Configuration.testChanges(fileObj.getAbsolutePath(), originalContents);
         }
 
         JSONObject summary = new JSONObject();

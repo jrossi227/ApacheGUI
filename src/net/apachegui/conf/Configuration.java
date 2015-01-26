@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.regex.Pattern;
 
 import net.apachegui.db.SettingsDao;
@@ -13,6 +14,7 @@ import net.apachegui.global.Utilities;
 import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,6 +48,17 @@ public class Configuration {
 
         log.trace("returning " + output);
         return output;
+    }
+    
+    public static void testChanges(String file, String originalContents) throws Exception {
+        
+        String status = Configuration.testServerConfiguration();
+
+        if(!Configuration.isServerConfigurationOk(status)) {
+            FileUtils.writeStringToFile(new File(file), originalContents, Charset.forName("UTF-8"));
+            
+            throw new Exception("The changes generated a configuration error in " + file + " and have been reverted: " + status);
+        }
     }
     
     public static boolean isServerConfigurationOk(String status) throws IOException, InterruptedException {

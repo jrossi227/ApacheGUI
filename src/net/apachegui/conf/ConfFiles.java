@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -38,16 +37,16 @@ public class ConfFiles {
      * @throws IOException
      *             if root ConfigFile can't be found
      */
-    public static void appendToRootConfigFile(String message) throws IOException {
-        log.trace("ConfFiles.appendToRootConfigFile called");
-
+    public static String appendToRootConfigFile(String message) throws IOException {
         String confFile = SettingsDao.getInstance().getSetting(Constants.confFile);
-        log.trace("Writing " + message + " To the configuration File " + confFile);
 
+        String originalContents = FileUtils.readFileToString(new File(confFile), Charset.forName("UTF-8"));
+        
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(confFile, true), "UTF-8"));
         out.write(Constants.newLine + message);
-        // Close the output stream
         out.close();
+        
+        return originalContents;
     }
 
     /**
@@ -57,36 +56,44 @@ public class ConfFiles {
      *            - the message to write to the file
      * @throws Exception
      */
-    public static void appendToGUIConfigFile(String message) throws Exception {
-        log.trace("ConfFiles.appendToGUIConfigFile called");
+    public static String appendToGUIConfigFile(String message) throws Exception {
 
         String confDirectory = SettingsDao.getInstance().getSetting(Constants.confDirectory);
-        log.trace("Writing " + message + " To the configuration File " + (new File(confDirectory, Constants.guiConfFile)).getAbsolutePath());
+        File guiFile = (new File(confDirectory, Constants.guiConfFile));
 
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream((new File(confDirectory, Constants.guiConfFile)).getAbsolutePath(), true)));
+        if(!guiFile.exists()) {
+            guiFile.createNewFile();
+            Utils.setPermissions(guiFile);
+        }
+        String originalContents = FileUtils.readFileToString(guiFile, Charset.forName("UTF-8"));
+        
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(guiFile, true)));
         out.write(Constants.newLine + message);
         out.close();
 
-        // check if gui file is included, if its not then include it
         String includedFiles[] = new Parser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getActiveConfFileList();
 
         boolean included = false;
         for (int i = 0; i < includedFiles.length && !included; i++) {
-            if (includedFiles[i].equals((new File(confDirectory, Constants.guiConfFile)).getAbsolutePath())) {
+            if (includedFiles[i].equals(guiFile.getAbsolutePath())) {
                 included = true;
             }
         }
 
         if (!included) {
-            appendToRootConfigFile(Constants.apacheGuiComment);
+            String originalConfContents = appendToRootConfigFile(Constants.apacheGuiComment);
             if (Utils.isWindows()) {
                 appendToRootConfigFile("Include \"" + (new File(confDirectory, Constants.guiConfFile)).getAbsolutePath() + "\"");
 
             } else {
                 appendToRootConfigFile("Include " + (new File(confDirectory, Constants.guiConfFile)).getAbsolutePath());
             }
+            
+            Configuration.testChanges(SettingsDao.getInstance().getSetting(Constants.confFile), originalConfContents);
         }
+        
+        return originalContents;
     }
 
     /**
@@ -97,38 +104,31 @@ public class ConfFiles {
      * @throws Exception
      *             If there is a file error.
      */
-    public static void removeFromGUIConfigFile(String regex) throws Exception {
-        log.trace("ConfFiles.removeFromGUIConfigFile called");
+    public static String removeFromGUIConfigFile(String regex) throws Exception {
 
         File guiFile = new File(SettingsDao.getInstance().getSetting(Constants.confDirectory), Constants.guiConfFile);
-        log.trace("Parsing " + guiFile.getAbsolutePath() + " for regex " + regex);
-
+        
+        String originalContents = FileUtils.readFileToString(guiFile, Charset.forName("UTF-8"));
+        
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(guiFile), "UTF-8"));
 
-        File FileHandle = new File(guiFile.getAbsolutePath() + ".tmp");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(FileHandle));
-
+        StringBuffer fileBuffer = new StringBuffer();
+        
         String strLine;
         while ((strLine = br.readLine()) != null) {
             if (strLine.matches(regex)) {
                 log.trace("Found patten " + regex + " in " + guiFile.getAbsolutePath() + " Skipping current line");
             } else {
-                writer.write(strLine);
-                writer.newLine();
+                fileBuffer.append(strLine);
+                fileBuffer.append(Constants.newLine);
             }
 
         }
         br.close();
-        writer.flush();
-        writer.close();
 
-        File fileNew = new File(guiFile.getAbsolutePath() + ".tmp");
-
-        File fileOld = new File(guiFile.getAbsolutePath());
-
-        log.trace("moving " + fileNew.getAbsolutePath() + " to " + fileOld.getAbsolutePath());
-        Utils.moveFile(fileNew, fileOld);
-
+        Utils.writeStringBufferToFile(new File(guiFile), fileBuffer, Charset.forName("UTF-8"));
+        
+        return originalContents;
     }
 
     /**
