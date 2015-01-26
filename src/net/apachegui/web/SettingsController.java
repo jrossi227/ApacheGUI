@@ -63,7 +63,7 @@ public class SettingsController {
     @RequestMapping(method = RequestMethod.POST, params = "option=setSetting", produces = "application/json;charset=UTF-8")
     public String setSetting(@RequestParam(value = "name") String name, @RequestParam(value = "value") String value) throws Exception {
 
-        value = value.trim().replaceAll("\\\\", "/");
+        value = value.trim();
 
         if (name.equals(Constants.serverRoot)) {
             if (value.endsWith("/")) {
@@ -78,6 +78,8 @@ public class SettingsController {
             if (!(new File(value).isDirectory())) {
                 throw new Exception("The input directory is not a directory");
             }
+            
+            value = (new File(value).getAbsolutePath());
         }
         if (name.equals(Constants.confDirectory)) {
             if (value.endsWith("/")) {
@@ -92,6 +94,8 @@ public class SettingsController {
             if (!(new File(value).isDirectory())) {
                 throw new Exception("The input directory is not a directory");
             }
+            
+            value = (new File(value).getAbsolutePath());
         }
         if (name.equals(Constants.confFile)) {
             log.trace("Setting confFile " + value);
@@ -103,6 +107,8 @@ public class SettingsController {
             if ((new File(value).isDirectory())) {
                 throw new Exception("The input file is a directory");
             }
+            
+            value = (new File(value).getAbsolutePath());
         }
         if (name.equals(Constants.logDirectory)) {
             if (value.endsWith("/")) {
@@ -117,6 +123,8 @@ public class SettingsController {
             if (!(new File(value).isDirectory())) {
                 throw new Exception("The input directory is not a directory");
             }
+            
+            value = (new File(value).getAbsolutePath());
         }
         if (name.equals(Constants.modulesDirectory)) {
             if (value.endsWith("/")) {
@@ -131,6 +139,8 @@ public class SettingsController {
             if (!(new File(value).isDirectory())) {
                 throw new Exception("The input directory is not a directory");
             }
+            
+            value = (new File(value).getAbsolutePath());
         }
         if (name.equals(Constants.binFile)) {
             log.trace("Setting binFile " + value);
@@ -142,6 +152,8 @@ public class SettingsController {
             if ((new File(value).isDirectory())) {
                 throw new Exception("The input file is a directory");
             }
+            
+            value = (new File(value).getAbsolutePath());
         }
         if (name.equals(Constants.historyRetention) || name.equals(Constants.historyBuffer)) {
             log.trace("Setting historyRetention/historyBuffer " + value);
