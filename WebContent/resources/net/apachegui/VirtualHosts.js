@@ -18,8 +18,9 @@ define([ "dojo/_base/declare",
          "dojo/query",
          "dojo/_base/array",
          "dojo/_base/lang",
-         "dojo/dom-construct"
-], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query, array, lang, domConstruct) {
+         "dojo/dom-construct",
+         "dijit/Tooltip"
+], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query, array, lang, domConstruct, Tooltip) {
 
     declare("net.apachegui.VirtualHosts", null, {
 
@@ -1114,9 +1115,14 @@ define([ "dojo/_base/declare",
                                 nameVirtualHostContainer.appendChild(div);
 
                                 div = document.createElement('div');
-                                div.innerHTML = '<h5>Default</h5>';
+                                div.innerHTML = '<h5>Default <span id="default_dialog_' + that.currentHierarchicalHostSummaryCount + '"  class="warningTooltip"></span></h5>';
                                 nameVirtualHostContainer.appendChild(div);
 
+                                new Tooltip({
+                                    connectId: ['default_dialog_' + that.currentHierarchicalHostSummaryCount],
+                                    label : "The default Virtual Host is used when a request comes in with a domain that does not match a ServerName for the specified address and port."
+                                });
+                                
                                 buildHierarchicalHost(host, hostArray[i], "name_virtual_host_container", globalServerName, globalDocumentRoot);
 
                                 div = document.createElement('div');

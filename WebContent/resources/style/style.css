@@ -334,7 +334,8 @@ body.editor #filename_container em {
 }
 
 #virtualHostsBody #example_container,
-#virtualHostsBody #select_host_container {
+#virtualHostsBody #select_host_container,
+#virtualHostsBody #right_click_container {
 	display: inline-block;
 	vertical-align: middle;
 	margin-right: 10px;
