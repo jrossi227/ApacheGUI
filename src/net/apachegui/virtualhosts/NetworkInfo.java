@@ -123,14 +123,20 @@ public class NetworkInfo {
 
         NetworkInfo info = (NetworkInfo) o;
 
-        return (info.getPort() == port && info.getAddress().equals(address));
+        String infoAddress = info.getAddress().equals("_default_") ? "*" : info.getAddress();
+        String thisAddress = address.equals("_default_") ? "*" : address;
+        
+        return (info.getPort() == port && infoAddress.equals(thisAddress));
     }
 
     @Override
     public int hashCode() {
         int hash = 1;
         hash = hash * 17 + port;
-        hash = hash * 31 + address.hashCode();
+        
+        String thisAddress = address.equals("_default_") ? "*" : address;
+        
+        hash = hash * 31 + thisAddress.hashCode();
         return hash;
     }
 

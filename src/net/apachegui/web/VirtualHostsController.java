@@ -225,20 +225,19 @@ public class VirtualHostsController {
         VirtualHost hosts[] = VirtualHosts.getAllVirtualHosts();
 
         // NetworkInfo, VirtualHost JSON String[], items first in the JSON String[] are the default
-        HashMap<NetworkInfo, ArrayList<String>> hostBuckets = new HashMap<NetworkInfo, ArrayList<String>>();
+        HashMap<NetworkInfo, ArrayList<VirtualHost>> hostBuckets = new HashMap<NetworkInfo, ArrayList<VirtualHost>>();
 
         for (VirtualHost host : hosts) {
             
             for (NetworkInfo info : host.getNetworkInfo()) {
 
-                ArrayList<String> json = hostBuckets.get(info);
-                if (json == null) {
-                    json = new ArrayList<String>();
+                ArrayList<VirtualHost> bucketHosts = hostBuckets.get(info);
+                if (bucketHosts == null) {
+                	bucketHosts = new ArrayList<VirtualHost>();
                 }
 
-                json.add(host.toJSON());
-
-                hostBuckets.put(info, json);
+                bucketHosts.add(host);
+                hostBuckets.put(info, bucketHosts);
 
             }
 
@@ -247,17 +246,22 @@ public class VirtualHostsController {
         JSONObject hostJSON = new JSONObject();
 
         NetworkInfo currInfo;
-        ArrayList<String> currHosts;
+        ArrayList<VirtualHost> currHosts;
         JSONArray hostArray;
-        for (Entry<NetworkInfo, ArrayList<String>> entry : hostBuckets.entrySet()) {
+        for (Entry<NetworkInfo, ArrayList<VirtualHost>> entry : hostBuckets.entrySet()) {
             currInfo = entry.getKey();
             currHosts = entry.getValue();
+            if(currHosts.size() > 1) {
+            	if(currInfo.getAddress().equals("_default_")) {
+            		currInfo.setAddress("*");
+            	}
+            }
 
             hostArray = new JSONArray();
             JSONObject currHostJSON;
-            for (String currHost : currHosts) {
+            for (VirtualHost currHost : currHosts) {
 
-                currHostJSON = new JSONObject(currHost);
+                currHostJSON = new JSONObject(currHost.toJSON());
                 currHostJSON.remove("NetworkInfo");
                 currHostJSON.put("NetworkInfo", new JSONObject(currInfo.toJSON()));
 
