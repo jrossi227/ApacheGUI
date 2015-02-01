@@ -151,7 +151,7 @@ public class HistoryController {
         JSONArray hosts = request.getJSONArray("hosts");
         VirtualHost serverVirtualHosts[];
         boolean foundModification = true;
-        while(foundModification) {
+        OUTER: while(foundModification) {
         
             foundModification = false;
             
@@ -169,8 +169,10 @@ public class HistoryController {
                         
                         if (option.equals("enable")) {
                             net.apachegui.history.History.enable(serverVirtualHosts[i]);
+                            continue OUTER;
                         } else {
                             net.apachegui.history.History.disable(serverVirtualHosts[i]);
+                            continue OUTER;
                         }
                     }
                 }
