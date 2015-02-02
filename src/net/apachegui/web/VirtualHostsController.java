@@ -150,7 +150,7 @@ public class VirtualHostsController {
         int portNum = port.equals("") ? -1 : Integer.parseInt(port);
         NetworkInfo networkInfo = new NetworkInfo(portNum, hostAddress);
 
-        if(Utils.isWindows()) {
+        if(!documentRoot.equals("") && Utils.isWindows()) {
         	if(!documentRoot.startsWith("\"")) {
         		documentRoot = "\"" + documentRoot;
         	}
