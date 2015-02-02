@@ -150,6 +150,14 @@ public class VirtualHostsController {
         int portNum = port.equals("") ? -1 : Integer.parseInt(port);
         NetworkInfo networkInfo = new NetworkInfo(portNum, hostAddress);
 
+        if(Utils.isWindows()) {
+        	if(!documentRoot.startsWith("\"")) {
+        		documentRoot = "\"" + documentRoot;
+        	}
+        	if(!documentRoot.endsWith("\"")) {
+        		documentRoot = documentRoot + "\""; 
+        	}
+        }
         String virtualHost = "<VirtualHost " + networkInfo.toString() + ">" + Constants.newLine 
                 + (serverName.equals("") ? "" : ("    ServerName " + serverName + Constants.newLine)) 
                 + (documentRoot.equals("") ? "" : ("    DocumentRoot " + documentRoot + Constants.newLine))
