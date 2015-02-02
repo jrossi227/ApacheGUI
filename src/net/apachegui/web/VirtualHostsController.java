@@ -151,12 +151,12 @@ public class VirtualHostsController {
         NetworkInfo networkInfo = new NetworkInfo(portNum, hostAddress);
 
         if(!documentRoot.equals("") && Utils.isWindows()) {
-        	if(!documentRoot.startsWith("\"")) {
-        		documentRoot = "\"" + documentRoot;
-        	}
-        	if(!documentRoot.endsWith("\"")) {
-        		documentRoot = documentRoot + "\""; 
-        	}
+            if(!documentRoot.startsWith("\"")) {
+                documentRoot = "\"" + documentRoot;
+            }
+            if(!documentRoot.endsWith("\"")) {
+                documentRoot = documentRoot + "\""; 
+            }
         }
         String virtualHost = "<VirtualHost " + networkInfo.toString() + ">" + Constants.newLine 
                 + (serverName.equals("") ? "" : ("    ServerName " + serverName + Constants.newLine)) 
@@ -241,7 +241,7 @@ public class VirtualHostsController {
 
                 ArrayList<VirtualHost> bucketHosts = hostBuckets.get(info);
                 if (bucketHosts == null) {
-                	bucketHosts = new ArrayList<VirtualHost>();
+                    bucketHosts = new ArrayList<VirtualHost>();
                 }
 
                 bucketHosts.add(host);
@@ -260,9 +260,9 @@ public class VirtualHostsController {
             currInfo = entry.getKey();
             currHosts = entry.getValue();
             if(currHosts.size() > 1) {
-            	if(currInfo.getAddress().equals("_default_")) {
-            		currInfo.setAddress("*");
-            	}
+                if(currInfo.getAddress().equals("_default_")) {
+                    currInfo.setAddress("*");
+                }
             }
 
             hostArray = new JSONArray();
