@@ -363,6 +363,10 @@ public class ConfFiles {
                 + "', type:'Configuration', children:[");
 
         java.io.File[] children = targetDirectory.listFiles();
+        
+        if(targetDirectory.getAbsolutePath().equals(confDirectory.getAbsolutePath())) {
+            children = sanitizeConfFiles(children);
+        }
         Arrays.sort(children);
 
         File child;
@@ -393,6 +397,31 @@ public class ConfFiles {
         return result.toString();
     }
 
+    /**
+     * Some apache configurations use the server root as the root configuration directory. As a result the root configuration directory can include the folder for modules logs and run. Any files
+     * contained in a folder logs modules and run will be removed from confFiles.
+     * 
+     * @param confFiles
+     *            the list of confFiles to sanitize
+     */
+    public static java.io.File[] sanitizeConfFiles(java.io.File[] confFiles) {
+    
+        log.trace("ConfFiles.sanitizeConfFiles called");
+        String confDirectory = SettingsDao.getInstance().getSetting(Constants.confDirectory);
+
+        log.trace("Sanitize String: " + Constants.sanitizedConfigFiles);
+        ArrayList<java.io.File> filteredFiles = new ArrayList<java.io.File>();
+        for (java.io.File confFile : confFiles) {
+            log.trace("Sanitizing " + confFile);
+            if (!(new File(confFile).getAbsolutePath()).matches((new File(confDirectory)).getAbsolutePath() + Constants.sanitizedConfigFiles)) {
+                log.trace("Adding to filter: " + confFile);
+                filteredFiles.add(confFile);
+            }
+        }
+
+        return filteredFiles.toArray(new java.io.File[filteredFiles.size()]);
+    }    
+        
     /**
      * Some apache configurations use the server root as the root configuration directory. As a result the root configuration directory can include the folder for modules logs and run. Any files
      * contained in a folder logs modules and run will be removed from confFiles.
