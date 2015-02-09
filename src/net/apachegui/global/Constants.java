@@ -170,7 +170,7 @@ public class Constants {
     public final static String versionSupportedString = "Apache 2.2, Apache 2.3, Apache 2.4";
 
     // Constants used for gui info
-    public final static String version = "1.9.6";
+    public final static String version = "1.9.7";
     public final static String supportAddress = "apachegui.net@gmail.com";
     public final static String supportWebsite = "http://forum.apachegui.net";
     public final static String website = "http://apachegui.net";
