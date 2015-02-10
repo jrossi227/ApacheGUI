@@ -1,5 +1,6 @@
 package net.apachegui.directives;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.apachegui.conf.ConfFiles;
@@ -60,11 +61,13 @@ public abstract class GlobalFactoryDirective extends BaseDirective {
         String directive[] = parser.getDirectiveValue(directiveName, false);
 
         boolean found = false;
+        Matcher matcher;
         for (int i = 0; i < directive.length; i++) {
-            if (directive[i].contains(getGlobalReplaceValue())) {
-                String file = parser.getDirectiveFile(directiveName, Pattern.compile(getGlobalReplaceValue()), false);
+            matcher = getGlobalReplacePattern().matcher(directive[i]);
+            if (matcher.find()) {
+                String file = parser.getDirectiveFile(directiveName, getGlobalReplacePattern(), false);
 
-                parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), Pattern.compile(getGlobalReplaceValue()), add, false);
+                parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), getGlobalReplacePattern(), add, false);
                 found = true;
             }
         }
@@ -84,18 +87,27 @@ public abstract class GlobalFactoryDirective extends BaseDirective {
         DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 
-        String file = parser.getDirectiveFile(directiveName, Pattern.compile(getGlobalReplaceValue()), false);
+        String file = parser.getDirectiveFile(directiveName, getGlobalReplacePattern(), false);
 
-        parser.removeDirectiveFromFile(directiveName, file, Pattern.compile(getGlobalReplaceValue()), false, false);
+        parser.removeDirectiveFromFile(directiveName, file, getGlobalReplacePattern(), false, false);
     }
 
     /**
-     * This function should return the replacement value for comparisons when adding directives to the configuration. It should be overriden if a custom replacement value is needed.
+     * This function should return the replacement value for comparisons when adding directives to the configuration. It should be overridden if a custom replacement value is needed.
      * 
-     * @return - the replacement value.
+     * @return the replacement value.
      */
     public String getGlobalReplaceValue() {
-        return Pattern.quote(getDirectiveValue());
+        return getDirectiveValue();
+    }
+    
+    /**
+     * This function should return the replacement pattern for comparisons when adding directives to the configuration. It should be overridden if a custom replacement pattern is needed.
+     * 
+     * @return the replacement pattern.
+     */
+    public Pattern getGlobalReplacePattern() {
+        return Pattern.compile(Pattern.quote(getGlobalReplaceValue()));
     }
 
     public String getDirectiveValue() {

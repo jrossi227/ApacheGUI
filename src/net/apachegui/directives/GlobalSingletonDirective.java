@@ -30,16 +30,30 @@ public abstract class GlobalSingletonDirective extends BaseDirective {
         String keepAliveDirective[] = parser.getDirectiveValue(directiveName, false);
 
         if (keepAliveDirective.length > 0) {
-            String file = parser.getDirectiveFile(directiveName, Pattern.compile(getGlobalReplaceValue()), false);
+            String file = parser.getDirectiveFile(directiveName, getGlobalReplacePattern(), false);
 
-            parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), Pattern.compile(getGlobalReplaceValue()), true, false);
+            parser.setDirectiveInFile(directiveName, file, getDirectiveValue(), getGlobalReplacePattern(), true, false);
         } else {
             ConfFiles.appendToGUIConfigFile(toString());
         }
     }
 
+    /**
+     * This function should return the replacement value for comparisons when updating a directive in the configuration. It should be overridden if a custom replacement value is needed.
+     * 
+     * @return the replacement value.
+     */
     public String getGlobalReplaceValue() {
         return "";
+    }
+    
+    /**
+     * This function should return the replacement pattern for comparisons when adding directives to the configuration. It should be overridden if a custom replacement pattern is needed.
+     * 
+     * @return the replacement pattern.
+     */
+    public Pattern getGlobalReplacePattern() {
+        return Pattern.compile(Pattern.quote(getGlobalReplaceValue()));
     }
 
     public String getDirectiveValue() {
