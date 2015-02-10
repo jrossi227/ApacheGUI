@@ -1,7 +1,5 @@
 package net.apachegui.global;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.CharacterIterator;
@@ -30,50 +28,47 @@ public class Utilities {
      * Goes through Apache Listen directives to search for a port/url that is available on the input ip.
      * 
      * @param host
-     *            - the host to connect to.
+     *            the host to connect to.
      * @return a url that is successfully connected to.
      * @throws Exception
      */
     public static String findRootURL(String host) throws Exception {
-        // We try in best effort to get a http port, but we might be confined to https depending on the server
-        log.trace("Utilities.findRootURL called");
-        log.trace("Searching configuration for " + Constants.listenDirective);
         Listen listeners[] = Listen.getAllListening();
         int port = 0;
+        String ip, protocol;
         URL url = null;
         for (int i = 0; i < listeners.length; i++) {
             port = listeners[i].getPort();
-
-            log.trace("Trying port " + port + " for http");
-
-            // we dont want https
-            if (port == 443) {
-                log.trace("we dont want https on port 443");
-                continue;
+            ip = listeners[i].getIp();
+            protocol = listeners[i].getProtocol();
+            
+            String address = ip.equals("") ? host : (ip.contains(":") ? "[" + ip + "]" : ip);
+            if(protocol.equals("")) {
+                protocol = "http";
             }
-
+            if (port == 443) {
+                protocol = "https";
+            }
+            
+            String urlString = protocol +  "://" + address + ":" + port;
             try {
-                url = new URL("http://" + host + ":" + port);
-                log.trace("Trying URL " + "http://" + host + ":" + port);
+                url = new URL(urlString);
+                log.trace("Trying URL " + urlString);
 
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.connect();
-                // BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                // while ((in.readLine()) != null){}
-                // in.close();
+                
                 conn.disconnect();
-                log.trace("Successfully connected to " + "http://" + host + ":" + port);
-                break;
+                log.trace("Successfully connected to " + urlString);
+                
+                return urlString;
             } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                log.info(sw.toString());
-                log.info("Unable to connect to " + "http://" + host + ":" + port + " setting url to https");
+                log.info("Unable to connect to " + urlString);
+                log.info(e.getMessage(), e);
             }
         }
-        log.trace("returning " + url.toString());
-        return url.toString();
+        return null;
     }
 
     /**

@@ -95,7 +95,7 @@ public abstract class GlobalFactoryDirective extends BaseDirective {
      * @return - the replacement value.
      */
     public String getGlobalReplaceValue() {
-        return getDirectiveValue();
+        return Pattern.quote(getDirectiveValue());
     }
 
     public String getDirectiveValue() {
