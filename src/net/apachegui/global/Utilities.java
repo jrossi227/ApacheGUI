@@ -171,6 +171,10 @@ public class Utilities {
         String number = padding + aIdx.toString();
         aBuilder.append("&#" + number + ";");
     }
+    
+    public static String processSearchResultContent(String line, String replacement) {
+        return Utilities.forHTML(line.replaceAll(replacement, "searchstartborder" + replacement + "searchendborder"));
+    }
 
     /**
      * 

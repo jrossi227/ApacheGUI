@@ -72,6 +72,10 @@ h1 {
 	width: auto !important;
 }
 
+.search_result {
+	background-color: yellow;
+}
+
 /* Main Heading */
 #titlePane {
 	position: relative;

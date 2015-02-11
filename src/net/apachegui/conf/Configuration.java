@@ -126,7 +126,7 @@ public class Configuration {
                             object = new JSONObject();
                             object.put("path", confFile);
                             object.put("line", line);
-                            object.put("content", Utilities.forHTML(strLine));
+                            object.put("content", Utilities.processSearchResultContent(strLine, patternMatcher.group()));
 
                             if (results.length() < Constants.maximumConfigurationSearchResults) {
                                 results.put(object);

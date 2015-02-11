@@ -385,6 +385,10 @@ define([ "dojo/_base/declare",
             }
         },
         
+        processSearchResultContent : function(content) {
+            return content.replace(/searchstartborder/g, '<span class="search_result">').replace(/searchendborder/g, '</span>');
+        },
+        
         submitSearch: function() {
             var that = this;
             
@@ -487,7 +491,7 @@ define([ "dojo/_base/declare",
                                 
                                 list += '<strong>' + iter + '</strong>: <a href="' + displayPage + '?file=' + results[i].path + '" target="_blank">' + results[i].path + ' Line ' + results[i].line + '</a>';
                                 list += '<br/>';
-                                list += '<p>' + results[i].content + '</p>';
+                                list += '<p>' + that.processSearchResultContent(results[i].content) + '</p>';
                                 
                                 iter ++;
                             }
@@ -541,6 +545,8 @@ define([ "dojo/_base/declare",
         },
         
         submitConfigurationSearch: function() {
+            var that = this;
+            
             var filter=dom.byId('searchConfigurationFilter').value.trim();
             if(filter == '') {
                 net.apachegui.Util.alert('Info','Filter is required.');
@@ -580,7 +586,7 @@ define([ "dojo/_base/declare",
                         for(var i in results) {
                             list += '<strong>' + iter + '</strong>: <a href="Configuration.jsp?file=' + results[i].path + '" target="_blank">' + results[i].path + ' Line ' + results[i].line + '</a>';
                             list += '<br/>';
-                            list += '<p>' + results[i].content + '</p>';
+                            list += '<p>' + that.processSearchResultContent(results[i].content) + '</p>';
                             
                             iter ++;
                         }

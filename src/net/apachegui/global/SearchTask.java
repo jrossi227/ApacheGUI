@@ -153,7 +153,7 @@ public class SearchTask implements Runnable {
                         object = new JSONObject();
                         object.put("path", file);
                         object.put("line", line);
-                        object.put("content", Utilities.forHTML(strLine));
+                        object.put("content", Utilities.processSearchResultContent(strLine, patternMatcher.group()));
 
                         if (results.length() < Constants.maximumFileSearchResults) {
                             results.put(object);
