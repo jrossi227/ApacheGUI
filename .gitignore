@@ -3,3 +3,7 @@
 /build/release
 /WebContent/resources/release
 /target/
+/.project
+/.classpath
+/.settings/
+/bin/
