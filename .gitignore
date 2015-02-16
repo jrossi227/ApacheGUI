@@ -2,3 +2,4 @@
 /build/dist/ApacheGUI.war
 /build/release
 /WebContent/resources/release
+/target/
