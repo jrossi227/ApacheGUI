@@ -46,6 +46,7 @@
   </repositories>
   
   <build>
+    <finalName>ApacheGUI</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
