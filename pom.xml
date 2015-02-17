@@ -37,6 +37,7 @@
         <version>2.4</version>
         <configuration>
           <failOnMissingWebXml>true</failOnMissingWebXml>
+          <warSourceExcludes>resources/dojo/**</warSourceExcludes>
         </configuration>
       </plugin>
       
