@@ -4,8 +4,31 @@
   <artifactId>ApacheGUI</artifactId>
   <version>1.9.7-SNAPSHOT</version>
   <packaging>war</packaging>
+  
   <name>ApacheGUI</name>
   <description>Java based Apache server management GUI</description>
+  <url>http://apachegui.net</url>
+  
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+  <developers>
+    <developer>
+      <id>jrossi227</id>
+      <name>Jonathan Rossi</name>
+      <email>jonathan.m.rossi@gmail.com</email>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>America/Toronto</timezone>
+    </developer>
+  </developers>
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
