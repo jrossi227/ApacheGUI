@@ -57,14 +57,52 @@
         </configuration>
       </plugin> 
       <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>ant-packagejs</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <property name="webapp.dir" value="${project.build.directory}/packagejs"/>
+                <property name="resources.dir" value="${basedir}/src/main/webapp/resources"/>
+                <ant antfile="build.xml" target="package.js" />
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <version>2.4</version>
         <configuration>
           <failOnMissingWebXml>true</failOnMissingWebXml>
-          <warSourceExcludes>resources/dojo/**</warSourceExcludes>
+          <warSourceExcludes>resources/**</warSourceExcludes>
+          <webResources>
+              <resource>
+                <directory>${project.build.directory}/packagejs</directory>
+                <includes>
+                  <include>**/*</include>
+                </includes>
+              </resource>
+              <resource>
+                <directory>${basedir}/src/main/webapp/resources</directory>
+                <targetPath>resources</targetPath>
+                <includes>
+                  <include>codemirror/**</include>
+                  <include>flot/**</include>
+                  <include>images/**</include>
+                  <include>jquery/**</include>
+                  <include>json/**</include>
+                  <include>style/**</include>
+                </includes>
+              </resource>
+          </webResources>
         </configuration>
       </plugin>
-      
     </plugins>
   </build>
   
