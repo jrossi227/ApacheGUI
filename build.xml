@@ -16,7 +16,7 @@
     <target name="build.js" if="isUnix">
     
         <exec dir="${resources.dir}" executable="util/buildscripts/build.sh">
-               <arg line="bin=java"/>
+               <arg line="bin=node"/>
                <arg line="profile=apachegui.profile.js"/>
                <arg line="action=release"/>
         </exec>
