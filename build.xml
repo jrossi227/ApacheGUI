@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <project name="ApacheGUI" default="package.js" basedir=".">
 
-    <property name="ant.build.javac.source" value="1.6"/>
-    <property name="ant.build.javac.target" value="1.6"/>
-	
     <!-- build js -->
     <condition property="isWindows">
         <os family="windows" />
