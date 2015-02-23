@@ -71,11 +71,11 @@
                       <goal>run</goal>
                     </goals>
                     <configuration>
-                      <target>
+                      <tasks>
                         <property name="webapp.dir" value="${project.build.directory}/packagejs"/>
                         <property name="resources.dir" value="${basedir}/src/main/webapp/resources"/>
                         <ant antfile="build.xml" target="package.js" />
-                      </target>
+                      </tasks>
                     </configuration>
                   </execution>
                   <execution>
@@ -85,11 +85,11 @@
                       <goal>run</goal>
                     </goals>
                     <configuration>
-                      <target>
+                      <tasks>
                         <property name="apachegui.home" value="${apachegui.home}"/>
                         <property name="project.build.directory" value="${project.build.directory}"/>
                         <ant antfile="build.xml" target="install" />
-                      </target>
+                      </tasks>
                     </configuration>
                   </execution>
                 </executions>
@@ -155,11 +155,11 @@
                       <goal>run</goal>
                     </goals>
                     <configuration>
-                      <target>
+                      <tasks>
                         <property name="apachegui.home" value="${apachegui.home}"/>
                         <property name="project.build.directory" value="${project.build.directory}"/>
                         <ant antfile="build.xml" target="install" />
-                      </target>
+                      </tasks>
                     </configuration>
                   </execution>
                 </executions>
@@ -177,13 +177,13 @@
                         <execution>
                             <id>default-cli</id>
                             <configuration>
-                              <target>
+                              <tasks>
                                 <property name="apachegui.home" value="${apachegui.home}"/>
                                 <property name="package.dir" value="${package.dir}"/>
                                 <property name="version" value="${project.version}" />
                                 <property name="dbdir" value="${basedir}/build/db/apacheGUI" />
                                 <ant antfile="build.xml" target="buildpackage" />
-                              </target>
+                              </tasks>
                             </configuration>
                         </execution>
                     </executions>
