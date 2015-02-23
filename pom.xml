@@ -48,26 +48,6 @@
   </repositories>
   
   <profiles>
-     <profile>
-        <id>common</id>
-        <activation>
-            <activeByDefault>true</activeByDefault>
-        </activation>
-        <build>
-            <finalName>ApacheGUI</finalName>
-            <plugins>
-              <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                  <source>1.6</source>
-                  <target>1.6</target>
-                </configuration>
-              </plugin>
-            </plugins>
-         </build>     
-      </profile>    
-  
       <profile>
           <id>prod</id>
           <build>
