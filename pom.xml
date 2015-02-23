@@ -9,6 +9,12 @@
   <description>Java based Apache server management GUI</description>
   <url>http://apachegui.net</url>
   
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <apachegui.home>/opt/ApacheGUI</apachegui.home>
+    <package.dir>/opt/release</package.dir>
+  </properties>
+  
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
@@ -29,10 +35,6 @@
       <timezone>America/Toronto</timezone>
     </developer>
   </developers>
-  
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
   
   <repositories>
     <repository>
@@ -61,7 +63,7 @@
                   <source>1.6</source>
                   <target>1.6</target>
                 </configuration>
-              </plugin> 
+              </plugin>
             </plugins>
          </build>     
       </profile>    
@@ -72,6 +74,14 @@
             <finalName>ApacheGUI</finalName>
             <plugins>
               <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                  <source>1.6</source>
+                  <target>1.6</target>
+                </configuration>
+              </plugin>
+              <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                   <execution>
@@ -81,11 +91,25 @@
                       <goal>run</goal>
                     </goals>
                     <configuration>
-                      <tasks>
+                      <target>
                         <property name="webapp.dir" value="${project.build.directory}/packagejs"/>
                         <property name="resources.dir" value="${basedir}/src/main/webapp/resources"/>
                         <ant antfile="build.xml" target="package.js" />
-                      </tasks>
+                      </target>
+                    </configuration>
+                  </execution>
+                  <execution>
+                    <id>ant-installwebapp</id>
+                    <phase>install</phase>
+                    <goals>
+                      <goal>run</goal>
+                    </goals>
+                    <configuration>
+                      <target>
+                        <property name="apachegui.home" value="${apachegui.home}"/>
+                        <property name="project.build.directory" value="${project.build.directory}"/>
+                        <ant antfile="build.xml" target="install" />
+                      </target>
                     </configuration>
                   </execution>
                 </executions>
@@ -127,15 +151,66 @@
             <finalName>ApacheGUI</finalName>
             <plugins>
               <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                  <source>1.6</source>
+                  <target>1.6</target>
+                </configuration>
+              </plugin>
+              <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
                   <failOnMissingWebXml>true</failOnMissingWebXml>
                 </configuration>
               </plugin>
+              <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                  <execution>
+                    <id>ant-installwebapp</id>
+                    <phase>install</phase>
+                    <goals>
+                      <goal>run</goal>
+                    </goals>
+                    <configuration>
+                      <target>
+                        <property name="apachegui.home" value="${apachegui.home}"/>
+                        <property name="project.build.directory" value="${project.build.directory}"/>
+                        <ant antfile="build.xml" target="install" />
+                      </target>
+                    </configuration>
+                  </execution>
+                </executions>
+              </plugin>
             </plugins>
           </build>
       </profile>   
+      <profile>
+        <id>package</id>
+        <build>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>default-cli</id>
+                            <configuration>
+                              <target>
+                                <property name="apachegui.home" value="${apachegui.home}"/>
+                                <property name="package.dir" value="${package.dir}"/>
+                                <property name="version" value="${project.version}" />
+                                <property name="dbdir" value="${basedir}/build/db/apacheGUI" />
+                                <ant antfile="build.xml" target="buildpackage" />
+                              </target>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+      </profile>
   </profiles>  
   
   <dependencies>
@@ -221,13 +296,6 @@
           <artifactId>spring-expression</artifactId>
           <version>4.0.6.RELEASE</version>
       </dependency>
-      <!--  
-      <dependency>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-framework-bom</artifactId>
-          <version>4.0.6.RELEASE</version>
-      </dependency>
-      -->
       <dependency>
           <groupId>org.springframework</groupId>
           <artifactId>spring-instrument</artifactId>

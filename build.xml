@@ -54,11 +54,11 @@
     </target>   
     
     <!-- move war to webapps -->
-    <target name="unix.deploy" if="isUnix">
-        <move file="${dist.dir}/ApacheGUI.war" todir="${apachegui.home}/tomcat/webapps"/>
+    <target name="unix.install" if="isUnix">
+        <move file="${project.build.directory}/ApacheGUI.war" todir="${apachegui.home}/tomcat/webapps"/>
     </target>
     
-    <target name="windows.deploy" if="isWindows">
+    <target name="windows.install" if="isWindows">
         <exec dir="${apachegui.home}/bin" executable="cmd">
                 <arg value="/c"/>
                 <arg value="stop.bat"/>
@@ -72,7 +72,7 @@
             <fileset dir="${apachegui.home}/tomcat/webapps/ApacheGUI"/>
          </delete>
         
-        <move file="${dist.dir}/ApacheGUI.war" todir="${apachegui.home}/tomcat/webapps"/>
+        <move file="${project.build.directory}/ApacheGUI.war" todir="${apachegui.home}/tomcat/webapps"/>
         
         <exec dir="${apachegui.home}/bin" executable="cmd">
                 <arg value="/c"/>
@@ -81,10 +81,10 @@
 
     </target>
     
-    <target name="deploy" depends="unix.deploy,windows.deploy"></target>
+    <target name="install" depends="unix.install,windows.install"></target>
     
     <!-- package ready for release -->
-    <target name="package" description="Build the ApacheGUI tar package. This is Unix specific">
+    <target name="buildpackage" description="Build the ApacheGUI tar package. This is Unix specific" if="isUnix">
     
         <exec dir="${apachegui.home}/bin" executable="sudo">
             <arg line="./stop.sh"/>
@@ -109,7 +109,7 @@
         
         <echo message="Copying database"/>
         <exec executable="cp">
-            <arg line="-R db/apacheGUI ${package.dir}/ApacheGUI/bin"/>
+            <arg line="-R ${dbdir} ${package.dir}/ApacheGUI/bin"/>
         </exec>
         
         <echo message="Creating archive"/>
