@@ -40,7 +40,7 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 4. Navigate to the root directory in the source project (Where pom.xml is located).
 5. Run the Maven builds below.
 
-######Ant options
+######Maven options
 - ```mvn clean deploy -P prod``` minifies required javascript and builds a new war under the *target* directory. 
 - ```mvn clean deploy -P dev``` copies required javascript without minification and builds a new war under the *target* directory. This task is meant to speed up war builds for development. 
 - ```mvn clean install -P prod``` minifies required javascript and builds a new war under the *target* directory. The war is then moved from the *target* directory to *[apachegui.home]/tomcat/webapps*. This will re-deploy the application.
@@ -55,7 +55,7 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 4. Navigate to the root directory in the source project (Where pom.xml is located).
 5. Run the Maven builds below.
 
-######Ant options
+######Maven options
 - ```mvn clean deploy -P prod``` minifies required javascript and builds a new war under the *target* directory. 
 - ```mvn clean deploy -P dev``` copies required javascript without minification and builds a new war under the *target* directory. This task is meant to speed up war builds for development. 
 - ```mvn clean install -P prod``` minifies required javascript and builds a new war under the *target* directory. The task then stops ApacheGUI, moves the war from the *target* directory to *[apachegui.home]/tomcat/webapps* and starts ApacheGUI. This will re-deploy the application.
