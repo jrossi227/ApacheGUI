@@ -113,6 +113,10 @@ h1 {
 	height: 100%;	
 }
 
+.center-me {
+	background-color: yellow !important;
+}
+
 #fileform {
 	height: 100%;
 }

@@ -23,6 +23,7 @@ define([ "dojo/_base/declare",
         openTime: -1,
         refreshUpdateTimerHandler: null,
         reloadDialogOpen: false,
+        scrolledLine: -1,
         
         modes : {
             'plain'         :    'text/plain',
@@ -94,6 +95,12 @@ define([ "dojo/_base/declare",
                 onChange : function() {
                     that.updateEditor();
                 },
+                onFocus : function() {
+                    if(that.scrolledLine > -1) {
+                        that.editor.setLineClass(that.scrolledLine, null, null);
+                        that.scrolledLine = -1;
+                    }
+                },
                 onCursorActivity: function() {
                     that.editor.matchHighlight("CodeMirror-matchhighlight");
                 }
@@ -102,8 +109,8 @@ define([ "dojo/_base/declare",
             return options;
         },
         
-        setEditor: function(textArea, mode) {
-            this.editor=CodeMirror.fromTextArea(document.getElementById(textArea), this.getInitEditorOptions());    
+        setEditor: function(textAreaId, mode) {
+            this.editor=CodeMirror.fromTextArea(document.getElementById(textAreaId), this.getInitEditorOptions());    
             
             if(!!mode) {
                 this.setMode(mode);
@@ -112,6 +119,25 @@ define([ "dojo/_base/declare",
             }
             
             this.clearSaveState();
+        },
+        
+        scrollToLine : function(lineNum) {
+            lineNum -= 1;
+            
+            var that = this;
+
+            this.editor.setCursor(lineNum);
+            window.setTimeout(function() {
+                that.editor.setLineClass(lineNum, null, "center-me");
+                var $line = $('.CodeMirror-lines').find('.center-me');
+                var h = $line.parent();
+
+                var $scroll = $('.CodeMirror-scroll');
+                $scroll.scrollTop(0).scrollTop($line.offset().top - $scroll.offset().top - Math.round($scroll.height() / 2));
+                
+                that.scrolledLine = lineNum;
+            }, 200);
+            
         },
         
         initToolbar: function() {

@@ -313,6 +313,14 @@ define([ "dojo/_base/declare",
                     net.apachegui.Logs.getInstance().init();
                 }
                 
+                var scrollToLine = function(editor) {
+                    var lineNum = net.apachegui.Util.getQueryParam('lineNum'); 
+                    if(lineNum != "") {
+                        lineNum = parseInt(lineNum);
+                        editor.scrollToLine(lineNum);
+                    }
+                };
+                
                 var subOption;
                 if(menuInstance.isDocuments(option)) {
                     var documents = net.apachegui.Documents.getInstance();
@@ -322,7 +330,9 @@ define([ "dojo/_base/declare",
                     {        
                         if(documents.getIsText()) {
                             documents.init();
-                            documents.setEditorFromFile('../web/Documents',subOption);
+                            documents.setEditorFromFile('../web/Documents',subOption, function() {
+                                scrollToLine(documents);
+                            });
                         }
                     }
                     else
@@ -346,7 +356,9 @@ define([ "dojo/_base/declare",
                     subOption=option.substring(14);
                     if(this.validateFileExists(subOption))
                     {    
-                        configuration.setEditorFromFile('../web/Configuration', subOption);
+                        configuration.setEditorFromFile('../web/Configuration', subOption, function() {
+                            scrollToLine(configuration);
+                        });
                     }
                     else
                     {    
