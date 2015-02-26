@@ -53,7 +53,7 @@ define([ "dojo/_base/declare",
             net.apachegui.Main.getInstance().getActiveFileList(function(files) {
                 var list='';
                 for(var i in files) {
-                    list=list + files[i] + "<br/>";
+                    list=list + '<a target="_blank" href="Configuration.jsp?file=' + files[i] + '">' + files[i] + '</a>' + "<br/>";
                 }
                 
                 net.apachegui.Util.alert('Active File List',list);
