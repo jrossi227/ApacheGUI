@@ -130,9 +130,8 @@ define([ "dojo/_base/declare",
             window.setTimeout(function() {
                 that.editor.setLineClass(lineNum, null, "center-me");
                 var $line = $('.CodeMirror-lines').find('.center-me');
-                var h = $line.parent();
-
                 var $scroll = $('.CodeMirror-scroll');
+                
                 $scroll.scrollTop(0).scrollTop($line.offset().top - $scroll.offset().top - Math.round($scroll.height() / 2));
                 
                 that.scrolledLine = lineNum;

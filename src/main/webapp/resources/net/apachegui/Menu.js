@@ -489,7 +489,7 @@ define([ "dojo/_base/declare",
                                     displayPage = "Logs.jsp";
                                 }
                                 
-                                list += '<strong>' + iter + '</strong>: <a href="' + displayPage + '?file=' + results[i].path + '" target="_blank">' + results[i].path + ' Line ' + results[i].line + '</a>';
+                                list += '<strong>' + iter + '</strong>: <a href="' + displayPage + '?file=' + results[i].path + '&lineNum=' + results[i].line + '" target="_blank">' + results[i].path + '</a> Line: ' + results[i].line;
                                 list += '<br/>';
                                 list += '<p>' + that.processSearchResultContent(results[i].content) + '</p>';
                                 
@@ -584,7 +584,7 @@ define([ "dojo/_base/declare",
                         list += 'Returning a maximum of ' + data.maxResults + ' results<br/>';
                         var iter =1;
                         for(var i in results) {
-                            list += '<strong>' + iter + '</strong>: <a href="Configuration.jsp?file=' + results[i].path + '" target="_blank">' + results[i].path + ' Line ' + results[i].line + '</a>';
+                            list += '<strong>' + iter + '</strong>: <a href="Configuration.jsp?file=' + results[i].path + '&lineNum=' + results[i].line + '" target="_blank">' + results[i].path + '</a> Line: ' + results[i].line;
                             list += '<br/>';
                             list += '<p>' + that.processSearchResultContent(results[i].content) + '</p>';
                             

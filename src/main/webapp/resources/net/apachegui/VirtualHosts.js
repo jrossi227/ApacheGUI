@@ -314,7 +314,7 @@ define([ "dojo/_base/declare",
             var serverName = this.getTreeHostServerName(host);
             var networkInfoValue = this.buildNetworkInfoString(host);
           
-            return '<span class="network">' + serverName + ' ' + networkInfoValue + '</span>&nbsp;&nbsp;&nbsp;<span class="file">File: ' + host.file + ' Line: ' + host.lineOfStart + '</span>';
+            return '<span class="network">' + serverName + ' ' + networkInfoValue + '</span>&nbsp;&nbsp;&nbsp;<span class="file"><a target="_blank" href="Configuration.jsp?file=' + host.file + '&lineNum=' + host.lineOfStart + '">' + host.file + '</a> Line: ' + host.lineOfStart + '</span>';
         },
 
         getTreeItem : function(id, items) {
@@ -1019,7 +1019,7 @@ define([ "dojo/_base/declare",
                     }, {
                         id : 'file',
                         name : 'File',
-                        value : '<a target="_blank" href="Configuration.jsp?file=' + vhost.file + '">' + vhost.file + '</a> Line: ' + vhost.lineOfStart
+                        value : '<a target="_blank" href="Configuration.jsp?file=' + vhost.file + '&lineNum=' + vhost.lineOfStart + '">' + vhost.file + '</a> Line: ' + vhost.lineOfStart
                     }, {
                         id : 'documentroot',
                         name : 'DocumentRoot',
