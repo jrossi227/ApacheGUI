@@ -1,6 +1,6 @@
 (function() {
-    // requires jsdom 3.1.2 if running on node js
-    // npm install 'jsdom@3.1.2' -g
+    
+    // npm install 'jsdom@3.1.2'
     var jsdom = require('jsdom');
 
     var fileBase = process.argv[1];
@@ -14,10 +14,10 @@
     var directiveList = [];
     jsdom.env({
         file : fileBase + version + '/mod/directives.html',
-        scripts : [ 'http://code.jquery.com/jquery-1.11.2.min.js' ],
         done : function(err, window) {
             
-            var $ = window.jQuery;
+            // npm install 'jquery@1.11.2'
+            var $ = require('jquery')(window);
 
             $('#directive-list').find('a').each(function() {
                 console.log($(this).attr('href'));
