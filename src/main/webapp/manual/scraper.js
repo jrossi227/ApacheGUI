@@ -25,7 +25,7 @@ net.apachegui = (function() {
     }
 
     /**
-     * Example object for directives:
+     * Example object for directives or enclosures:
      * {
      *    'listen' : {
      *        name : 'Listen',
@@ -55,6 +55,7 @@ net.apachegui = (function() {
      * }
      **/
     var directives = {};
+    var enclosures = {};
     
     /**
      * Tree like structure to enable efficient auto-completion
@@ -89,6 +90,7 @@ net.apachegui = (function() {
      * 
      **/
     var directiveTree = {};
+    var enclosureTree = {};
     
     var addToDirectiveTree = function(obj, directive, index) {
         
@@ -115,14 +117,16 @@ net.apachegui = (function() {
             addToDirectiveTree(directiveTree, directive, 0);
         }
                 
-        var file = "directives_" + version.replace('.','')+ ".js";
+        var file = "auto_suggest_" + version.replace('.','')+ ".js";
         
         console.log('Writing json to file: ' + file);
 
         var out = 'var net = (net || {});\n' + 
                   'net.apachegui = (net.apachegui || {});\n' + 
                   'net.apachegui.DIRECTIVES = ' + JSON.stringify(directives, null, 4) + ';\n\n' +
-                  'net.apachegui.DIRECTIVETREE = ' + JSON.stringify(directiveTree, null, 4) + ';';
+                  'net.apachegui.DIRECTIVETREE = ' + JSON.stringify(directiveTree, null, 4) + ';\n\n' +
+                  'net.apachegui.ENCLOSURES = ' + JSON.stringify(enclosures, null, 4) + ';\n\n' +
+                  'net.apachegui.ENCOLSURETREE = ' + JSON.stringify(enclosureTree, null, 4) + ';';
         
         var fs = require('fs');
         fs.writeFile(file, out, function(err) {

@@ -115,13 +115,16 @@ define([ "dojo/_base/declare",
         },
         
         loadAutoSuggest: function() {
+            /**
             net.apachegui.Main.getInstance().getApacheVersion(function(version) {
                 var url = '/ApacheGUI/manual/directives_' + version.replace('.','') + '.min.js';
                 script.get(url); 
             });
+            **/
         },
         
         autoSuggest: function() {
+            /**
             var currentLineContent = this.editor.getRange({
                 line: this.editor.getCursor().line,
                 ch: 0
@@ -149,6 +152,7 @@ define([ "dojo/_base/declare",
                     console.log('no directives');
                 }
             }
+            **/
         },
         
         addListeners : function() {
