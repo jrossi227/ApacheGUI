@@ -121,6 +121,7 @@ var profile = (function(){
                            "net/apachegui/NoCloseDialog",
                            "net/apachegui/Menu",
                            "net/apachegui/Settings",
+                           "net/apachegui/AutoSuggest",
                            "net/apachegui/RefreshableTree"
                 ],
                 customBase: true,

@@ -102,22 +102,23 @@ net.apachegui = (function() {
         var char = item[index];
         if(!obj[char]) {
             obj[char] = {};
-            obj[char].directives = [];
+            obj[char].items = [];
         }
         
-        if(obj[char].directives.length < 10) {
-            obj[char].directives.push(item);
+        if(obj[char].items.length < 10) {
+            obj[char].items.push(item);
         }
         addToAutoSuggestTree(obj[char], item, index + 1);
     }; 
     
     var generateAutoSuggestTree = function() {
-        console.log("Generating directive tree");
         
+        console.log("Generating directive tree");
         for(var directive in directives) {
             addToAutoSuggestTree(directiveTree, directive, 0);
         }
         
+        console.log("Generating enclosure tree");
         for(var enclosure in enclosures) {
             addToAutoSuggestTree(enclosureTree, enclosure, 0);
         }
@@ -128,10 +129,11 @@ net.apachegui = (function() {
 
         var out = 'var net = (net || {});\n' + 
                   'net.apachegui = (net.apachegui || {});\n' + 
-                  'net.apachegui.DIRECTIVES = ' + JSON.stringify(directives, null, 4) + ';\n\n' +
-                  'net.apachegui.DIRECTIVETREE = ' + JSON.stringify(directiveTree, null, 4) + ';\n\n' +
-                  'net.apachegui.ENCLOSURES = ' + JSON.stringify(enclosures, null, 4) + ';\n\n' +
-                  'net.apachegui.ENCOLSURETREE = ' + JSON.stringify(enclosureTree, null, 4) + ';';
+                  'net.apachegui.AutoSuggest = (net.apachegui.AutoSuggest || {});\n' + 
+                  'net.apachegui.AutoSuggest.DIRECTIVES = ' + JSON.stringify(directives, null, 4) + ';\n\n' +
+                  'net.apachegui.AutoSuggest.DIRECTIVETREE = ' + JSON.stringify(directiveTree, null, 4) + ';\n\n' +
+                  'net.apachegui.AutoSuggest.ENCLOSURES = ' + JSON.stringify(enclosures, null, 4) + ';\n\n' +
+                  'net.apachegui.AutoSuggest.ENCLOSURETREE = ' + JSON.stringify(enclosureTree, null, 4) + ';';
         
         var fs = require('fs');
         fs.writeFile(file, out, function(err) {
@@ -202,7 +204,6 @@ net.apachegui = (function() {
                         obj[key].items = items;
                     };
                     
-                    console.log(name);
                     if(name.indexOf('<') == 0) {
                         addJson(enclosures);
                     } else {

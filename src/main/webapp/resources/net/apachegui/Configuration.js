@@ -5,12 +5,13 @@ define([ "dojo/_base/declare",
          "dojo/request",
          "net/apachegui/Editor",
          "dojo/_base/json",
-         "dojo/request/script"
-], function(declare, dom, registry, on, request, Editor, json, script){    
+         "net/apachegui/AutoSuggest"
+], function(declare, dom, registry, on, request, Editor, json, AutoSuggest){    
     
     declare("net.apachegui.Configuration", [net.apachegui.Editor], {        
         
         initialized: false,
+        autoSuggest: null,
         
         init: function() {
             
@@ -115,16 +116,16 @@ define([ "dojo/_base/declare",
         },
         
         loadAutoSuggest: function() {
-            /**
+            that = this;
+            
             net.apachegui.Main.getInstance().getApacheVersion(function(version) {
-                var url = '/ApacheGUI/manual/directives_' + version.replace('.','') + '.min.js';
-                script.get(url); 
+                that.autoSuggest = new AutoSuggest(version);
             });
-            **/
+            
         },
         
-        autoSuggest: function() {
-            /**
+        updateAutoSuggest: function() {
+            
             var currentLineContent = this.editor.getRange({
                 line: this.editor.getCursor().line,
                 ch: 0
@@ -133,26 +134,7 @@ define([ "dojo/_base/declare",
                 ch: this.editor.getCursor().ch
             });
             
-            var patt = /^(\s*\w+)$/m;
-            if(patt.test(currentLineContent)) {
-                var obj = net.apachegui.DIRECTIVETREE;
-                var line = currentLineContent.trim().toLowerCase();
-                for(var i=0; i<line.length; i++) {
-                    if(!!obj[line[i]]) {
-                        obj = obj[line[i]];
-                    } else {
-                        obj = {};
-                        break;
-                    }
-                }
-                
-                if(!!obj.directives) {
-                    console.log(obj.directives);
-                } else {
-                    console.log('no directives');
-                }
-            }
-            **/
+            this.autoSuggest.updateSuggestions(currentLineContent, 0, 0);
         },
         
         addListeners : function() {

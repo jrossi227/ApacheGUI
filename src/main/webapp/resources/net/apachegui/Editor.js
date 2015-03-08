@@ -87,7 +87,7 @@ define([ "dojo/_base/declare",
         },
         
         //Override for auto-suggest
-        autoSuggest: function() {
+        updateAutoSuggest: function() {
             
         },
         
@@ -108,7 +108,7 @@ define([ "dojo/_base/declare",
                 },
                 onCursorActivity : function() {
                     that.editor.matchHighlight("CodeMirror-matchhighlight");
-                    that.autoSuggest();
+                    that.updateAutoSuggest();
                 }
             };
         
