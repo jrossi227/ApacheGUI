@@ -3,6 +3,7 @@
  * npm install 'jsdom@3.1.2'
  * npm install 'jquery@1.11.2'
  * npm install node-minify
+ * npm install html-entities
  * 
  */
 
@@ -92,29 +93,33 @@ net.apachegui = (function() {
     var directiveTree = {};
     var enclosureTree = {};
     
-    var addToDirectiveTree = function(obj, directive, index) {
+    var addToAutoSuggestTree = function(obj, item, index) {
         
-        if(index == directive.length) {
+        if(index == item.length) {
             return;
         }
         
-        var char = directive[index];
+        var char = item[index];
         if(!obj[char]) {
             obj[char] = {};
             obj[char].directives = [];
         }
         
         if(obj[char].directives.length < 10) {
-            obj[char].directives.push(directive);
+            obj[char].directives.push(item);
         }
-        addToDirectiveTree(obj[char], directive, index + 1);
+        addToAutoSuggestTree(obj[char], item, index + 1);
     }; 
     
-    var generateDirectiveTree = function() {
+    var generateAutoSuggestTree = function() {
         console.log("Generating directive tree");
         
         for(var directive in directives) {
-            addToDirectiveTree(directiveTree, directive, 0);
+            addToAutoSuggestTree(directiveTree, directive, 0);
+        }
+        
+        for(var enclosure in enclosures) {
+            addToAutoSuggestTree(enclosureTree, enclosure, 0);
         }
                 
         var file = "auto_suggest_" + version.replace('.','')+ ".js";
@@ -155,9 +160,12 @@ net.apachegui = (function() {
     }
     
     var index = 0;
-    var buildDirectives = function(parseList) {
+    var buildAutoSuggest = function(parseList) {
 
-        var buildDirective = function(parseObj) {
+        var Entities = require('html-entities').AllHtmlEntities;
+        entities = new Entities();
+        
+        var buildAutoSuggestItem = function(parseObj) {
 
             console.log('Processing ' + (index + 1) + ' of ' + parseList.length);
             console.log('key: ' + parseObj.key);
@@ -170,43 +178,55 @@ net.apachegui = (function() {
                     var $ = require('jquery')(window);
 
                     var key = parseObj.key;
-                    directives[key] = {};
-
+                    
                     var $section = $('#' + key).closest('.directive-section');
-                    directives[key].name = $section.find('h2').find('a').eq(0).attr('name');
-                    directives[key].href = '/ApacheGUI/manual/' + version + '/mod/' + parseObj.link + '#' + key;
+                    var name = entities.decode($section.find('h2').find('a').eq(0).html());
+                    
+                    var addJson = function(obj) {
+                        
+                        obj[key] = {};
+                        obj[key].name = name;
+                        obj[key].href = '/ApacheGUI/manual/' + version + '/mod/' + parseObj.link + '#' + key;
 
-                    var items = [];
-                    $section.find('.directive').find('tr').each(function() {
-                        var $this = $(this);
+                        var items = [];
+                        $section.find('.directive').find('tr').each(function() {
+                            var $this = $(this);
 
-                        var obj = {}
-                        obj.name = $this.find('th').find('a').html();
-                        obj.value = $this.find('td').html();
+                            var obj = {}
+                            obj.name = $this.find('th').find('a').html();
+                            obj.value = $this.find('td').html();
 
-                        items.push(obj);
-                    });
+                            items.push(obj);
+                        });
 
-                    directives[key].items = items;
+                        obj[key].items = items;
+                    };
+                    
+                    console.log(name);
+                    if(name.indexOf('<') == 0) {
+                        addJson(enclosures);
+                    } else {
+                        addJson(directives);
+                    }
 
                     window.close();
 
                     index++;
 
                     if (index < parseList.length) {
-                        buildDirective(parseList[index]);
+                        buildAutoSuggestItem(parseList[index]);
                     } else {
-                        generateDirectiveTree();
+                        generateAutoSuggestTree();
                     }
                 }
             });
         };
 
-        buildDirective(parseList[index]);
+        buildAutoSuggestItem(parseList[index]);
     };
 
     return {
-        generateDirectives : function() {
+        generateAutoSuggest : function() {
             var parseList = [];
             jsdom.env({
                 file : fileBase + version + '/mod/directives.html',
@@ -236,7 +256,7 @@ net.apachegui = (function() {
 
                     window.close();
 
-                    buildDirectives(parseList);
+                    buildAutoSuggest(parseList);
                 }
             });
         }
@@ -244,4 +264,4 @@ net.apachegui = (function() {
     
 })();
 
-net.apachegui.generateDirectives();
+net.apachegui.generateAutoSuggest();

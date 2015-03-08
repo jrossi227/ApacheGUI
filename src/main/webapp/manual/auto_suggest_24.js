@@ -2993,32 +2993,6 @@ net.apachegui.DIRECTIVES = {
             }
         ]
     },
-    "authnprovideralias": {
-        "name": "AuthnProviderAlias",
-        "href": "/ApacheGUI/manual/2.4/mod/mod_authn_core.html#authnprovideralias",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Enclose a group of directives that represent an\nextension of a base authentication provider and referenced by\nthe specified alias"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;AuthnProviderAlias <var>baseProvider Alias</var>&gt;\n... &lt;/AuthnProviderAlias&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config"
-            },
-            {
-                "name": "Status:",
-                "value": "Base"
-            },
-            {
-                "name": "Module:",
-                "value": "mod_authn_core"
-            }
-        ]
-    },
     "authnzfcgicheckauthnprovider": {
         "name": "AuthnzFcgiCheckAuthnProvider",
         "href": "/ApacheGUI/manual/2.4/mod/mod_authnz_fcgi.html#authnzfcgicheckauthnprovider",
@@ -3252,32 +3226,6 @@ net.apachegui.DIRECTIVES = {
             {
                 "name": "Module:",
                 "value": "mod_authz_dbm"
-            }
-        ]
-    },
-    "authzprovideralias": {
-        "name": "AuthzProviderAlias",
-        "href": "/ApacheGUI/manual/2.4/mod/mod_authz_core.html#authzprovideralias",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Enclose a group of directives that represent an\nextension of a base authorization provider and referenced by the specified\nalias"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;AuthzProviderAlias <var>baseProvider Alias Require-Parameters</var>&gt;\n... &lt;/AuthzProviderAlias&gt;\n</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config"
-            },
-            {
-                "name": "Status:",
-                "value": "Base"
-            },
-            {
-                "name": "Module:",
-                "value": "mod_authz_core"
             }
         ]
     },
@@ -6053,32 +6001,6 @@ net.apachegui.DIRECTIVES = {
             }
         ]
     },
-    "directory": {
-        "name": "Directory",
-        "href": "/ApacheGUI/manual/2.4/mod/core.html#directory",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Enclose a group of directives that apply only to the\nnamed file-system directory, sub-directories, and their contents."
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;Directory <var>directory-path</var>&gt;\n... &lt;/Directory&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host"
-            },
-            {
-                "name": "Status:",
-                "value": "Core"
-            },
-            {
-                "name": "Module:",
-                "value": "core"
-            }
-        ]
-    },
     "directorycheckhandler": {
         "name": "DirectoryCheckHandler",
         "href": "/ApacheGUI/manual/2.4/mod/mod_dir.html#directorycheckhandler",
@@ -6186,32 +6108,6 @@ net.apachegui.DIRECTIVES = {
             {
                 "name": "Compatibility:",
                 "value": "Available in version 2.3.14 and later"
-            }
-        ]
-    },
-    "directorymatch": {
-        "name": "DirectoryMatch",
-        "href": "/ApacheGUI/manual/2.4/mod/core.html#directorymatch",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Enclose directives that apply to\nthe contents of file-system directories matching a regular expression."
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;DirectoryMatch <var>regex</var>&gt;\n... &lt;/DirectoryMatch&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host"
-            },
-            {
-                "name": "Status:",
-                "value": "Core"
-            },
-            {
-                "name": "Module:",
-                "value": "core"
             }
         ]
     },
@@ -6378,66 +6274,6 @@ net.apachegui.DIRECTIVES = {
             {
                 "name": "Compatibility:",
                 "value": "DumpIOOutput is only available in Apache 2.1.3 and\nlater."
-            }
-        ]
-    },
-    "else": {
-        "name": "Else",
-        "href": "/ApacheGUI/manual/2.4/mod/core.html#else",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Contains directives that apply only if the condition of a\nprevious <code class=\"directive\"><a href=\"#if\">&lt;If&gt;</a></code> or\n<code class=\"directive\"><a href=\"#elseif\">&lt;ElseIf&gt;</a></code> section is not\nsatisfied by a request at runtime"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;Else&gt; ... &lt;/Else&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host, directory, .htaccess"
-            },
-            {
-                "name": "Override:",
-                "value": "All"
-            },
-            {
-                "name": "Status:",
-                "value": "Core"
-            },
-            {
-                "name": "Module:",
-                "value": "core"
-            }
-        ]
-    },
-    "elseif": {
-        "name": "ElseIf",
-        "href": "/ApacheGUI/manual/2.4/mod/core.html#elseif",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Contains directives that apply only if a condition is satisfied\nby a request at runtime while the condition of a previous\n<code class=\"directive\"><a href=\"#if\">&lt;If&gt;</a></code> or\n<code class=\"directive\">&lt;ElseIf&gt;</code> section is not\nsatisfied"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;ElseIf <var>expression</var>&gt; ... &lt;/ElseIf&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host, directory, .htaccess"
-            },
-            {
-                "name": "Override:",
-                "value": "All"
-            },
-            {
-                "name": "Status:",
-                "value": "Core"
-            },
-            {
-                "name": "Module:",
-                "value": "core"
             }
         ]
     },
@@ -6938,66 +6774,6 @@ net.apachegui.DIRECTIVES = {
             {
                 "name": "Compatibility:",
                 "value": "The default used to be \"INode&nbsp;MTime&nbsp;Size\" in 2.3.14 and\nearlier."
-            }
-        ]
-    },
-    "files": {
-        "name": "Files",
-        "href": "/ApacheGUI/manual/2.4/mod/core.html#files",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Contains directives that apply to matched\nfilenames"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;Files <var>filename</var>&gt; ... &lt;/Files&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host, directory, .htaccess"
-            },
-            {
-                "name": "Override:",
-                "value": "All"
-            },
-            {
-                "name": "Status:",
-                "value": "Core"
-            },
-            {
-                "name": "Module:",
-                "value": "core"
-            }
-        ]
-    },
-    "filesmatch": {
-        "name": "FilesMatch",
-        "href": "/ApacheGUI/manual/2.4/mod/core.html#filesmatch",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Contains directives that apply to regular-expression matched\nfilenames"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;FilesMatch <var>regex</var>&gt; ... &lt;/FilesMatch&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host, directory, .htaccess"
-            },
-            {
-                "name": "Override:",
-                "value": "All"
-            },
-            {
-                "name": "Status:",
-                "value": "Core"
-            },
-            {
-                "name": "Module:",
-                "value": "core"
             }
         ]
     },
@@ -7602,130 +7378,6 @@ net.apachegui.DIRECTIVES = {
             {
                 "name": "Module:",
                 "value": "mod_ident"
-            }
-        ]
-    },
-    "if": {
-        "name": "If",
-        "href": "/ApacheGUI/manual/2.4/mod/core.html#if",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Contains directives that apply only if a condition is\nsatisfied by a request at runtime"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;If <var>expression</var>&gt; ... &lt;/If&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host, directory, .htaccess"
-            },
-            {
-                "name": "Override:",
-                "value": "All"
-            },
-            {
-                "name": "Status:",
-                "value": "Core"
-            },
-            {
-                "name": "Module:",
-                "value": "core"
-            }
-        ]
-    },
-    "ifdefine": {
-        "name": "IfDefine",
-        "href": "/ApacheGUI/manual/2.4/mod/core.html#ifdefine",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Encloses directives that will be processed only\nif a test is true at startup"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;IfDefine [!]<var>parameter-name</var>&gt; ...\n    &lt;/IfDefine&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host, directory, .htaccess"
-            },
-            {
-                "name": "Override:",
-                "value": "All"
-            },
-            {
-                "name": "Status:",
-                "value": "Core"
-            },
-            {
-                "name": "Module:",
-                "value": "core"
-            }
-        ]
-    },
-    "ifmodule": {
-        "name": "IfModule",
-        "href": "/ApacheGUI/manual/2.4/mod/core.html#ifmodule",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Encloses directives that are processed conditional on the\npresence or absence of a specific module"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;IfModule [!]<var>module-file</var>|<var>module-identifier</var>&gt; ...\n    &lt;/IfModule&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host, directory, .htaccess"
-            },
-            {
-                "name": "Override:",
-                "value": "All"
-            },
-            {
-                "name": "Status:",
-                "value": "Core"
-            },
-            {
-                "name": "Module:",
-                "value": "core"
-            },
-            {
-                "name": "Compatibility:",
-                "value": "Module identifiers are available in version 2.1 and\nlater."
-            }
-        ]
-    },
-    "ifversion": {
-        "name": "IfVersion",
-        "href": "/ApacheGUI/manual/2.4/mod/mod_version.html#ifversion",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "contains version dependent configuration"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;IfVersion [[!]<var>operator</var>] <var>version</var>&gt; ...\n&lt;/IfVersion&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host, directory, .htaccess"
-            },
-            {
-                "name": "Override:",
-                "value": "All"
-            },
-            {
-                "name": "Status:",
-                "value": "Extension"
-            },
-            {
-                "name": "Module:",
-                "value": "mod_version"
             }
         ]
     },
@@ -8969,66 +8621,6 @@ net.apachegui.DIRECTIVES = {
             }
         ]
     },
-    "limit": {
-        "name": "Limit",
-        "href": "/ApacheGUI/manual/2.4/mod/core.html#limit",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Restrict enclosed access controls to only certain HTTP\nmethods"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;Limit <var>method</var> [<var>method</var>] ... &gt; ...\n    &lt;/Limit&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "directory, .htaccess"
-            },
-            {
-                "name": "Override:",
-                "value": "AuthConfig, Limit"
-            },
-            {
-                "name": "Status:",
-                "value": "Core"
-            },
-            {
-                "name": "Module:",
-                "value": "core"
-            }
-        ]
-    },
-    "limitexcept": {
-        "name": "LimitExcept",
-        "href": "/ApacheGUI/manual/2.4/mod/core.html#limitexcept",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Restrict access controls to all HTTP methods\nexcept the named ones"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;LimitExcept <var>method</var> [<var>method</var>] ... &gt; ...\n    &lt;/LimitExcept&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "directory, .htaccess"
-            },
-            {
-                "name": "Override:",
-                "value": "AuthConfig, Limit"
-            },
-            {
-                "name": "Status:",
-                "value": "Core"
-            },
-            {
-                "name": "Module:",
-                "value": "core"
-            }
-        ]
-    },
     "limitinternalrecursion": {
         "name": "LimitInternalRecursion",
         "href": "/ApacheGUI/manual/2.4/mod/core.html#limitinternalrecursion",
@@ -9326,58 +8918,6 @@ net.apachegui.DIRECTIVES = {
             {
                 "name": "Module:",
                 "value": "mod_so"
-            }
-        ]
-    },
-    "location": {
-        "name": "Location",
-        "href": "/ApacheGUI/manual/2.4/mod/core.html#location",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Applies the enclosed directives only to matching\nURLs"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;Location\n    <var>URL-path</var>|<var>URL</var>&gt; ... &lt;/Location&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host"
-            },
-            {
-                "name": "Status:",
-                "value": "Core"
-            },
-            {
-                "name": "Module:",
-                "value": "core"
-            }
-        ]
-    },
-    "locationmatch": {
-        "name": "LocationMatch",
-        "href": "/ApacheGUI/manual/2.4/mod/core.html#locationmatch",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Applies the enclosed directives only to regular-expression\nmatching URLs"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;LocationMatch\n    <var>regex</var>&gt; ... &lt;/LocationMatch&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host"
-            },
-            {
-                "name": "Status:",
-                "value": "Core"
-            },
-            {
-                "name": "Module:",
-                "value": "core"
             }
         ]
     },
@@ -10104,32 +9644,6 @@ net.apachegui.DIRECTIVES = {
             {
                 "name": "Module:",
                 "value": "mod_lua"
-            }
-        ]
-    },
-    "macro": {
-        "name": "Macro",
-        "href": "/ApacheGUI/manual/2.4/mod/mod_macro.html#macro",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Define a configuration file macro"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>\n&lt;Macro <var>name</var> [<var>par1</var> .. <var>parN</var>]&gt;\n... &lt;/Macro&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host, directory"
-            },
-            {
-                "name": "Status:",
-                "value": "Base"
-            },
-            {
-                "name": "Module:",
-                "value": "mod_macro"
             }
         ]
     },
@@ -11177,32 +10691,6 @@ net.apachegui.DIRECTIVES = {
             }
         ]
     },
-    "proxy": {
-        "name": "Proxy",
-        "href": "/ApacheGUI/manual/2.4/mod/mod_proxy.html#proxy",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Container for directives applied to proxied resources"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;Proxy <var>wildcard-url</var>&gt; ...&lt;/Proxy&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host"
-            },
-            {
-                "name": "Status:",
-                "value": "Extension"
-            },
-            {
-                "name": "Module:",
-                "value": "mod_proxy"
-            }
-        ]
-    },
     "proxyaddheaders": {
         "name": "ProxyAddHeaders",
         "href": "/ApacheGUI/manual/2.4/mod/mod_proxy.html#proxyaddheaders",
@@ -11948,32 +11436,6 @@ net.apachegui.DIRECTIVES = {
             {
                 "name": "Default:",
                 "value": "<code>ProxyIOBufferSize 8192</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config, virtual host"
-            },
-            {
-                "name": "Status:",
-                "value": "Extension"
-            },
-            {
-                "name": "Module:",
-                "value": "mod_proxy"
-            }
-        ]
-    },
-    "proxymatch": {
-        "name": "ProxyMatch",
-        "href": "/ApacheGUI/manual/2.4/mod/mod_proxy.html#proxymatch",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Container for directives applied to regular-expression-matched\nproxied resources"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;ProxyMatch <var>regex</var>&gt; ...&lt;/ProxyMatch&gt;</code>"
             },
             {
                 "name": "Context:",
@@ -13236,96 +12698,6 @@ net.apachegui.DIRECTIVES = {
             {
                 "name": "Syntax:",
                 "value": "<code>Require [not] <var>entity-name</var>\n    [<var>entity-name</var>] ...</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "directory, .htaccess"
-            },
-            {
-                "name": "Override:",
-                "value": "AuthConfig"
-            },
-            {
-                "name": "Status:",
-                "value": "Base"
-            },
-            {
-                "name": "Module:",
-                "value": "mod_authz_core"
-            }
-        ]
-    },
-    "requireall": {
-        "name": "RequireAll",
-        "href": "/ApacheGUI/manual/2.4/mod/mod_authz_core.html#requireall",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Enclose a group of authorization directives of which none\nmust fail and at least one must succeed for the enclosing directive to\nsucceed."
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;RequireAll&gt; ... &lt;/RequireAll&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "directory, .htaccess"
-            },
-            {
-                "name": "Override:",
-                "value": "AuthConfig"
-            },
-            {
-                "name": "Status:",
-                "value": "Base"
-            },
-            {
-                "name": "Module:",
-                "value": "mod_authz_core"
-            }
-        ]
-    },
-    "requireany": {
-        "name": "RequireAny",
-        "href": "/ApacheGUI/manual/2.4/mod/mod_authz_core.html#requireany",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Enclose a group of authorization directives of which one\nmust succeed for the enclosing directive to succeed."
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;RequireAny&gt; ... &lt;/RequireAny&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "directory, .htaccess"
-            },
-            {
-                "name": "Override:",
-                "value": "AuthConfig"
-            },
-            {
-                "name": "Status:",
-                "value": "Base"
-            },
-            {
-                "name": "Module:",
-                "value": "mod_authz_core"
-            }
-        ]
-    },
-    "requirenone": {
-        "name": "RequireNone",
-        "href": "/ApacheGUI/manual/2.4/mod/mod_authz_core.html#requirenone",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Enclose a group of authorization directives of which none\nmust succeed for the enclosing directive to not fail."
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;RequireNone&gt; ... &lt;/RequireNone&gt;</code>"
             },
             {
                 "name": "Context:",
@@ -18339,32 +17711,6 @@ net.apachegui.DIRECTIVES = {
             }
         ]
     },
-    "virtualhost": {
-        "name": "VirtualHost",
-        "href": "/ApacheGUI/manual/2.4/mod/core.html#virtualhost",
-        "items": [
-            {
-                "name": "Description:",
-                "value": "Contains directives that apply only to a specific\nhostname or IP address"
-            },
-            {
-                "name": "Syntax:",
-                "value": "<code>&lt;VirtualHost\n    <var>addr</var>[:<var>port</var>] [<var>addr</var>[:<var>port</var>]]\n    ...&gt; ... &lt;/VirtualHost&gt;</code>"
-            },
-            {
-                "name": "Context:",
-                "value": "server config"
-            },
-            {
-                "name": "Status:",
-                "value": "Core"
-            },
-            {
-                "name": "Module:",
-                "value": "core"
-            }
-        ]
-    },
     "virtualscriptalias": {
         "name": "VirtualScriptAlias",
         "href": "/ApacheGUI/manual/2.4/mod/mod_vhost_alias.html#virtualscriptalias",
@@ -23073,7 +22419,6 @@ net.apachegui.DIRECTIVETREE = {
                             "authncacheprovidefor",
                             "authncachesocache",
                             "authncachetimeout",
-                            "authnprovideralias",
                             "authnzfcgicheckauthnprovider",
                             "authnzfcgidefineprovider"
                         ],
@@ -23310,71 +22655,6 @@ net.apachegui.DIRECTIVETREE = {
                                                                         "directives": [
                                                                             "authncachetimeout"
                                                                         ]
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "p": {
-                            "directives": [
-                                "authnprovideralias"
-                            ],
-                            "r": {
-                                "directives": [
-                                    "authnprovideralias"
-                                ],
-                                "o": {
-                                    "directives": [
-                                        "authnprovideralias"
-                                    ],
-                                    "v": {
-                                        "directives": [
-                                            "authnprovideralias"
-                                        ],
-                                        "i": {
-                                            "directives": [
-                                                "authnprovideralias"
-                                            ],
-                                            "d": {
-                                                "directives": [
-                                                    "authnprovideralias"
-                                                ],
-                                                "e": {
-                                                    "directives": [
-                                                        "authnprovideralias"
-                                                    ],
-                                                    "r": {
-                                                        "directives": [
-                                                            "authnprovideralias"
-                                                        ],
-                                                        "a": {
-                                                            "directives": [
-                                                                "authnprovideralias"
-                                                            ],
-                                                            "l": {
-                                                                "directives": [
-                                                                    "authnprovideralias"
-                                                                ],
-                                                                "i": {
-                                                                    "directives": [
-                                                                        "authnprovideralias"
-                                                                    ],
-                                                                    "a": {
-                                                                        "directives": [
-                                                                            "authnprovideralias"
-                                                                        ],
-                                                                        "s": {
-                                                                            "directives": [
-                                                                                "authnprovideralias"
-                                                                            ]
-                                                                        }
                                                                     }
                                                                 }
                                                             }
@@ -23644,7 +22924,6 @@ net.apachegui.DIRECTIVETREE = {
                             "authzdbdquery",
                             "authzdbdredirectquery",
                             "authzdbmtype",
-                            "authzprovideralias",
                             "authzsendforbiddenonfailure"
                         ],
                         "d": {
@@ -23848,71 +23127,6 @@ net.apachegui.DIRECTIVETREE = {
                                                     "directives": [
                                                         "authzdbmtype"
                                                     ]
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "p": {
-                            "directives": [
-                                "authzprovideralias"
-                            ],
-                            "r": {
-                                "directives": [
-                                    "authzprovideralias"
-                                ],
-                                "o": {
-                                    "directives": [
-                                        "authzprovideralias"
-                                    ],
-                                    "v": {
-                                        "directives": [
-                                            "authzprovideralias"
-                                        ],
-                                        "i": {
-                                            "directives": [
-                                                "authzprovideralias"
-                                            ],
-                                            "d": {
-                                                "directives": [
-                                                    "authzprovideralias"
-                                                ],
-                                                "e": {
-                                                    "directives": [
-                                                        "authzprovideralias"
-                                                    ],
-                                                    "r": {
-                                                        "directives": [
-                                                            "authzprovideralias"
-                                                        ],
-                                                        "a": {
-                                                            "directives": [
-                                                                "authzprovideralias"
-                                                            ],
-                                                            "l": {
-                                                                "directives": [
-                                                                    "authzprovideralias"
-                                                                ],
-                                                                "i": {
-                                                                    "directives": [
-                                                                        "authzprovideralias"
-                                                                    ],
-                                                                    "a": {
-                                                                        "directives": [
-                                                                            "authzprovideralias"
-                                                                        ],
-                                                                        "s": {
-                                                                            "directives": [
-                                                                                "authzprovideralias"
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
                                                 }
                                             }
                                         }
@@ -28191,74 +27405,58 @@ net.apachegui.DIRECTIVETREE = {
         },
         "i": {
             "directives": [
-                "directory",
                 "directorycheckhandler",
                 "directoryindex",
                 "directoryindexredirect",
-                "directorymatch",
                 "directoryslash"
             ],
             "r": {
                 "directives": [
-                    "directory",
                     "directorycheckhandler",
                     "directoryindex",
                     "directoryindexredirect",
-                    "directorymatch",
                     "directoryslash"
                 ],
                 "e": {
                     "directives": [
-                        "directory",
                         "directorycheckhandler",
                         "directoryindex",
                         "directoryindexredirect",
-                        "directorymatch",
                         "directoryslash"
                     ],
                     "c": {
                         "directives": [
-                            "directory",
                             "directorycheckhandler",
                             "directoryindex",
                             "directoryindexredirect",
-                            "directorymatch",
                             "directoryslash"
                         ],
                         "t": {
                             "directives": [
-                                "directory",
                                 "directorycheckhandler",
                                 "directoryindex",
                                 "directoryindexredirect",
-                                "directorymatch",
                                 "directoryslash"
                             ],
                             "o": {
                                 "directives": [
-                                    "directory",
                                     "directorycheckhandler",
                                     "directoryindex",
                                     "directoryindexredirect",
-                                    "directorymatch",
                                     "directoryslash"
                                 ],
                                 "r": {
                                     "directives": [
-                                        "directory",
                                         "directorycheckhandler",
                                         "directoryindex",
                                         "directoryindexredirect",
-                                        "directorymatch",
                                         "directoryslash"
                                     ],
                                     "y": {
                                         "directives": [
-                                            "directory",
                                             "directorycheckhandler",
                                             "directoryindex",
                                             "directoryindexredirect",
-                                            "directorymatch",
                                             "directoryslash"
                                         ],
                                         "c": {
@@ -28386,31 +27584,6 @@ net.apachegui.DIRECTIVETREE = {
                                                                     }
                                                                 }
                                                             }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        "m": {
-                                            "directives": [
-                                                "directorymatch"
-                                            ],
-                                            "a": {
-                                                "directives": [
-                                                    "directorymatch"
-                                                ],
-                                                "t": {
-                                                    "directives": [
-                                                        "directorymatch"
-                                                    ],
-                                                    "c": {
-                                                        "directives": [
-                                                            "directorymatch"
-                                                        ],
-                                                        "h": {
-                                                            "directives": [
-                                                                "directorymatch"
-                                                            ]
                                                         }
                                                     }
                                                 }
@@ -28667,8 +27840,6 @@ net.apachegui.DIRECTIVETREE = {
     },
     "e": {
         "directives": [
-            "else",
-            "elseif",
             "enableexceptionhook",
             "enablemmap",
             "enablesendfile",
@@ -28676,36 +27847,10 @@ net.apachegui.DIRECTIVETREE = {
             "errordocument",
             "errorlog",
             "errorlogformat",
-            "example"
+            "example",
+            "expiresactive",
+            "expiresbytype"
         ],
-        "l": {
-            "directives": [
-                "else",
-                "elseif"
-            ],
-            "s": {
-                "directives": [
-                    "else",
-                    "elseif"
-                ],
-                "e": {
-                    "directives": [
-                        "else",
-                        "elseif"
-                    ],
-                    "i": {
-                        "directives": [
-                            "elseif"
-                        ],
-                        "f": {
-                            "directives": [
-                                "elseif"
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "n": {
             "directives": [
                 "enableexceptionhook",
@@ -29320,14 +28465,14 @@ net.apachegui.DIRECTIVETREE = {
         "directives": [
             "fallbackresource",
             "fileetag",
-            "files",
-            "filesmatch",
             "filterchain",
             "filterdeclare",
             "filterprotocol",
             "filterprovider",
             "filtertrace",
-            "forcelanguagepriority"
+            "forcelanguagepriority",
+            "forcetype",
+            "forensiclog"
         ],
         "a": {
             "directives": [
@@ -29407,8 +28552,6 @@ net.apachegui.DIRECTIVETREE = {
         "i": {
             "directives": [
                 "fileetag",
-                "files",
-                "filesmatch",
                 "filterchain",
                 "filterdeclare",
                 "filterprotocol",
@@ -29418,8 +28561,6 @@ net.apachegui.DIRECTIVETREE = {
             "l": {
                 "directives": [
                     "fileetag",
-                    "files",
-                    "filesmatch",
                     "filterchain",
                     "filterdeclare",
                     "filterprotocol",
@@ -29428,9 +28569,7 @@ net.apachegui.DIRECTIVETREE = {
                 ],
                 "e": {
                     "directives": [
-                        "fileetag",
-                        "files",
-                        "filesmatch"
+                        "fileetag"
                     ],
                     "e": {
                         "directives": [
@@ -29448,37 +28587,6 @@ net.apachegui.DIRECTIVETREE = {
                                     "directives": [
                                         "fileetag"
                                     ]
-                                }
-                            }
-                        }
-                    },
-                    "s": {
-                        "directives": [
-                            "files",
-                            "filesmatch"
-                        ],
-                        "m": {
-                            "directives": [
-                                "filesmatch"
-                            ],
-                            "a": {
-                                "directives": [
-                                    "filesmatch"
-                                ],
-                                "t": {
-                                    "directives": [
-                                        "filesmatch"
-                                    ],
-                                    "c": {
-                                        "directives": [
-                                            "filesmatch"
-                                        ],
-                                        "h": {
-                                            "directives": [
-                                                "filesmatch"
-                                            ]
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -30342,14 +29450,14 @@ net.apachegui.DIRECTIVETREE = {
         "directives": [
             "identitycheck",
             "identitychecktimeout",
-            "if",
-            "ifdefine",
-            "ifmodule",
-            "ifversion",
             "imapbase",
             "imapdefault",
             "imapmenu",
-            "include"
+            "include",
+            "includeoptional",
+            "indexheadinsert",
+            "indexignore",
+            "indexignorereset"
         ],
         "d": {
             "directives": [
@@ -30450,109 +29558,6 @@ net.apachegui.DIRECTIVETREE = {
                                                 }
                                             }
                                         }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "f": {
-            "directives": [
-                "if",
-                "ifdefine",
-                "ifmodule",
-                "ifversion"
-            ],
-            "d": {
-                "directives": [
-                    "ifdefine"
-                ],
-                "e": {
-                    "directives": [
-                        "ifdefine"
-                    ],
-                    "f": {
-                        "directives": [
-                            "ifdefine"
-                        ],
-                        "i": {
-                            "directives": [
-                                "ifdefine"
-                            ],
-                            "n": {
-                                "directives": [
-                                    "ifdefine"
-                                ],
-                                "e": {
-                                    "directives": [
-                                        "ifdefine"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "m": {
-                "directives": [
-                    "ifmodule"
-                ],
-                "o": {
-                    "directives": [
-                        "ifmodule"
-                    ],
-                    "d": {
-                        "directives": [
-                            "ifmodule"
-                        ],
-                        "u": {
-                            "directives": [
-                                "ifmodule"
-                            ],
-                            "l": {
-                                "directives": [
-                                    "ifmodule"
-                                ],
-                                "e": {
-                                    "directives": [
-                                        "ifmodule"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "v": {
-                "directives": [
-                    "ifversion"
-                ],
-                "e": {
-                    "directives": [
-                        "ifversion"
-                    ],
-                    "r": {
-                        "directives": [
-                            "ifversion"
-                        ],
-                        "s": {
-                            "directives": [
-                                "ifversion"
-                            ],
-                            "i": {
-                                "directives": [
-                                    "ifversion"
-                                ],
-                                "o": {
-                                    "directives": [
-                                        "ifversion"
-                                    ],
-                                    "n": {
-                                        "directives": [
-                                            "ifversion"
-                                        ]
                                     }
                                 }
                             }
@@ -32625,8 +31630,6 @@ net.apachegui.DIRECTIVETREE = {
         },
         "i": {
             "directives": [
-                "limit",
-                "limitexcept",
                 "limitinternalrecursion",
                 "limitrequestbody",
                 "limitrequestfields",
@@ -32638,8 +31641,6 @@ net.apachegui.DIRECTIVETREE = {
             ],
             "m": {
                 "directives": [
-                    "limit",
-                    "limitexcept",
                     "limitinternalrecursion",
                     "limitrequestbody",
                     "limitrequestfields",
@@ -32649,8 +31650,6 @@ net.apachegui.DIRECTIVETREE = {
                 ],
                 "i": {
                     "directives": [
-                        "limit",
-                        "limitexcept",
                         "limitinternalrecursion",
                         "limitrequestbody",
                         "limitrequestfields",
@@ -32660,8 +31659,6 @@ net.apachegui.DIRECTIVETREE = {
                     ],
                     "t": {
                         "directives": [
-                            "limit",
-                            "limitexcept",
                             "limitinternalrecursion",
                             "limitrequestbody",
                             "limitrequestfields",
@@ -32669,36 +31666,6 @@ net.apachegui.DIRECTIVETREE = {
                             "limitrequestline",
                             "limitxmlrequestbody"
                         ],
-                        "e": {
-                            "directives": [
-                                "limitexcept"
-                            ],
-                            "x": {
-                                "directives": [
-                                    "limitexcept"
-                                ],
-                                "c": {
-                                    "directives": [
-                                        "limitexcept"
-                                    ],
-                                    "e": {
-                                        "directives": [
-                                            "limitexcept"
-                                        ],
-                                        "p": {
-                                            "directives": [
-                                                "limitexcept"
-                                            ],
-                                            "t": {
-                                                "directives": [
-                                                    "limitexcept"
-                                                ]
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
                         "i": {
                             "directives": [
                                 "limitinternalrecursion"
@@ -33068,8 +32035,6 @@ net.apachegui.DIRECTIVETREE = {
             "directives": [
                 "loadfile",
                 "loadmodule",
-                "location",
-                "locationmatch",
                 "logformat",
                 "loglevel",
                 "logmessage"
@@ -33128,67 +32093,6 @@ net.apachegui.DIRECTIVETREE = {
                                             "directives": [
                                                 "loadmodule"
                                             ]
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "c": {
-                "directives": [
-                    "location",
-                    "locationmatch"
-                ],
-                "a": {
-                    "directives": [
-                        "location",
-                        "locationmatch"
-                    ],
-                    "t": {
-                        "directives": [
-                            "location",
-                            "locationmatch"
-                        ],
-                        "i": {
-                            "directives": [
-                                "location",
-                                "locationmatch"
-                            ],
-                            "o": {
-                                "directives": [
-                                    "location",
-                                    "locationmatch"
-                                ],
-                                "n": {
-                                    "directives": [
-                                        "location",
-                                        "locationmatch"
-                                    ],
-                                    "m": {
-                                        "directives": [
-                                            "locationmatch"
-                                        ],
-                                        "a": {
-                                            "directives": [
-                                                "locationmatch"
-                                            ],
-                                            "t": {
-                                                "directives": [
-                                                    "locationmatch"
-                                                ],
-                                                "c": {
-                                                    "directives": [
-                                                        "locationmatch"
-                                                    ],
-                                                    "h": {
-                                                        "directives": [
-                                                            "locationmatch"
-                                                        ]
-                                                    }
-                                                }
-                                            }
                                         }
                                     }
                                 }
@@ -34324,7 +33228,6 @@ net.apachegui.DIRECTIVETREE = {
     },
     "m": {
         "directives": [
-            "macro",
             "maxconnectionsperchild",
             "maxkeepaliverequests",
             "maxmemfree",
@@ -34333,11 +33236,11 @@ net.apachegui.DIRECTIVETREE = {
             "maxranges",
             "maxrequestworkers",
             "maxspareservers",
-            "maxsparethreads"
+            "maxsparethreads",
+            "maxthreads"
         ],
         "a": {
             "directives": [
-                "macro",
                 "maxconnectionsperchild",
                 "maxkeepaliverequests",
                 "maxmemfree",
@@ -34346,23 +33249,9 @@ net.apachegui.DIRECTIVETREE = {
                 "maxranges",
                 "maxrequestworkers",
                 "maxspareservers",
-                "maxsparethreads"
+                "maxsparethreads",
+                "maxthreads"
             ],
-            "c": {
-                "directives": [
-                    "macro"
-                ],
-                "r": {
-                    "directives": [
-                        "macro"
-                    ],
-                    "o": {
-                        "directives": [
-                            "macro"
-                        ]
-                    }
-                }
-            },
             "x": {
                 "directives": [
                     "maxconnectionsperchild",
@@ -35844,11 +34733,11 @@ net.apachegui.DIRECTIVETREE = {
             "privilegesmode",
             "protocol",
             "protocolecho",
-            "proxy",
             "proxyaddheaders",
             "proxybadheader",
             "proxyblock",
-            "proxydomain"
+            "proxydomain",
+            "proxyerroroverride"
         ],
         "a": {
             "directives": [
@@ -35915,13 +34804,13 @@ net.apachegui.DIRECTIVETREE = {
                 "privilegesmode",
                 "protocol",
                 "protocolecho",
-                "proxy",
                 "proxyaddheaders",
                 "proxybadheader",
                 "proxyblock",
                 "proxydomain",
                 "proxyerroroverride",
-                "proxyexpressdbmfile"
+                "proxyexpressdbmfile",
+                "proxyexpressdbmtype"
             ],
             "i": {
                 "directives": [
@@ -35987,14 +34876,14 @@ net.apachegui.DIRECTIVETREE = {
                 "directives": [
                     "protocol",
                     "protocolecho",
-                    "proxy",
                     "proxyaddheaders",
                     "proxybadheader",
                     "proxyblock",
                     "proxydomain",
                     "proxyerroroverride",
                     "proxyexpressdbmfile",
-                    "proxyexpressdbmtype"
+                    "proxyexpressdbmtype",
+                    "proxyexpressenable"
                 ],
                 "t": {
                     "directives": [
@@ -36048,7 +34937,6 @@ net.apachegui.DIRECTIVETREE = {
                 },
                 "x": {
                     "directives": [
-                        "proxy",
                         "proxyaddheaders",
                         "proxybadheader",
                         "proxyblock",
@@ -36057,11 +34945,11 @@ net.apachegui.DIRECTIVETREE = {
                         "proxyexpressdbmfile",
                         "proxyexpressdbmtype",
                         "proxyexpressenable",
-                        "proxyftpdircharset"
+                        "proxyftpdircharset",
+                        "proxyftpescapewildcards"
                     ],
                     "y": {
                         "directives": [
-                            "proxy",
                             "proxyaddheaders",
                             "proxybadheader",
                             "proxyblock",
@@ -36070,7 +34958,8 @@ net.apachegui.DIRECTIVETREE = {
                             "proxyexpressdbmfile",
                             "proxyexpressdbmtype",
                             "proxyexpressenable",
-                            "proxyftpdircharset"
+                            "proxyftpdircharset",
+                            "proxyftpescapewildcards"
                         ],
                         "a": {
                             "directives": [
@@ -37162,29 +36051,12 @@ net.apachegui.DIRECTIVETREE = {
                         },
                         "m": {
                             "directives": [
-                                "proxymatch",
                                 "proxymaxforwards"
                             ],
                             "a": {
                                 "directives": [
-                                    "proxymatch",
                                     "proxymaxforwards"
                                 ],
-                                "t": {
-                                    "directives": [
-                                        "proxymatch"
-                                    ],
-                                    "c": {
-                                        "directives": [
-                                            "proxymatch"
-                                        ],
-                                        "h": {
-                                            "directives": [
-                                                "proxymatch"
-                                            ]
-                                        }
-                                    }
-                                },
                                 "x": {
                                     "directives": [
                                         "proxymaxforwards"
@@ -39064,19 +37936,13 @@ net.apachegui.DIRECTIVETREE = {
                 "directives": [
                     "requestheader",
                     "requestreadtimeout",
-                    "require",
-                    "requireall",
-                    "requireany",
-                    "requirenone"
+                    "require"
                 ],
                 "u": {
                     "directives": [
                         "requestheader",
                         "requestreadtimeout",
-                        "require",
-                        "requireall",
-                        "requireany",
-                        "requirenone"
+                        "require"
                     ],
                     "e": {
                         "directives": [
@@ -39183,71 +38049,16 @@ net.apachegui.DIRECTIVETREE = {
                     },
                     "i": {
                         "directives": [
-                            "require",
-                            "requireall",
-                            "requireany",
-                            "requirenone"
+                            "require"
                         ],
                         "r": {
                             "directives": [
-                                "require",
-                                "requireall",
-                                "requireany",
-                                "requirenone"
+                                "require"
                             ],
                             "e": {
                                 "directives": [
-                                    "require",
-                                    "requireall",
-                                    "requireany",
-                                    "requirenone"
-                                ],
-                                "a": {
-                                    "directives": [
-                                        "requireall",
-                                        "requireany"
-                                    ],
-                                    "l": {
-                                        "directives": [
-                                            "requireall"
-                                        ],
-                                        "l": {
-                                            "directives": [
-                                                "requireall"
-                                            ]
-                                        }
-                                    },
-                                    "n": {
-                                        "directives": [
-                                            "requireany"
-                                        ],
-                                        "y": {
-                                            "directives": [
-                                                "requireany"
-                                            ]
-                                        }
-                                    }
-                                },
-                                "n": {
-                                    "directives": [
-                                        "requirenone"
-                                    ],
-                                    "o": {
-                                        "directives": [
-                                            "requirenone"
-                                        ],
-                                        "n": {
-                                            "directives": [
-                                                "requirenone"
-                                            ],
-                                            "e": {
-                                                "directives": [
-                                                    "requirenone"
-                                                ]
-                                            }
-                                        }
-                                    }
-                                }
+                                    "require"
+                                ]
                             }
                         }
                     }
@@ -46722,8 +45533,8 @@ net.apachegui.DIRECTIVETREE = {
             "vhostuser",
             "virtualdocumentroot",
             "virtualdocumentrootip",
-            "virtualhost",
-            "virtualscriptalias"
+            "virtualscriptalias",
+            "virtualscriptaliasip"
         ],
         "h": {
             "directives": [
@@ -46932,7 +45743,6 @@ net.apachegui.DIRECTIVETREE = {
             "directives": [
                 "virtualdocumentroot",
                 "virtualdocumentrootip",
-                "virtualhost",
                 "virtualscriptalias",
                 "virtualscriptaliasip"
             ],
@@ -46940,7 +45750,6 @@ net.apachegui.DIRECTIVETREE = {
                 "directives": [
                     "virtualdocumentroot",
                     "virtualdocumentrootip",
-                    "virtualhost",
                     "virtualscriptalias",
                     "virtualscriptaliasip"
                 ],
@@ -46948,7 +45757,6 @@ net.apachegui.DIRECTIVETREE = {
                     "directives": [
                         "virtualdocumentroot",
                         "virtualdocumentrootip",
-                        "virtualhost",
                         "virtualscriptalias",
                         "virtualscriptaliasip"
                     ],
@@ -46956,7 +45764,6 @@ net.apachegui.DIRECTIVETREE = {
                         "directives": [
                             "virtualdocumentroot",
                             "virtualdocumentrootip",
-                            "virtualhost",
                             "virtualscriptalias",
                             "virtualscriptaliasip"
                         ],
@@ -46964,7 +45771,6 @@ net.apachegui.DIRECTIVETREE = {
                             "directives": [
                                 "virtualdocumentroot",
                                 "virtualdocumentrootip",
-                                "virtualhost",
                                 "virtualscriptalias",
                                 "virtualscriptaliasip"
                             ],
@@ -46972,7 +45778,6 @@ net.apachegui.DIRECTIVETREE = {
                                 "directives": [
                                     "virtualdocumentroot",
                                     "virtualdocumentrootip",
-                                    "virtualhost",
                                     "virtualscriptalias",
                                     "virtualscriptaliasip"
                                 ],
@@ -47054,26 +45859,6 @@ net.apachegui.DIRECTIVETREE = {
                                                         }
                                                     }
                                                 }
-                                            }
-                                        }
-                                    }
-                                },
-                                "h": {
-                                    "directives": [
-                                        "virtualhost"
-                                    ],
-                                    "o": {
-                                        "directives": [
-                                            "virtualhost"
-                                        ],
-                                        "s": {
-                                            "directives": [
-                                                "virtualhost"
-                                            ],
-                                            "t": {
-                                                "directives": [
-                                                    "virtualhost"
-                                                ]
                                             }
                                         }
                                     }
@@ -47430,6 +46215,1468 @@ net.apachegui.DIRECTIVETREE = {
                     "xml2encdefault",
                     "xml2startparse"
                 ]
+            }
+        }
+    }
+};
+
+net.apachegui.ENCLOSURES = {
+    "authnprovideralias": {
+        "name": "<AuthnProviderAlias>",
+        "href": "/ApacheGUI/manual/2.4/mod/mod_authn_core.html#authnprovideralias",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Enclose a group of directives that represent an\nextension of a base authentication provider and referenced by\nthe specified alias"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;AuthnProviderAlias <var>baseProvider Alias</var>&gt;\n... &lt;/AuthnProviderAlias&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config"
+            },
+            {
+                "name": "Status:",
+                "value": "Base"
+            },
+            {
+                "name": "Module:",
+                "value": "mod_authn_core"
+            }
+        ]
+    },
+    "authzprovideralias": {
+        "name": "<AuthzProviderAlias>",
+        "href": "/ApacheGUI/manual/2.4/mod/mod_authz_core.html#authzprovideralias",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Enclose a group of directives that represent an\nextension of a base authorization provider and referenced by the specified\nalias"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;AuthzProviderAlias <var>baseProvider Alias Require-Parameters</var>&gt;\n... &lt;/AuthzProviderAlias&gt;\n</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config"
+            },
+            {
+                "name": "Status:",
+                "value": "Base"
+            },
+            {
+                "name": "Module:",
+                "value": "mod_authz_core"
+            }
+        ]
+    },
+    "directory": {
+        "name": "<Directory>",
+        "href": "/ApacheGUI/manual/2.4/mod/core.html#directory",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Enclose a group of directives that apply only to the\nnamed file-system directory, sub-directories, and their contents."
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;Directory <var>directory-path</var>&gt;\n... &lt;/Directory&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host"
+            },
+            {
+                "name": "Status:",
+                "value": "Core"
+            },
+            {
+                "name": "Module:",
+                "value": "core"
+            }
+        ]
+    },
+    "directorymatch": {
+        "name": "<DirectoryMatch>",
+        "href": "/ApacheGUI/manual/2.4/mod/core.html#directorymatch",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Enclose directives that apply to\nthe contents of file-system directories matching a regular expression."
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;DirectoryMatch <var>regex</var>&gt;\n... &lt;/DirectoryMatch&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host"
+            },
+            {
+                "name": "Status:",
+                "value": "Core"
+            },
+            {
+                "name": "Module:",
+                "value": "core"
+            }
+        ]
+    },
+    "else": {
+        "name": "<Else>",
+        "href": "/ApacheGUI/manual/2.4/mod/core.html#else",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Contains directives that apply only if the condition of a\nprevious <code class=\"directive\"><a href=\"#if\">&lt;If&gt;</a></code> or\n<code class=\"directive\"><a href=\"#elseif\">&lt;ElseIf&gt;</a></code> section is not\nsatisfied by a request at runtime"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;Else&gt; ... &lt;/Else&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host, directory, .htaccess"
+            },
+            {
+                "name": "Override:",
+                "value": "All"
+            },
+            {
+                "name": "Status:",
+                "value": "Core"
+            },
+            {
+                "name": "Module:",
+                "value": "core"
+            }
+        ]
+    },
+    "elseif": {
+        "name": "<ElseIf>",
+        "href": "/ApacheGUI/manual/2.4/mod/core.html#elseif",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Contains directives that apply only if a condition is satisfied\nby a request at runtime while the condition of a previous\n<code class=\"directive\"><a href=\"#if\">&lt;If&gt;</a></code> or\n<code class=\"directive\">&lt;ElseIf&gt;</code> section is not\nsatisfied"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;ElseIf <var>expression</var>&gt; ... &lt;/ElseIf&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host, directory, .htaccess"
+            },
+            {
+                "name": "Override:",
+                "value": "All"
+            },
+            {
+                "name": "Status:",
+                "value": "Core"
+            },
+            {
+                "name": "Module:",
+                "value": "core"
+            }
+        ]
+    },
+    "files": {
+        "name": "<Files>",
+        "href": "/ApacheGUI/manual/2.4/mod/core.html#files",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Contains directives that apply to matched\nfilenames"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;Files <var>filename</var>&gt; ... &lt;/Files&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host, directory, .htaccess"
+            },
+            {
+                "name": "Override:",
+                "value": "All"
+            },
+            {
+                "name": "Status:",
+                "value": "Core"
+            },
+            {
+                "name": "Module:",
+                "value": "core"
+            }
+        ]
+    },
+    "filesmatch": {
+        "name": "<FilesMatch>",
+        "href": "/ApacheGUI/manual/2.4/mod/core.html#filesmatch",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Contains directives that apply to regular-expression matched\nfilenames"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;FilesMatch <var>regex</var>&gt; ... &lt;/FilesMatch&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host, directory, .htaccess"
+            },
+            {
+                "name": "Override:",
+                "value": "All"
+            },
+            {
+                "name": "Status:",
+                "value": "Core"
+            },
+            {
+                "name": "Module:",
+                "value": "core"
+            }
+        ]
+    },
+    "if": {
+        "name": "<If>",
+        "href": "/ApacheGUI/manual/2.4/mod/core.html#if",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Contains directives that apply only if a condition is\nsatisfied by a request at runtime"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;If <var>expression</var>&gt; ... &lt;/If&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host, directory, .htaccess"
+            },
+            {
+                "name": "Override:",
+                "value": "All"
+            },
+            {
+                "name": "Status:",
+                "value": "Core"
+            },
+            {
+                "name": "Module:",
+                "value": "core"
+            }
+        ]
+    },
+    "ifdefine": {
+        "name": "<IfDefine>",
+        "href": "/ApacheGUI/manual/2.4/mod/core.html#ifdefine",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Encloses directives that will be processed only\nif a test is true at startup"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;IfDefine [!]<var>parameter-name</var>&gt; ...\n    &lt;/IfDefine&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host, directory, .htaccess"
+            },
+            {
+                "name": "Override:",
+                "value": "All"
+            },
+            {
+                "name": "Status:",
+                "value": "Core"
+            },
+            {
+                "name": "Module:",
+                "value": "core"
+            }
+        ]
+    },
+    "ifmodule": {
+        "name": "<IfModule>",
+        "href": "/ApacheGUI/manual/2.4/mod/core.html#ifmodule",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Encloses directives that are processed conditional on the\npresence or absence of a specific module"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;IfModule [!]<var>module-file</var>|<var>module-identifier</var>&gt; ...\n    &lt;/IfModule&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host, directory, .htaccess"
+            },
+            {
+                "name": "Override:",
+                "value": "All"
+            },
+            {
+                "name": "Status:",
+                "value": "Core"
+            },
+            {
+                "name": "Module:",
+                "value": "core"
+            },
+            {
+                "name": "Compatibility:",
+                "value": "Module identifiers are available in version 2.1 and\nlater."
+            }
+        ]
+    },
+    "ifversion": {
+        "name": "<IfVersion>",
+        "href": "/ApacheGUI/manual/2.4/mod/mod_version.html#ifversion",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "contains version dependent configuration"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;IfVersion [[!]<var>operator</var>] <var>version</var>&gt; ...\n&lt;/IfVersion&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host, directory, .htaccess"
+            },
+            {
+                "name": "Override:",
+                "value": "All"
+            },
+            {
+                "name": "Status:",
+                "value": "Extension"
+            },
+            {
+                "name": "Module:",
+                "value": "mod_version"
+            }
+        ]
+    },
+    "limit": {
+        "name": "<Limit>",
+        "href": "/ApacheGUI/manual/2.4/mod/core.html#limit",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Restrict enclosed access controls to only certain HTTP\nmethods"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;Limit <var>method</var> [<var>method</var>] ... &gt; ...\n    &lt;/Limit&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "directory, .htaccess"
+            },
+            {
+                "name": "Override:",
+                "value": "AuthConfig, Limit"
+            },
+            {
+                "name": "Status:",
+                "value": "Core"
+            },
+            {
+                "name": "Module:",
+                "value": "core"
+            }
+        ]
+    },
+    "limitexcept": {
+        "name": "<LimitExcept>",
+        "href": "/ApacheGUI/manual/2.4/mod/core.html#limitexcept",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Restrict access controls to all HTTP methods\nexcept the named ones"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;LimitExcept <var>method</var> [<var>method</var>] ... &gt; ...\n    &lt;/LimitExcept&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "directory, .htaccess"
+            },
+            {
+                "name": "Override:",
+                "value": "AuthConfig, Limit"
+            },
+            {
+                "name": "Status:",
+                "value": "Core"
+            },
+            {
+                "name": "Module:",
+                "value": "core"
+            }
+        ]
+    },
+    "location": {
+        "name": "<Location>",
+        "href": "/ApacheGUI/manual/2.4/mod/core.html#location",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Applies the enclosed directives only to matching\nURLs"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;Location\n    <var>URL-path</var>|<var>URL</var>&gt; ... &lt;/Location&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host"
+            },
+            {
+                "name": "Status:",
+                "value": "Core"
+            },
+            {
+                "name": "Module:",
+                "value": "core"
+            }
+        ]
+    },
+    "locationmatch": {
+        "name": "<LocationMatch>",
+        "href": "/ApacheGUI/manual/2.4/mod/core.html#locationmatch",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Applies the enclosed directives only to regular-expression\nmatching URLs"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;LocationMatch\n    <var>regex</var>&gt; ... &lt;/LocationMatch&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host"
+            },
+            {
+                "name": "Status:",
+                "value": "Core"
+            },
+            {
+                "name": "Module:",
+                "value": "core"
+            }
+        ]
+    },
+    "macro": {
+        "name": "<Macro>",
+        "href": "/ApacheGUI/manual/2.4/mod/mod_macro.html#macro",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Define a configuration file macro"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>\n&lt;Macro <var>name</var> [<var>par1</var> .. <var>parN</var>]&gt;\n... &lt;/Macro&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host, directory"
+            },
+            {
+                "name": "Status:",
+                "value": "Base"
+            },
+            {
+                "name": "Module:",
+                "value": "mod_macro"
+            }
+        ]
+    },
+    "proxy": {
+        "name": "<Proxy>",
+        "href": "/ApacheGUI/manual/2.4/mod/mod_proxy.html#proxy",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Container for directives applied to proxied resources"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;Proxy <var>wildcard-url</var>&gt; ...&lt;/Proxy&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host"
+            },
+            {
+                "name": "Status:",
+                "value": "Extension"
+            },
+            {
+                "name": "Module:",
+                "value": "mod_proxy"
+            }
+        ]
+    },
+    "proxymatch": {
+        "name": "<ProxyMatch>",
+        "href": "/ApacheGUI/manual/2.4/mod/mod_proxy.html#proxymatch",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Container for directives applied to regular-expression-matched\nproxied resources"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;ProxyMatch <var>regex</var>&gt; ...&lt;/ProxyMatch&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config, virtual host"
+            },
+            {
+                "name": "Status:",
+                "value": "Extension"
+            },
+            {
+                "name": "Module:",
+                "value": "mod_proxy"
+            }
+        ]
+    },
+    "requireall": {
+        "name": "<RequireAll>",
+        "href": "/ApacheGUI/manual/2.4/mod/mod_authz_core.html#requireall",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Enclose a group of authorization directives of which none\nmust fail and at least one must succeed for the enclosing directive to\nsucceed."
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;RequireAll&gt; ... &lt;/RequireAll&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "directory, .htaccess"
+            },
+            {
+                "name": "Override:",
+                "value": "AuthConfig"
+            },
+            {
+                "name": "Status:",
+                "value": "Base"
+            },
+            {
+                "name": "Module:",
+                "value": "mod_authz_core"
+            }
+        ]
+    },
+    "requireany": {
+        "name": "<RequireAny>",
+        "href": "/ApacheGUI/manual/2.4/mod/mod_authz_core.html#requireany",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Enclose a group of authorization directives of which one\nmust succeed for the enclosing directive to succeed."
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;RequireAny&gt; ... &lt;/RequireAny&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "directory, .htaccess"
+            },
+            {
+                "name": "Override:",
+                "value": "AuthConfig"
+            },
+            {
+                "name": "Status:",
+                "value": "Base"
+            },
+            {
+                "name": "Module:",
+                "value": "mod_authz_core"
+            }
+        ]
+    },
+    "requirenone": {
+        "name": "<RequireNone>",
+        "href": "/ApacheGUI/manual/2.4/mod/mod_authz_core.html#requirenone",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Enclose a group of authorization directives of which none\nmust succeed for the enclosing directive to not fail."
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;RequireNone&gt; ... &lt;/RequireNone&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "directory, .htaccess"
+            },
+            {
+                "name": "Override:",
+                "value": "AuthConfig"
+            },
+            {
+                "name": "Status:",
+                "value": "Base"
+            },
+            {
+                "name": "Module:",
+                "value": "mod_authz_core"
+            }
+        ]
+    },
+    "virtualhost": {
+        "name": "<VirtualHost>",
+        "href": "/ApacheGUI/manual/2.4/mod/core.html#virtualhost",
+        "items": [
+            {
+                "name": "Description:",
+                "value": "Contains directives that apply only to a specific\nhostname or IP address"
+            },
+            {
+                "name": "Syntax:",
+                "value": "<code>&lt;VirtualHost\n    <var>addr</var>[:<var>port</var>] [<var>addr</var>[:<var>port</var>]]\n    ...&gt; ... &lt;/VirtualHost&gt;</code>"
+            },
+            {
+                "name": "Context:",
+                "value": "server config"
+            },
+            {
+                "name": "Status:",
+                "value": "Core"
+            },
+            {
+                "name": "Module:",
+                "value": "core"
+            }
+        ]
+    }
+};
+
+net.apachegui.ENCOLSURETREE = {
+    "a": {
+        "directives": [
+            "authnprovideralias",
+            "authzprovideralias"
+        ],
+        "u": {
+            "directives": [
+                "authnprovideralias",
+                "authzprovideralias"
+            ],
+            "t": {
+                "directives": [
+                    "authnprovideralias",
+                    "authzprovideralias"
+                ],
+                "h": {
+                    "directives": [
+                        "authnprovideralias",
+                        "authzprovideralias"
+                    ],
+                    "n": {
+                        "directives": [
+                            "authnprovideralias"
+                        ],
+                        "p": {
+                            "directives": [
+                                "authnprovideralias"
+                            ],
+                            "r": {
+                                "directives": [
+                                    "authnprovideralias"
+                                ],
+                                "o": {
+                                    "directives": [
+                                        "authnprovideralias"
+                                    ],
+                                    "v": {
+                                        "directives": [
+                                            "authnprovideralias"
+                                        ],
+                                        "i": {
+                                            "directives": [
+                                                "authnprovideralias"
+                                            ],
+                                            "d": {
+                                                "directives": [
+                                                    "authnprovideralias"
+                                                ],
+                                                "e": {
+                                                    "directives": [
+                                                        "authnprovideralias"
+                                                    ],
+                                                    "r": {
+                                                        "directives": [
+                                                            "authnprovideralias"
+                                                        ],
+                                                        "a": {
+                                                            "directives": [
+                                                                "authnprovideralias"
+                                                            ],
+                                                            "l": {
+                                                                "directives": [
+                                                                    "authnprovideralias"
+                                                                ],
+                                                                "i": {
+                                                                    "directives": [
+                                                                        "authnprovideralias"
+                                                                    ],
+                                                                    "a": {
+                                                                        "directives": [
+                                                                            "authnprovideralias"
+                                                                        ],
+                                                                        "s": {
+                                                                            "directives": [
+                                                                                "authnprovideralias"
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "z": {
+                        "directives": [
+                            "authzprovideralias"
+                        ],
+                        "p": {
+                            "directives": [
+                                "authzprovideralias"
+                            ],
+                            "r": {
+                                "directives": [
+                                    "authzprovideralias"
+                                ],
+                                "o": {
+                                    "directives": [
+                                        "authzprovideralias"
+                                    ],
+                                    "v": {
+                                        "directives": [
+                                            "authzprovideralias"
+                                        ],
+                                        "i": {
+                                            "directives": [
+                                                "authzprovideralias"
+                                            ],
+                                            "d": {
+                                                "directives": [
+                                                    "authzprovideralias"
+                                                ],
+                                                "e": {
+                                                    "directives": [
+                                                        "authzprovideralias"
+                                                    ],
+                                                    "r": {
+                                                        "directives": [
+                                                            "authzprovideralias"
+                                                        ],
+                                                        "a": {
+                                                            "directives": [
+                                                                "authzprovideralias"
+                                                            ],
+                                                            "l": {
+                                                                "directives": [
+                                                                    "authzprovideralias"
+                                                                ],
+                                                                "i": {
+                                                                    "directives": [
+                                                                        "authzprovideralias"
+                                                                    ],
+                                                                    "a": {
+                                                                        "directives": [
+                                                                            "authzprovideralias"
+                                                                        ],
+                                                                        "s": {
+                                                                            "directives": [
+                                                                                "authzprovideralias"
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "d": {
+        "directives": [
+            "directory",
+            "directorymatch"
+        ],
+        "i": {
+            "directives": [
+                "directory",
+                "directorymatch"
+            ],
+            "r": {
+                "directives": [
+                    "directory",
+                    "directorymatch"
+                ],
+                "e": {
+                    "directives": [
+                        "directory",
+                        "directorymatch"
+                    ],
+                    "c": {
+                        "directives": [
+                            "directory",
+                            "directorymatch"
+                        ],
+                        "t": {
+                            "directives": [
+                                "directory",
+                                "directorymatch"
+                            ],
+                            "o": {
+                                "directives": [
+                                    "directory",
+                                    "directorymatch"
+                                ],
+                                "r": {
+                                    "directives": [
+                                        "directory",
+                                        "directorymatch"
+                                    ],
+                                    "y": {
+                                        "directives": [
+                                            "directory",
+                                            "directorymatch"
+                                        ],
+                                        "m": {
+                                            "directives": [
+                                                "directorymatch"
+                                            ],
+                                            "a": {
+                                                "directives": [
+                                                    "directorymatch"
+                                                ],
+                                                "t": {
+                                                    "directives": [
+                                                        "directorymatch"
+                                                    ],
+                                                    "c": {
+                                                        "directives": [
+                                                            "directorymatch"
+                                                        ],
+                                                        "h": {
+                                                            "directives": [
+                                                                "directorymatch"
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "e": {
+        "directives": [
+            "else",
+            "elseif"
+        ],
+        "l": {
+            "directives": [
+                "else",
+                "elseif"
+            ],
+            "s": {
+                "directives": [
+                    "else",
+                    "elseif"
+                ],
+                "e": {
+                    "directives": [
+                        "else",
+                        "elseif"
+                    ],
+                    "i": {
+                        "directives": [
+                            "elseif"
+                        ],
+                        "f": {
+                            "directives": [
+                                "elseif"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "f": {
+        "directives": [
+            "files",
+            "filesmatch"
+        ],
+        "i": {
+            "directives": [
+                "files",
+                "filesmatch"
+            ],
+            "l": {
+                "directives": [
+                    "files",
+                    "filesmatch"
+                ],
+                "e": {
+                    "directives": [
+                        "files",
+                        "filesmatch"
+                    ],
+                    "s": {
+                        "directives": [
+                            "files",
+                            "filesmatch"
+                        ],
+                        "m": {
+                            "directives": [
+                                "filesmatch"
+                            ],
+                            "a": {
+                                "directives": [
+                                    "filesmatch"
+                                ],
+                                "t": {
+                                    "directives": [
+                                        "filesmatch"
+                                    ],
+                                    "c": {
+                                        "directives": [
+                                            "filesmatch"
+                                        ],
+                                        "h": {
+                                            "directives": [
+                                                "filesmatch"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "i": {
+        "directives": [
+            "if",
+            "ifdefine",
+            "ifmodule",
+            "ifversion"
+        ],
+        "f": {
+            "directives": [
+                "if",
+                "ifdefine",
+                "ifmodule",
+                "ifversion"
+            ],
+            "d": {
+                "directives": [
+                    "ifdefine"
+                ],
+                "e": {
+                    "directives": [
+                        "ifdefine"
+                    ],
+                    "f": {
+                        "directives": [
+                            "ifdefine"
+                        ],
+                        "i": {
+                            "directives": [
+                                "ifdefine"
+                            ],
+                            "n": {
+                                "directives": [
+                                    "ifdefine"
+                                ],
+                                "e": {
+                                    "directives": [
+                                        "ifdefine"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "m": {
+                "directives": [
+                    "ifmodule"
+                ],
+                "o": {
+                    "directives": [
+                        "ifmodule"
+                    ],
+                    "d": {
+                        "directives": [
+                            "ifmodule"
+                        ],
+                        "u": {
+                            "directives": [
+                                "ifmodule"
+                            ],
+                            "l": {
+                                "directives": [
+                                    "ifmodule"
+                                ],
+                                "e": {
+                                    "directives": [
+                                        "ifmodule"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "v": {
+                "directives": [
+                    "ifversion"
+                ],
+                "e": {
+                    "directives": [
+                        "ifversion"
+                    ],
+                    "r": {
+                        "directives": [
+                            "ifversion"
+                        ],
+                        "s": {
+                            "directives": [
+                                "ifversion"
+                            ],
+                            "i": {
+                                "directives": [
+                                    "ifversion"
+                                ],
+                                "o": {
+                                    "directives": [
+                                        "ifversion"
+                                    ],
+                                    "n": {
+                                        "directives": [
+                                            "ifversion"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "l": {
+        "directives": [
+            "limit",
+            "limitexcept",
+            "location",
+            "locationmatch"
+        ],
+        "i": {
+            "directives": [
+                "limit",
+                "limitexcept"
+            ],
+            "m": {
+                "directives": [
+                    "limit",
+                    "limitexcept"
+                ],
+                "i": {
+                    "directives": [
+                        "limit",
+                        "limitexcept"
+                    ],
+                    "t": {
+                        "directives": [
+                            "limit",
+                            "limitexcept"
+                        ],
+                        "e": {
+                            "directives": [
+                                "limitexcept"
+                            ],
+                            "x": {
+                                "directives": [
+                                    "limitexcept"
+                                ],
+                                "c": {
+                                    "directives": [
+                                        "limitexcept"
+                                    ],
+                                    "e": {
+                                        "directives": [
+                                            "limitexcept"
+                                        ],
+                                        "p": {
+                                            "directives": [
+                                                "limitexcept"
+                                            ],
+                                            "t": {
+                                                "directives": [
+                                                    "limitexcept"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "o": {
+            "directives": [
+                "location",
+                "locationmatch"
+            ],
+            "c": {
+                "directives": [
+                    "location",
+                    "locationmatch"
+                ],
+                "a": {
+                    "directives": [
+                        "location",
+                        "locationmatch"
+                    ],
+                    "t": {
+                        "directives": [
+                            "location",
+                            "locationmatch"
+                        ],
+                        "i": {
+                            "directives": [
+                                "location",
+                                "locationmatch"
+                            ],
+                            "o": {
+                                "directives": [
+                                    "location",
+                                    "locationmatch"
+                                ],
+                                "n": {
+                                    "directives": [
+                                        "location",
+                                        "locationmatch"
+                                    ],
+                                    "m": {
+                                        "directives": [
+                                            "locationmatch"
+                                        ],
+                                        "a": {
+                                            "directives": [
+                                                "locationmatch"
+                                            ],
+                                            "t": {
+                                                "directives": [
+                                                    "locationmatch"
+                                                ],
+                                                "c": {
+                                                    "directives": [
+                                                        "locationmatch"
+                                                    ],
+                                                    "h": {
+                                                        "directives": [
+                                                            "locationmatch"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "m": {
+        "directives": [
+            "macro"
+        ],
+        "a": {
+            "directives": [
+                "macro"
+            ],
+            "c": {
+                "directives": [
+                    "macro"
+                ],
+                "r": {
+                    "directives": [
+                        "macro"
+                    ],
+                    "o": {
+                        "directives": [
+                            "macro"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "p": {
+        "directives": [
+            "proxy",
+            "proxymatch"
+        ],
+        "r": {
+            "directives": [
+                "proxy",
+                "proxymatch"
+            ],
+            "o": {
+                "directives": [
+                    "proxy",
+                    "proxymatch"
+                ],
+                "x": {
+                    "directives": [
+                        "proxy",
+                        "proxymatch"
+                    ],
+                    "y": {
+                        "directives": [
+                            "proxy",
+                            "proxymatch"
+                        ],
+                        "m": {
+                            "directives": [
+                                "proxymatch"
+                            ],
+                            "a": {
+                                "directives": [
+                                    "proxymatch"
+                                ],
+                                "t": {
+                                    "directives": [
+                                        "proxymatch"
+                                    ],
+                                    "c": {
+                                        "directives": [
+                                            "proxymatch"
+                                        ],
+                                        "h": {
+                                            "directives": [
+                                                "proxymatch"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "r": {
+        "directives": [
+            "requireall",
+            "requireany",
+            "requirenone"
+        ],
+        "e": {
+            "directives": [
+                "requireall",
+                "requireany",
+                "requirenone"
+            ],
+            "q": {
+                "directives": [
+                    "requireall",
+                    "requireany",
+                    "requirenone"
+                ],
+                "u": {
+                    "directives": [
+                        "requireall",
+                        "requireany",
+                        "requirenone"
+                    ],
+                    "i": {
+                        "directives": [
+                            "requireall",
+                            "requireany",
+                            "requirenone"
+                        ],
+                        "r": {
+                            "directives": [
+                                "requireall",
+                                "requireany",
+                                "requirenone"
+                            ],
+                            "e": {
+                                "directives": [
+                                    "requireall",
+                                    "requireany",
+                                    "requirenone"
+                                ],
+                                "a": {
+                                    "directives": [
+                                        "requireall",
+                                        "requireany"
+                                    ],
+                                    "l": {
+                                        "directives": [
+                                            "requireall"
+                                        ],
+                                        "l": {
+                                            "directives": [
+                                                "requireall"
+                                            ]
+                                        }
+                                    },
+                                    "n": {
+                                        "directives": [
+                                            "requireany"
+                                        ],
+                                        "y": {
+                                            "directives": [
+                                                "requireany"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "n": {
+                                    "directives": [
+                                        "requirenone"
+                                    ],
+                                    "o": {
+                                        "directives": [
+                                            "requirenone"
+                                        ],
+                                        "n": {
+                                            "directives": [
+                                                "requirenone"
+                                            ],
+                                            "e": {
+                                                "directives": [
+                                                    "requirenone"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "v": {
+        "directives": [
+            "virtualhost"
+        ],
+        "i": {
+            "directives": [
+                "virtualhost"
+            ],
+            "r": {
+                "directives": [
+                    "virtualhost"
+                ],
+                "t": {
+                    "directives": [
+                        "virtualhost"
+                    ],
+                    "u": {
+                        "directives": [
+                            "virtualhost"
+                        ],
+                        "a": {
+                            "directives": [
+                                "virtualhost"
+                            ],
+                            "l": {
+                                "directives": [
+                                    "virtualhost"
+                                ],
+                                "h": {
+                                    "directives": [
+                                        "virtualhost"
+                                    ],
+                                    "o": {
+                                        "directives": [
+                                            "virtualhost"
+                                        ],
+                                        "s": {
+                                            "directives": [
+                                                "virtualhost"
+                                            ],
+                                            "t": {
+                                                "directives": [
+                                                    "virtualhost"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
