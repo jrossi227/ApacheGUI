@@ -2,6 +2,7 @@
  * Modules to install
  * npm install 'jsdom@3.1.2'
  * npm install 'jquery@1.11.2'
+ * npm install node-minify
  * 
  */
 
@@ -19,6 +20,9 @@ net.apachegui = (function() {
 
     var version = process.argv[2];
     console.log('version: ' + version);
+    if(typeof version == 'undefined') {
+        console.log('PLEASE SPECIFY THE APACHE VERSION WHEN RUNNING THE PROGRAM');
+    }
 
     /**
      * Example object for directives:
@@ -65,6 +69,7 @@ net.apachegui = (function() {
      *              'action',
      *              'addalt',
      *              ... 
+     *              [maximum of 10 entries]
      *          ]
      *          
      *          c {
@@ -85,19 +90,64 @@ net.apachegui = (function() {
      **/
     var directiveTree = {};
     
+    var addToDirectiveTree = function(obj, directive, index) {
+        
+        if(index == directive.length) {
+            return;
+        }
+        
+        var char = directive[index];
+        if(!obj[char]) {
+            obj[char] = {};
+            obj[char].directives = [];
+        }
+        
+        if(obj[char].directives.length < 10) {
+            obj[char].directives.push(directive);
+        }
+        addToDirectiveTree(obj[char], directive, index + 1);
+    }; 
+    
     var generateDirectiveTree = function() {
         console.log("Generating directive tree");
         
         for(var directive in directives) {
-            console.log(directive);
-            var chars = [];
-            for(var i=0; i<directive.length; i++) {
-                chars.push(directive[i]);
-                for(var j=0; j<chars.length; j++) {
-                    if(!!directiveTree[chars[j]])
-                }
-            }
+            addToDirectiveTree(directiveTree, directive, 0);
         }
+                
+        var file = "directives_" + version.replace('.','')+ ".js";
+        
+        console.log('Writing json to file: ' + file);
+
+        var out = 'var net = (net || {});\n' + 
+                  'net.apachegui = (net.apachegui || {});\n' + 
+                  'net.apachegui.DIRECTIVES = ' + JSON.stringify(directives, null, 4) + ';\n\n' +
+                  'net.apachegui.DIRECTIVETREE = ' + JSON.stringify(directiveTree, null, 4) + ';';
+        
+        var fs = require('fs');
+        fs.writeFile(file, out, function(err) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("The file was successfully saved");
+                
+                var fileMin = file.replace('.js', '.min.js');
+                console.log("Minifying file to: " + fileMin);
+                var compressor = require('node-minify');
+                new compressor.minify({
+                    type: 'yui-js',
+                    fileIn: file,
+                    fileOut: fileMin,
+                    callback: function(err, min){
+                        if(err) {
+                            console.log(err);
+                        } else {
+                            console.log("The file was successfully minified");
+                        }
+                    }
+                });
+            }
+        });
     }
     
     var index = 0;
@@ -142,21 +192,7 @@ net.apachegui = (function() {
                     if (index < parseList.length) {
                         buildDirective(parseList[index]);
                     } else {
-                        console.log('writing json to file');
-
-                        var out = 'var net = (net || {});\n' + 
-                                  'net.apachegui = (net.apachegui || {});\n' + 
-                                  'net.apachegui.DIRECTIVES = ' + JSON.stringify(directives, null, 4) + ';';
-
-                        var fs = require('fs');
-                        fs.writeFile("directives.js", out, function(err) {
-                            if (err) {
-                                console.log(err);
-                            } else {
-                                console.log("The file was saved!");
-                                generateDirectiveTree();
-                            }
-                        });
+                        generateDirectiveTree();
                     }
                 }
             });
