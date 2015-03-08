@@ -4,8 +4,9 @@ define([ "dojo/_base/declare",
          "dojo/on",
          "dojo/request",
          "net/apachegui/Editor",
-         "dojo/_base/json"
-], function(declare, dom, registry, on, request, Editor, json){    
+         "dojo/_base/json",
+         "dojo/request/script"
+], function(declare, dom, registry, on, request, Editor, json, script){    
     
     declare("net.apachegui.Configuration", [net.apachegui.Editor], {        
         
@@ -16,6 +17,7 @@ define([ "dojo/_base/declare",
             if(this.initialized===false) {
                 this.inherited(arguments);
                 this.addListeners();
+                this.loadAutoSuggest();
                 this.initialized=true;
             }    
         },
@@ -110,6 +112,43 @@ define([ "dojo/_base/declare",
         
         preview: function(line) {
             net.apachegui.Util.alert('Preview',escape(line));
+        },
+        
+        loadAutoSuggest: function() {
+            net.apachegui.Main.getInstance().getApacheVersion(function(version) {
+                var url = '/ApacheGUI/manual/directives_' + version.replace('.','') + '.min.js';
+                script.get(url); 
+            });
+        },
+        
+        autoSuggest: function() {
+            var currentLineContent = this.editor.getRange({
+                line: this.editor.getCursor().line,
+                ch: 0
+            }, {
+                line: this.editor.getCursor().line,
+                ch: this.editor.getCursor().ch
+            });
+            
+            var patt = /^(\s*\w+)$/m;
+            if(patt.test(currentLineContent)) {
+                var obj = net.apachegui.DIRECTIVETREE;
+                var line = currentLineContent.trim().toLowerCase();
+                for(var i=0; i<line.length; i++) {
+                    if(!!obj[line[i]]) {
+                        obj = obj[line[i]];
+                    } else {
+                        obj = {};
+                        break;
+                    }
+                }
+                
+                if(!!obj.directives) {
+                    console.log(obj.directives);
+                } else {
+                    console.log('no directives');
+                }
+            }
         },
         
         addListeners : function() {

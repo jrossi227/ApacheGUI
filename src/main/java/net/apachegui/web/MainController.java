@@ -8,6 +8,7 @@ import net.apachegui.global.Constants;
 import net.apachegui.global.Utilities;
 import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
+import net.apachegui.server.ServerInfo;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -143,6 +144,15 @@ public class MainController {
 
         JSONObject result = new JSONObject();
         result.put("files", files);
+
+        return result.toString();
+    }
+    
+    @RequestMapping(method = RequestMethod.GET, params = "option=apacheVersion", produces = "application/json;charset=UTF-8")
+    public String getApacheVersion() throws Exception {
+
+        JSONObject result = new JSONObject();
+        result.put("version", ServerInfo.getVersionMajorMinorString(null));
 
         return result.toString();
     }

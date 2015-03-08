@@ -86,6 +86,11 @@ define([ "dojo/_base/declare",
             net.apachegui.Interval.clearInterval( this.refreshUpdateTimerHandler );
         },
         
+        //Override for auto-suggest
+        autoSuggest: function() {
+            
+        },
+        
         getInitEditorOptions: function() {
             var that=this;
             
@@ -101,8 +106,9 @@ define([ "dojo/_base/declare",
                         that.scrolledLine = -1;
                     }
                 },
-                onCursorActivity: function() {
+                onCursorActivity : function() {
                     that.editor.matchHighlight("CodeMirror-matchhighlight");
+                    that.autoSuggest();
                 }
             };
         

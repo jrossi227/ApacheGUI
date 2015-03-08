@@ -145,6 +145,24 @@ public class ServerInfo {
         return isVersion(versionString, Constants.versionTwoPointFourRegex);
     }
 
+    /**
+     * Method to return the String representation of the Apache major Minor version eg. 2.4
+     * 
+     * @param binFile
+     *            optional apache binary file to use. This should be set to null if you intend to use the apache binary file defined in the settings.
+     * @return a String representation of the Major Minor version of Apache eg. 2.4
+     * @return
+     * @throws InterruptedException 
+     * @throws IOException 
+     */
+    public static String getVersionMajorMinorString(String binFile) throws IOException, InterruptedException {
+        if(isTwoPointTwo(binFile)) {
+            return "2.2";
+        }
+        
+        return "2.4";
+    }
+    
     private static boolean isVersion(String versionString, String regexVersion) {
         Pattern pattern = Pattern.compile(regexVersion, Pattern.CASE_INSENSITIVE);
         java.util.regex.Matcher patternMatcher = pattern.matcher(versionString);

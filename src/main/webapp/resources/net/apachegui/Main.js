@@ -211,6 +211,28 @@ define([ "dojo/_base/declare",
             );
         },
         
+        getApacheVersion: function(callback) {
+            request.get('../web/Main', {
+                query:     {
+                    option: 'apacheVersion'
+                },
+                handleAs: 'json',
+                sync: false,
+                preventCache: true
+            }).response.then(
+                function(response) {
+                
+                    var data = response.data;
+
+                    callback(data.version);
+                },
+                function(error) {
+                    thisdialog.remove();
+                    net.apachegui.Util.alert('Info',error.response.data.message);
+                }
+            );
+        },
+        
         checkSession: function() {
             var that = this;
             

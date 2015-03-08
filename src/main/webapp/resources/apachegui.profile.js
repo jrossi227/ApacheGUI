@@ -62,6 +62,7 @@ var profile = (function(){
  		     		       "dojo/_base/lang",
  						   "dojo/on",
  	     			       "dojo/request",
+ 	     			       "dojo/request/script",
  	     			       "dojo/_base/array", 
  	     			       "dojo/query",
  	     			       "dojo/dom-class",
