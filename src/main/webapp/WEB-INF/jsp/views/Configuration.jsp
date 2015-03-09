@@ -64,5 +64,7 @@
 			</div>
 		</div>
 	</div>	
+	
+	<jsp:include page="/jsp/AutoSuggest.jsp"  flush="true" />
 </body>
 </html>

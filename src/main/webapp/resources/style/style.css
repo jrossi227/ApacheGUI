@@ -144,6 +144,53 @@ h1 {
 	margin-left:-312px;
 }
 
+/* Auto Suggest styling */
+#autoSuggestContainer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 500px;
+	height: 300px;
+	z-index: 899;
+	background-color: #ffffff;
+	border: 1px solid #000000;
+}
+
+#autoSuggestKeywordContainer {
+    display: inline-block;
+    vertical-align: top;	
+    width: 135px;
+    height: 300px;
+    border-right: 1px dashed #000000;
+    padding: 0;
+}
+
+#autoSuggestKeywordContainer ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+#autoSuggestKeywordContainer ul li {
+	height: 25px;
+    line-height: 25px;
+    vertical-align: middle;
+    cursor: pointer;
+    padding: 0 5px;
+}	
+
+#autoSuggestKeywordContainer ul li:hover {
+    background-color: #BCD2EE;	
+}	
+
+#autoSuggestDescriptionContainer {
+	display: inline-block;
+    vertical-align: top;    
+    width: 330px;
+    height: 300px;
+    padding: 5px;
+}
+
 /* Control specific css */
 #controlBody .running {
     color: #00ff00;
