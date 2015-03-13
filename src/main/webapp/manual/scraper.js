@@ -93,7 +93,7 @@ net.apachegui = (function() {
     var directiveTree = {};
     var enclosureTree = {};
     
-    var addToAutoSuggestTree = function(obj, item, index) {
+    var addToAutoSuggestTree = function(obj, item, items, index) {
         
         if(index == item.length) {
             return;
@@ -106,21 +106,21 @@ net.apachegui = (function() {
         }
         
         if(obj[char].items.length < 10) {
-            obj[char].items.push(item);
+            obj[char].items.push(items[item].name);
         }
-        addToAutoSuggestTree(obj[char], item, index + 1);
+        addToAutoSuggestTree(obj[char], item, items, index + 1);
     }; 
     
     var generateAutoSuggestTree = function() {
         
         console.log("Generating directive tree");
         for(var directive in directives) {
-            addToAutoSuggestTree(directiveTree, directive, 0);
+            addToAutoSuggestTree(directiveTree, directive, directives, 0);
         }
         
         console.log("Generating enclosure tree");
         for(var enclosure in enclosures) {
-            addToAutoSuggestTree(enclosureTree, enclosure, 0);
+            addToAutoSuggestTree(enclosureTree, enclosure, enclosures, 0);
         }
                 
         var file = "auto_suggest_" + version.replace('.','')+ ".js";
@@ -187,7 +187,7 @@ net.apachegui = (function() {
                     var addJson = function(obj) {
                         
                         obj[key] = {};
-                        obj[key].name = name;
+                        obj[key].name = name.replace('<','').replace('>','');
                         obj[key].href = '/ApacheGUI/manual/' + version + '/mod/' + parseObj.link + '#' + key;
 
                         var items = [];
