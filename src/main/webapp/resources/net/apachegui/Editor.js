@@ -8,8 +8,9 @@ define([ "dojo/_base/declare",
          "dojo/_base/window",
          "dojo/query",
          "dojo/_base/event",
-         "dojo/_base/json"
-], function(declare, dom, registry, on, request, domClass, domConstruct, win, query, event, json){
+         "dojo/_base/json",
+         "dojo/dom-geometry"
+], function(declare, dom, registry, on, request, domClass, domConstruct, win, query, event, json, domGeom){
     
     declare("net.apachegui.Editor", null, {    
 
@@ -133,12 +134,18 @@ define([ "dojo/_base/declare",
             var that = this;
 
             this.editor.setCursor(lineNum);
-            window.setTimeout(function() {
+            setTimeout(function() {
                 that.editor.setLineClass(lineNum, null, "center-me");
-                var $line = $('.CodeMirror-lines').find('.center-me');
-                var $scroll = $('.CodeMirror-scroll');
                 
-                $scroll.scrollTop(0).scrollTop($line.offset().top - $scroll.offset().top - Math.round($scroll.height() / 2));
+                var line = query('.center-me',query('.CodeMirror-lines')[0])[0];
+                var scroll = query('.CodeMirror-scroll')[0];
+                scroll.scrollTop = 0;
+                
+                var linePos = domGeom.position(line);
+                var scrollPos = domGeom.position(scroll);
+                var scrollHeight = scroll.offsetHeight; 
+                
+                scroll.scrollTop = linePos.y - scrollPos.y - Math.round(scrollHeight / 2);
                 
                 that.scrolledLine = lineNum;
             }, 200);

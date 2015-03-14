@@ -140,20 +140,23 @@ define([ "dojo/_base/declare",
         
         updateAutoSuggest: function() {
             
-            var currentLineContent = this.editor.getRange({
-                line: this.editor.getCursor().line,
-                ch: 0
-            }, {
-                line: this.editor.getCursor().line,
-                ch: this.editor.getCursor().ch
-            });
-            
-            var pos = this.editor.cursorCoords(true, 'page');
-            var xpos = pos.x;
-            //max height of the line is 18px
-            var ypos = pos.y + 18;
-            
-            this.autoSuggest.updateSuggestions(this.editor.getLine(this.editor.getCursor().line), this.editor.getCursor().ch, xpos, ypos);
+             if (!!this.autoSuggest) {
+
+                var currentLineContent = this.editor.getRange({
+                    line : this.editor.getCursor().line,
+                    ch : 0
+                }, {
+                    line : this.editor.getCursor().line,
+                    ch : this.editor.getCursor().ch
+                });
+
+                var pos = this.editor.cursorCoords(true, 'page');
+                var xpos = pos.x;
+                // max height of the line is 18px
+                var ypos = pos.y + 18;
+
+                this.autoSuggest.updateSuggestions(this.editor.getLine(this.editor.getCursor().line), this.editor.getCursor().ch, xpos, ypos);
+            }
         },
         
         addListeners : function() {
