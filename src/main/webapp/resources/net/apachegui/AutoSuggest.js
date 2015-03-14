@@ -151,10 +151,6 @@ define([ "dojo/_base/declare",
                  that.hide();
              });
              
-             window.onscroll = function() {
-                 that.hide();
-             };
-             
              on(document, "keyup", function(event) {
                 if(!that.isShown) {
                     return;
