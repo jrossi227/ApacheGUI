@@ -11,7 +11,7 @@
     
     </div>
     
-    <div id="autoSuggestDescriptionContainer">
+    <div id="autoSuggestDescriptionContainer" style="display: none;">
     
     </div>
 

@@ -607,7 +607,6 @@ define([ "dojo/_base/declare",
             on(registry.byId('editorEditUnComment'), "click", function(){
                 CodeMirror.commands.unComment(that.editor);
             });
-            
         }
     });
     

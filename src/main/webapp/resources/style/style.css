@@ -179,7 +179,8 @@ h1 {
     padding: 0 5px;
 }	
 
-#autoSuggestKeywordContainer ul li:hover {
+#autoSuggestKeywordContainer ul li:hover,
+#autoSuggestKeywordContainer ul li.selected {
     background-color: #BCD2EE;	
 }	
 

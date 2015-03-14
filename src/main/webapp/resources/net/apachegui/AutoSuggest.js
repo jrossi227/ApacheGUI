@@ -3,8 +3,10 @@ define([ "dojo/_base/declare",
          "dojo/dom-style",
          "dojo/request/script",
          "dojo/on",
-         "dojo/keys"
-], function(declare, dom, domStyle, script, on, keys){    
+         "dojo/keys",
+         "dojo/dom-class",
+         "dojo/query"
+], function(declare, dom, domStyle, script, on, keys, domClass, query){    
      
      return declare(null, {    
          
@@ -12,6 +14,7 @@ define([ "dojo/_base/declare",
          isShown: false,
          onShow: null,
          onHide: null,
+         selectedItem: -1,
          
          constructor: function(obj) {
             var that = this;
@@ -34,26 +37,71 @@ define([ "dojo/_base/declare",
          },
          
          show: function(xpos, ypos) {
-             domStyle.set('autoSuggestContainer','top',ypos + 'px');
-             domStyle.set('autoSuggestContainer','left',xpos + 'px');
-             domStyle.set('autoSuggestContainer','display','block');
+             this.updatePosition(xpos,ypos);
+             if(!this.isShown) {
+                 domStyle.set('autoSuggestContainer','display','block');
+                 
+                 this.onShow();
+                 this.isShown = true;
+             }
+         },
+         
+         updatePosition: function(xpos, ypos) {
+             //position either above or below line
+             var windowHeight = window.innerHeight;
+             if((windowHeight / 2) > ypos) {
+                 domStyle.set('autoSuggestContainer','bottom','auto');
+                 domStyle.set('autoSuggestContainer','top',ypos + 'px');
+                 domStyle.set('autoSuggestContainer','left',xpos + 'px');
+             } else {
+                 domStyle.set('autoSuggestContainer','top','auto');
+                 domStyle.set('autoSuggestContainer','bottom',(windowHeight - ypos) + 'px');
+                 domStyle.set('autoSuggestContainer','left',xpos + 'px');
+             }
              
-             this.onShow();
-             this.isShown = true;
          },
          
          hide: function() {
-             domStyle.set('autoSuggestContainer','display','none');
+             if(this.isShown) {
+                 domStyle.set('autoSuggestContainer','display','none');
+                 
+                 this.onHide();
+                 this.isShown = false;
+             }
+         },
+         
+         selectItem: function(item) {
+             this.selectedItem = item;
              
-             this.onHide();
-             this.isShown = false;
+             query('li', dom.byId('autoSuggestKeywordList')).removeClass('selected');
+             if(item > -1) {
+                 domClass.add(query('li', dom.byId('autoSuggestKeywordList'))[item],'selected');
+                 domStyle.set('autoSuggestDescriptionContainer','display','block');
+             } else {
+                 domStyle.set('autoSuggestDescriptionContainer','display','none');
+             }
+         },
+         
+         buildKeywordList: function(items) {
+             var list ='';
+             for(var i=0; i<items.length; i++) {
+                 list += '<li data-value="' + items[i] + '">' + items[i] + '</li>'
+             }
+             
+             return list;
+         },
+         
+         buildDescriptionContainer: function(item) {
+             
          },
          
          updateSuggestions: function(line, cursorCharNum, xpos, ypos) {
              if(!this.initialized) {
                  return;
              }
-                          
+              
+             this.selectedItem = -1;
+             
              var obj = null;
              //if the next character isn't whitespace dont show suggestions
              if(line.length == cursorCharNum || (line.length > cursorCharNum && /\s/m.test(line[cursorCharNum]))) {
@@ -81,12 +129,7 @@ define([ "dojo/_base/declare",
                  }
                  
                  if(!!obj.items) {
-                     var list ='';
-                     var items = obj.items;
-                     for(var i=0; i<items.length; i++) {
-                         list += '<li data-value="' + items[i] + '">' + items[i] + '</li>'
-                     }
-                     dom.byId('autoSuggestKeywordList').innerHTML = list;
+                     dom.byId('autoSuggestKeywordList').innerHTML = this.buildKeywordList(obj.items);
                      
                      this.show(xpos, ypos);
                  } else {
@@ -105,8 +148,12 @@ define([ "dojo/_base/declare",
              });
              
              on(document, 'click', function() {
-                 domStyle.set('autoSuggestContainer','display','none');
+                 that.hide();
              });
+             
+             window.onscroll = function() {
+                 that.hide();
+             };
              
              on(document, "keyup", function(event) {
                 if(!that.isShown) {
@@ -117,24 +164,29 @@ define([ "dojo/_base/declare",
                 case keys.UP_ARROW:
                     event.preventDefault();
                     
-                    //check if selected else close
-                    
-                    console.log("up arrow has been pressed");
+                    if(that.selectedItem > -1) {
+                        that.selectItem(that.selectedItem -1);                        
+                    } else {
+                        that.hide();
+                    } 
+                 
                     break;
                 case keys.DOWN_ARROW:
                     event.preventDefault();
                     
-                    console.log("down arrow has been pressed");
+                    var numOfItems = query('li', dom.byId('autoSuggestKeywordList')).length;
+                    if(that.selectedItem < (numOfItems-1)) {
+                        that.selectItem(that.selectedItem + 1);     
+                    }    
+                    
                     break;
                 case keys.RIGHT_ARROW:
                     event.preventDefault();
                     
-                    console.log("right arrow has been pressed");
                     break;
                 case keys.LEFT_ARROW:
                     event.preventDefault();
                     
-                    console.log("left arrow has been pressed");
                     break;    
                 
                 }

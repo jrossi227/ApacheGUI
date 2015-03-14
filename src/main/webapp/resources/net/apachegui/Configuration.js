@@ -5,8 +5,9 @@ define([ "dojo/_base/declare",
          "dojo/request",
          "net/apachegui/Editor",
          "dojo/_base/json",
+         "dojo/query",
          "net/apachegui/AutoSuggest"
-], function(declare, dom, registry, on, request, Editor, json, AutoSuggest){    
+], function(declare, dom, registry, on, request, Editor, json, query, AutoSuggest){    
     
     declare("net.apachegui.Configuration", [net.apachegui.Editor], {        
         
@@ -138,24 +139,26 @@ define([ "dojo/_base/declare",
             
         },
         
-        updateAutoSuggest: function() {
+        getCursorCoords: function() {
+            var pos = this.editor.cursorCoords(true, 'page');
+            var xpos = pos.x;
+            var ypos = pos.y;
             
+            var windowHeight = window.innerHeight;
+            if(ypos < (windowHeight / 2)) {
+                ypos += 18;
+            }
+            
+            return {
+                xpos: xpos,
+                ypos: ypos
+            }
+        },
+        
+        updateAutoSuggest: function() {
              if (!!this.autoSuggest) {
-
-                var currentLineContent = this.editor.getRange({
-                    line : this.editor.getCursor().line,
-                    ch : 0
-                }, {
-                    line : this.editor.getCursor().line,
-                    ch : this.editor.getCursor().ch
-                });
-
-                var pos = this.editor.cursorCoords(true, 'page');
-                var xpos = pos.x;
-                // max height of the line is 18px
-                var ypos = pos.y + 18;
-
-                this.autoSuggest.updateSuggestions(this.editor.getLine(this.editor.getCursor().line), this.editor.getCursor().ch, xpos, ypos);
+                var cursorCoords = this.getCursorCoords();
+                this.autoSuggest.updateSuggestions(this.editor.getLine(this.editor.getCursor().line), this.editor.getCursor().ch, cursorCoords.xpos, cursorCoords.ypos);
             }
         },
         
@@ -178,6 +181,11 @@ define([ "dojo/_base/declare",
                 registry.byId('searchConfigurationDialog').show();
             });
             
+            query('.CodeMirror-scroll').on('scroll', function() {
+                if(!!that.autoSuggest) {
+                    that.autoSuggest.hide();
+                }
+            });
         }    
             
     });
