@@ -99,6 +99,7 @@ define([ "dojo/_base/declare",
                 tabMode : 'indent',
                 onChange : function() {
                     that.updateEditor();
+                    that.updateAutoSuggest();
                 },
                 onFocus : function() {
                     if(that.scrolledLine > -1) {
@@ -108,7 +109,6 @@ define([ "dojo/_base/declare",
                 },
                 onCursorActivity : function() {
                     that.editor.matchHighlight("CodeMirror-matchhighlight");
-                    that.updateAutoSuggest();
                 }
             };
         

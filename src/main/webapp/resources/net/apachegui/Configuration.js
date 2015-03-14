@@ -119,7 +119,21 @@ define([ "dojo/_base/declare",
             that = this;
             
             net.apachegui.Main.getInstance().getApacheVersion(function(version) {
-                that.autoSuggest = new AutoSuggest(version);
+                that.autoSuggest = new AutoSuggest({
+                    version : version,
+                    onShow: function() {
+                        CodeMirror.keyMap.basic.Up = '';
+                        CodeMirror.keyMap.basic.Down = '';
+                        CodeMirror.keyMap.basic.Left = '';
+                        CodeMirror.keyMap.basic.Right = '';
+                    },
+                    onHide: function() {
+                        CodeMirror.keyMap.basic.Up = 'goLineUp';
+                        CodeMirror.keyMap.basic.Down = 'goLineDown';
+                        CodeMirror.keyMap.basic.Left = 'goCharLeft';
+                        CodeMirror.keyMap.basic.Right = 'goCharRight';
+                    }
+                });
             });
             
         },
@@ -134,7 +148,12 @@ define([ "dojo/_base/declare",
                 ch: this.editor.getCursor().ch
             });
             
-            this.autoSuggest.updateSuggestions(currentLineContent, 0, 0);
+            var pos = this.editor.cursorCoords(true, 'page');
+            var xpos = pos.x;
+            //max height of the line is 18px
+            var ypos = pos.y + 18;
+            
+            this.autoSuggest.updateSuggestions(this.editor.getLine(this.editor.getCursor().line), this.editor.getCursor().ch, xpos, ypos);
         },
         
         addListeners : function() {
