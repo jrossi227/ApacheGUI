@@ -5,8 +5,9 @@ define([ "dojo/_base/declare",
          "dojo/on",
          "dojo/keys",
          "dojo/dom-class",
-         "dojo/query"
-], function(declare, dom, domStyle, script, on, keys, domClass, query){    
+         "dojo/query",
+         "dojo/dom-attr"
+], function(declare, dom, domStyle, script, on, keys, domClass, query, domAttr){    
      
      return declare(null, {    
          
@@ -38,6 +39,7 @@ define([ "dojo/_base/declare",
          
          show: function(xpos, ypos) {
              this.updatePosition(xpos,ypos);
+             this.selectItem(0);
              if(!this.isShown) {
                  domStyle.set('autoSuggestContainer','display','block');
                  
@@ -70,15 +72,40 @@ define([ "dojo/_base/declare",
              }
          },
          
-         selectItem: function(item) {
-             this.selectedItem = item;
-             
-             query('li', dom.byId('autoSuggestKeywordList')).removeClass('selected');
-             if(item > -1) {
-                 domClass.add(query('li', dom.byId('autoSuggestKeywordList'))[item],'selected');
-                 domStyle.set('autoSuggestDescriptionContainer','display','block');
-             } else {
-                 domStyle.set('autoSuggestDescriptionContainer','display','none');
+         selectItem: function(itemNum) {
+             var numOfItems = query('li', dom.byId('autoSuggestKeywordList')).length;
+             if(itemNum < numOfItems && itemNum >= 0) {
+                 this.selectedItem = itemNum;
+                 
+                 var keywords = query('li', dom.byId('autoSuggestKeywordList'));
+                 keywords.removeClass('selected');
+                 domClass.add(keywords[itemNum],'selected');
+                 var name = domAttr.get(keywords[itemNum], "data-value").toLowerCase();
+                 
+                 var item = net.apachegui.AutoSuggest.DIRECTIVES[name];
+                 if(typeof item == 'undefined') {
+                     item = net.apachegui.AutoSuggest.ENCLOSURES[name];
+                 }
+                 
+                 var items = item['items'];
+                 var html = '<div>' +
+                                 '<h4>' + item.name + '</h4>' +
+                                 
+                                 '<table>';
+                                     for(var i=0; i<items.length; i++) {
+                     html +=            '<tr>' +
+                                            '<td>' + items[i].name + '</td>' +
+                                            '<td>' + items[i].value + '</td>' +
+                                         '</tr>';
+                                     }
+                     html +=     '</table>' +
+                                 '<p><a href="' + item.href + '" target="_blank">Full Description</a></p>' +
+                            '</div>';
+                 
+                 dom.byId('autoSuggestDescriptionContainer').innerHTML = html;
+                 
+                 //populate description container
+                 domStyle.set('autoSuggestDescriptionContainer','display','inline-block');
              }
          },
          
@@ -159,30 +186,19 @@ define([ "dojo/_base/declare",
                 switch (event.keyCode) {
                 case keys.UP_ARROW:
                     event.preventDefault();
-                    
-                    if(that.selectedItem > -1) {
-                        that.selectItem(that.selectedItem -1);                        
-                    } else {
-                        that.hide();
-                    } 
-                 
+                    that.selectItem(that.selectedItem -1);                        
                     break;
                 case keys.DOWN_ARROW:
                     event.preventDefault();
-                    
-                    var numOfItems = query('li', dom.byId('autoSuggestKeywordList')).length;
-                    if(that.selectedItem < (numOfItems-1)) {
-                        that.selectItem(that.selectedItem + 1);     
-                    }    
-                    
+                    that.selectItem(that.selectedItem + 1);     
                     break;
                 case keys.RIGHT_ARROW:
                     event.preventDefault();
-                    
+                    that.hide();
                     break;
                 case keys.LEFT_ARROW:
                     event.preventDefault();
-                    
+                    that.hide();
                     break;    
                 
                 }

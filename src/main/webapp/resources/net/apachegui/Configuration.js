@@ -127,12 +127,14 @@ define([ "dojo/_base/declare",
                         CodeMirror.keyMap.basic.Down = '';
                         CodeMirror.keyMap.basic.Left = '';
                         CodeMirror.keyMap.basic.Right = '';
+                        CodeMirror.keyMap.basic.Enter = '';
                     },
                     onHide: function() {
                         CodeMirror.keyMap.basic.Up = 'goLineUp';
                         CodeMirror.keyMap.basic.Down = 'goLineDown';
                         CodeMirror.keyMap.basic.Left = 'goCharLeft';
                         CodeMirror.keyMap.basic.Right = 'goCharRight';
+                        CodeMirror.keyMap.basic.Enter = 'newlineAndIndent';
                     }
                 });
             });
