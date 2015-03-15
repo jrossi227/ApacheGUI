@@ -1,4 +1,4 @@
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head><meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type" />
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head><meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
 <title>mod_log_debug - Apache HTTP Server Version 2.4</title>
 <link href="../style/css/manual-zip.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-zip-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
@@ -19,8 +19,8 @@
 
 <table class="module"><tr><th><a href="module-dict.html#Description">Description:</a></th><td>Additional configurable debug logging</td></tr>
 <tr><th><a href="module-dict.html#Status">Status:</a></th><td>Experimental</td></tr>
-<tr><th><a href="module-dict.html#ModuleIdentifier">Module Identifier:</a></th><td>log_debug_module</td></tr>
-<tr><th><a href="module-dict.html#SourceFile">Source File:</a></th><td>mod_log_debug.c</td></tr>
+<tr><th><a href="module-dict.html#ModuleIdentifier">ModuleÂ Identifier:</a></th><td>log_debug_module</td></tr>
+<tr><th><a href="module-dict.html#SourceFile">SourceÂ File:</a></th><td>mod_log_debug.c</td></tr>
 <tr><th><a href="module-dict.html#Compatibility">Compatibility:</a></th><td>Available in Apache 2.3.14 and later</td></tr></table>
 </div>
 <div id="quickview"><h3 class="directives">Directives</h3>
@@ -40,7 +40,7 @@
         Log message after request to /foo/* is processed:
 
         <pre class="prettyprint lang-config">&lt;Location /foo/&gt;
-  LogMessage "/foo/ has been requested"
+Â Â LogMessage "/foo/ has been requested"
 &lt;/Location&gt;</pre>
 
       </li>
@@ -48,7 +48,7 @@
       <li>
         Log message if request to /foo/* is processed in a sub-request:
         <pre class="prettyprint lang-config">&lt;Location /foo/&gt;
-  LogMessage "subrequest to /foo/" hook=type_checker expr=%{IS_SUBREQ}
+Â Â LogMessage "subrequest to /foo/" hook=type_checker expr=%{IS_SUBREQ}
 &lt;/Location&gt;</pre>
 
 
@@ -68,7 +68,7 @@
         Log the value of the "X-Foo" request environment variable in each
         stage of the request:
         <pre class="prettyprint lang-config">&lt;Location /&gt;
-  LogMessage "%{reqenv:X-Foo}" hook=all
+Â Â LogMessage "%{reqenv:X-Foo}" hook=all
 &lt;/Location&gt;</pre>
 
         Together with microsecond time stamps in the error log,

@@ -196,7 +196,14 @@ net.apachegui = (function() {
 
                             var obj = {}
                             obj.name = $this.find('th').find('a').html();
-                            obj.value = $this.find('td').html();
+                            var $content = $this.find('td');
+                            $content.find('a').each(function() {
+                               var $this = $(this);
+                               var currentHref = $this.attr('href');
+                               $this.attr('href', currentHref.replace('../','/ApacheGUI/manual/' + version + '/'));
+                               $this.attr('target','_blank');
+                            });
+                            obj.value = $content.html();
 
                             items.push(obj);
                         });

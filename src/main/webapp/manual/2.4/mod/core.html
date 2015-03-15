@@ -1,4 +1,4 @@
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head><meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type" />
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head><meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
 <title>core - Apache HTTP Server Version 2.4</title>
 <link href="../style/css/manual-zip.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-zip-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
@@ -1512,7 +1512,7 @@ ErrorLogFormat "[%t] [%l] [pid %P] %F: %E: [client %a] %M"</pre>
     unique id will be used as log ID for requests.</p>
 
     <pre class="prettyprint lang-config">#Example (default format for threaded MPMs)
-ErrorLogFormat "[%{u}t] [%-m:%l] [pid %P:tid %T] %7F: %E: [client\ %a] %M% ,\ referer\ %{Referer}i"</pre>
+ErrorLogFormat "[%{u}t] [%-m:%l] [pid %P:tid %T] %7F: %E: [client\ %a] %M%Â ,\Â referer\Â %{Referer}i"</pre>
 
 
     <p>This would result in error messages such as:</p>
@@ -1525,7 +1525,7 @@ ErrorLogFormat "[%{u}t] [%-m:%l] [pid %P:tid %T] %7F: %E: [client\ %a] %M% ,\ re
     entirely because they are not defined.</p>
 
     <pre class="prettyprint lang-config">#Example (similar to the 2.2.x format)
-ErrorLogFormat "[%t] [%l] %7F: %E: [client\ %a] %M% ,\ referer\ %{Referer}i"</pre>
+ErrorLogFormat "[%t] [%l] %7F: %E: [client\ %a] %M%Â ,\Â referer\Â %{Referer}i"</pre>
 
 
     <pre class="prettyprint lang-config">#Advanced example with request/connection log IDs

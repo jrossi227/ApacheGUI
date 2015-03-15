@@ -171,8 +171,8 @@ h1 {
 }
 
 #autoSuggestKeywordContainer ul li {
-	height: 25px;
-    line-height: 25px;
+	height: 28px;
+    line-height: 28px;
     vertical-align: middle;
     cursor: pointer;
     padding: 0 5px;
@@ -180,7 +180,8 @@ h1 {
 
 #autoSuggestKeywordContainer ul li:hover,
 #autoSuggestKeywordContainer ul li.selected {
-    background-color: #BCD2EE;	
+    background-color: #557697;
+    color: #fff;
 }	
 
 #autoSuggestDescriptionContainer {
@@ -188,10 +189,40 @@ h1 {
     vertical-align: top;    
     width: auto;
     height: 300px;
-    padding: 5px;
+    padding: 0;
     overflow: auto;
     border-left: 1px solid #000000;
     margin-left: -4px;
+}
+
+#autoSuggestDescriptionContainer .header {
+	background-color: #557697;
+    color: #fff;
+	font-size: 18px;
+    font-weight: bold;
+    margin: 0 0 0.5em;
+    padding: 0.2em 0 0.2em 0.7em;
+    text-decoration: none;
+}
+
+#autoSuggestDescriptionContainer .name,
+#autoSuggestDescriptionContainer .value,
+#autoSuggestDescriptionContainer .manual_link {
+	padding: 2px 5px;
+}
+
+#autoSuggestDescriptionContainer .name {
+    color: #0073c7;
+    font-weight: bold;   
+}
+
+#autoSuggestDescriptionContainer .value {
+    color: #036;
+}
+
+#autoSuggestDescriptionContainer code,
+#autoSuggestDescriptionContainer pre {
+   font-family: "Courier New",Courier,monospace; 
 }
 
 /* Control specific css */

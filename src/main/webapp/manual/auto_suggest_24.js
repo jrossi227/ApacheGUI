@@ -606,7 +606,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Compatibility:",
-                "value": "Had severe limitations before\nbeing moved to <code class=\"module\"><a href=\"../mod/mod_filter.html\">mod_filter</a></code> in version 2.3.7"
+                "value": "Had severe limitations before\nbeing moved to <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_filter.html\" target=\"_blank\">mod_filter</a></code> in version 2.3.7"
             }
         ]
     },
@@ -752,7 +752,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Compatibility:",
-                "value": "Moved from <code class=\"module\"><a href=\"../mod/mod_proxy.html\">mod_proxy</a></code> in Apache 2.3.5.\nPort ranges available since Apache 2.3.7."
+                "value": "Moved from <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_proxy.html\" target=\"_blank\">mod_proxy</a></code> in Apache 2.3.5.\nPort ranges available since Apache 2.3.7."
             }
         ]
     },
@@ -4672,7 +4672,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Default:",
-                "value": "<code>value of <code class=\"directive\"><a href=\"../mod/core.html#timeout\">Timeout</a></code> directive when \nunset</code>"
+                "value": "<code>value of <code class=\"directive\"><a href=\"/ApacheGUI/manual/2.4/mod/core.html#timeout\" target=\"_blank\">Timeout</a></code> directive when \nunset</code>"
             },
             {
                 "name": "Context:",
@@ -4914,7 +4914,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/mod_unixd.html\">mod_unixd</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_unixd.html\" target=\"_blank\">mod_unixd</a></code>"
             },
             {
                 "name": "Compatibility:",
@@ -5144,7 +5144,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             }
         ]
     },
@@ -6206,7 +6206,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Compatibility:",
-                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code> or custom MPM)."
+                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code> or custom MPM)."
             }
         ]
     },
@@ -6304,7 +6304,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             }
         ]
     },
@@ -6678,7 +6678,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
         "items": [
             {
                 "name": "Description:",
-                "value": "Configure <code class=\"module\"><a href=\"../mod/mod_ext_filter.html\">mod_ext_filter</a></code> options"
+                "value": "Configure <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_ext_filter.html\" target=\"_blank\">mod_ext_filter</a></code> options"
             },
             {
                 "name": "Syntax:",
@@ -6904,7 +6904,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
         "items": [
             {
                 "name": "Description:",
-                "value": "Get debug/diagnostic information from\n    <code class=\"module\"><a href=\"../mod/mod_filter.html\">mod_filter</a></code>"
+                "value": "Get debug/diagnostic information from\n    <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_filter.html\" target=\"_blank\">mod_filter</a></code>"
             },
             {
                 "name": "Syntax:",
@@ -7066,7 +7066,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>, <code class=\"module\"><a href=\"../mod/event.html\">event</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>"
             },
             {
                 "name": "Compatibility:",
@@ -8832,7 +8832,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/mpm_netware.html\">mpm_netware</a></code>, <code class=\"module\"><a href=\"../mod/mpm_winnt.html\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"../mod/mpmt_os2.html\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>, <code class=\"module\"><a href=\"../mod/event.html\">event</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_netware.html\" target=\"_blank\">mpm_netware</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_winnt.html\" target=\"_blank\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpmt_os2.html\" target=\"_blank\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>"
             },
             {
                 "name": "Compatibility:",
@@ -8866,7 +8866,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/mpm_netware.html\">mpm_netware</a></code>, <code class=\"module\"><a href=\"../mod/mpm_winnt.html\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"../mod/mpmt_os2.html\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_netware.html\" target=\"_blank\">mpm_netware</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_winnt.html\" target=\"_blank\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpmt_os2.html\" target=\"_blank\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             }
         ]
     },
@@ -9022,7 +9022,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
         "items": [
             {
                 "name": "Description:",
-                "value": "Plug an authorization provider function into <code class=\"module\"><a href=\"../mod/mod_authz_core.html\">mod_authz_core</a></code>\n"
+                "value": "Plug an authorization provider function into <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_authz_core.html\" target=\"_blank\">mod_authz_core</a></code>\n"
             },
             {
                 "name": "Syntax:",
@@ -9674,7 +9674,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/mpm_netware.html\">mpm_netware</a></code>, <code class=\"module\"><a href=\"../mod/mpm_winnt.html\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"../mod/mpmt_os2.html\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_netware.html\" target=\"_blank\">mpm_netware</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_winnt.html\" target=\"_blank\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpmt_os2.html\" target=\"_blank\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             },
             {
                 "name": "Compatibility:",
@@ -9738,7 +9738,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/mpm_netware.html\">mpm_netware</a></code>, <code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>, <code class=\"module\"><a href=\"../mod/mpm_winnt.html\">mpm_winnt</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_netware.html\" target=\"_blank\">mpm_netware</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_winnt.html\" target=\"_blank\">mpm_winnt</a></code>"
             }
         ]
     },
@@ -9870,7 +9870,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             }
         ]
     },
@@ -9930,7 +9930,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/mpm_netware.html\">mpm_netware</a></code>, <code class=\"module\"><a href=\"../mod/mpmt_os2.html\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_netware.html\" target=\"_blank\">mpm_netware</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpmt_os2.html\" target=\"_blank\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             }
         ]
     },
@@ -10182,7 +10182,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/mpm_netware.html\">mpm_netware</a></code>, <code class=\"module\"><a href=\"../mod/mpmt_os2.html\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_netware.html\" target=\"_blank\">mpm_netware</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpmt_os2.html\" target=\"_blank\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             }
         ]
     },
@@ -10244,7 +10244,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
         "items": [
             {
                 "name": "Description:",
-                "value": "Tells <code class=\"module\"><a href=\"../mod/mod_mime.html\">mod_mime</a></code> to treat <code>path_info</code>\ncomponents as part of the filename"
+                "value": "Tells <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_mime.html\" target=\"_blank\">mod_mime</a></code> to treat <code>path_info</code>\ncomponents as part of the filename"
             },
             {
                 "name": "Syntax:",
@@ -10594,7 +10594,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/mpm_winnt.html\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"../mod/mpmt_os2.html\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_winnt.html\" target=\"_blank\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpmt_os2.html\" target=\"_blank\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             }
         ]
     },
@@ -10628,7 +10628,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Compatibility:",
-                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code> or custom MPM)."
+                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code> or custom MPM)."
             }
         ]
     },
@@ -10970,7 +10970,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Compatibility:",
-                "value": "Available in Apache 2.2.7 and later. Moved from <code class=\"module\"><a href=\"../mod/mod_proxy.html\">mod_proxy</a></code> in Apache 2.3.5."
+                "value": "Available in Apache 2.2.7 and later. Moved from <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_proxy.html\" target=\"_blank\">mod_proxy</a></code> in Apache 2.3.5."
             }
         ]
     },
@@ -11998,7 +11998,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Default:",
-                "value": "<code>Value of <code class=\"directive\"><a href=\"../mod/core.html#timeout\">Timeout</a></code></code>"
+                "value": "<code>Value of <code class=\"directive\"><a href=\"/ApacheGUI/manual/2.4/mod/core.html#timeout\" target=\"_blank\">Timeout</a></code></code>"
             },
             {
                 "name": "Context:",
@@ -12100,7 +12100,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/mpm_netware.html\">mpm_netware</a></code>, <code class=\"module\"><a href=\"../mod/mpm_winnt.html\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"../mod/mpmt_os2.html\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_netware.html\" target=\"_blank\">mpm_netware</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_winnt.html\" target=\"_blank\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpmt_os2.html\" target=\"_blank\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             }
         ]
     },
@@ -13042,7 +13042,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Compatibility:",
-                "value": "Influenced by <code class=\"directive\"><a href=\"../mod/core.html#limit\">&lt;Limit&gt;</a></code> and <code class=\"directive\"><a href=\"../mod/core.html#limitexcept\">&lt;LimitExcept&gt;</a></code> in version 2.0.51 and\nlater"
+                "value": "Influenced by <code class=\"directive\"><a href=\"/ApacheGUI/manual/2.4/mod/core.html#limit\" target=\"_blank\">&lt;Limit&gt;</a></code> and <code class=\"directive\"><a href=\"/ApacheGUI/manual/2.4/mod/core.html#limitexcept\" target=\"_blank\">&lt;LimitExcept&gt;</a></code> in version 2.0.51 and\nlater"
             }
         ]
     },
@@ -13072,7 +13072,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/mpm_winnt.html\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_winnt.html\" target=\"_blank\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             }
         ]
     },
@@ -13214,7 +13214,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/mod_cgi.html\">mod_cgi</a></code>, <code class=\"module\"><a href=\"../mod/mod_cgid.html\">mod_cgid</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_cgi.html\" target=\"_blank\">mod_cgi</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_cgid.html\" target=\"_blank\">mod_cgid</a></code>"
             }
         ]
     },
@@ -13244,7 +13244,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/mod_cgi.html\">mod_cgi</a></code>, <code class=\"module\"><a href=\"../mod/mod_cgid.html\">mod_cgid</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_cgi.html\" target=\"_blank\">mod_cgi</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_cgid.html\" target=\"_blank\">mod_cgid</a></code>"
             }
         ]
     },
@@ -13274,7 +13274,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/mod_cgi.html\">mod_cgi</a></code>, <code class=\"module\"><a href=\"../mod/mod_cgid.html\">mod_cgid</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_cgi.html\" target=\"_blank\">mod_cgi</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_cgid.html\" target=\"_blank\">mod_cgid</a></code>"
             }
         ]
     },
@@ -13394,7 +13394,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/mpm_netware.html\">mpm_netware</a></code>, <code class=\"module\"><a href=\"../mod/mpm_winnt.html\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"../mod/mpmt_os2.html\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_netware.html\" target=\"_blank\">mpm_netware</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_winnt.html\" target=\"_blank\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpmt_os2.html\" target=\"_blank\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             }
         ]
     },
@@ -13476,7 +13476,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             }
         ]
     },
@@ -16856,7 +16856,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/mpmt_os2.html\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpmt_os2.html\" target=\"_blank\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             }
         ]
     },
@@ -16886,7 +16886,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/mpm_netware.html\">mpm_netware</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_netware.html\" target=\"_blank\">mpm_netware</a></code>"
             }
         ]
     },
@@ -17040,7 +17040,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/mpm_winnt.html\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_winnt.html\" target=\"_blank\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             }
         ]
     },
@@ -17070,7 +17070,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/mpm_winnt.html\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_winnt.html\" target=\"_blank\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>"
             }
         ]
     },
@@ -17100,7 +17100,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Module:",
-                "value": "<code class=\"module\"><a href=\"../mod/event.html\">event</a></code>, <code class=\"module\"><a href=\"../mod/mpm_netware.html\">mpm_netware</a></code>, <code class=\"module\"><a href=\"../mod/mpmt_os2.html\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"../mod/mpm_winnt.html\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"../mod/worker.html\">worker</a></code>, <code class=\"module\"><a href=\"../mod/event.html\">event</a></code>"
+                "value": "<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_netware.html\" target=\"_blank\">mpm_netware</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpmt_os2.html\" target=\"_blank\">mpmt_os2</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mpm_winnt.html\" target=\"_blank\">mpm_winnt</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/worker.html\" target=\"_blank\">worker</a></code>, <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/event.html\" target=\"_blank\">event</a></code>"
             },
             {
                 "name": "Compatibility:",
@@ -17478,7 +17478,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Compatibility:",
-                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code> or custom MPM)."
+                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code> or custom MPM)."
             }
         ]
     },
@@ -17512,7 +17512,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Compatibility:",
-                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code> or custom MPM)\nand when <code class=\"module\"><a href=\"../mod/mod_privileges.html\">mod_privileges</a></code> is compiled with the\n<var>BIG_SECURITY_HOLE</var> compile-time option."
+                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code> or custom MPM)\nand when <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_privileges.html\" target=\"_blank\">mod_privileges</a></code> is compiled with the\n<var>BIG_SECURITY_HOLE</var> compile-time option."
             }
         ]
     },
@@ -17530,7 +17530,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Default:",
-                "value": "<code>Inherits the group id specified in\n<code class=\"directive\"><a href=\"../mod/mod_unixd.html#group\">Group</a></code></code>"
+                "value": "<code>Inherits the group id specified in\n<code class=\"directive\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_unixd.html#group\" target=\"_blank\">Group</a></code></code>"
             },
             {
                 "name": "Context:",
@@ -17546,7 +17546,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Compatibility:",
-                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code> or custom MPM)."
+                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code> or custom MPM)."
             }
         ]
     },
@@ -17580,7 +17580,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Compatibility:",
-                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code> or custom MPM)\nand when <code class=\"module\"><a href=\"../mod/mod_privileges.html\">mod_privileges</a></code> is compiled with the\n<var>BIG_SECURITY_HOLE</var> compile-time option."
+                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code> or custom MPM)\nand when <code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_privileges.html\" target=\"_blank\">mod_privileges</a></code> is compiled with the\n<var>BIG_SECURITY_HOLE</var> compile-time option."
             }
         ]
     },
@@ -17614,7 +17614,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Compatibility:",
-                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code> or custom MPM)."
+                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code> or custom MPM)."
             }
         ]
     },
@@ -17632,7 +17632,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Default:",
-                "value": "<code>Inherits the userid specified in\n<code class=\"directive\"><a href=\"../mod/mod_unixd.html#user\">User</a></code></code>"
+                "value": "<code>Inherits the userid specified in\n<code class=\"directive\"><a href=\"/ApacheGUI/manual/2.4/mod/mod_unixd.html#user\" target=\"_blank\">User</a></code></code>"
             },
             {
                 "name": "Context:",
@@ -17648,7 +17648,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
             },
             {
                 "name": "Compatibility:",
-                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"../mod/prefork.html\">prefork</a></code> or custom MPM)."
+                "value": "Available on Solaris 10 and OpenSolaris with\nnon-threaded MPMs (<code class=\"module\"><a href=\"/ApacheGUI/manual/2.4/mod/prefork.html\" target=\"_blank\">prefork</a></code> or custom MPM)."
             }
         ]
     },
@@ -17868,7 +17868,7 @@ net.apachegui.AutoSuggest.DIRECTIVES = {
         "items": [
             {
                 "name": "Description:",
-                "value": "Sets a default encoding to assume when absolutely no information\ncan be <a href=\"#sniffing\">automatically detected</a>"
+                "value": "Sets a default encoding to assume when absolutely no information\ncan be <a href=\"#sniffing\" target=\"_blank\">automatically detected</a>"
             },
             {
                 "name": "Syntax:",
@@ -46332,7 +46332,7 @@ net.apachegui.AutoSuggest.ENCLOSURES = {
         "items": [
             {
                 "name": "Description:",
-                "value": "Contains directives that apply only if the condition of a\nprevious <code class=\"directive\"><a href=\"#if\">&lt;If&gt;</a></code> or\n<code class=\"directive\"><a href=\"#elseif\">&lt;ElseIf&gt;</a></code> section is not\nsatisfied by a request at runtime"
+                "value": "Contains directives that apply only if the condition of a\nprevious <code class=\"directive\"><a href=\"#if\" target=\"_blank\">&lt;If&gt;</a></code> or\n<code class=\"directive\"><a href=\"#elseif\" target=\"_blank\">&lt;ElseIf&gt;</a></code> section is not\nsatisfied by a request at runtime"
             },
             {
                 "name": "Syntax:",
@@ -46362,7 +46362,7 @@ net.apachegui.AutoSuggest.ENCLOSURES = {
         "items": [
             {
                 "name": "Description:",
-                "value": "Contains directives that apply only if a condition is satisfied\nby a request at runtime while the condition of a previous\n<code class=\"directive\"><a href=\"#if\">&lt;If&gt;</a></code> or\n<code class=\"directive\">&lt;ElseIf&gt;</code> section is not\nsatisfied"
+                "value": "Contains directives that apply only if a condition is satisfied\nby a request at runtime while the condition of a previous\n<code class=\"directive\"><a href=\"#if\" target=\"_blank\">&lt;If&gt;</a></code> or\n<code class=\"directive\">&lt;ElseIf&gt;</code> section is not\nsatisfied"
             },
             {
                 "name": "Syntax:",

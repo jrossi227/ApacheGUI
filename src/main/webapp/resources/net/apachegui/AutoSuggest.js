@@ -6,13 +6,15 @@ define([ "dojo/_base/declare",
          "dojo/keys",
          "dojo/dom-class",
          "dojo/query",
-         "dojo/dom-attr"
-], function(declare, dom, domStyle, script, on, keys, domClass, query, domAttr){    
+         "dojo/dom-attr",
+         "dojo/_base/event"
+], function(declare, dom, domStyle, script, on, keys, domClass, query, domAttr, event){    
      
      return declare(null, {    
          
          initialized: false,
          isShown: false,
+         onSelect: null,
          onShow: null,
          onHide: null,
          selectedItem: -1,
@@ -22,6 +24,7 @@ define([ "dojo/_base/declare",
 
             //initialize
             var version = obj.version; 
+            this.onSelect = obj.onSelect || function() {};
             this.onShow = obj.onShow || function(){};
             this.onHide = obj.onHide || function(){};
             
@@ -39,7 +42,7 @@ define([ "dojo/_base/declare",
          
          show: function(xpos, ypos) {
              this.updatePosition(xpos,ypos);
-             this.selectItem(0);
+             this.highlightItem(0);
              if(!this.isShown) {
                  domStyle.set('autoSuggestContainer','display','block');
                  
@@ -72,15 +75,24 @@ define([ "dojo/_base/declare",
              }
          },
          
-         selectItem: function(itemNum) {
-             var numOfItems = query('li', dom.byId('autoSuggestKeywordList')).length;
+         getKeywordListItems: function() {
+             return  query('li', dom.byId('autoSuggestKeywordList'));
+         },
+         
+         getNameFromListItem: function(item) {
+             return domAttr.get(item, "data-value");
+         },
+         
+         highlightItem: function(itemNum) {
+             var keywords = this.getKeywordListItems();
+             
+             var numOfItems = keywords.length;
              if(itemNum < numOfItems && itemNum >= 0) {
                  this.selectedItem = itemNum;
                  
-                 var keywords = query('li', dom.byId('autoSuggestKeywordList'));
                  keywords.removeClass('selected');
                  domClass.add(keywords[itemNum],'selected');
-                 var name = domAttr.get(keywords[itemNum], "data-value").toLowerCase();
+                 var name = this.getNameFromListItem(keywords[itemNum]).toLowerCase();
                  
                  var item = net.apachegui.AutoSuggest.DIRECTIVES[name];
                  if(typeof item == 'undefined') {
@@ -88,18 +100,18 @@ define([ "dojo/_base/declare",
                  }
                  
                  var items = item['items'];
-                 var html = '<div>' +
-                                 '<h4>' + item.name + '</h4>' +
+                 var html = '<div">' +
+                                 '<div class="header">' + item.name + '</div>' +
                                  
                                  '<table>';
                                      for(var i=0; i<items.length; i++) {
                      html +=            '<tr>' +
-                                            '<td>' + items[i].name + '</td>' +
-                                            '<td>' + items[i].value + '</td>' +
+                                            '<td class="name">' + items[i].name + '</td>' +
+                                            '<td class="value">' + items[i].value + '</td>' +
                                          '</tr>';
                                      }
                      html +=     '</table>' +
-                                 '<p><a href="' + item.href + '" target="_blank">Full Description</a></p>' +
+                                 '<p class="manual_link"><a href="' + item.href + '" target="_blank">Full Description</a></p>' +
                             '</div>';
                  
                  dom.byId('autoSuggestDescriptionContainer').innerHTML = html;
@@ -107,6 +119,15 @@ define([ "dojo/_base/declare",
                  //populate description container
                  domStyle.set('autoSuggestDescriptionContainer','display','inline-block');
              }
+         },
+         
+         selectItem: function(itemNum) {
+           
+             var item = this.getKeywordListItems()[itemNum];
+             var name = this.getNameFromListItem(item);
+             
+             this.hide();
+             this.onSelect(name);
          },
          
          buildKeywordList: function(items) {
@@ -178,29 +199,32 @@ define([ "dojo/_base/declare",
                  that.hide();
              });
              
-             on(document, "keyup", function(event) {
+             on(document, "keydown", function(e) {
                 if(!that.isShown) {
                     return;
                 }
                  
-                switch (event.keyCode) {
+                switch (e.keyCode) {
                 case keys.UP_ARROW:
-                    event.preventDefault();
-                    that.selectItem(that.selectedItem -1);                        
+                    event.stop(e);
+                    that.highlightItem(that.selectedItem -1);                        
                     break;
                 case keys.DOWN_ARROW:
-                    event.preventDefault();
-                    that.selectItem(that.selectedItem + 1);     
+                    event.stop(e);
+                    that.highlightItem(that.selectedItem + 1);     
                     break;
                 case keys.RIGHT_ARROW:
-                    event.preventDefault();
+                    event.stop(e);
                     that.hide();
                     break;
                 case keys.LEFT_ARROW:
-                    event.preventDefault();
+                    event.stop(e);
                     that.hide();
                     break;    
-                
+                case keys.ENTER:
+                    event.stop(e);
+                    that.selectItem(that.selectedItem);
+                    break;
                 }
             });
              

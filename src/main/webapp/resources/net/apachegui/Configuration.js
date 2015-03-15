@@ -135,6 +135,9 @@ define([ "dojo/_base/declare",
                         CodeMirror.keyMap.basic.Left = 'goCharLeft';
                         CodeMirror.keyMap.basic.Right = 'goCharRight';
                         CodeMirror.keyMap.basic.Enter = 'newlineAndIndent';
+                    },
+                    onSelect: function(name) {
+                        //replace non whitespace from start of line to current cursor with the passed in name
                     }
                 });
             });
