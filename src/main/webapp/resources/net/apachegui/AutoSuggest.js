@@ -25,6 +25,7 @@ define([ "dojo/_base/declare",
             //initialize
             var version = obj.version; 
             this.onSelect = obj.onSelect || function() {};
+            this.onHighlight = obj.onHighlight || function() {};
             this.onShow = obj.onShow || function(){};
             this.onHide = obj.onHide || function(){};
             
@@ -57,13 +58,28 @@ define([ "dojo/_base/declare",
              if((windowHeight / 2) > ypos) {
                  domStyle.set('autoSuggestContainer','bottom','auto');
                  domStyle.set('autoSuggestContainer','top',ypos + 'px');
-                 domStyle.set('autoSuggestContainer','left',xpos + 'px');
              } else {
                  domStyle.set('autoSuggestContainer','top','auto');
                  domStyle.set('autoSuggestContainer','bottom',(windowHeight - ypos) + 'px');
-                 domStyle.set('autoSuggestContainer','left',xpos + 'px');
              }
              
+             // position either left or right
+             var windowWidth = window.innerWidth;
+             var keywordWidth = dom.byId('autoSuggestKeywordContainer').offsetWidth;
+             var maxWidth = 0;
+             if((windowWidth / 2) > xpos) {
+                 domStyle.set('autoSuggestContainer','left',xpos + 'px');
+                 domStyle.set('autoSuggestContainer','right','auto');
+                 maxWidth = windowWidth - xpos - keywordWidth;
+             } else {
+                 domStyle.set('autoSuggestContainer','left','auto');
+                 domStyle.set('autoSuggestContainer','right',(windowWidth - xpos) + 'px');
+                 maxWidth = windowWidth - (xpos - windowWidth / 2) - keywordWidth;
+             }
+             
+             //TODO fix max-width calculation
+             domStyle.set('autoSuggestDescriptionContainer', 'max-width', maxWidth + 'px')
+                          
          },
          
          hide: function() {
@@ -118,6 +134,8 @@ define([ "dojo/_base/declare",
                  
                  //populate description container
                  domStyle.set('autoSuggestDescriptionContainer','display','inline-block');
+                 
+                 this.onHighlight(name);
              }
          },
          
@@ -126,14 +144,14 @@ define([ "dojo/_base/declare",
              var item = this.getKeywordListItems()[itemNum];
              var name = this.getNameFromListItem(item);
              
-             this.hide();
              this.onSelect(name);
+             this.hide();
          },
          
          buildKeywordList: function(items) {
              var list ='';
              for(var i=0; i<items.length; i++) {
-                 list += '<li data-value="' + items[i] + '">' + items[i] + '</li>'
+                 list += '<li data-index="' + i + '" data-value="' + items[i] + '">' + items[i] + '</li>'
              }
              
              return list;
@@ -197,6 +215,15 @@ define([ "dojo/_base/declare",
              
              on(document, 'click', function() {
                  that.hide();
+             });
+             
+             on(dom.byId('autoSuggestKeywordList'), "li:click", function() {
+                 var index = parseInt(domAttr.get(this, "data-index"));
+                 if(that.selectedItem != index) {
+                     that.highlightItem(index); 
+                 } else {
+                     that.selectItem(index);
+                 }
              });
              
              on(document, "keydown", function(e) {
