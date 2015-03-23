@@ -145,7 +145,7 @@ h1 {
 }
 
 /* Auto Suggest styling */
-#autoSuggestContainer {
+.autoSuggestContainer {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -156,7 +156,7 @@ h1 {
 	border: 1px solid #000000;
 }
 
-#autoSuggestKeywordContainer {
+.autoSuggestKeywordContainer {
     display: inline-block;
     vertical-align: top;	
     width: auto;
@@ -164,13 +164,13 @@ h1 {
     padding: 0;
 }
 
-#autoSuggestKeywordContainer ul {
+.autoSuggestKeywordContainer ul {
 	list-style-type: none;
 	padding: 0;
 	margin: 0;
 }
 
-#autoSuggestKeywordContainer ul li {
+.autoSuggestKeywordContainer ul li {
 	height: 28px;
     line-height: 28px;
     vertical-align: middle;
@@ -178,13 +178,13 @@ h1 {
     padding: 0 5px;
 }	
 
-#autoSuggestKeywordContainer ul li:hover,
-#autoSuggestKeywordContainer ul li.selected {
+.autoSuggestKeywordContainer ul li:hover,
+.autoSuggestKeywordContainer ul li.selected {
     background-color: #557697;
     color: #fff;
 }	
 
-#autoSuggestDescriptionContainer {
+.autoSuggestDescriptionContainer {
 	display: inline-block;
     vertical-align: top;    
     width: auto;
@@ -195,7 +195,7 @@ h1 {
     margin-left: -4px;
 }
 
-#autoSuggestDescriptionContainer .header {
+.autoSuggestDescriptionContainer .header {
 	background-color: #557697;
     color: #fff;
 	font-size: 18px;
@@ -205,23 +205,23 @@ h1 {
     text-decoration: none;
 }
 
-#autoSuggestDescriptionContainer .name,
-#autoSuggestDescriptionContainer .value,
-#autoSuggestDescriptionContainer .manual_link {
+.autoSuggestDescriptionContainer .name,
+.autoSuggestDescriptionContainer .value,
+.autoSuggestDescriptionContainer .manual_link {
 	padding: 2px 5px;
 }
 
-#autoSuggestDescriptionContainer .name {
+.autoSuggestDescriptionContainer .name {
     color: #0073c7;
     font-weight: bold;   
 }
 
-#autoSuggestDescriptionContainer .value {
+.autoSuggestDescriptionContainer .value {
     color: #036;
 }
 
-#autoSuggestDescriptionContainer code,
-#autoSuggestDescriptionContainer pre {
+.autoSuggestDescriptionContainer code,
+.autoSuggestDescriptionContainer pre {
    font-family: "Courier New",Courier,monospace; 
 }
 

@@ -12,6 +12,7 @@ define([ "dojo/_base/declare",
         windows: false,
         sessionActive: true,
         notRunningDialog: null,
+        apacheVersion: null,
         
         confDirectoryPath: '',
         logDirectoryPath: '',
@@ -212,25 +213,32 @@ define([ "dojo/_base/declare",
         },
         
         getApacheVersion: function(callback) {
-            request.get('../web/Main', {
-                query:     {
-                    option: 'apacheVersion'
-                },
-                handleAs: 'json',
-                sync: false,
-                preventCache: true
-            }).response.then(
-                function(response) {
-                
-                    var data = response.data;
-
-                    callback(data.version);
-                },
-                function(error) {
-                    thisdialog.remove();
-                    net.apachegui.Util.alert('Info',error.response.data.message);
-                }
-            );
+            if(!!this.apacheVersion) {
+                callback(this.apacheVersion);
+            } else {
+            
+                var that = this;
+                request.get('../web/Main', {
+                    query:     {
+                        option: 'apacheVersion'
+                    },
+                    handleAs: 'json',
+                    sync: false,
+                    preventCache: true
+                }).response.then(
+                    function(response) {
+                    
+                        var data = response.data;
+                        that.apacheVersion = data.version;
+                        
+                        callback(that.apacheVersion);
+                    },
+                    function(error) {
+                        thisdialog.remove();
+                        net.apachegui.Util.alert('Info',error.response.data.message);
+                    }
+                );
+            }
         },
         
         checkSession: function() {

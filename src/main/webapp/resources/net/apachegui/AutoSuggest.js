@@ -28,6 +28,7 @@ define([ "dojo/_base/declare",
             this.onHighlight = obj.onHighlight || function() {};
             this.onShow = obj.onShow || function(){};
             this.onHide = obj.onHide || function(){};
+            this.id = 0;
             
             if (!!net.apachegui.AutoSuggest) {
                 this.initialized = true;
@@ -38,53 +39,99 @@ define([ "dojo/_base/declare",
                 });
             }
 
+            this.addToPage();
             this.addListeners();
          },
          
+         getAutoSuggestContainer : function() {
+             return dom.byId(this.id + '-' + 'autoSuggestContainer');
+         },
+         
+         getAutoSuggestKeywordContainer : function() {
+            return dom.byId(this.id + '-' + 'autoSuggestKeywordContainer'); 
+         },
+         
+         getAutoSuggestDescriptionContainer: function() {
+             return dom.byId(this.id + '-' + 'autoSuggestDescriptionContainer');
+         },
+         
+         getAutoSuggestKeywordList : function() {
+             return dom.byId(this.id + '-' + 'autoSuggestKeywordList');
+         },
+         
+         addToPage: function() {
+             //count the current amount of auto suggest
+             this.id = query('.autoSuggestContainer').length;
+             var div = document.createElement('div');
+             div.id = this.id + '-autoSuggestContainer';
+             
+             domClass.add(div,'autoSuggestContainer');
+             domStyle.set(div, 'display', 'none');
+             
+             div.innerHTML = '<div class="autoSuggestKeywordContainer" id="' + this.id + '-autoSuggestKeywordContainer">' +
+             
+                                 '<ul class="autoSuggestKeywordList" id="' + this.id + '-autoSuggestKeywordList">' +
+                                     
+                                 '</ul>' +
+                             
+                             '</div>' +
+                             
+                             '<div class="autoSuggestDescriptionContainer" id="' + this.id + '-autoSuggestDescriptionContainer" style="display: none;">' +
+                             
+                             '</div>';
+             
+             document.body.appendChild(div);                
+         },
+         
          show: function(xpos, ypos) {
-             this.updatePosition(xpos,ypos);
-             this.highlightItem(0);
+             
              if(!this.isShown) {
-                 domStyle.set('autoSuggestContainer','display','block');
+                 domStyle.set(this.getAutoSuggestContainer(),'display','block');
+                 this.updatePosition(xpos,ypos);
                  
                  this.onShow();
                  this.isShown = true;
-             }
+             } 
+             
+             this.highlightItem(0);    
+             this.updatePosition(xpos,ypos);
          },
          
          updatePosition: function(xpos, ypos) {
+             var autoSuggestContainer = this.getAutoSuggestContainer();
+             
              //position either above or below line
              var windowHeight = window.innerHeight;
              if((windowHeight / 2) > ypos) {
-                 domStyle.set('autoSuggestContainer','bottom','auto');
-                 domStyle.set('autoSuggestContainer','top',ypos + 'px');
+                 domStyle.set(autoSuggestContainer,'bottom','auto');
+                 domStyle.set(autoSuggestContainer,'top',ypos + 'px');
              } else {
-                 domStyle.set('autoSuggestContainer','top','auto');
-                 domStyle.set('autoSuggestContainer','bottom',(windowHeight - ypos) + 'px');
+                 domStyle.set(autoSuggestContainer,'top','auto');
+                 domStyle.set(autoSuggestContainer,'bottom',(windowHeight - ypos) + 'px');
              }
              
              // position either left or right
              var windowWidth = window.innerWidth;
-             var keywordWidth = dom.byId('autoSuggestKeywordContainer').offsetWidth;
-             var maxWidth = 0;
+             var keywordWidth = this.getAutoSuggestKeywordContainer().offsetWidth;
+             
+             var maxWidth = -10;
              if((windowWidth / 2) > xpos) {
-                 domStyle.set('autoSuggestContainer','left',xpos + 'px');
-                 domStyle.set('autoSuggestContainer','right','auto');
-                 maxWidth = windowWidth - xpos - keywordWidth;
+                 domStyle.set(autoSuggestContainer,'left',xpos + 'px');
+                 domStyle.set(autoSuggestContainer,'right','auto');
+                 maxWidth += windowWidth - xpos - keywordWidth;
              } else {
-                 domStyle.set('autoSuggestContainer','left','auto');
-                 domStyle.set('autoSuggestContainer','right',(windowWidth - xpos) + 'px');
-                 maxWidth = windowWidth - (xpos - windowWidth / 2) - keywordWidth;
+                 domStyle.set(autoSuggestContainer,'left','auto');
+                 domStyle.set(autoSuggestContainer,'right',(windowWidth - xpos) + 'px');
+                 maxWidth += windowWidth - (windowWidth - xpos) - keywordWidth;
              }
              
-             //TODO fix max-width calculation
-             domStyle.set('autoSuggestDescriptionContainer', 'max-width', maxWidth + 'px')
+             domStyle.set(this.getAutoSuggestDescriptionContainer(), 'max-width', maxWidth + 'px')
                           
          },
          
          hide: function() {
              if(this.isShown) {
-                 domStyle.set('autoSuggestContainer','display','none');
+                 domStyle.set(this.getAutoSuggestContainer(),'display','none');
                  
                  this.onHide();
                  this.isShown = false;
@@ -92,7 +139,7 @@ define([ "dojo/_base/declare",
          },
          
          getKeywordListItems: function() {
-             return  query('li', dom.byId('autoSuggestKeywordList'));
+             return  query('li', this.getAutoSuggestKeywordList());
          },
          
          getNameFromListItem: function(item) {
@@ -130,10 +177,12 @@ define([ "dojo/_base/declare",
                                  '<p class="manual_link"><a href="' + item.href + '" target="_blank">Full Description</a></p>' +
                             '</div>';
                  
-                 dom.byId('autoSuggestDescriptionContainer').innerHTML = html;
+                 var autoSuggestDescriptionContainer = this.getAutoSuggestDescriptionContainer();    
+                     
+                 autoSuggestDescriptionContainer.innerHTML = html;
                  
                  //populate description container
-                 domStyle.set('autoSuggestDescriptionContainer','display','inline-block');
+                 domStyle.set(autoSuggestDescriptionContainer,'display','inline-block');
                  
                  this.onHighlight(name);
              }
@@ -155,10 +204,6 @@ define([ "dojo/_base/declare",
              }
              
              return list;
-         },
-         
-         buildDescriptionContainer: function(item) {
-             
          },
          
          updateSuggestions: function(line, cursorCharNum, xpos, ypos) {
@@ -195,7 +240,7 @@ define([ "dojo/_base/declare",
                  }
                  
                  if(!!obj.items) {
-                     dom.byId('autoSuggestKeywordList').innerHTML = this.buildKeywordList(obj.items);
+                     this.getAutoSuggestKeywordList().innerHTML = this.buildKeywordList(obj.items);
                      
                      this.show(xpos, ypos);
                  } else {
@@ -209,7 +254,7 @@ define([ "dojo/_base/declare",
          addListeners: function() {
              var that = this;
              
-             on(dom.byId('autoSuggestContainer'),'click', function(e) {
+             on(this.getAutoSuggestContainer(),'click', function(e) {
                 e.stopPropagation(); 
              });
              
@@ -217,7 +262,7 @@ define([ "dojo/_base/declare",
                  that.hide();
              });
              
-             on(dom.byId('autoSuggestKeywordList'), "li:click", function() {
+             on(this.getAutoSuggestKeywordList(), "li:click", function() {
                  var index = parseInt(domAttr.get(this, "data-index"));
                  if(that.selectedItem != index) {
                      that.highlightItem(index); 
