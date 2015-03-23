@@ -192,7 +192,6 @@ h1 {
     padding: 0;
     overflow: auto;
     border-left: 1px solid #000000;
-    margin-left: -4px;
 }
 
 .autoSuggestDescriptionContainer .header {
