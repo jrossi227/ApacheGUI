@@ -23,7 +23,7 @@ define([ "dojo/_base/declare",
             var that = this;
 
             //initialize
-            var version = obj.version; 
+            var version = obj.apacheVersion; 
             this.onSelect = obj.onSelect || function() {};
             this.onHighlight = obj.onHighlight || function() {};
             this.onShow = obj.onShow || function(){};
@@ -33,9 +33,11 @@ define([ "dojo/_base/declare",
             if (!!net.apachegui.AutoSuggest) {
                 this.initialized = true;
             } else {
-                var url = '/ApacheGUI/manual/auto_suggest_' + version.replace('.', '') + '.min.js';
-                script.get(url).then(function() {
-                    that.initialized = true;
+                net.apachegui.Main.getInstance().getApacheVersion(function(version) {
+                    var url = '/ApacheGUI/manual/auto_suggest_' + version.replace('.', '') + '.min.js';
+                    script.get(url).then(function() {
+                        that.initialized = true;
+                    });
                 });
             }
 
@@ -299,7 +301,6 @@ define([ "dojo/_base/declare",
                     break;
                 }
             });
-             
              
          }
          

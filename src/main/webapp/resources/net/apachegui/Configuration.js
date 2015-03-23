@@ -119,52 +119,49 @@ define([ "dojo/_base/declare",
         loadAutoSuggest: function() {
             that = this;
             
-            net.apachegui.Main.getInstance().getApacheVersion(function(version) {
-                that.autoSuggest = new AutoSuggest({
-                    version : version,
-                    onShow: function() {
-                        CodeMirror.keyMap.basic.Up = '';
-                        CodeMirror.keyMap.basic.Down = '';
-                        CodeMirror.keyMap.basic.Left = '';
-                        CodeMirror.keyMap.basic.Right = '';
-                        CodeMirror.keyMap.basic.Enter = '';
-                    },
-                    onHide: function() {
-                        CodeMirror.keyMap.basic.Up = 'goLineUp';
-                        CodeMirror.keyMap.basic.Down = 'goLineDown';
-                        CodeMirror.keyMap.basic.Left = 'goCharLeft';
-                        CodeMirror.keyMap.basic.Right = 'goCharRight';
-                        CodeMirror.keyMap.basic.Enter = 'newlineAndIndent';
-                    },
-                    onHighlight: function(name) {
-                        that.editor.focus();
-                    },
-                    onSelect: function(name) {
-                        var currentLine = that.editor.getLine(that.editor.getCursor().line);
-                        
-                        var firstCharacterIndex = currentLine.search(/\S/m);
-                        if(currentLine[firstCharacterIndex] == '<') {
-                            firstCharacterIndex ++;
-                        }
-                        
-                        var secondWhiteSpaceIndex = currentLine.substring(firstCharacterIndex).search(/\s/m);
-                        if(secondWhiteSpaceIndex == -1) {
-                            secondWhiteSpaceIndex = currentLine.length;
-                        } else {
-                            secondWhiteSpaceIndex += firstCharacterIndex;
-                        }
-                        
-                        currentLine = currentLine.replace(currentLine.substring(firstCharacterIndex, secondWhiteSpaceIndex), name);
-                        
-                        that.editor.setLine(that.editor.getCursor().line, currentLine);
-                        that.editor.setCursor({
-                            line: that.editor.getCursor().line,
-                            ch: firstCharacterIndex + name.length
-                        });
-                        
-                        that.editor.focus();
+            that.autoSuggest = new AutoSuggest({
+                onShow: function() {
+                    CodeMirror.keyMap.basic.Up = '';
+                    CodeMirror.keyMap.basic.Down = '';
+                    CodeMirror.keyMap.basic.Left = '';
+                    CodeMirror.keyMap.basic.Right = '';
+                    CodeMirror.keyMap.basic.Enter = '';
+                },
+                onHide: function() {
+                    CodeMirror.keyMap.basic.Up = 'goLineUp';
+                    CodeMirror.keyMap.basic.Down = 'goLineDown';
+                    CodeMirror.keyMap.basic.Left = 'goCharLeft';
+                    CodeMirror.keyMap.basic.Right = 'goCharRight';
+                    CodeMirror.keyMap.basic.Enter = 'newlineAndIndent';
+                },
+                onHighlight: function(name) {
+                    that.editor.focus();
+                },
+                onSelect: function(name) {
+                    var currentLine = that.editor.getLine(that.editor.getCursor().line);
+                    
+                    var firstCharacterIndex = currentLine.search(/\S/m);
+                    if(currentLine[firstCharacterIndex] == '<') {
+                        firstCharacterIndex ++;
                     }
-                });
+                    
+                    var secondWhiteSpaceIndex = currentLine.substring(firstCharacterIndex).search(/\s/m);
+                    if(secondWhiteSpaceIndex == -1) {
+                        secondWhiteSpaceIndex = currentLine.length;
+                    } else {
+                        secondWhiteSpaceIndex += firstCharacterIndex;
+                    }
+                    
+                    currentLine = currentLine.replace(currentLine.substring(firstCharacterIndex, secondWhiteSpaceIndex), name);
+                    
+                    that.editor.setLine(that.editor.getCursor().line, currentLine);
+                    that.editor.setCursor({
+                        line: that.editor.getCursor().line,
+                        ch: firstCharacterIndex + name.length
+                    });
+                    
+                    that.editor.focus();
+                }
             });
             
         },
