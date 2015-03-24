@@ -9,8 +9,9 @@ define([ "dojo/_base/declare",
          "dojo/query",
          "dojo/_base/event",
          "dojo/_base/json",
-         "dojo/dom-geometry"
-], function(declare, dom, registry, on, request, domClass, domConstruct, win, query, event, json, domGeom){
+         "dojo/dom-geometry",
+         "net/apachegui/EditorAutoSuggest"
+], function(declare, dom, registry, on, request, domClass, domConstruct, win, query, event, json, domGeom, EditorAutoSuggest){
     
     declare("net.apachegui.Editor", null, {    
 
@@ -25,6 +26,7 @@ define([ "dojo/_base/declare",
         refreshUpdateTimerHandler: null,
         reloadDialogOpen: false,
         scrolledLine: -1,
+        editorAutoSuggest: null,
         
         modes : {
             'plain'         :    'text/plain',
@@ -87,11 +89,6 @@ define([ "dojo/_base/declare",
             net.apachegui.Interval.clearInterval( this.refreshUpdateTimerHandler );
         },
         
-        //Override for auto-suggest
-        updateAutoSuggest: function() {
-            
-        },
-        
         getInitEditorOptions: function() {
             var that=this;
             
@@ -100,7 +97,6 @@ define([ "dojo/_base/declare",
                 tabMode : 'indent',
                 onChange : function() {
                     that.updateEditor();
-                    that.updateAutoSuggest();
                 },
                 onFocus : function() {
                     if(that.scrolledLine > -1) {
@@ -126,6 +122,8 @@ define([ "dojo/_base/declare",
             }
             
             this.clearSaveState();
+            
+            this.editorAutoSuggest = new EditorAutoSuggest(this.editor, this);
         },
         
         scrollToLine : function(lineNum) {
@@ -243,6 +241,10 @@ define([ "dojo/_base/declare",
             }
             
             this.currTheme=theme;
+        },
+        
+        getMode: function() {
+            return this.currMode;
         },
         
         setMode: function(mode) {
@@ -409,7 +411,7 @@ define([ "dojo/_base/declare",
                     if(!!callback) {
                         callback();
                     }
-                    
+
                     thisdialog.remove();
                 },
                 function(error) {

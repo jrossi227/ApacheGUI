@@ -4,22 +4,18 @@ define([ "dojo/_base/declare",
          "dojo/on",
          "dojo/request",
          "net/apachegui/Editor",
-         "dojo/_base/json",
-         "dojo/query",
-         "net/apachegui/AutoSuggest"
-], function(declare, dom, registry, on, request, Editor, json, query, AutoSuggest){    
+         "dojo/_base/json"        
+], function(declare, dom, registry, on, request, Editor, json){    
     
     declare("net.apachegui.Configuration", [net.apachegui.Editor], {        
         
         initialized: false,
-        autoSuggest: null,
         
         init: function() {
             
             if(this.initialized===false) {
                 this.inherited(arguments);
                 this.addListeners();
-                this.loadAutoSuggest();
                 this.initialized=true;
             }    
         },
@@ -116,79 +112,6 @@ define([ "dojo/_base/declare",
             net.apachegui.Util.alert('Preview',escape(line));
         },
         
-        loadAutoSuggest: function() {
-            that = this;
-            
-            that.autoSuggest = new AutoSuggest({
-                onShow: function() {
-                    CodeMirror.keyMap.basic.Up = '';
-                    CodeMirror.keyMap.basic.Down = '';
-                    CodeMirror.keyMap.basic.Left = '';
-                    CodeMirror.keyMap.basic.Right = '';
-                    CodeMirror.keyMap.basic.Enter = '';
-                },
-                onHide: function() {
-                    CodeMirror.keyMap.basic.Up = 'goLineUp';
-                    CodeMirror.keyMap.basic.Down = 'goLineDown';
-                    CodeMirror.keyMap.basic.Left = 'goCharLeft';
-                    CodeMirror.keyMap.basic.Right = 'goCharRight';
-                    CodeMirror.keyMap.basic.Enter = 'newlineAndIndent';
-                },
-                onHighlight: function(name) {
-                    that.editor.focus();
-                },
-                onSelect: function(name) {
-                    var currentLine = that.editor.getLine(that.editor.getCursor().line);
-                    
-                    var firstCharacterIndex = currentLine.search(/\S/m);
-                    if(currentLine[firstCharacterIndex] == '<') {
-                        firstCharacterIndex ++;
-                    }
-                    
-                    var secondWhiteSpaceIndex = currentLine.substring(firstCharacterIndex).search(/\s/m);
-                    if(secondWhiteSpaceIndex == -1) {
-                        secondWhiteSpaceIndex = currentLine.length;
-                    } else {
-                        secondWhiteSpaceIndex += firstCharacterIndex;
-                    }
-                    
-                    currentLine = currentLine.replace(currentLine.substring(firstCharacterIndex, secondWhiteSpaceIndex), name);
-                    
-                    that.editor.setLine(that.editor.getCursor().line, currentLine);
-                    that.editor.setCursor({
-                        line: that.editor.getCursor().line,
-                        ch: firstCharacterIndex + name.length
-                    });
-                    
-                    that.editor.focus();
-                }
-            });
-            
-        },
-        
-        getCursorCoords: function() {
-            var pos = this.editor.cursorCoords(true, 'page');
-            var xpos = pos.x;
-            var ypos = pos.y;
-            
-            var windowHeight = window.innerHeight;
-            if(ypos < (windowHeight / 2)) {
-                ypos += 18;
-            }
-            
-            return {
-                xpos: xpos,
-                ypos: ypos
-            }
-        },
-        
-        updateAutoSuggest: function() {
-             if (!!this.autoSuggest) {
-                var cursorCoords = this.getCursorCoords();
-                this.autoSuggest.updateSuggestions(this.editor.getLine(this.editor.getCursor().line), this.editor.getCursor().ch, cursorCoords.xpos, cursorCoords.ypos);
-            }
-        },
-        
         addListeners : function() {
             var that = this;
             
@@ -206,12 +129,6 @@ define([ "dojo/_base/declare",
             
             on(registry.byId('editorConfigurationSearch'), "click", function() {
                 registry.byId('searchConfigurationDialog').show();
-            });
-            
-            query('.CodeMirror-scroll').on('scroll', function() {
-                if(!!that.autoSuggest) {
-                    that.autoSuggest.hide();
-                }
             });
         }    
             
