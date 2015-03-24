@@ -2,3 +2,4 @@
     pageEncoding="UTF-8"%>
 
     <%response.sendRedirect("jsp/GUISettings.jsp");%>
+
