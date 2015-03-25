@@ -19,8 +19,10 @@ define([ "dojo/_base/declare",
          "dojo/_base/array",
          "dojo/_base/lang",
          "dojo/dom-construct",
-         "dijit/Tooltip"
-], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query, array, lang, domConstruct, Tooltip) {
+         "dijit/Tooltip",
+         "dojo/dom-attr",
+         "net/apachegui/InputAutoSuggest"
+], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query, array, lang, domConstruct, Tooltip, domAttr, InputAutoSuggest) {
 
     declare("net.apachegui.VirtualHosts", null, {
 
@@ -51,14 +53,21 @@ define([ "dojo/_base/declare",
         
         addHostFileSelect: null,
         
+        inputAutoSuggest: null,
+        
         initialized : false,
 
         init : function() {
             if (this.initialized === false) {
                 this.populateTreeVirtualHosts();
                 this.addListeners();
+                this.initializeAutoSuggest();
                 this.initialized = true;
             }
+        },
+        
+        initializeAutoSuggest: function() {
+            this.inputAutoSuggest = new InputAutoSuggest(dom.byId('addLineType'));
         },
 
         areHostsEqual : function(host1, host2) {
@@ -655,7 +664,9 @@ define([ "dojo/_base/declare",
             var item = this.getSelectedTreeItem();
             if (!!item) {
 
-                dom.byId('addLineType').value = '';
+                var addLineType = dom.byId('addLineType');
+                addLineType.value = '';
+                domAttr.set(addLineType, "data-type", type);
                 dom.byId('addLineValue').value = '';
                 dom.byId('addLineBeforeLineType').value = this.getItemProperty(item,'lineType');
                 dom.byId('addLineLineType').value = type;
