@@ -194,6 +194,10 @@ h1 {
     border-left: 1px solid #000000;
 }
 
+.autoSuggestDescriptionContainer.hover_state {
+	border-left: none;
+}	
+
 .autoSuggestDescriptionContainer .header {
 	background-color: #557697;
     color: #fff;

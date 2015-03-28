@@ -7,27 +7,38 @@ define([ "dojo/_base/declare",
          "dojo/dom-class",
          "dojo/query",
          "dojo/dom-attr",
+         "dojo/mouse",
          "dojo/_base/event"
-], function(declare, dom, domStyle, script, on, keys, domClass, query, domAttr, event){    
+], function(declare, dom, domStyle, script, on, keys, domClass, query, domAttr, mouse, event){    
      
      return declare(null, {    
          
          initialized: false,
          isShown: false,
+         isHoverShown: false,
          onSelect: null,
          onShow: null,
          onHide: null,
          selectedItem: -1,
+         
+         hoverSelector: null,
+         hoverOutTimer: '',
+         moveAutoSuggestContainerHandle: null,
+         moveBodyHandle: null,
          
          constructor: function(obj) {
             var that = this;
 
             //initialize
             var version = obj.apacheVersion; 
+            this.hoverContainer = obj.hoverContainer || document.body;
+            this.hoverSelector = obj.hoverSelector || null;
             this.onSelect = obj.onSelect || function() {};
             this.onHighlight = obj.onHighlight || function() {};
             this.onShow = obj.onShow || function(){};
             this.onHide = obj.onHide || function(){};
+            this.onShowHover = obj.onShowHover || function(){};
+            this.onHideHover = obj.onHideHover || function(){};
             this.id = 0;
             
             if (!!net.apachegui.AutoSuggest) {
@@ -78,7 +89,7 @@ define([ "dojo/_base/declare",
                              
                              '</div>' +
                              
-                             '<div class="autoSuggestDescriptionContainer" id="' + this.id + '-autoSuggestDescriptionContainer" style="display: none;">' +
+                             '<div class="autoSuggestDescriptionContainer" id="' + this.id + '-autoSuggestDescriptionContainer">' +
                              
                              '</div>';
              
@@ -88,6 +99,7 @@ define([ "dojo/_base/declare",
          show: function(xpos, ypos) {
              
              if(!this.isShown) {
+                 domStyle.set(this.getAutoSuggestKeywordContainer(),'display','inline-block');
                  domStyle.set(this.getAutoSuggestContainer(),'display','block');
                  this.updatePosition(xpos,ypos);
                  
@@ -97,6 +109,80 @@ define([ "dojo/_base/declare",
              
              this.highlightItem(0);    
              this.updatePosition(xpos,ypos);
+         },
+         
+         hide: function() {
+             if(this.isShown) {
+                 domStyle.set(this.getAutoSuggestContainer(),'display','none');
+                 
+                 this.onHide();
+                 this.isShown = false;
+             }
+         },
+         
+         showHover: function(name, xpos, ypos) {
+             var that = this;
+             
+             name = name.replace('<','').replace('&lt;','');
+             if(!this.isHoverShown) {
+                 this.updatePosition(xpos,ypos);
+                 var isFound = this.buildDescriptionContainer(name);
+                 if(isFound) {
+                     domStyle.set(this.getAutoSuggestKeywordContainer(),'display','none');
+                     domStyle.set(this.getAutoSuggestContainer(),'display','block');
+                     domClass.add(this.getAutoSuggestDescriptionContainer(),'hover_state');
+                     
+                     this.addHoverEvents();
+                     this.onShowHover();
+                     this.isHoverShown = true;
+                 }
+             }
+         },
+         
+         addHoverEvents: function() {
+             var that = this;
+             
+             this.hoverOutTimer = '';
+             this.moveAutoSuggestContainerHandle = on(this.getAutoSuggestContainer(), 'mousemove', function(e) {
+                 clearTimeout(that.hoverOutTimer);
+                 that.hoverOutTimer = '';
+                 e.stopPropagation();
+             })
+             
+             this.moveBodyHandle = on(document.body, 'mousemove', function() {
+                 if(that.hoverOutTimer == '') {
+                     that.hoverOutTimer = setTimeout(function() {
+                         that.hideHover();
+                     }, 500);
+                 }
+             });
+         },
+         
+         removeHoverEvents: function() {
+             clearTimeout(this.hoverOutTimer);
+             if(!!this.moveAutoSuggestContainerHandle) {
+                 this.moveAutoSuggestContainerHandle.remove();
+             }
+             
+             if(!!this.moveBodyHandle) {
+                 this.moveBodyHandle.remove();
+             }
+         },
+         
+         hideHover: function() {
+             if(this.isHoverShown) {
+                 domStyle.set(this.getAutoSuggestContainer(),'display','none');
+                 domClass.remove(this.getAutoSuggestDescriptionContainer(),'hover_state');
+                 
+                 this.removeHoverEvents();
+                 this.onHideHover();
+                 this.isHoverShown = false;
+             }
+         },
+         
+         hideAll: function() {
+             this.hideHover();
+             this.hide();
          },
          
          updatePosition: function(xpos, ypos) {
@@ -131,15 +217,6 @@ define([ "dojo/_base/declare",
                           
          },
          
-         hide: function() {
-             if(this.isShown) {
-                 domStyle.set(this.getAutoSuggestContainer(),'display','none');
-                 
-                 this.onHide();
-                 this.isShown = false;
-             }
-         },
-         
          getKeywordListItems: function() {
              return  query('li', this.getAutoSuggestKeywordList());
          },
@@ -159,11 +236,27 @@ define([ "dojo/_base/declare",
                  domClass.add(keywords[itemNum],'selected');
                  var name = this.getNameFromListItem(keywords[itemNum]).toLowerCase();
                  
-                 var item = net.apachegui.AutoSuggest.DIRECTIVES[name];
-                 if(typeof item == 'undefined') {
-                     item = net.apachegui.AutoSuggest.ENCLOSURES[name];
-                 }
+                 this.buildDescriptionContainer(name);
                  
+                 this.onHighlight(name);
+             }
+         },
+         
+         getItemFromName: function(name) {
+             name = name.toLowerCase();
+             
+             var item = net.apachegui.AutoSuggest.DIRECTIVES[name];
+             if(typeof item == 'undefined') {
+                 item = net.apachegui.AutoSuggest.ENCLOSURES[name];
+             } 
+             
+             return item;
+         },
+         
+         buildDescriptionContainer: function(name) {
+             var item = this.getItemFromName(name);
+             
+             if(!!item) {
                  var items = item['items'];
                  var html = '<div">' +
                                  '<div class="header">' + item.name + '</div>' +
@@ -183,10 +276,9 @@ define([ "dojo/_base/declare",
                      
                  autoSuggestDescriptionContainer.innerHTML = html;
                  
-                 //populate description container
-                 domStyle.set(autoSuggestDescriptionContainer,'display','inline-block');
-                 
-                 this.onHighlight(name);
+                 return true;
+             } else {
+                 return false;
              }
          },
          
@@ -261,7 +353,7 @@ define([ "dojo/_base/declare",
              });
              
              on(document, 'click', function() {
-                 that.hide();
+                 that.hideAll();
              });
              
              on(this.getAutoSuggestKeywordList(), "li:click", function() {
@@ -300,7 +392,24 @@ define([ "dojo/_base/declare",
                     that.selectItem(that.selectedItem);
                     break;
                 }
-            });
+             });
+             
+             if(!!this.hoverSelector) {
+                 on(this.hoverContainer, this.hoverSelector + ':mouseover', function(e) {
+                     var node = this;
+                     
+                     var xpos = e.clientX;
+                     var ypos = e.clientY;
+                     var leaveTimer = setTimeout(function() {
+                         that.showHover(node.innerHTML, e.clientX, e.clientY);
+                     }, 500);
+                     
+                     var leaveHandle = on(node, mouse.leave, function(){                       
+                         clearTimeout(leaveTimer);
+                         leaveHandle.remove();
+                     });
+                 });
+             }
              
          }
          

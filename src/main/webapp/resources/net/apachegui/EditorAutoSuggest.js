@@ -32,6 +32,8 @@ define([ "dojo/_base/declare",
             var that = this;
             
             this.autoSuggest = new AutoSuggest({
+                hoverContainer: dom.byId('fileform'),
+                hoverSelector: '.cm-variable',
                 onShow: function() {
                     CodeMirror.keyMap.basic.Up = '';
                     CodeMirror.keyMap.basic.Down = '';
@@ -106,10 +108,10 @@ define([ "dojo/_base/declare",
            
            query('.CodeMirror-scroll').on('scroll', function() {
                if(!!that.autoSuggest) {
-                   that.autoSuggest.hide();
+                   that.autoSuggest.hideAll();
                }
            });
-       }    
+        }    
     
     });
     
