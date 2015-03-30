@@ -24,7 +24,7 @@ define([ "dojo/_base/declare",
             
             this.autoSuggest = new AutoSuggest({
                 hoverContainer: document.body,
-                hoverSelector: '.directive_type',
+                hoverClass: 'directive_type',
                 onShow: function() {
                     
                 },

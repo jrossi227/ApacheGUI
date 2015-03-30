@@ -33,7 +33,7 @@ define([ "dojo/_base/declare",
             
             this.autoSuggest = new AutoSuggest({
                 hoverContainer: dom.byId('fileform'),
-                hoverSelector: '.cm-variable',
+                hoverClass: 'cm-variable',
                 onShow: function() {
                     CodeMirror.keyMap.basic.Up = '';
                     CodeMirror.keyMap.basic.Down = '';

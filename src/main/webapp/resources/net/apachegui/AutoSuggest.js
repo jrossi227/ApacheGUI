@@ -23,7 +23,7 @@ define([ "dojo/_base/declare",
          selectedItem: -1,
          
          hoverContainer: null,
-         hoverSelector: null,
+         hoverClass: null,
          hoverOutTimer: '',
          moveAutoSuggestContainerHandle: null,
          moveBodyHandle: null,
@@ -33,7 +33,7 @@ define([ "dojo/_base/declare",
 
             //initialize
             this.hoverContainer = obj.hoverContainer || document.body;
-            this.hoverSelector = obj.hoverSelector || null;
+            this.hoverClass = obj.hoverClass || null;
             this.onSelect = obj.onSelect || function() {};
             this.onHighlight = obj.onHighlight || function() {};
             this.onShow = obj.onShow || function(){};
@@ -409,20 +409,22 @@ define([ "dojo/_base/declare",
                 }
              });
              
-             if(!!this.hoverSelector) {
-                 on(this.hoverContainer, this.hoverSelector + ':mouseover', function(e) {
-                     var node = this;
-                     
-                     var xpos = e.clientX;
-                     var ypos = e.clientY;
-                     var leaveTimer = setTimeout(function() {
-                         that.showHover(node.innerHTML, e.clientX, e.clientY);
-                     }, 750);
-                     
-                     var leaveHandle = on(node, mouse.leave, function(){                       
-                         clearTimeout(leaveTimer);
-                         leaveHandle.remove();
-                     });
+             if(!!this.hoverClass) {
+                 on(this.hoverContainer, 'mouseover', function(e) {
+                     var node = e.target;
+                     if(domClass.contains(node, that.hoverClass)) {
+
+                         var xpos = e.clientX;
+                         var ypos = e.clientY;
+                         var leaveTimer = setTimeout(function() {
+                             that.showHover(node.innerHTML, e.clientX, e.clientY);
+                         }, 750);
+                         
+                         var leaveHandle = on(node, mouse.leave, function(){                       
+                             clearTimeout(leaveTimer);
+                             leaveHandle.remove();
+                         });
+                     }
                  });
              }
              
