@@ -346,37 +346,13 @@
             		<a href="mailto:${supportAddress}">${supportAddress}</a>
             	</td>
         	</tr>
-        	<tr class="dijitDialogPaneContentArea">
-            	<td>	
-           		</td>
-            	<td>
-            	</td>
-        	</tr>
-        	<tr class="dijitDialogPaneContentArea">
-            	<td>
-            		Available Updates: 	
-           		</td>
-            	<td>
-            		<div id="updateInfoContainer"></div>
-            	</td>
-        	</tr>
         </table>
         <div class="dijitDialogPaneActionBar">
             <button id="guiInfoClose" dojoType="dijit.form.Button" type="button">
                 Ok
             </button>
         </div>	
-	</div> 
-	<div dojoType="net.apachegui.NoCloseDialog" id="updateGUIDialog" title="Updating" style="width: 351px; display: none">
-    	<p id="updateStatusAdvisory">The update has started please do not close this window.</p>
-    	<p style="text-align: center"><span style="display: inline-block" class="dijitContentPaneLoading" id="updateStatusText"></span></p>
-    	<div id="progressContainer" style="display:none">
-    		<div dojoType="dijit.ProgressBar" style="width:300px; margin:auto;" id="downloadProgress" maximum="100">
-			</div>
-    	</div>
-    	<div id="finishedContainer">
-    	</div>
-	</div> 
+	</div>
 	<div id="appLayout" class="demoLayout" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline'">
 	
 		<jsp:include page="/jsp/Heading.jsp" 	flush="true" />
