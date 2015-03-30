@@ -112,7 +112,7 @@
                 <version>2.4</version>
                 <configuration>
                   <failOnMissingWebXml>true</failOnMissingWebXml>
-                  <warSourceExcludes>resources/**</warSourceExcludes>
+                  <warSourceExcludes>resources/**,manual/node_modules/**,manual/auto_suggest_24.js,manual/auto_suggest_22.js,manual/scraper.js</warSourceExcludes>
                   <webResources>
                       <resource>
                         <directory>${project.build.directory}/packagejs</directory>
@@ -156,6 +156,7 @@
                 <version>2.4</version>
                 <configuration>
                   <failOnMissingWebXml>true</failOnMissingWebXml>
+                  <warSourceExcludes>manual/node_modules/**,manual/auto_suggest_24.js,manual/auto_suggest_22.js,manual/scraper.js</warSourceExcludes>
                 </configuration>
               </plugin>
               <plugin>
