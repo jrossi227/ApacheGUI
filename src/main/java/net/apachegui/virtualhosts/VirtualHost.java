@@ -109,7 +109,7 @@ public class VirtualHost {
     private String getNameFromParts(String parts[]) {
         String name = Utilities.join(parts, " ");
         
-        name = "<strong>" + name.replaceFirst(" ", "</strong> ");
+        name = "<span class=\"directive_type\">" + name.replaceFirst(" ", "</span> ");
         
         return name;
     }
@@ -131,7 +131,7 @@ public class VirtualHost {
         children.put("id", 0);
         children.put("name", name);
         children.put("type", parts[0]);
-        children.put("value", name.substring(name.indexOf(" ") + 1));
+        children.put("value", name.replaceAll("<span.*</span> ", ""));
         children.put("lineOfStart", enclosure.getConfigurationLines()[0].getLineOfStart());
         children.put("lineOfEnd", enclosure.getConfigurationLines()[0].getLineOfEnd());
         children.put("lineType", "enclosure");
@@ -167,7 +167,7 @@ public class VirtualHost {
                 children.put("id", lineNum);
                 children.put("name", name);
                 children.put("type", parts[0]);
-                children.put("value", name.substring(name.indexOf(" ") + 1));
+                children.put("value", name.replaceAll("<span.*</span> ", ""));
                 children.put("lineOfStart", configurationLines[i].getLineOfStart());
                 children.put("lineOfEnd", configurationLines[i].getLineOfEnd());
                 children.put("lineType", "enclosure");
@@ -188,7 +188,7 @@ public class VirtualHost {
                 directive.put("id", lineNum);
                 directive.put("name", name);
                 directive.put("type", parts[0]);
-                directive.put("value", name.substring(name.indexOf(" ") + 1));
+                directive.put("value", name.replaceAll("<span.*</span> ", ""));
                 directive.put("lineOfStart", configurationLines[i].getLineOfStart());
                 directive.put("lineOfEnd", configurationLines[i].getLineOfEnd());
                 directive.put("lineType", "directive");

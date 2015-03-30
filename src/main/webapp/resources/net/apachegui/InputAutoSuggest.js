@@ -23,6 +23,8 @@ define([ "dojo/_base/declare",
             var that = this;
             
             this.autoSuggest = new AutoSuggest({
+                hoverContainer: document.body,
+                hoverSelector: '.directive_type',
                 onShow: function() {
                     
                 },

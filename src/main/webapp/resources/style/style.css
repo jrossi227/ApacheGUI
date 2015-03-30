@@ -76,6 +76,10 @@ h1 {
 	background-color: yellow;
 }
 
+.directive_type {
+	font-weight: bold;
+}
+
 /* Main Heading */
 #titlePane {
 	position: relative;

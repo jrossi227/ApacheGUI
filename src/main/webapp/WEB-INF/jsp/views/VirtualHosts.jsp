@@ -44,7 +44,7 @@
                          </label>
                     </td>
                     <td>
-                        <span id="editLineType"></span>
+                        <span id="editLineType" class="directive_type"></span>
                     </td>
             </tr>
             <tr class="dijitDialogPaneContentArea">

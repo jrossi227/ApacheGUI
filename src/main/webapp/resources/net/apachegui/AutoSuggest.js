@@ -8,8 +8,9 @@ define([ "dojo/_base/declare",
          "dojo/query",
          "dojo/dom-attr",
          "dojo/mouse",
-         "dojo/_base/event"
-], function(declare, dom, domStyle, script, on, keys, domClass, query, domAttr, mouse, event){    
+         "dojo/_base/event",
+         "dojo/_base/fx"
+], function(declare, dom, domStyle, script, on, keys, domClass, query, domAttr, mouse, event, fx){    
      
      return declare(null, {    
          
@@ -21,6 +22,7 @@ define([ "dojo/_base/declare",
          onHide: null,
          selectedItem: -1,
          
+         hoverContainer: null,
          hoverSelector: null,
          hoverOutTimer: '',
          moveAutoSuggestContainerHandle: null,
@@ -30,7 +32,6 @@ define([ "dojo/_base/declare",
             var that = this;
 
             //initialize
-            var version = obj.apacheVersion; 
             this.hoverContainer = obj.hoverContainer || document.body;
             this.hoverSelector = obj.hoverSelector || null;
             this.onSelect = obj.onSelect || function() {};
@@ -125,11 +126,19 @@ define([ "dojo/_base/declare",
              
              name = name.replace('<','').replace('&lt;','');
              if(!this.isHoverShown) {
-                 this.updatePosition(xpos,ypos);
                  var isFound = this.buildDescriptionContainer(name);
                  if(isFound) {
+                     this.updatePosition(xpos,ypos);
                      domStyle.set(this.getAutoSuggestKeywordContainer(),'display','none');
-                     domStyle.set(this.getAutoSuggestContainer(),'display','block');
+                     
+                     var autoSuggestContainer = this.getAutoSuggestContainer();
+                     domStyle.set(autoSuggestContainer,'opacity','0');
+                     domStyle.set(autoSuggestContainer,'display','block');
+                     var fadeArgs = {
+                             node: autoSuggestContainer
+                     };
+                     fx.fadeIn(fadeArgs).play();
+                     
                      domClass.add(this.getAutoSuggestDescriptionContainer(),'hover_state');
                      
                      this.addHoverEvents();
@@ -139,13 +148,19 @@ define([ "dojo/_base/declare",
              }
          },
          
+         clearHoverOutTimeout: function() {
+             if(this.hoverOutTimer != '') {
+                 clearTimeout(this.hoverOutTimer);
+                 this.hoverOutTimer = '';
+             }
+         },
+         
          addHoverEvents: function() {
              var that = this;
              
              this.hoverOutTimer = '';
              this.moveAutoSuggestContainerHandle = on(this.getAutoSuggestContainer(), 'mousemove', function(e) {
-                 clearTimeout(that.hoverOutTimer);
-                 that.hoverOutTimer = '';
+                 that.clearHoverOutTimeout();
                  e.stopPropagation();
              })
              
@@ -153,13 +168,13 @@ define([ "dojo/_base/declare",
                  if(that.hoverOutTimer == '') {
                      that.hoverOutTimer = setTimeout(function() {
                          that.hideHover();
-                     }, 500);
+                     }, 700);
                  }
              });
          },
          
          removeHoverEvents: function() {
-             clearTimeout(this.hoverOutTimer);
+             this.clearHoverOutTimeout();
              if(!!this.moveAutoSuggestContainerHandle) {
                  this.moveAutoSuggestContainerHandle.remove();
              }
@@ -402,7 +417,7 @@ define([ "dojo/_base/declare",
                      var ypos = e.clientY;
                      var leaveTimer = setTimeout(function() {
                          that.showHover(node.innerHTML, e.clientX, e.clientY);
-                     }, 500);
+                     }, 750);
                      
                      var leaveHandle = on(node, mouse.leave, function(){                       
                          clearTimeout(leaveTimer);
