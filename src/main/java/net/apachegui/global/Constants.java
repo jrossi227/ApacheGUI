@@ -129,9 +129,6 @@ public class Constants {
     // Constants for document file size
     public final static long maximumDocumentFilesize = 1000000;// 1MB
 
-    // String used to sanitize configuration files
-    public final static String sanitizedConfigFiles = "/(logs|modules|run)(|/.*)";
-
     // Constants for modules
     public final static String staticModulesSearchString = ".*\\(static\\).*";
     public final static String sharedModulesSearchString = ".*\\(shared\\).*";

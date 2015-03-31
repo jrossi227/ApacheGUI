@@ -373,19 +373,15 @@ public class ConfFiles {
         for (int i = 0; i < children.length; i++) {
             child = new File(children[i]);
             if (child.isDirectory()) {
-                if (!child.getAbsolutePath().matches(SettingsDao.getInstance().getSetting(Constants.confDirectory) + Constants.sanitizedConfigFiles)) {
-                    result.append("{ $ref: '" + Constants.ConfigurationRoot + child.getAbsolutePath() + "', id:'" + Constants.ConfigurationRoot + child.getAbsolutePath()
-                            + "', type:'Configuration', name: '" + child.getName() + "', children: true},");
-                }
+                result.append("{ $ref: '" + Constants.ConfigurationRoot + child.getAbsolutePath() + "', id:'" + Constants.ConfigurationRoot + child.getAbsolutePath()
+                        + "', type:'Configuration', name: '" + child.getName() + "', children: true},");
             }
         }
         for (int i = 0; i < children.length; i++) {
             child = new File(children[i]);
             if (!child.isDirectory()) {
-                if (!child.getAbsolutePath().matches(SettingsDao.getInstance().getSetting(Constants.confDirectory) + Constants.sanitizedConfigFiles)) {
-                    result.append("{ $ref: '" + Constants.ConfigurationRoot + child.getAbsolutePath() + "', id:'" + Constants.ConfigurationRoot + child.getAbsolutePath()
-                            + "', type:'Configuration', name: '" + child.getName() + "'},");
-                }
+                result.append("{ $ref: '" + Constants.ConfigurationRoot + child.getAbsolutePath() + "', id:'" + Constants.ConfigurationRoot + child.getAbsolutePath()
+                        + "', type:'Configuration', name: '" + child.getName() + "'},");
             }
         }
 
@@ -409,11 +405,10 @@ public class ConfFiles {
         log.trace("ConfFiles.sanitizeConfFiles called");
         String confDirectory = SettingsDao.getInstance().getSetting(Constants.confDirectory);
 
-        log.trace("Sanitize String: " + Constants.sanitizedConfigFiles);
         ArrayList<java.io.File> filteredFiles = new ArrayList<java.io.File>();
         for (java.io.File confFile : confFiles) {
             log.trace("Sanitizing " + confFile);
-            if (!(new File(confFile).getAbsolutePath()).matches((new File(confDirectory)).getAbsolutePath() + Constants.sanitizedConfigFiles)) {
+            if ((new File(confFile).getAbsolutePath()).startsWith((new File(confDirectory)).getAbsolutePath())) {
                 log.trace("Adding to filter: " + confFile);
                 filteredFiles.add(confFile);
             }
@@ -423,8 +418,8 @@ public class ConfFiles {
     }    
         
     /**
-     * Some apache configurations use the server root as the root configuration directory. As a result the root configuration directory can include the folder for modules logs and run. Any files
-     * contained in a folder logs modules and run will be removed from confFiles.
+     * Some apache configurations use the server root as the root configuration directory. As a result the root configuration directory can include the folder for modules logs and run. The folders
+     * will contain symbolic links. 
      * 
      * @param confFiles
      *            the list of confFiles to sanitize
@@ -433,11 +428,10 @@ public class ConfFiles {
         log.trace("ConfFiles.sanitizeConfFiles called");
         String confDirectory = SettingsDao.getInstance().getSetting(Constants.confDirectory);
 
-        log.trace("Sanitize String: " + Constants.sanitizedConfigFiles);
         ArrayList<String> filteredFiles = new ArrayList<String>();
         for (String confFile : confFiles) {
             log.trace("Sanitizing " + confFile);
-            if (!confFile.matches((new File(confDirectory)).getAbsolutePath() + Constants.sanitizedConfigFiles)) {
+            if (confFile.startsWith((new File(confDirectory)).getAbsolutePath())) {
                 log.trace("Adding to filter: " + confFile);
                 filteredFiles.add(confFile);
             }
