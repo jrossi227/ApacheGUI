@@ -190,6 +190,9 @@
                     <executions>
                         <execution>
                             <id>default-cli</id>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
                             <configuration>
                               <tasks>
                                 <property name="apachegui.home" value="${apachegui.home}"/>
