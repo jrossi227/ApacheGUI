@@ -22,6 +22,7 @@ define([ "dojo/_base/declare",
          onHide: null,
          selectedItem: -1,
          
+         hoverEnabled: true,
          hoverContainer: null,
          hoverClass: null,
          hoverOutTimer: '',
@@ -193,6 +194,14 @@ define([ "dojo/_base/declare",
                  this.onHideHover();
                  this.isHoverShown = false;
              }
+         },
+         
+         enableHover: function() {
+             this.hoverEnabled = true;
+         },
+         
+         disableHover: function() {
+             this.hoverEnabled = false;
          },
          
          hideAll: function() {
@@ -411,19 +420,21 @@ define([ "dojo/_base/declare",
              
              if(!!this.hoverClass) {
                  on(this.hoverContainer, 'mouseover', function(e) {
-                     var node = e.target;
-                     if(domClass.contains(node, that.hoverClass)) {
-
-                         var xpos = e.clientX;
-                         var ypos = e.clientY;
-                         var leaveTimer = setTimeout(function() {
-                             that.showHover(node.innerHTML, e.clientX, e.clientY);
-                         }, 750);
-                         
-                         var leaveHandle = on(node, mouse.leave, function(){                       
-                             clearTimeout(leaveTimer);
-                             leaveHandle.remove();
-                         });
+                     if(that.hoverEnabled) {
+                         var node = e.target;
+                         if(domClass.contains(node, that.hoverClass)) {
+    
+                             var xpos = e.clientX;
+                             var ypos = e.clientY;
+                             var leaveTimer = setTimeout(function() {
+                                 that.showHover(node.innerHTML, e.clientX, e.clientY);
+                             }, 750);
+                             
+                             var leaveHandle = on(node, mouse.leave, function(){                       
+                                 clearTimeout(leaveTimer);
+                                 leaveHandle.remove();
+                             });
+                         }
                      }
                  });
              }

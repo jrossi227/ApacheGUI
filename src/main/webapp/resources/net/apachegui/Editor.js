@@ -30,7 +30,7 @@ define([ "dojo/_base/declare",
         
         modes : {
             'plain'         :    'text/plain',
-            'conf'          :   'text/apache-conf',
+            'conf'          :    'text/apache-conf',
             'html'          :    'text/html',
             'css'           :    'text/css',
             'xml'           :    'application/xml',
@@ -115,6 +115,8 @@ define([ "dojo/_base/declare",
         setEditor: function(textAreaId, mode) {
             this.editor=CodeMirror.fromTextArea(document.getElementById(textAreaId), this.getInitEditorOptions());    
             
+            this.editorAutoSuggest = new EditorAutoSuggest(this.editor, this);
+            
             if(!!mode) {
                 this.setMode(mode);
             } else {
@@ -122,8 +124,6 @@ define([ "dojo/_base/declare",
             }
             
             this.clearSaveState();
-            
-            this.editorAutoSuggest = new EditorAutoSuggest(this.editor, this);
         },
         
         scrollToLine : function(lineNum) {
@@ -283,6 +283,13 @@ define([ "dojo/_base/declare",
             }
             else {
                  this.editor.setOption('onGutterClick', null);
+            }
+            
+            /* Enable directive hover if were in conf mode */
+            if(mode == 'conf') {
+                this.editorAutoSuggest.enableHover();
+            } else {
+                this.editorAutoSuggest.disableHover();
             }
             
             this.currMode=mode;

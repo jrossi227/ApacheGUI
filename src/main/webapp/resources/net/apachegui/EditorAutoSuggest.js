@@ -28,6 +28,13 @@ define([ "dojo/_base/declare",
             this.addListeners();
         },
 
+        enableHover: function() {
+            this.autoSuggest.enableHover();
+        },
+        disableHover: function() {
+            this.autoSuggest.disableHover();
+        },
+        
         loadAutoSuggest: function() {
             var that = this;
             
