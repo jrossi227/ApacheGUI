@@ -38,7 +38,10 @@ public class JdbcConnection {
 
         String update;
         for (int i = 0; i < Constants.tableNames.length; i++) {
-            update = "TRUNCATE TABLE " + Constants.tableNames[i];
+            update = "DELETE FROM " + Constants.tableNames[i];
+            jdbcTemplate.update(update);
+
+            update = "VACUUM";
             jdbcTemplate.update(update);
         }
         UsersDao.getInstance().setUsername(Constants.defaultUsername);
