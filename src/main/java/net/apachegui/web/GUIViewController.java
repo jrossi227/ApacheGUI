@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 
 import net.apachegui.conf.ServerMime;
 import net.apachegui.db.LogDataDao;
+import net.apachegui.db.Timestamp;
 import net.apachegui.db.UsersDao;
 import net.apachegui.directives.Group;
 import net.apachegui.directives.KeepAlive;
@@ -149,7 +150,7 @@ public class GUIViewController {
     @RequestMapping(value = "/jsp/GenerateGraph.jsp")
     public String renderGenerateGraphViewJsp(@RequestParam(value = "date") String date, @RequestParam(value = "type") String type, @RequestParam(value = "host") String host,
             @RequestParam(value = "userAgent") String userAgent, @RequestParam(value = "requestString") String requestString, @RequestParam(value = "status") String status,
-            @RequestParam(value = "contentSize") String contentSize, Model model) throws UnsupportedEncodingException, ParseException {
+            @RequestParam(value = "contentSize") String contentSize, Model model) throws Exception {
 
         Calendar cal = Calendar.getInstance();
 
@@ -157,7 +158,7 @@ public class GUIViewController {
         if (type.equals("day")) {
             SimpleDateFormat startDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             java.util.Date startParsedDate = startDateFormat.parse(date + " 00:00:00");
-            java.sql.Timestamp startTimestamp = new java.sql.Timestamp(startParsedDate.getTime());
+            Timestamp startTimestamp = new Timestamp(startParsedDate.getTime());
             cal.setTimeInMillis(startTimestamp.getTime());
             int hourCount[] = LogDataDao.getInstance().getDailyReportByHour(startTimestamp, host, userAgent, requestString, status, contentSize);
             for (int i = 0; i < hourCount.length; i++) {
@@ -169,7 +170,7 @@ public class GUIViewController {
         if (type.equals("month")) {
             SimpleDateFormat startDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             java.util.Date startParsedDate = startDateFormat.parse(date + " 00:00:00");
-            java.sql.Timestamp startTimestamp = new java.sql.Timestamp(startParsedDate.getTime());
+            Timestamp startTimestamp = new Timestamp(startParsedDate.getTime());
             cal.setTimeInMillis(startTimestamp.getTime());
             int dayCount[] = LogDataDao.getInstance().getMonthlyReportByDay(startTimestamp, host, userAgent, requestString, status, contentSize);
 

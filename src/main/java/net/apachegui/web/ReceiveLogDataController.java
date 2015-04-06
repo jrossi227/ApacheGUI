@@ -1,12 +1,12 @@
 package net.apachegui.web;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
 import net.apachegui.db.LogData;
 import net.apachegui.db.LogDataDao;
 import net.apachegui.db.SettingsDao;
+import net.apachegui.db.Timestamp;
 import net.apachegui.global.Constants;
 
 import org.apache.log4j.Logger;
@@ -32,7 +32,7 @@ public class ReceiveLogDataController {
     }
 
     @RequestMapping(value = "/pass/ReceiveLogData")
-    public String extendedRunningProcesses(@RequestParam(value = "logData") String logData) {
+    public String extendedRunningProcesses(@RequestParam(value = "logData") String logData) throws Exception {
         log.trace("Calling Post");
         log.trace("Received Log Data " + logData);
         String fields[] = logData.split("\",\"");

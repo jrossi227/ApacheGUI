@@ -21,7 +21,7 @@ public class HistoryController {
     private static Logger log = Logger.getLogger(HistoryController.class);
 
     @RequestMapping(value = "/Current", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getHistory() throws IOException, InterruptedException {
+    public String getHistory() throws Exception {
         int numberEntries = LogDataDao.getInstance().getNumberOfEntries();
         Timestamp newestTimeStamp = LogDataDao.getInstance().getNewestTime();
         String newestTime = (newestTimeStamp == null) ? "" : newestTimeStamp.toString();

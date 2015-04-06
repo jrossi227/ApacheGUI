@@ -146,7 +146,6 @@ public class Constants {
     public final static String maxHistoricalResults = "100";
     public final static String historyFilename = "ApacheGUIHistory.csv";
     public final static long historyThreadDelay = (60000 * 60);
-    public final static long rebuildIndexInterval = 12;
     public final static String historyLogHolder = "apacheguilogholder";
 
     // Constants for Menu

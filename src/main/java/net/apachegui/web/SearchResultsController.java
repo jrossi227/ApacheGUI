@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 
 import net.apachegui.db.LogData;
 import net.apachegui.db.LogDataDao;
+import net.apachegui.db.Timestamp;
 import net.apachegui.global.Constants;
 import net.apachegui.global.Utilities;
 
@@ -32,8 +33,7 @@ public class SearchResultsController {
     public String searchResults(@RequestParam(value = "option") String option, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "startTime") String startTime,
             @RequestParam(value = "endDate") String endDate, @RequestParam(value = "endTime") String endTime, @RequestParam(value = "host") String host,
             @RequestParam(value = "userAgent") String userAgent, @RequestParam(value = "requestString") String requestString, @RequestParam(value = "status") String status,
-            @RequestParam(value = "contentSize") String contentSize, @RequestParam(value = "maxResults", required = false) String maxResults, Model model) throws ParseException, IOException,
-            SQLException {
+            @RequestParam(value = "contentSize") String contentSize, @RequestParam(value = "maxResults", required = false) String maxResults, Model model) throws Exception {
 
         log.trace("SearchResults.doGet Called");
         log.trace("option " + option);
@@ -60,12 +60,12 @@ public class SearchResultsController {
 
         SimpleDateFormat startDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         java.util.Date startParsedDate = startDateFormat.parse(startDate + " " + startTime);
-        java.sql.Timestamp startTimestamp = new java.sql.Timestamp(startParsedDate.getTime());
+        Timestamp startTimestamp = new Timestamp(startParsedDate.getTime());
         log.trace("startTimestamp " + startTimestamp.toString());
 
         SimpleDateFormat endDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         java.util.Date endParsedDate = endDateFormat.parse(endDate + " " + endTime);
-        java.sql.Timestamp endTimestamp = new java.sql.Timestamp(endParsedDate.getTime());
+        Timestamp endTimestamp = new Timestamp(endParsedDate.getTime());
         log.trace("endTimestamp " + endTimestamp.toString());
 
         JSONObject result = new JSONObject();

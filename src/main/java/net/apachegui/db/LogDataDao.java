@@ -1,12 +1,8 @@
 package net.apachegui.db;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -50,7 +46,7 @@ public class LogDataDao {
                 LogData logdata = data[i];
 
                 ps.setString(1, logdata.getHost());
-                ps.setTimestamp(2, logdata.getInsertDate());
+                ps.setLong(2, logdata.getInsertDate().getTime());
                 ps.setString(3, logdata.getUserAgent());
                 ps.setString(4, logdata.getRequestString());
                 ps.setString(5, logdata.getStatus());
@@ -99,7 +95,7 @@ public class LogDataDao {
         log.trace("maxResults " + maxResults);
         StringBuffer query = new StringBuffer();
 
-        query.append("SELECT * FROM " + Constants.logDataTable + " WHERE INSERTDATE>TIMESTAMP('" + startDate.toString() + "') AND INSERTDATE<TIMESTAMP('" + endDate.toString() + "')");
+        query.append("SELECT * FROM " + Constants.logDataTable + " WHERE INSERTDATE > " + startDate.getTime() + " AND INSERTDATE < " + endDate.getTime());
         if (!host.equals("")) {
             query.append(" AND UPPER(HOST) LIKE '%" + host.toUpperCase() + "%'");
         }
@@ -120,46 +116,27 @@ public class LogDataDao {
             query.append(" AND CONTENTSIZE='" + contentSize + "'");
         }
 
-        query.append(" ORDER BY INSERTDATE DESC");
+        query.append(" ORDER BY INSERTDATE DESC LIMIT " + maxResults);
         log.trace("Query: " + query.toString());
 
-        Connection con = null;
-        Statement stmt = null;
-        ResultSet res = null;
-
-        ArrayList<LogData> logData = new ArrayList<LogData>();
-        try {
-            con = this.jdbcTemplate.getDataSource().getConnection();
-            stmt = con.createStatement();
-            stmt.setMaxRows(Integer.parseInt(maxResults));
-            res = stmt.executeQuery(query.toString());
-
-            while (res.next()) {
-                Timestamp insertDateResult = res.getTimestamp("INSERTDATE");
-                log.trace("INSERTDATE " + insertDateResult.toString());
+        List<LogData> logData = this.jdbcTemplate.query(query.toString(), new RowMapper<LogData>() {
+            public LogData mapRow(ResultSet res, int rowNum) throws SQLException {
+                Timestamp insertDateResult = new Timestamp(res.getTimestamp("INSERTDATE"));
+                log.trace("INSERTDATE "+insertDateResult.toString());
                 String hostResult = res.getString("HOST");
-                log.trace("HOST " + hostResult);
+                log.trace("HOST "+hostResult);
                 String userAgentResult = res.getString("USERAGENT");
-                log.trace("USERAGENT " + userAgentResult);
+                log.trace("USERAGENT "+userAgentResult);
                 String requestStringResult = res.getString("REQUESTSTRING");
-                log.trace("REQUESTSTRING " + requestStringResult);
+                log.trace("REQUESTSTRING "+requestStringResult);
                 String statusResult = res.getString("STATUS");
-                log.trace("STATUS " + statusResult);
+                log.trace("STATUS "+statusResult);
                 String contentSizeResult = res.getString("CONTENTSIZE");
-                log.trace("CONTENTSIZE " + contentSizeResult);
-                logData.add(new LogData(insertDateResult, hostResult, userAgentResult, requestStringResult, statusResult, contentSizeResult));
+                log.trace("CONTENTSIZE "+contentSizeResult);
+
+                return new LogData(insertDateResult, hostResult, userAgentResult, requestStringResult, statusResult, contentSizeResult);
             }
-        } finally {
-            if (res != null) {
-                res.close();
-            }
-            if (stmt != null) {
-                stmt.close();
-            }
-            if (con != null) {
-                con.close();
-            }
-        }
+        });
 
         return logData.toArray(new LogData[logData.size()]);
     }
@@ -191,7 +168,7 @@ public class LogDataDao {
         log.trace("status " + status);
         log.trace("contentSize " + contentSize);
         StringBuffer update = new StringBuffer();
-        update.append("DELETE FROM " + Constants.logDataTable + " WHERE INSERTDATE>TIMESTAMP('" + startDate.toString() + "') AND INSERTDATE<TIMESTAMP('" + endDate.toString() + "')");
+        update.append("DELETE FROM " + Constants.logDataTable + " WHERE INSERTDATE > " + startDate.getTime() + " AND INSERTDATE < " + endDate.getTime());
 
         if (!host.equals("")) {
             update.append(" AND UPPER(HOST) LIKE '%" + host.toUpperCase() + "%'");
@@ -224,14 +201,14 @@ public class LogDataDao {
      * @param numberOfDays
      *            - Any data older than the supplied number of days will be deleted.
      */
-    public void shrinkLogData(int numberOfDays) {
+    public void shrinkLogData(int numberOfDays) throws Exception {
         log.trace("Entering shrinkLogData with numberOf Days " + numberOfDays);
 
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_YEAR, ((-1) * numberOfDays));
         Timestamp date = new Timestamp(cal.getTimeInMillis());
 
-        String update = "DELETE FROM " + Constants.logDataTable + " WHERE INSERTDATE<TIMESTAMP('" + date.toString() + "')";
+        String update = "DELETE FROM " + Constants.logDataTable + " WHERE INSERTDATE < " + date.getTime();
         log.trace("Update: " + update);
 
         this.jdbcTemplate.update(update);
@@ -258,38 +235,42 @@ public class LogDataDao {
      * 
      * @return the oldest time in the database.
      */
-    public Timestamp getOldestTime() {
+    public Timestamp getOldestTime() throws Exception {
         log.trace("Entering getOldestTime");
 
         String query = "SELECT MIN(INSERTDATE) AS MINTIME FROM " + Constants.logDataTable;
-        Timestamp value = this.jdbcTemplate.queryForObject(query, Timestamp.class);
+        Long value = this.jdbcTemplate.queryForObject(query, Long.class);
 
+        Timestamp time = null;
         if (value != null) {
+            time = new Timestamp(value * 1000);
             log.trace("Minimum Time " + value.toString());
         } else {
             log.trace("There were no entries found in the database");
         }
 
-        return value;
+        return time;
     }
 
     /**
      * 
      * @return the newest time in the database
      */
-    public Timestamp getNewestTime() {
+    public Timestamp getNewestTime() throws Exception {
         log.trace("Entering getNewestTime");
 
         String query = "SELECT MAX(INSERTDATE) AS MAXTIME FROM " + Constants.logDataTable;
-        Timestamp value = this.jdbcTemplate.queryForObject(query, Timestamp.class);
+        Long value = this.jdbcTemplate.queryForObject(query, Long.class);
 
+        Timestamp time = null;
         if (value != null) {
+            time = new Timestamp(value * 1000);
             log.trace("Maximum Time " + value.toString());
         } else {
             log.trace("There were no entries found in the database");
         }
 
-        return value;
+        return time;
     }
 
     /**
@@ -309,7 +290,7 @@ public class LogDataDao {
      *            - An integer with the desired contentSize. The supplied contentSize must exactly match the status in the database. Can be left blank if its not required.
      * @return an array with length 24 which has the amount of entries per hour.
      */
-    public int[] getDailyReportByHour(Timestamp date, String host, String userAgent, String requestString, String status, String contentSize) {
+    public int[] getDailyReportByHour(Timestamp date, String host, String userAgent, String requestString, String status, String contentSize) throws Exception {
         // select h, count(*) as NUM from (select hour(INSERTDATE) from LOGDATA WHERE INSERTDATE < TIMESTAMP('2011-12-23 00:00:00.0') AND INSERTDATE > TIMESTAMP('2011-12-22 00:00:00.0')) as t(h) group
         // by h;
         log.trace("Entering getDailyReportByHour");
@@ -322,7 +303,7 @@ public class LogDataDao {
 
         Timestamp currentTime = date;
         Calendar tempPresent = Calendar.getInstance();
-        tempPresent.setTimeInMillis(currentTime.getTime());
+        tempPresent.setTimeInMillis(currentTime.getTime() * 1000);
         tempPresent.set(Calendar.HOUR_OF_DAY, 0);
         tempPresent.set(Calendar.MINUTE, 0);
         tempPresent.set(Calendar.SECOND, 0);
@@ -333,8 +314,8 @@ public class LogDataDao {
 
         StringBuffer query = new StringBuffer();
 
-        query.append("SELECT h, count(*) as NUM from (SELECT hour(INSERTDATE) FROM " + Constants.logDataTable + " WHERE INSERTDATE<TIMESTAMP('" + futureTime.toString()
-                + "') AND INSERTDATE>TIMESTAMP('" + currentTime.toString() + "')");
+        query.append("SELECT h, count(*) as NUM from (SELECT strftime('%H',datetime(INSERTDATE, 'unixepoch', 'localtime')) as h FROM " + Constants.logDataTable + " WHERE INSERTDATE < " + futureTime.getTime()
+                + " AND INSERTDATE > " + currentTime.getTime());
         if (!host.equals("")) {
             query.append(" AND UPPER(HOST) LIKE '%" + host.toUpperCase() + "%'");
         }
@@ -355,7 +336,7 @@ public class LogDataDao {
             query.append(" AND CONTENTSIZE='" + contentSize + "'");
         }
 
-        query.append(") as t(h) group by h");
+        query.append(") group by h");
         log.trace("Query: " + query.toString());
         List<HourCount> hourCounts = this.jdbcTemplate.query(query.toString(), new RowMapper<HourCount>() {
             public HourCount mapRow(ResultSet res, int rowNum) throws SQLException {
@@ -404,7 +385,7 @@ public class LogDataDao {
      *            - An integer with the desired contentSize. The supplied contentSize must exactly match the status in the database. Can be left blank if its not required.
      * @return an array with length that matches the amount of the days in the month +1. Each position has the amount of entries per day. The days start at 1 so position 0 is not used.
      */
-    public int[] getMonthlyReportByDay(Timestamp date, String host, String userAgent, String requestString, String status, String contentSize) {
+    public int[] getMonthlyReportByDay(Timestamp date, String host, String userAgent, String requestString, String status, String contentSize) throws Exception {
         log.trace("Entering getDailyReportByHour");
         log.trace("date " + date.toString());
         log.trace("host " + host);
@@ -415,7 +396,7 @@ public class LogDataDao {
 
         Timestamp currentTime = date;
         Calendar tempPresent = Calendar.getInstance();
-        tempPresent.setTimeInMillis(currentTime.getTime());
+        tempPresent.setTimeInMillis(currentTime.getTime() * 1000);
         tempPresent.set(Calendar.DAY_OF_MONTH, 1);
         tempPresent.set(Calendar.HOUR_OF_DAY, 0);
         tempPresent.set(Calendar.MINUTE, 0);
@@ -428,8 +409,8 @@ public class LogDataDao {
 
         StringBuffer query = new StringBuffer();
 
-        query.append("SELECT d, count(*) as NUM from (SELECT day(INSERTDATE) FROM " + Constants.logDataTable + " WHERE INSERTDATE<TIMESTAMP('" + futureTime.toString()
-                + "') AND INSERTDATE>TIMESTAMP('" + currentTime.toString() + "')");
+        query.append("SELECT d, count(*) as NUM from (SELECT strftime('%d',datetime(INSERTDATE, 'unixepoch', 'localtime')) as d FROM " + Constants.logDataTable + " WHERE INSERTDATE < " + futureTime.getTime()
+                + " AND INSERTDATE > " + currentTime.getTime());
         if (!host.equals("")) {
             query.append(" AND UPPER(HOST) LIKE '%" + host.toUpperCase() + "%'");
         }
@@ -450,7 +431,7 @@ public class LogDataDao {
             query.append(" AND CONTENTSIZE='" + contentSize + "'");
         }
 
-        query.append(") as t(d) group by d");
+        query.append(") group by d");
         log.trace("Query: " + query.toString());
 
         List<DayCount> dayCounts = this.jdbcTemplate.query(query.toString(), new RowMapper<DayCount>() {
@@ -482,22 +463,5 @@ public class LogDataDao {
             this.day = day;
             this.count = count;
         }
-    }
-
-    /**
-     * Function used to rebuild date index.
-     */
-    public void rebuildInsertDateIndex() {
-        log.trace("Entering rebuildInsertDateIndex");
-        String update = "";
-
-        update = "DROP INDEX insertDateIndex";
-        log.trace("Update: " + update);
-        this.jdbcTemplate.update(update);
-
-        update = "CREATE INDEX insertDateIndex ON logdata(insertdate)";
-        log.trace("Update: " + update);
-        this.jdbcTemplate.update(update);
-
     }
 }

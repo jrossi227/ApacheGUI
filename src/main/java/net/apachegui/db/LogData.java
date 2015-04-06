@@ -1,7 +1,5 @@
 package net.apachegui.db;
 
-import java.sql.Timestamp;
-
 public class LogData {
 
     private String host;
