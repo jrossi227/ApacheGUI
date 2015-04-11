@@ -229,16 +229,16 @@
                                 </div>
                                 
                                 <div id="right_click_container">
-	                                <span id="rightClickTooltip" class="warningTooltip" onmouseover="dijit.Tooltip.defaultPosition=['below', 'above']"></span>
-							        <div class="dijitHidden">
-							            <div data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'rightClickTooltip'">
-											<div class="warningDialog">You may right click a line
-												below for various options. If you choose to add a Directive
-												or Enclosure then it will be added to the configuration file
-												after the line that has been right clicked.</div>
-									   </div>  
-							        </div>
-						        </div> 
+                                    <span id="rightClickTooltip" class="warningTooltip" onmouseover="dijit.Tooltip.defaultPosition=['below', 'above']"></span>
+                                    <div class="dijitHidden">
+                                        <div data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'rightClickTooltip'">
+                                            <div class="warningDialog">You may right click a line
+                                                below for various options. If you choose to add a Directive
+                                                or Enclosure then it will be added to the configuration file
+                                                after the line that has been right clicked.</div>
+                                       </div>  
+                                    </div>
+                                </div> 
                                 
                                 <div id="select_host_container">
                                    Host: <div id="select_host_box"></div>
