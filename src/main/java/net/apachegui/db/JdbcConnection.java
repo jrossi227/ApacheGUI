@@ -16,16 +16,10 @@ public class JdbcConnection {
     private JdbcTemplate historyJdbcTemplate;
     private static JdbcConnection jdbcConnection;
 
-    public JdbcConnection() {
+    public JdbcConnection(DataSource guiDataSource, DataSource historyDataSource) {
+        guiJdbcTemplate = new JdbcTemplate(guiDataSource);
+        historyJdbcTemplate = new JdbcTemplate(historyDataSource);
         jdbcConnection = this;
-    }
-
-    public void setGuiDataSource(DataSource dataSourceIn) {
-        guiJdbcTemplate = new JdbcTemplate(dataSourceIn);
-    }
-
-    public void setHistoryDataSource(DataSource dataSourceIn) {
-        historyJdbcTemplate = new JdbcTemplate(dataSourceIn);
     }
 
     public static JdbcConnection getInstance() {

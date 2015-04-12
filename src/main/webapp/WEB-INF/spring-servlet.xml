@@ -67,8 +67,8 @@
     </bean>
     
     <bean id="JdbcConnection" class="net.apachegui.db.JdbcConnection">
-        <property name="guiDataSource" ref="guiDataSource" />
-        <property name="historyDataSource" ref="historyDataSource" />
+        <constructor-arg ref="guiDataSource"/>
+        <constructor-arg ref="historyDataSource"/>
     </bean>
     
     <bean id="logDataDao" class="net.apachegui.db.LogDataDao">

@@ -7,7 +7,7 @@ import net.apachegui.global.Constants;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class UsersDao extends JdbcConnection {
+public class UsersDao {
     private static Logger log = Logger.getLogger(UsersDao.class);
 
     private JdbcTemplate jdbcTemplate;

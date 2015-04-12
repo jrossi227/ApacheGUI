@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-public class SettingsDao extends JdbcConnection {
+public class SettingsDao {
     private static Logger log = Logger.getLogger(SettingsDao.class);
 
     private JdbcTemplate jdbcTemplate;
@@ -29,8 +29,8 @@ public class SettingsDao extends JdbcConnection {
     }
 
     /**
-     * @param the
-     *            name of the setting
+     * @param name
+     *            the name of the setting
      * @return value if found or null if not found
      * @throws SQLException
      * @throws ClassNotFoundException

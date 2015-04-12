@@ -50,7 +50,7 @@ define([ "dojo/_base/declare",
                         option: 'newServer'
                     },
                     handleAs: 'json',
-                    sync: true
+                    sync: false
                 }).response.then(
                     function(response) {
                         window.location.reload();
