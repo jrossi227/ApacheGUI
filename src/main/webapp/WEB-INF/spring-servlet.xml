@@ -50,28 +50,37 @@
     </bean>
     
     <!-- Database Connectivity -->
-    <bean id="dataSource"
+    <bean id="guiDataSource"
         class="org.springframework.jdbc.datasource.DriverManagerDataSource">
  
         <property name="driverClassName" value="org.sqlite.JDBC" />
-        <property name="url" value="jdbc:sqlite:/#{systemProperties['catalina.base']}/db/apachegui-database.db" />
+        <property name="url" value="jdbc:sqlite:/#{systemProperties['catalina.base']}/db/apachegui-gui-database.db" />
         
+    </bean>
+
+    <bean id="historyDataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+
+        <property name="driverClassName" value="org.sqlite.JDBC" />
+        <property name="url" value="jdbc:sqlite:/#{systemProperties['catalina.base']}/db/apachegui-history-database.db" />
+
     </bean>
     
     <bean id="JdbcConnection" class="net.apachegui.db.JdbcConnection">
-        <property name="dataSource" ref="dataSource" />
+        <property name="guiDataSource" ref="guiDataSource" />
+        <property name="historyDataSource" ref="historyDataSource" />
     </bean>
     
     <bean id="logDataDao" class="net.apachegui.db.LogDataDao">
-        <property name="dataSource" ref="dataSource" />
+        <property name="dataSource" ref="historyDataSource" />
     </bean>
     
     <bean id="settingsDao" class="net.apachegui.db.SettingsDao">
-        <property name="dataSource" ref="dataSource" />
+        <property name="dataSource" ref="guiDataSource" />
     </bean>
     
     <bean id="usersDao" class="net.apachegui.db.UsersDao">
-        <property name="dataSource" ref="dataSource" />
+        <property name="dataSource" ref="guiDataSource" />
     </bean>
     
     <!-- Threading  -->

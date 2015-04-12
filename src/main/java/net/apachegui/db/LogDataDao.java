@@ -121,20 +121,26 @@ public class LogDataDao {
 
         List<LogData> logData = this.jdbcTemplate.query(query.toString(), new RowMapper<LogData>() {
             public LogData mapRow(ResultSet res, int rowNum) throws SQLException {
-                Timestamp insertDateResult = new Timestamp(res.getTimestamp("INSERTDATE"));
-                log.trace("INSERTDATE "+insertDateResult.toString());
-                String hostResult = res.getString("HOST");
-                log.trace("HOST "+hostResult);
-                String userAgentResult = res.getString("USERAGENT");
-                log.trace("USERAGENT "+userAgentResult);
-                String requestStringResult = res.getString("REQUESTSTRING");
-                log.trace("REQUESTSTRING "+requestStringResult);
-                String statusResult = res.getString("STATUS");
-                log.trace("STATUS "+statusResult);
-                String contentSizeResult = res.getString("CONTENTSIZE");
-                log.trace("CONTENTSIZE "+contentSizeResult);
+                try {
+                    Timestamp insertDateResult = new Timestamp((res.getLong("INSERTDATE") * 1000));
+                    log.trace("INSERTDATE "+insertDateResult.toString());
+                    String hostResult = res.getString("HOST");
+                    log.trace("HOST "+hostResult);
+                    String userAgentResult = res.getString("USERAGENT");
+                    log.trace("USERAGENT "+userAgentResult);
+                    String requestStringResult = res.getString("REQUESTSTRING");
+                    log.trace("REQUESTSTRING "+requestStringResult);
+                    String statusResult = res.getString("STATUS");
+                    log.trace("STATUS "+statusResult);
+                    String contentSizeResult = res.getString("CONTENTSIZE");
+                    log.trace("CONTENTSIZE "+contentSizeResult);
 
-                return new LogData(insertDateResult, hostResult, userAgentResult, requestStringResult, statusResult, contentSizeResult);
+                    return new LogData(insertDateResult, hostResult, userAgentResult, requestStringResult, statusResult, contentSizeResult);
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+
+                return null;
             }
         });
 

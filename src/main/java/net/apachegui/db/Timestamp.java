@@ -1,6 +1,8 @@
 package net.apachegui.db;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class Timestamp extends java.sql.Timestamp {
 
@@ -24,6 +26,13 @@ public class Timestamp extends java.sql.Timestamp {
     @Override
     public long getTime() {
         return super.getTime() / 1000;
+    }
+
+    @Override
+    public String toString() {
+        Date date = new Date(super.getTime());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        return sdf.format(date);
     }
 
 }

@@ -82,9 +82,6 @@ public class Constants {
     public final static String requireDirective = "(?i:require)";
     public final static String includeDirective = "\\b(?i:Include|IncludeOptional)\\b";
 
-    // Array of table names
-    public final static String tableNames[] = { "SETTINGS", "LOGDATA" };
-
     // Constants used for processes
     public final static String[] processInfoCommand = Utils.isWindows() ? "cmd,/c,tasklist,/FO,CSV,/V,/NH".split(",") : "ps,-e,-o,user,-o,pid,-o,ppid,-o,time,-o,comm".split(",");
     public final static String processKillCommand = Utils.isWindows() ? "cmd /c taskkill /F /PID " : "kill -9 ";
