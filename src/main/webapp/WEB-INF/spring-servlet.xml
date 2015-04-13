@@ -48,41 +48,7 @@
         <property name="maxUploadSize" value="100000000" />
  
     </bean>
-    
-    <!-- Database Connectivity -->
-    <bean id="guiDataSource"
-        class="org.springframework.jdbc.datasource.DriverManagerDataSource">
- 
-        <property name="driverClassName" value="org.sqlite.JDBC" />
-        <property name="url" value="jdbc:sqlite:/#{systemProperties['catalina.base']}/db/apachegui-gui-database.db" />
-        
-    </bean>
 
-    <bean id="historyDataSource"
-          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-
-        <property name="driverClassName" value="org.sqlite.JDBC" />
-        <property name="url" value="jdbc:sqlite:/#{systemProperties['catalina.base']}/db/apachegui-history-database.db" />
-
-    </bean>
-    
-    <bean id="JdbcConnection" class="net.apachegui.db.JdbcConnection">
-        <constructor-arg ref="guiDataSource"/>
-        <constructor-arg ref="historyDataSource"/>
-    </bean>
-    
-    <bean id="logDataDao" class="net.apachegui.db.LogDataDao">
-        <property name="dataSource" ref="historyDataSource" />
-    </bean>
-    
-    <bean id="settingsDao" class="net.apachegui.db.SettingsDao">
-        <property name="dataSource" ref="guiDataSource" />
-    </bean>
-    
-    <bean id="usersDao" class="net.apachegui.db.UsersDao">
-        <property name="dataSource" ref="guiDataSource" />
-    </bean>
-    
     <!-- Threading  -->
     <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
         <property name="corePoolSize" value="5" />

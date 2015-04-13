@@ -82,6 +82,10 @@ public class Constants {
     public final static String requireDirective = "(?i:require)";
     public final static String includeDirective = "\\b(?i:Include|IncludeOptional)\\b";
 
+    //Constants for jdbc
+    public final static String logDataDatabaseFile = "apachegui-history-database.db";
+    public final static String guiDatabaseFile = "apachegui-gui-database.db";
+
     // Constants used for processes
     public final static String[] processInfoCommand = Utils.isWindows() ? "cmd,/c,tasklist,/FO,CSV,/V,/NH".split(",") : "ps,-e,-o,user,-o,pid,-o,ppid,-o,time,-o,comm".split(",");
     public final static String processKillCommand = Utils.isWindows() ? "cmd /c taskkill /F /PID " : "kill -9 ";

@@ -1,35 +1,34 @@
 package net.apachegui.db;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.sql.DataSource;
 
 import net.apachegui.global.Constants;
 
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 public class LogDataDao {
     private static Logger log = Logger.getLogger(LogDataDao.class);
 
-    private JdbcTemplate jdbcTemplate;
-    private static LogDataDao logDataDao;
-
-    public void setDataSource(DataSource dataSourceIn) {
-        jdbcTemplate = new JdbcTemplate(dataSourceIn);
-        logDataDao = this;
-    }
+    private static LogDataDao instance = null;
 
     public static LogDataDao getInstance() {
-        return logDataDao;
-    }
 
+        synchronized (LogDataDao.class) {
+            if(instance == null) {
+                synchronized (LogDataDao.class) {
+                    instance = new LogDataDao();
+                }
+            }
+        }
+
+        return instance;
+    }
     /**
      * Writes the log data directly to the database.
      * 
@@ -37,27 +36,39 @@ public class LogDataDao {
      *            - an Array of LogData to write to the database.
      */
     public void commitLogData(final LogData data[]) {
-        String update = "INSERT INTO " + Constants.logDataTable + " (HOST,INSERTDATE,USERAGENT,REQUESTSTRING,STATUS,CONTENTSIZE) VALUES (?,?,?,?,?,?)";
 
-        jdbcTemplate.batchUpdate(update, new BatchPreparedStatementSetter() {
+        LogDataJdbcConnection logDataJdbcConnection = new LogDataJdbcConnection();
+        Connection connection = null;
+        PreparedStatement preparedStatement =  null;
 
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                LogData logdata = data[i];
+        try {
+            connection = logDataJdbcConnection.getConnection();
 
-                ps.setString(1, logdata.getHost());
-                ps.setLong(2, logdata.getInsertDate().getTime());
-                ps.setString(3, logdata.getUserAgent());
-                ps.setString(4, logdata.getRequestString());
-                ps.setString(5, logdata.getStatus());
-                ps.setString(6, logdata.getContentSize());
+            String update = "INSERT INTO " + Constants.logDataTable + " (HOST,INSERTDATE,USERAGENT,REQUESTSTRING,STATUS,CONTENTSIZE) VALUES (?,?,?,?,?,?)";
+            preparedStatement = connection.prepareStatement(update);
+
+            LogData logData;
+            for(int i=0; i<data.length; i++) {
+                logData = data[i];
+
+                preparedStatement.setString(1, logData.getHost());
+                preparedStatement.setLong(2, logData.getInsertDate().getTime());
+                preparedStatement.setString(3, logData.getUserAgent());
+                preparedStatement.setString(4, logData.getRequestString());
+                preparedStatement.setString(5, logData.getStatus());
+                preparedStatement.setString(6, logData.getContentSize());
+
+                preparedStatement.addBatch();
             }
 
-            @Override
-            public int getBatchSize() {
-                return data.length;
-            }
-        });
+            preparedStatement.executeBatch();
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            logDataJdbcConnection.closeStatement(preparedStatement);
+            logDataJdbcConnection.closeConnection(connection);
+        }
     }
 
     /**
@@ -119,30 +130,41 @@ public class LogDataDao {
         query.append(" ORDER BY INSERTDATE DESC LIMIT " + maxResults);
         log.trace("Query: " + query.toString());
 
-        List<LogData> logData = this.jdbcTemplate.query(query.toString(), new RowMapper<LogData>() {
-            public LogData mapRow(ResultSet res, int rowNum) throws SQLException {
-                try {
-                    Timestamp insertDateResult = new Timestamp((res.getLong("INSERTDATE") * 1000));
-                    log.trace("INSERTDATE "+insertDateResult.toString());
-                    String hostResult = res.getString("HOST");
-                    log.trace("HOST "+hostResult);
-                    String userAgentResult = res.getString("USERAGENT");
-                    log.trace("USERAGENT "+userAgentResult);
-                    String requestStringResult = res.getString("REQUESTSTRING");
-                    log.trace("REQUESTSTRING "+requestStringResult);
-                    String statusResult = res.getString("STATUS");
-                    log.trace("STATUS "+statusResult);
-                    String contentSizeResult = res.getString("CONTENTSIZE");
-                    log.trace("CONTENTSIZE "+contentSizeResult);
+        LogDataJdbcConnection logDataJdbcConnection = new LogDataJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
+        ResultSet resultSet = null;
 
-                    return new LogData(insertDateResult, hostResult, userAgentResult, requestStringResult, statusResult, contentSizeResult);
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                }
+        List<LogData> logData = new ArrayList<LogData>();
+        try {
+            connection = logDataJdbcConnection.getConnection();
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(query.toString());
 
-                return null;
+            while(resultSet.next()) {
+                Timestamp insertDateResult = new Timestamp((resultSet.getLong("INSERTDATE") * 1000));
+                log.trace("INSERTDATE " + insertDateResult.toString());
+                String hostResult = resultSet.getString("HOST");
+                log.trace("HOST "+hostResult);
+                String userAgentResult = resultSet.getString("USERAGENT");
+                log.trace("USERAGENT " + userAgentResult);
+                String requestStringResult = resultSet.getString("REQUESTSTRING");
+                log.trace("REQUESTSTRING "+requestStringResult);
+                String statusResult = resultSet.getString("STATUS");
+                log.trace("STATUS " + statusResult);
+                String contentSizeResult = resultSet.getString("CONTENTSIZE");
+                log.trace("CONTENTSIZE "+contentSizeResult);
+
+                logData.add(new LogData(insertDateResult, hostResult, userAgentResult, requestStringResult, statusResult, contentSizeResult));
             }
-        });
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            logDataJdbcConnection.closeResultSet(resultSet);
+            logDataJdbcConnection.closeStatement(statement);
+            logDataJdbcConnection.closeConnection(connection);
+        }
 
         return logData.toArray(new LogData[logData.size()]);
     }
@@ -198,7 +220,21 @@ public class LogDataDao {
 
         log.trace("Update: " + update.toString());
 
-        this.jdbcTemplate.update(update.toString());
+        LogDataJdbcConnection logDataJdbcConnection = new LogDataJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
+
+        try {
+            connection = logDataJdbcConnection.getConnection();
+            statement = connection.createStatement();
+            statement.executeUpdate(update.toString());
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            logDataJdbcConnection.closeStatement(statement);
+            logDataJdbcConnection.closeConnection(connection);
+        }
 
     }
 
@@ -217,7 +253,21 @@ public class LogDataDao {
         String update = "DELETE FROM " + Constants.logDataTable + " WHERE INSERTDATE < " + date.getTime();
         log.trace("Update: " + update);
 
-        this.jdbcTemplate.update(update);
+        LogDataJdbcConnection logDataJdbcConnection = new LogDataJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
+
+        try {
+            connection = logDataJdbcConnection.getConnection();
+            statement = connection.createStatement();
+            statement.executeUpdate(update);
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            logDataJdbcConnection.closeStatement(statement);
+            logDataJdbcConnection.closeConnection(connection);
+        }
     }
 
     /**
@@ -227,11 +277,32 @@ public class LogDataDao {
     public int getNumberOfEntries() {
         log.trace("Entering getNumberOfEntries");
 
-        String query = "SELECT COUNT(INSERTDATE) AS NUMROWS FROM " + Constants.logDataTable;
-        int value = this.jdbcTemplate.queryForObject(query, Integer.class);
+        LogDataJdbcConnection logDataJdbcConnection = new LogDataJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
+        ResultSet resultSet = null;
 
-        if (value == 0) {
-            log.trace("There were no entries found in the table");
+        int value = 0;
+        try {
+            connection = logDataJdbcConnection.getConnection();
+            statement = connection.createStatement();
+
+            String query = "SELECT COUNT(INSERTDATE) AS NUMROWS FROM " + Constants.logDataTable;
+            resultSet = statement.executeQuery(query);
+            if(resultSet.next()) {
+                value = resultSet.getInt("NUMROWS");
+            }
+
+            if (value == 0) {
+                log.trace("There were no entries found in the table");
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            logDataJdbcConnection.closeResultSet(resultSet);
+            logDataJdbcConnection.closeStatement(statement);
+            logDataJdbcConnection.closeConnection(connection);
         }
 
         return value;
@@ -244,15 +315,36 @@ public class LogDataDao {
     public Timestamp getOldestTime() throws Exception {
         log.trace("Entering getOldestTime");
 
-        String query = "SELECT MIN(INSERTDATE) AS MINTIME FROM " + Constants.logDataTable;
-        Long value = this.jdbcTemplate.queryForObject(query, Long.class);
+        LogDataJdbcConnection logDataJdbcConnection = new LogDataJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
+        ResultSet resultSet = null;
 
+        long value = 0;
         Timestamp time = null;
-        if (value != null) {
-            time = new Timestamp(value * 1000);
-            log.trace("Minimum Time " + value.toString());
-        } else {
-            log.trace("There were no entries found in the database");
+        try {
+            connection = logDataJdbcConnection.getConnection();
+            statement = connection.createStatement();
+
+            String query = "SELECT MIN(INSERTDATE) AS MINTIME FROM " + Constants.logDataTable;
+            resultSet = statement.executeQuery(query);
+            if(resultSet.next()) {
+                value = resultSet.getLong("MINTIME");
+            }
+
+            if (value != 0) {
+                time = new Timestamp(value * 1000);
+                log.trace("Minimum Time " + time.toString());
+            } else {
+                log.trace("There were no entries found in the database");
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            logDataJdbcConnection.closeResultSet(resultSet);
+            logDataJdbcConnection.closeStatement(statement);
+            logDataJdbcConnection.closeConnection(connection);
         }
 
         return time;
@@ -265,15 +357,36 @@ public class LogDataDao {
     public Timestamp getNewestTime() throws Exception {
         log.trace("Entering getNewestTime");
 
-        String query = "SELECT MAX(INSERTDATE) AS MAXTIME FROM " + Constants.logDataTable;
-        Long value = this.jdbcTemplate.queryForObject(query, Long.class);
+        LogDataJdbcConnection logDataJdbcConnection = new LogDataJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
+        ResultSet resultSet = null;
 
+        long value = 0;
         Timestamp time = null;
-        if (value != null) {
-            time = new Timestamp(value * 1000);
-            log.trace("Maximum Time " + value.toString());
-        } else {
-            log.trace("There were no entries found in the database");
+        try {
+            connection = logDataJdbcConnection.getConnection();
+            statement = connection.createStatement();
+
+            String query = "SELECT MAX(INSERTDATE) AS MAXTIME FROM " + Constants.logDataTable;
+            resultSet = statement.executeQuery(query);
+            if(resultSet.next()) {
+                value = resultSet.getLong("MAXTIME");
+            }
+
+            if (value != 0) {
+                time = new Timestamp(value * 1000);
+                log.trace("Maximum Time " + time.toString());
+            } else {
+                log.trace("There were no entries found in the database");
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            logDataJdbcConnection.closeResultSet(resultSet);
+            logDataJdbcConnection.closeStatement(statement);
+            logDataJdbcConnection.closeConnection(connection);
         }
 
         return time;
@@ -344,34 +457,35 @@ public class LogDataDao {
 
         query.append(") group by h");
         log.trace("Query: " + query.toString());
-        List<HourCount> hourCounts = this.jdbcTemplate.query(query.toString(), new RowMapper<HourCount>() {
-            public HourCount mapRow(ResultSet res, int rowNum) throws SQLException {
-                int hour = res.getInt("h");
-                int count = res.getInt("NUM");
-                return new HourCount(hour, count);
-            }
-        });
+
+        LogDataJdbcConnection logDataJdbcConnection = new LogDataJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
+        ResultSet resultSet = null;
 
         int hourCount[] = new int[24];
         for (int i = 0; i < hourCount.length; i++) {
             hourCount[i] = 0;
         }
 
-        for (HourCount curr : hourCounts) {
-            hourCount[curr.hour] = curr.count;
+        try {
+            connection = logDataJdbcConnection.getConnection();
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(query.toString());
+
+            while(resultSet.next()) {
+                hourCount[resultSet.getInt("h")] = resultSet.getInt("NUM");
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            logDataJdbcConnection.closeResultSet(resultSet);
+            logDataJdbcConnection.closeStatement(statement);
+            logDataJdbcConnection.closeConnection(connection);
         }
 
         return hourCount;
-    }
-
-    private class HourCount {
-        private int hour;
-        private int count;
-
-        public HourCount(int hour, int count) {
-            this.hour = hour;
-            this.count = count;
-        }
     }
 
     /**
@@ -440,13 +554,10 @@ public class LogDataDao {
         query.append(") group by d");
         log.trace("Query: " + query.toString());
 
-        List<DayCount> dayCounts = this.jdbcTemplate.query(query.toString(), new RowMapper<DayCount>() {
-            public DayCount mapRow(ResultSet res, int rowNum) throws SQLException {
-                int day = res.getInt("d");
-                int count = res.getInt("NUM");
-                return new DayCount(day, count);
-            }
-        });
+        LogDataJdbcConnection logDataJdbcConnection = new LogDataJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
+        ResultSet resultSet = null;
 
         // Add an additional day for the unused day position
         int dayCount[] = new int[numOfdaysInMonth + 1];
@@ -454,20 +565,24 @@ public class LogDataDao {
             dayCount[i] = 0;
         }
 
-        for (DayCount curr : dayCounts) {
-            dayCount[curr.day] = curr.count;
+        try {
+            connection = logDataJdbcConnection.getConnection();
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(query.toString());
+
+            while(resultSet.next()) {
+                dayCount[resultSet.getInt("d")] = resultSet.getInt("NUM");
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            logDataJdbcConnection.closeResultSet(resultSet);
+            logDataJdbcConnection.closeStatement(statement);
+            logDataJdbcConnection.closeConnection(connection);
         }
 
         return dayCount;
     }
 
-    private class DayCount {
-        private int day;
-        private int count;
-
-        public DayCount(int day, int count) {
-            this.day = day;
-            this.count = count;
-        }
-    }
 }

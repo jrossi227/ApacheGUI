@@ -1,29 +1,89 @@
 package net.apachegui.db;
 
-import java.sql.SQLException;
+import java.sql.*;
 
-import javax.sql.DataSource;
-
+import apache.conf.parser.File;
 import net.apachegui.global.Constants;
 
+import net.apachegui.global.Utilities;
 import org.apache.log4j.Logger;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 public class JdbcConnection {
     private static Logger log = Logger.getLogger(JdbcConnection.class);
 
-    private JdbcTemplate guiJdbcTemplate;
-    private JdbcTemplate historyJdbcTemplate;
-    private static JdbcConnection jdbcConnection;
-
-    public JdbcConnection(DataSource guiDataSource, DataSource historyDataSource) {
-        guiJdbcTemplate = new JdbcTemplate(guiDataSource);
-        historyJdbcTemplate = new JdbcTemplate(historyDataSource);
-        jdbcConnection = this;
-    }
+    private static JdbcConnection instance = null;
 
     public static JdbcConnection getInstance() {
-        return jdbcConnection;
+
+        synchronized (JdbcConnection.class) {
+            if(instance == null) {
+                synchronized (JdbcConnection.class) {
+                    instance = new JdbcConnection();
+                }
+            }
+        }
+
+        return instance;
+    }
+
+    protected JdbcConnection() {
+
+    }
+
+    private String getDatabaseDirectory() {
+        return new File(Utilities.getTomcatInstallDirectory(),"db").getAbsolutePath();
+    }
+
+    private Connection getConnection(String dbName) {
+        Connection connection = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            connection = DriverManager.getConnection("jdbc:sqlite:/" + new File(getDatabaseDirectory(),dbName).getAbsolutePath());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+        return connection;
+    }
+
+    protected Connection getLogDataConnection() {
+        return getConnection(Constants.logDataDatabaseFile);
+    }
+
+    protected Connection getGuiConnection() {
+        return getConnection(Constants.guiDatabaseFile);
+    }
+
+    public void closeResultSet(ResultSet resultSet) {
+        try {
+            if(resultSet != null && !resultSet.isClosed()) {
+                resultSet.close();
+            }
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    public void closeStatement(Statement statement) {
+
+        try {
+            if(statement != null && !statement.isClosed()) {
+                statement.close();
+            }
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+        }
+
+    }
+
+    public void closeConnection(Connection connection) {
+        try {
+            if(connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 
     /**
@@ -36,20 +96,56 @@ public class JdbcConnection {
      */
     public void clearAllDatabases() {
 
-        log.info("Clearing GUI database");
-        String update = "DELETE FROM SETTINGS";
-        guiJdbcTemplate.update(update);
-        update = "VACUUM";
-        guiJdbcTemplate.update(update);
+        Connection guiConnection = null;
+        Statement guiStatement = null;
 
-        log.info("Clearing History database");
-        update = "DELETE FROM LOGDATA";
-        historyJdbcTemplate.update(update);
-        update = "VACUUM";
-        historyJdbcTemplate.update(update);
+        Connection logDataConnection = null;
+        Statement logDataStatement = null;
+        try {
+            log.info("Clearing GUI database");
+            guiConnection = getGuiConnection();
+            guiConnection.setAutoCommit(false);
 
-        UsersDao.getInstance().setUsername(Constants.defaultUsername);
-        UsersDao.getInstance().setPassword(Constants.defaultPassword);
+            guiStatement = guiConnection.createStatement();
+            String update = "DELETE FROM SETTINGS";
+            guiStatement.executeUpdate(update);
+
+            update = "VACUUM";
+            guiStatement.executeUpdate(update);
+
+            guiConnection.commit();
+
+            closeStatement(guiStatement);
+            closeConnection(guiConnection);
+
+            log.info("Clearing History database");
+
+            logDataConnection = getLogDataConnection();
+            logDataConnection.setAutoCommit(false);
+
+            logDataStatement = logDataConnection.createStatement();
+            update = "DELETE FROM LOGDATA";
+            logDataStatement.executeUpdate(update);
+
+            update = "VACUUM";
+            logDataStatement.executeUpdate(update);
+
+            logDataConnection.commit();
+
+            closeStatement(logDataStatement);
+            closeConnection(logDataConnection);
+
+            UsersDao.getInstance().setUsername(Constants.defaultUsername);
+            UsersDao.getInstance().setPassword(Constants.defaultPassword);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            closeStatement(guiStatement);
+            closeConnection(guiConnection);
+
+            closeStatement(logDataStatement);
+            closeConnection(logDataConnection);
+        }
 
     }
 

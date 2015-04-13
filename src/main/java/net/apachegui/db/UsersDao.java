@@ -7,21 +7,27 @@ import net.apachegui.global.Constants;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
 public class UsersDao {
     private static Logger log = Logger.getLogger(UsersDao.class);
 
-    private JdbcTemplate jdbcTemplate;
-    private static UsersDao usersDao;
-
-    public void setDataSource(DataSource dataSourceIn) {
-        jdbcTemplate = new JdbcTemplate(dataSourceIn);
-        usersDao = this;
-    }
+    private static UsersDao instance = null;
 
     public static UsersDao getInstance() {
-        return usersDao;
-    }
 
+        synchronized (UsersDao.class) {
+            if(instance == null) {
+                synchronized (UsersDao.class) {
+                    instance = new UsersDao();
+                }
+            }
+        }
+
+        return instance;
+    }
     /**
      * Checks to see whether the default username and password are being used.
      * 
@@ -48,8 +54,30 @@ public class UsersDao {
     public String getUsername() {
         log.trace("Users.getUsername called");
 
-        String query = "SELECT USER_NAME FROM " + Constants.usersTable;
-        String username = this.jdbcTemplate.queryForObject(query, String.class);
+        GuiJdbcConnection guiJdbcConnection = new GuiJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
+        ResultSet resultSet = null;
+
+        String username = "";
+        try {
+            connection = guiJdbcConnection.getConnection();
+            statement = connection.createStatement();
+
+            String query = "SELECT USER_NAME FROM " + Constants.usersTable;
+            resultSet = statement.executeQuery(query);
+
+            if(resultSet.next()) {
+                username = resultSet.getString("USER_NAME");
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            guiJdbcConnection.closeResultSet(resultSet);
+            guiJdbcConnection.closeStatement(statement);
+            guiJdbcConnection.closeConnection(connection);
+        }
 
         return username;
     }
@@ -61,8 +89,30 @@ public class UsersDao {
     public String getPassword() {
         log.trace("Users.getPassword called");
 
-        String query = "SELECT USER_PASS FROM " + Constants.usersTable;
-        String password = this.jdbcTemplate.queryForObject(query, String.class);
+        GuiJdbcConnection guiJdbcConnection = new GuiJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
+        ResultSet resultSet = null;
+
+        String password = "";
+        try {
+            connection = guiJdbcConnection.getConnection();
+            statement = connection.createStatement();
+
+            String query = "SELECT USER_PASS FROM " + Constants.usersTable;
+            resultSet = statement.executeQuery(query);
+
+            if(resultSet.next()) {
+                password = resultSet.getString("USER_PASS");
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            guiJdbcConnection.closeResultSet(resultSet);
+            guiJdbcConnection.closeStatement(statement);
+            guiJdbcConnection.closeConnection(connection);
+        }
 
         return password;
     }
@@ -78,13 +128,28 @@ public class UsersDao {
 
         String currentUsername = getUsername();
 
-        String update = "UPDATE " + Constants.usersTable + " SET USER_NAME='" + newUsername + "' WHERE USER_NAME='" + currentUsername + "'";
-        log.trace("Executing update " + update);
-        this.jdbcTemplate.update(update);
+        GuiJdbcConnection guiJdbcConnection = new GuiJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
 
-        update = "UPDATE " + Constants.rolesTable + " SET USER_NAME='" + newUsername + "' WHERE USER_NAME='" + currentUsername + "'";
-        log.trace("Executing update " + update);
-        this.jdbcTemplate.update(update);
+        try {
+            connection = guiJdbcConnection.getConnection();
+            statement = connection.createStatement();
+
+            String update = "UPDATE " + Constants.usersTable + " SET USER_NAME='" + newUsername + "' WHERE USER_NAME='" + currentUsername + "'";
+            log.trace("Executing update " + update);
+            statement.executeUpdate(update);
+
+            update = "UPDATE " + Constants.rolesTable + " SET USER_NAME='" + newUsername + "' WHERE USER_NAME='" + currentUsername + "'";
+            log.trace("Executing update " + update);
+            statement.executeUpdate(update);
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            guiJdbcConnection.closeStatement(statement);
+            guiJdbcConnection.closeConnection(connection);
+        }
     }
 
     /**
@@ -98,8 +163,23 @@ public class UsersDao {
 
         String currentUsername = getUsername();
 
-        String update = "UPDATE " + Constants.usersTable + " SET USER_PASS='" + newPassword + "' WHERE USER_NAME='" + currentUsername + "'";
-        log.trace("Executing update " + update);
-        this.jdbcTemplate.update(update);
+        GuiJdbcConnection guiJdbcConnection = new GuiJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
+
+        try {
+            connection = guiJdbcConnection.getConnection();
+            statement = connection.createStatement();
+
+            String update = "UPDATE " + Constants.usersTable + " SET USER_PASS='" + newPassword + "' WHERE USER_NAME='" + currentUsername + "'";
+            log.trace("Executing update " + update);
+            statement.executeUpdate(update);
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            guiJdbcConnection.closeStatement(statement);
+            guiJdbcConnection.closeConnection(connection);
+        }
     }
 }

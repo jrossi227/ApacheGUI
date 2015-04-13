@@ -1,32 +1,37 @@
 package net.apachegui.db;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
-import java.util.List;
-
-import javax.sql.DataSource;
 
 import net.apachegui.global.Constants;
 
 import org.apache.log4j.Logger;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
 public class SettingsDao {
     private static Logger log = Logger.getLogger(SettingsDao.class);
 
-    private JdbcTemplate jdbcTemplate;
-    private static SettingsDao settingsDao;
+    private static SettingsDao instance = null;
 
-    public void setDataSource(DataSource dataSourceIn) {
-        jdbcTemplate = new JdbcTemplate(dataSourceIn);
-        settingsDao = this;
+    private SettingsDao() {
+
     }
 
     public static SettingsDao getInstance() {
-        return settingsDao;
+
+        synchronized (SettingsDao.class) {
+            if(instance == null) {
+                synchronized (SettingsDao.class) {
+                    instance = new SettingsDao();
+                }
+            }
+        }
+
+        return instance;
     }
+
 
     /**
      * @param name
@@ -40,18 +45,35 @@ public class SettingsDao {
     public String getSetting(String name) {
         log.trace("Getting setting " + name);
 
-        String query = "SELECT VALUE FROM " + Constants.settingsTable + " WHERE NAME='" + name + "'";
-        List<String> values = this.jdbcTemplate.queryForList(query, String.class);
-
         String value = null;
-        if (!values.isEmpty()) {
-            value = values.get(0);
-        }
+        GuiJdbcConnection guiJdbcConnection = new GuiJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
+        ResultSet resultSet = null;
 
-        if (value == null) {
-            log.trace("Setting not found in the table");
-        } else {
-            log.trace("Setting value " + value);
+        try {
+            connection = guiJdbcConnection.getConnection();
+            statement = connection.createStatement();
+
+            String query = "SELECT VALUE FROM " + Constants.settingsTable + " WHERE NAME='" + name + "'";
+            resultSet = statement.executeQuery(query);
+
+            if(resultSet.next()) {
+                value = resultSet.getString("VALUE");
+            }
+
+            if (value == null) {
+                log.trace("Setting not found in the table");
+            } else {
+                log.trace("Setting value " + value);
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            guiJdbcConnection.closeResultSet(resultSet);
+            guiJdbcConnection.closeStatement(statement);
+            guiJdbcConnection.closeConnection(connection);
         }
 
         return value;
@@ -72,17 +94,34 @@ public class SettingsDao {
     public void setSetting(String name, String value) {
         log.trace("Setting setting " + name + " value " + value);
 
-        String query = "SELECT VALUE FROM " + Constants.settingsTable + " WHERE NAME='" + name + "'";
-        List<String> values = this.jdbcTemplate.queryForList(query, String.class);
+        GuiJdbcConnection guiJdbcConnection = new GuiJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
+        ResultSet resultSet = null;
 
-        String update = "";
-        if (!values.isEmpty()) {
-            update = "UPDATE " + Constants.settingsTable + " SET VALUE='" + value + "' WHERE NAME='" + name + "'";
-        } else {
-            update = "INSERT INTO " + Constants.settingsTable + "(NAME,VALUE) VALUES ('" + name + "','" + value + "')";
+        try {
+            connection = guiJdbcConnection.getConnection();
+            statement = connection.createStatement();
+
+            String query = "SELECT VALUE FROM " + Constants.settingsTable + " WHERE NAME='" + name + "'";
+            resultSet = statement.executeQuery(query);
+
+            String update = "";
+            if (resultSet.next()) {
+                update = "UPDATE " + Constants.settingsTable + " SET VALUE='" + value + "' WHERE NAME='" + name + "'";
+            } else {
+                update = "INSERT INTO " + Constants.settingsTable + "(NAME,VALUE) VALUES ('" + name + "','" + value + "')";
+            }
+
+            statement.executeUpdate(update);
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            guiJdbcConnection.closeResultSet(resultSet);
+            guiJdbcConnection.closeStatement(statement);
+            guiJdbcConnection.closeConnection(connection);
         }
-
-        this.jdbcTemplate.update(update);
     }
 
     /**
@@ -95,31 +134,30 @@ public class SettingsDao {
 
         HashMap<String, String> values = new HashMap<String, String>();
 
-        String query = "SELECT NAME,VALUE FROM " + Constants.settingsTable;
-        List<Setting> settings = this.jdbcTemplate.query(query, new RowMapper<Setting>() {
-            public Setting mapRow(ResultSet res, int rowNum) throws SQLException {
+        GuiJdbcConnection guiJdbcConnection = new GuiJdbcConnection();
+        Connection connection = null;
+        Statement statement =  null;
+        ResultSet resultSet = null;
 
-                String name = res.getString("NAME");
-                String value = res.getString("VALUE");
+        try {
+            connection = guiJdbcConnection.getConnection();
+            statement = connection.createStatement();
+            String query = "SELECT NAME,VALUE FROM " + Constants.settingsTable;
+            resultSet = statement.executeQuery(query);
 
-                return new Setting(name, value);
+            while(resultSet.next()) {
+                values.put(resultSet.getString("NAME"), resultSet.getString("VALUE"));
             }
-        });
 
-        for (Setting setting : settings) {
-            values.put(setting.name, setting.value);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            guiJdbcConnection.closeResultSet(resultSet);
+            guiJdbcConnection.closeStatement(statement);
+            guiJdbcConnection.closeConnection(connection);
         }
 
         return values;
     }
 
-    private class Setting {
-        private String name;
-        private String value;
-
-        public Setting(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
-    }
 }
