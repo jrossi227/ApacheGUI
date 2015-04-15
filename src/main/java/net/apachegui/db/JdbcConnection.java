@@ -114,6 +114,8 @@ public class JdbcConnection {
 
             closeStatement(guiStatement);
             closeConnection(guiConnection);
+            guiStatement = null;
+            guiConnection = null;
 
             log.info("Clearing History database");
 
@@ -128,6 +130,8 @@ public class JdbcConnection {
 
             closeStatement(logDataStatement);
             closeConnection(logDataConnection);
+            logDataStatement = null;
+            logDataConnection = null;
 
             UsersDao.getInstance().setUsername(Constants.defaultUsername);
             UsersDao.getInstance().setPassword(Constants.defaultPassword);
