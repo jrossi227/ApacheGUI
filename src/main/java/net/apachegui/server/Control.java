@@ -19,12 +19,12 @@ public class Control {
 
     /**
      * Method used to start Apache.
-     * 
+     *
      * @return the OS output from starting apache.
      * @throws IOException
      * @throws InterruptedException
      */
-    public static String startServer() throws IOException, InterruptedException, ControlFailException {
+    public static String startServer() throws Exception {
         log.trace("RunningProcess.startServer called");
 
         String command[] = Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.binFile) + ",-k,start").split(",") : (SettingsDao.getInstance()
@@ -33,7 +33,8 @@ public class Control {
         String output = Utils.RunProcessWithOutput(command);
 
         log.trace("Output " + output);
-        checkFailure(output);
+
+        checkRunning(output);
 
         StringBuffer buffer = new StringBuffer();
         BufferedReader reader = new BufferedReader(new StringReader(output));
@@ -51,12 +52,12 @@ public class Control {
 
     /**
      * Method used to restart Apache.
-     * 
+     *
      * @return the OS output from restarting apache.
      * @throws IOException
      * @throws InterruptedException
      */
-    public static String restartServer() throws Exception, ControlFailException {
+    public static String restartServer() throws Exception {
         log.trace("RunningProcess.restartServer called");
 
         log.trace("Checking the server configuration before restarting");
@@ -64,14 +65,14 @@ public class Control {
         if(!Configuration.isServerConfigurationOk(status)) {
             throw new Exception("The server was not restarted. There is an error with the configuration " + status);
         }
-     
+
         String command[] = Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.binFile) + ",-k,restart").split(",") : (SettingsDao.getInstance().getSetting(
                 Constants.binFile) + ",restart").split(",");
 
         String output = Utils.RunProcessWithOutput(command);
         log.trace("Output " + output);
 
-        checkFailure(output);
+        checkRunning(output);
 
         StringBuffer buffer = new StringBuffer();
         BufferedReader reader = new BufferedReader(new StringReader(output));
@@ -89,19 +90,20 @@ public class Control {
 
     /**
      * Method used to stop Apache.
-     * 
+     *
      * @return the OS output from stopping apache.
      * @throws IOException
      * @throws InterruptedException
      */
-    public static String stopServer() throws Exception, ControlFailException {
+    public static String stopServer() throws Exception {
         log.trace("RunningProcess.stopServer called");
         String command[] = Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.binFile) + ",-k,stop").split(",")
                 : (SettingsDao.getInstance().getSetting(Constants.binFile) + ",stop").split(",");
 
         String output = Utils.RunProcessWithOutput(command);
         log.trace("Output " + output);
-        checkFailure(output);
+
+        checkStopped(output);
 
         StringBuffer buffer = new StringBuffer();
         BufferedReader reader = new BufferedReader(new StringReader(output));
@@ -117,27 +119,42 @@ public class Control {
         return buffer.toString();
     }
 
-    private static boolean checkFailure(String output) throws IOException, ControlFailException {
-        BufferedReader reader = new BufferedReader(new StringReader(output));
+    private static void checkRunning(String output) throws Exception {
+        long i =0;
 
-        Pattern failPattern = Pattern.compile(Constants.actionFailedRegex, Pattern.CASE_INSENSITIVE);
-
-        Matcher matcher;
-        String line;
-        while ((line = reader.readLine()) != null) {
-            log.trace(line);
-            matcher = failPattern.matcher(line);
-            if(matcher.find()) {
-                throw new ControlFailException(output);
+        boolean started = true;
+        while (!isServerRunning()) {
+            Thread.sleep(500);
+            i += 500;
+            if (i >= Constants.startServerWaitTime) {
+                started = false;
+                break;
             }
         }
-        reader.close();
+        if (!started) {
+            throw new Exception(output);
+        }
+    }
 
-        return false;
+    private static void checkStopped(String output) throws Exception {
+        long i =0;
+
+        boolean stopped = true;
+        while (isServerRunning()) {
+            Thread.sleep(500);
+            i += 500;
+            if (i >= Constants.stopServerWaitTime) {
+                stopped = false;
+                break;
+            }
+        }
+        if (!stopped) {
+            throw new Exception(output);
+        }
     }
 
     /**
-     * 
+     *
      * @return a boolean indicating if apache is running.
      * @throws Exception
      */

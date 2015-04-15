@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.apachegui</groupId>
   <artifactId>ApacheGUI</artifactId>
-  <version>1.9.7-SNAPSHOT</version>
+  <version>1.9.7_1-SNAPSHOT</version>
   <packaging>war</packaging>
   
   <name>ApacheGUI</name>

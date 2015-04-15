@@ -92,6 +92,7 @@ public class Constants {
     public final static String actionFailedRegex = "Action .* failed|syntax error|could not bind to address|already running|not running";
     public final static String processInfoCommandAdivsory = Utils.isWindows() ? "ERROR: Please make sure tasklist.exe and taskkill.exe <br/> are installed in the /Windows/System32 directory"
             : "ERROR: Please make sure ps is installed and available from your $PATH";
+    public final static long startServerWaitTime = Utils.isWindows() ? 10000 : 5000;
     public final static long stopServerWaitTime = Utils.isWindows() ? 15000 : 10000;
     public final static String extendedProcessScrapeRegex = "^\\d+-.*";
     public final static String extendedProcessHost = "localhost";
@@ -168,7 +169,7 @@ public class Constants {
     public final static String versionSupportedString = "Apache 2.2, Apache 2.3, Apache 2.4";
 
     // Constants used for gui info
-    public final static String version = "1.9.7";
+    public final static String version = "1.9.7_1";
     public final static String supportAddress = "apachegui.net@gmail.com";
     public final static String supportWebsite = "http://forum.apachegui.net";
     public final static String website = "http://apachegui.net";

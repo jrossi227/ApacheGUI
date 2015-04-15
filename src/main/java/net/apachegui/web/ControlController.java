@@ -372,13 +372,12 @@ public class ControlController {
     public String restartServer() throws Exception {
         JSONObject result = new JSONObject();
 
-        String error = "";
         try {
             net.apachegui.server.Control.restartServer();
             result.put("result", "success");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new Exception("There was an error while trying to restart the server: " + error + " " + e.getMessage());
+            throw new Exception("There was an error while trying to restart the server: " + e.getMessage());
         }
 
         return result.toString();
@@ -389,22 +388,7 @@ public class ControlController {
         JSONObject result = new JSONObject();
 
         try {
-            String error = net.apachegui.server.Control.stopServer();
-            long i = 0;
-            // lets wait up to 10 seconds for the server to stop
-            boolean stopped = true;
-            while (net.apachegui.server.Control.isServerRunning()) {
-                Thread.sleep(1000);
-                i += 1000;
-                if (i >= Constants.stopServerWaitTime) {
-                    stopped = false;
-                    break;
-                }
-            }
-            if (!stopped) {
-                throw new Exception("There was an error when stopping the server: " + error);
-            }
-
+            net.apachegui.server.Control.stopServer();
             result.put("result", "success");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
