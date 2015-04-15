@@ -89,6 +89,7 @@ public class Constants {
     public final static String[] processInfoCommand = Utils.isWindows() ? "cmd,/c,tasklist,/FO,CSV,/V,/NH".split(",") : "ps,-e,-o,user,-o,pid,-o,ppid,-o,time,-o,comm".split(",");
     public final static String processKillCommand = Utils.isWindows() ? "cmd /c taskkill /F /PID " : "kill -9 ";
     public final static String runningProcessName = ".*httpd.*|.*apache2.*";// ".*httpd[^\\.].*|.*apache2[^\\.].*";
+    public final static String actionFailedRegex = "Action .* failed";
     public final static String processInfoCommandAdivsory = Utils.isWindows() ? "ERROR: Please make sure tasklist.exe and taskkill.exe <br/> are installed in the /Windows/System32 directory"
             : "ERROR: Please make sure ps is installed and available from your $PATH";
     public final static long stopServerWaitTime = Utils.isWindows() ? 15000 : 10000;

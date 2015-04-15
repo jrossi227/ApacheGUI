@@ -3,6 +3,8 @@ package net.apachegui.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.apachegui.conf.Configuration;
 import net.apachegui.db.SettingsDao;
@@ -22,14 +24,17 @@ public class Control {
      * @throws IOException
      * @throws InterruptedException
      */
-    public static String startServer() throws IOException, InterruptedException {
+    public static String startServer() throws IOException, InterruptedException, ControlFailException {
         log.trace("RunningProcess.startServer called");
 
         String command[] = Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.binFile) + ",-k,start").split(",") : (SettingsDao.getInstance()
                 .getSetting(Constants.binFile) + ",start").split(",");
 
         String output = Utils.RunProcessWithOutput(command);
+
         log.trace("Output " + output);
+        checkFailure(output);
+
         StringBuffer buffer = new StringBuffer();
         BufferedReader reader = new BufferedReader(new StringReader(output));
 
@@ -51,7 +56,7 @@ public class Control {
      * @throws IOException
      * @throws InterruptedException
      */
-    public static String restartServer() throws Exception {
+    public static String restartServer() throws Exception, ControlFailException {
         log.trace("RunningProcess.restartServer called");
 
         log.trace("Checking the server configuration before restarting");
@@ -65,6 +70,9 @@ public class Control {
 
         String output = Utils.RunProcessWithOutput(command);
         log.trace("Output " + output);
+
+        checkFailure(output);
+
         StringBuffer buffer = new StringBuffer();
         BufferedReader reader = new BufferedReader(new StringReader(output));
 
@@ -86,13 +94,15 @@ public class Control {
      * @throws IOException
      * @throws InterruptedException
      */
-    public static String stopServer() throws Exception {
+    public static String stopServer() throws Exception, ControlFailException {
         log.trace("RunningProcess.stopServer called");
         String command[] = Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.binFile) + ",-k,stop").split(",")
                 : (SettingsDao.getInstance().getSetting(Constants.binFile) + ",stop").split(",");
 
         String output = Utils.RunProcessWithOutput(command);
         log.trace("Output " + output);
+        checkFailure(output);
+
         StringBuffer buffer = new StringBuffer();
         BufferedReader reader = new BufferedReader(new StringReader(output));
 
@@ -105,6 +115,25 @@ public class Control {
 
         log.trace("Apache stopped");
         return buffer.toString();
+    }
+
+    private static boolean checkFailure(String output) throws IOException, ControlFailException {
+        BufferedReader reader = new BufferedReader(new StringReader(output));
+
+        Pattern failPattern = Pattern.compile(Constants.actionFailedRegex, Pattern.CASE_INSENSITIVE);
+
+        Matcher matcher;
+        String line;
+        while ((line = reader.readLine()) != null) {
+            log.trace(line);
+            matcher = failPattern.matcher(line);
+            if(matcher.find()) {
+                throw new ControlFailException(output);
+            }
+        }
+        reader.close();
+
+        return false;
     }
 
     /**

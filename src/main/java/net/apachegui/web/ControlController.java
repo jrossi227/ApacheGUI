@@ -10,11 +10,7 @@ import net.apachegui.global.Constants;
 import net.apachegui.modules.AvailableModuleHandler;
 import net.apachegui.modules.SharedModuleHandler;
 import net.apachegui.modules.StaticModuleHandler;
-import net.apachegui.server.ExtendedRunningProcess;
-import net.apachegui.server.ExtendedServerInfo;
-import net.apachegui.server.ExtendedStatus;
-import net.apachegui.server.RunningProcess;
-import net.apachegui.server.ServerInfo;
+import net.apachegui.server.*;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -361,20 +357,12 @@ public class ControlController {
     public String startServer() throws Exception {
         JSONObject result = new JSONObject();
 
-        String error = "";
         try {
-            error = net.apachegui.server.Control.startServer();
-            if (!net.apachegui.server.Control.isServerRunning()) {
-                if (Utils.isWindows()) {
-                    throw new Exception("The server could not start. Have you installed Apache as a service?");
-                } else {
-                    throw new Exception("The server could not start");
-                }
-            }
+            net.apachegui.server.Control.startServer();
             result.put("result", "success");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new Exception("There was an error while trying to start the server: " + error + " " + e.getMessage());
+            throw new Exception("There was an error while trying to start the server: " + e.getMessage());
         }
 
         return result.toString();
@@ -386,10 +374,7 @@ public class ControlController {
 
         String error = "";
         try {
-            error = net.apachegui.server.Control.restartServer();
-            if (!net.apachegui.server.Control.isServerRunning()) {
-                throw new Exception("The server could not restart");
-            }
+            net.apachegui.server.Control.restartServer();
             result.put("result", "success");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -403,9 +388,8 @@ public class ControlController {
     public String stopServer() throws Exception {
         JSONObject result = new JSONObject();
 
-        String error = "";
         try {
-            error = net.apachegui.server.Control.stopServer();
+            String error = net.apachegui.server.Control.stopServer();
             long i = 0;
             // lets wait up to 10 seconds for the server to stop
             boolean stopped = true;
@@ -418,13 +402,13 @@ public class ControlController {
                 }
             }
             if (!stopped) {
-                throw new Exception("There was an error when stopping the server");
+                throw new Exception("There was an error when stopping the server: " + error);
             }
 
             result.put("result", "success");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new Exception("There was an error while stopping the server: " + error + " " + e.getMessage());
+            throw new Exception("There was an error while stopping the server: " + e.getMessage());
         }
 
         return result.toString();
