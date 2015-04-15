@@ -104,7 +104,6 @@ public class JdbcConnection {
         try {
             log.info("Clearing GUI database");
             guiConnection = getGuiConnection();
-            guiConnection.setAutoCommit(false);
 
             guiStatement = guiConnection.createStatement();
             String update = "DELETE FROM SETTINGS";
@@ -113,15 +112,12 @@ public class JdbcConnection {
             update = "VACUUM";
             guiStatement.executeUpdate(update);
 
-            guiConnection.commit();
-
             closeStatement(guiStatement);
             closeConnection(guiConnection);
 
             log.info("Clearing History database");
 
             logDataConnection = getLogDataConnection();
-            logDataConnection.setAutoCommit(false);
 
             logDataStatement = logDataConnection.createStatement();
             update = "DELETE FROM LOGDATA";
@@ -129,8 +125,6 @@ public class JdbcConnection {
 
             update = "VACUUM";
             logDataStatement.executeUpdate(update);
-
-            logDataConnection.commit();
 
             closeStatement(logDataStatement);
             closeConnection(logDataConnection);
