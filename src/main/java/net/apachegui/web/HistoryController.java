@@ -115,12 +115,8 @@ public class HistoryController {
         }
 
         if (net.apachegui.server.Control.isServerRunning()) {
-            String error = "";
             try {
-                error = net.apachegui.server.Control.restartServer();
-                if (!net.apachegui.server.Control.isServerRunning()) {
-                    throw new Exception("The server could not restart");
-                }
+                net.apachegui.server.Control.restartServer();
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 net.apachegui.history.History.globalEnable();
@@ -132,7 +128,7 @@ public class HistoryController {
                     net.apachegui.history.History.globalEnable();
                 }
 
-                throw new Exception("There was an error while trying to restart the server, the changes were reverted: " + error + " " + e.getMessage());
+                throw new Exception("There was an error while trying to restart the server, the changes were reverted: " + e.getMessage());
             }
         }
 
@@ -180,16 +176,12 @@ public class HistoryController {
         }
         
         if (net.apachegui.server.Control.isServerRunning()) {
-            String error = "";
             try {
-                error = net.apachegui.server.Control.restartServer();
-                if (!net.apachegui.server.Control.isServerRunning()) {
-                    throw new Exception("The server could not restart");
-                }
+                net.apachegui.server.Control.restartServer();
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 
-                throw new Exception("There was an error while trying to restart the server: " + error + " " + e.getMessage());
+                throw new Exception("There was an error while trying to restart the server: " + e.getMessage());
             }
         }
 

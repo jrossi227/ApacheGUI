@@ -330,19 +330,37 @@
       </dependency>
       
       <dependency>
+          <groupId>org.apache.derby</groupId>
+          <artifactId>derby</artifactId>
+          <version>10.7.1.1</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.derby</groupId>
+          <artifactId>derbyclient</artifactId>
+          <version>10.7.1.1</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.derby</groupId>
+          <artifactId>derbynet</artifactId>
+          <version>10.7.1.1</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.derby</groupId>
+          <artifactId>derbytools</artifactId>
+          <version>10.7.1.1</version>
+          <scope>provided</scope>
+      </dependency>
+      
+      <dependency>
           <groupId>javax.servlet</groupId>
           <artifactId>javax.servlet-api</artifactId>
           <version>3.1.0</version>
           <scope>provided</scope>
       </dependency>
-
-      <dependency>
-          <groupId>org.xerial</groupId>
-          <artifactId>sqlite-jdbc</artifactId>
-          <version>3.8.7</version>
-          <scope>provided</scope>
-      </dependency>
-
+      
       <dependency>
           <groupId>org.jsoup</groupId>
           <artifactId>jsoup</artifactId>

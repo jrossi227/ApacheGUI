@@ -3,6 +3,8 @@ package net.apachegui.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.apachegui.conf.Configuration;
 import net.apachegui.db.SettingsDao;
@@ -17,19 +19,23 @@ public class Control {
 
     /**
      * Method used to start Apache.
-     * 
+     *
      * @return the OS output from starting apache.
      * @throws IOException
      * @throws InterruptedException
      */
-    public static String startServer() throws IOException, InterruptedException {
+    public static String startServer() throws Exception {
         log.trace("RunningProcess.startServer called");
 
         String command[] = Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.binFile) + ",-k,start").split(",") : (SettingsDao.getInstance()
                 .getSetting(Constants.binFile) + ",start").split(",");
 
         String output = Utils.RunProcessWithOutput(command);
+
         log.trace("Output " + output);
+
+        checkRunning(output);
+
         StringBuffer buffer = new StringBuffer();
         BufferedReader reader = new BufferedReader(new StringReader(output));
 
@@ -46,7 +52,7 @@ public class Control {
 
     /**
      * Method used to restart Apache.
-     * 
+     *
      * @return the OS output from restarting apache.
      * @throws IOException
      * @throws InterruptedException
@@ -59,12 +65,15 @@ public class Control {
         if(!Configuration.isServerConfigurationOk(status)) {
             throw new Exception("The server was not restarted. There is an error with the configuration " + status);
         }
-     
+
         String command[] = Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.binFile) + ",-k,restart").split(",") : (SettingsDao.getInstance().getSetting(
                 Constants.binFile) + ",restart").split(",");
 
         String output = Utils.RunProcessWithOutput(command);
         log.trace("Output " + output);
+
+        checkRunning(output);
+
         StringBuffer buffer = new StringBuffer();
         BufferedReader reader = new BufferedReader(new StringReader(output));
 
@@ -81,7 +90,7 @@ public class Control {
 
     /**
      * Method used to stop Apache.
-     * 
+     *
      * @return the OS output from stopping apache.
      * @throws IOException
      * @throws InterruptedException
@@ -93,6 +102,9 @@ public class Control {
 
         String output = Utils.RunProcessWithOutput(command);
         log.trace("Output " + output);
+
+        checkStopped(output);
+
         StringBuffer buffer = new StringBuffer();
         BufferedReader reader = new BufferedReader(new StringReader(output));
 
@@ -107,8 +119,42 @@ public class Control {
         return buffer.toString();
     }
 
+    private static void checkRunning(String output) throws Exception {
+        long i =0;
+
+        boolean started = true;
+        while (!isServerRunning()) {
+            Thread.sleep(500);
+            i += 500;
+            if (i >= Constants.startServerWaitTime) {
+                started = false;
+                break;
+            }
+        }
+        if (!started) {
+            throw new Exception(output);
+        }
+    }
+
+    private static void checkStopped(String output) throws Exception {
+        long i =0;
+
+        boolean stopped = true;
+        while (isServerRunning()) {
+            Thread.sleep(500);
+            i += 500;
+            if (i >= Constants.stopServerWaitTime) {
+                stopped = false;
+                break;
+            }
+        }
+        if (!stopped) {
+            throw new Exception(output);
+        }
+    }
+
     /**
-     * 
+     *
      * @return a boolean indicating if apache is running.
      * @throws Exception
      */

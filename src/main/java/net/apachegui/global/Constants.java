@@ -92,6 +92,7 @@ public class Constants {
     public final static String runningProcessName = ".*httpd.*|.*apache2.*";// ".*httpd[^\\.].*|.*apache2[^\\.].*";
     public final static String processInfoCommandAdivsory = Utils.isWindows() ? "ERROR: Please make sure tasklist.exe and taskkill.exe <br/> are installed in the /Windows/System32 directory"
             : "ERROR: Please make sure ps is installed and available from your $PATH";
+    public final static long startServerWaitTime = Utils.isWindows() ? 10000 : 5000;
     public final static long stopServerWaitTime = Utils.isWindows() ? 15000 : 10000;
     public final static String extendedProcessScrapeRegex = "^\\d+-.*";
     public final static String extendedProcessHost = "localhost";

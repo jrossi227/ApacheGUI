@@ -100,6 +100,7 @@
         
         <delete includeemptydirs="true">
             <fileset dir="${package.dir}" includes="**/*.log"/>
+            <fileset dir="${package.dir}" includes="**/.DS_Store"/>
             <fileset dir="${package.dir}/ApacheGUI/tomcat/logs" includes="**/*"/>
             <fileset dir="${package.dir}/ApacheGUI/bin/apacheGUI"/>
         </delete>    
