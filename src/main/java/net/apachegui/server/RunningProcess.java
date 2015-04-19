@@ -39,7 +39,7 @@ public class RunningProcess {
     public static RunningProcess[] getRunningProcessInfo(String serviceName) throws Exception {
         log.trace("RunningProcess.getRunningProcessInfo called");
         log.trace("getRunningProcessInfo called with serviceName " + serviceName);
-        String output = Utils.RunProcessWithOutput(Constants.processInfoCommand);
+        String output = Utils.RunProcessWithOutput(Constants.PROCESS_INFO_COMMAND);
         log.trace("Output " + output);
         BufferedReader reader = new BufferedReader(new StringReader(output));
 
@@ -72,7 +72,7 @@ public class RunningProcess {
     public static boolean isProcessRunning(String serviceName) throws Exception {
         log.trace("RunningProcess.isProcessRunning called");
         log.trace("isProcessRunning called with serviceName " + serviceName);
-        String output = Utils.RunProcessWithOutput(Constants.processInfoCommand);
+        String output = Utils.RunProcessWithOutput(Constants.PROCESS_INFO_COMMAND);
         log.trace("Output " + output);
         BufferedReader reader = new BufferedReader(new StringReader(output));
 
@@ -102,7 +102,7 @@ public class RunningProcess {
         log.trace("RunningProcess.killProcess called");
         log.trace("killing process with pid " + pid);
 
-        String command[] = (Constants.processKillCommand + pid).split(" ");
+        String command[] = (Constants.PROCESS_KILL_COMMAND + pid).split(" ");
         Utils.RunProcessWithoutOutput(command);
         log.trace("Process killed!");
     }

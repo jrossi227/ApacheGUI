@@ -25,7 +25,7 @@ public class AvailableModuleHandler extends ModuleHandler {
      */
     public static AvailableModule[] getAvailableModules() throws Exception {
         log.trace("Modules.getAvailableModules called");
-        String modulesDirectory = SettingsDao.getInstance().getSetting(Constants.modulesDirectory);
+        String modulesDirectory = SettingsDao.getInstance().getSetting(Constants.MODULES_DIRECTORY);
 
         File dir = new File(modulesDirectory);
         String[] children;
@@ -33,7 +33,7 @@ public class AvailableModuleHandler extends ModuleHandler {
         // This example does not return any files that start with `.'.
         FilenameFilter filter = new FilenameFilter() {
             public boolean accept(java.io.File dir, String name) {
-                return name.matches(Constants.modulesExtensionRegex);
+                return name.matches(Constants.MODULES_EXTENSION_REGEX);
             }
         };
         children = dir.list(filter);

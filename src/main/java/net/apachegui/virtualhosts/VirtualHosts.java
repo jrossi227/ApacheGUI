@@ -17,10 +17,10 @@ public class VirtualHosts {
 
     public static VirtualHost[] getAllVirtualHosts() throws Exception {
 
-        EnclosureParser parser = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        EnclosureParser parser = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 
-        Enclosure virtualHostEnclosures[] = parser.getEnclosure(Constants.virtualHostDirectiveString, true);
+        Enclosure virtualHostEnclosures[] = parser.getEnclosure(Constants.VIRTUAL_HOST_DIRECTIVE_STRING, true);
 
         ArrayList<VirtualHost> virtualHosts = new ArrayList<VirtualHost>();
 
@@ -34,11 +34,11 @@ public class VirtualHosts {
 
             ServerAlias serverAlias = new ServerAlias();
             for (Directive directive : virtualHostEnclosure.getDirectives()) {
-                if (directive.getType().equals(Constants.serverNameDirectiveString)) {
+                if (directive.getType().equals(Constants.SERVER_NAME_DIRECTIVE_STRING)) {
                     virtualHost.setServerName(new ServerName(directive.getValues()[0]));
-                } else if (directive.getType().equals(Constants.documentRootDirectiveString)) {
+                } else if (directive.getType().equals(Constants.DOCUMENT_ROOT_DIRECTIVE_STRING)) {
                     virtualHost.setDocumentRoot(new DocumentRoot(directive.getValues()[0]));
-                } else if (directive.getType().equals(Constants.serverAliasDirectiveString)) {
+                } else if (directive.getType().equals(Constants.SERVER_ALIAS_DIRECTIVE_STRING)) {
                     for(String directiveValue : directive.getValues()) {
                         serverAlias.addHostname(directiveValue);
                     }

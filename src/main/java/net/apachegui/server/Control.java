@@ -3,8 +3,6 @@ package net.apachegui.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.apachegui.conf.Configuration;
 import net.apachegui.db.SettingsDao;
@@ -27,8 +25,8 @@ public class Control {
     public static String startServer() throws Exception {
         log.trace("RunningProcess.startServer called");
 
-        String command[] = Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.binFile) + ",-k,start").split(",") : (SettingsDao.getInstance()
-                .getSetting(Constants.binFile) + ",start").split(",");
+        String command[] = Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.BIN_FILE) + ",-k,start").split(",") : (SettingsDao.getInstance()
+                .getSetting(Constants.BIN_FILE) + ",start").split(",");
 
         String output = Utils.RunProcessWithOutput(command);
 
@@ -66,8 +64,8 @@ public class Control {
             throw new Exception("The server was not restarted. There is an error with the configuration " + status);
         }
 
-        String command[] = Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.binFile) + ",-k,restart").split(",") : (SettingsDao.getInstance().getSetting(
-                Constants.binFile) + ",restart").split(",");
+        String command[] = Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.BIN_FILE) + ",-k,restart").split(",") : (SettingsDao.getInstance().getSetting(
+                Constants.BIN_FILE) + ",restart").split(",");
 
         String output = Utils.RunProcessWithOutput(command);
         log.trace("Output " + output);
@@ -97,8 +95,8 @@ public class Control {
      */
     public static String stopServer() throws Exception {
         log.trace("RunningProcess.stopServer called");
-        String command[] = Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.binFile) + ",-k,stop").split(",")
-                : (SettingsDao.getInstance().getSetting(Constants.binFile) + ",stop").split(",");
+        String command[] = Utils.isWindows() ? ("cmd,/c," + SettingsDao.getInstance().getSetting(Constants.BIN_FILE) + ",-k,stop").split(",")
+                : (SettingsDao.getInstance().getSetting(Constants.BIN_FILE) + ",stop").split(",");
 
         String output = Utils.RunProcessWithOutput(command);
         log.trace("Output " + output);
@@ -126,7 +124,7 @@ public class Control {
         while (!isServerRunning()) {
             Thread.sleep(500);
             i += 500;
-            if (i >= Constants.startServerWaitTime) {
+            if (i >= Constants.START_SERVER_WAIT_TIME) {
                 started = false;
                 break;
             }
@@ -143,7 +141,7 @@ public class Control {
         while (isServerRunning()) {
             Thread.sleep(500);
             i += 500;
-            if (i >= Constants.stopServerWaitTime) {
+            if (i >= Constants.STOP_SERVER_WAIT_TIME) {
                 stopped = false;
                 break;
             }
@@ -159,7 +157,7 @@ public class Control {
      * @throws Exception
      */
     public static boolean isServerRunning() throws Exception {
-        return RunningProcess.isProcessRunning(Constants.runningProcessName);
+        return RunningProcess.isProcessRunning(Constants.RUNNING_PROCESS_NAME);
     }
 
 }

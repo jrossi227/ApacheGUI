@@ -11,7 +11,7 @@ public class User extends GlobalSingletonDirective {
     private String user;
 
     public User() {
-        super(Constants.userDirective);
+        super(Constants.USER_DIRECTIVE);
         user = "";
     }
 
@@ -23,7 +23,7 @@ public class User extends GlobalSingletonDirective {
      * @param directiveValue
      */
     public User(String directiveValue) {
-        super(Constants.userDirective);
+        super(Constants.USER_DIRECTIVE);
         user = directiveValue.trim();
     }
 
@@ -53,7 +53,7 @@ public class User extends GlobalSingletonDirective {
      */
     @Override
     User getGlobalConfigured() throws Exception {
-        String user[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        String user[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 
         User userFound = null;

@@ -235,7 +235,7 @@ public class Utilities {
      */
     public static String getFileSystemDrive() {
 
-        String serverRoot = SettingsDao.getInstance().getSetting(Constants.serverRoot);
+        String serverRoot = SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT);
 
         return serverRoot.substring(0, serverRoot.indexOf("/") + 1);
     }

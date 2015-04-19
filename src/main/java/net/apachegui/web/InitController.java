@@ -29,7 +29,7 @@ public class InitController {
     @RequestMapping(value = "/CheckFirstTime", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String checkInit() {
 
-        String init = SettingsDao.getInstance().getSetting("init");
+        String init = SettingsDao.getInstance().getSetting(Constants.INIT);
         log.trace("init value " + init);
 
         JSONObject result = new JSONObject();
@@ -166,49 +166,49 @@ public class InitController {
         log.trace("Init.initializeDatabaseSource called");
         log.trace("Initializing the database with source parameters ");
 
-        File confDirectoryFile = new File(serverRoot, Constants.shortConfDirectory);
+        File confDirectoryFile = new File(serverRoot, Constants.SHORT_CONF_DIRECTORY);
         if (!confDirectoryFile.exists()) {
-            throw new Exception("We are unable to find the Apache " + Constants.shortConfDirectory + " directory under " + serverRoot + " please verify that your Server Root is correct");
+            throw new Exception("We are unable to find the Apache " + Constants.SHORT_CONF_DIRECTORY + " directory under " + serverRoot + " please verify that your Server Root is correct");
         }
 
         String confDirectory = confDirectoryFile.getAbsolutePath();
         log.trace("confDirectory " + confDirectory);
 
-        File confFileHandle = new File(confDirectory, Constants.shortConfFile);
+        File confFileHandle = new File(confDirectory, Constants.SHORT_CONF_FILE);
         if (!confFileHandle.exists()) {
-            throw new Exception("We are unable to find " + Constants.shortConfFile + " under " + confDirectory + " please verify your apache layout");
+            throw new Exception("We are unable to find " + Constants.SHORT_CONF_FILE + " under " + confDirectory + " please verify your apache layout");
         }
 
         String confFile = confFileHandle.getAbsolutePath();
         log.trace("confFile " + confFile);
 
-        File logDirectoryFile = new File(serverRoot, Constants.shortLogDirectory);
+        File logDirectoryFile = new File(serverRoot, Constants.SHORT_LOG_DIRECTORY);
         if (!logDirectoryFile.exists()) {
-            throw new Exception("We are unable to find the Apache " + Constants.shortLogDirectory + " directory under " + serverRoot + " please verify that your Server Root is correct");
+            throw new Exception("We are unable to find the Apache " + Constants.SHORT_LOG_DIRECTORY + " directory under " + serverRoot + " please verify that your Server Root is correct");
         }
 
         String logDirectory = logDirectoryFile.getAbsolutePath();
         log.trace("logDirectory " + logDirectory);
 
-        File modulesDirectoryFile = new File(serverRoot, Constants.shortModulesDirectory);
+        File modulesDirectoryFile = new File(serverRoot, Constants.SHORT_MODULES_DIRECTORY);
         if (!modulesDirectoryFile.exists()) {
-            throw new Exception("We are unable to find the Apache " + Constants.shortModulesDirectory + " directory under " + serverRoot + " please verify that your Server Root is correct");
+            throw new Exception("We are unable to find the Apache " + Constants.SHORT_MODULES_DIRECTORY + " directory under " + serverRoot + " please verify that your Server Root is correct");
         }
 
         String modulesDirectory = modulesDirectoryFile.getAbsolutePath();
         log.trace("modulesDirectory " + modulesDirectory);
 
-        File binDirectoryFile = new File(serverRoot, Constants.shortBinDirectory);
+        File binDirectoryFile = new File(serverRoot, Constants.SHORT_BIN_DIRECTORY);
         if (!binDirectoryFile.exists()) {
-            throw new Exception("We are unable to find the Apache " + Constants.shortBinDirectory + " directory under " + serverRoot + " please verify that your Server Root is correct");
+            throw new Exception("We are unable to find the Apache " + Constants.SHORT_BIN_DIRECTORY + " directory under " + serverRoot + " please verify that your Server Root is correct");
         }
 
         String binDirectory = binDirectoryFile.getAbsolutePath();
         log.trace("binDirectory " + binDirectory);
 
-        File binFileHandle = new File(binDirectory, Constants.shortBinFile);
+        File binFileHandle = new File(binDirectory, Constants.SHORT_BIN_FILE);
         if (!binFileHandle.exists()) {
-            throw new Exception("We are unable to find " + Constants.shortBinFile + " under " + binDirectory + " please verify your apache layout");
+            throw new Exception("We are unable to find " + Constants.SHORT_BIN_FILE + " under " + binDirectory + " please verify your apache layout");
         }
 
         String binFile = binFileHandle.getAbsolutePath();
@@ -219,61 +219,61 @@ public class InitController {
                 throw new Exception("");
             }
         } catch (Exception e) {
-            throw new Exception("This version of apache does not appear to be supported. Supported versions include " + Constants.versionSupportedString + ".");
+            throw new Exception("This version of apache does not appear to be supported. Supported versions include " + Constants.VERSION_SUPPORTED_STRING + ".");
         }
 
         log.info("Clearing the database");
         JdbcConnection.getInstance().clearAllDatabases();
 
-        log.trace("Setting name:" + Constants.init + " value: true");
-        SettingsDao.getInstance().setSetting(Constants.init, "true");
+        log.trace("Setting name:" + Constants.INIT + " value: true");
+        SettingsDao.getInstance().setSetting(Constants.INIT, "true");
 
-        log.trace("Setting name:" + Constants.serverRoot + " value: " + serverRoot);
-        SettingsDao.getInstance().setSetting(Constants.serverRoot, serverRoot);
+        log.trace("Setting name:" + Constants.SERVER_ROOT + " value: " + serverRoot);
+        SettingsDao.getInstance().setSetting(Constants.SERVER_ROOT, serverRoot);
 
-        log.trace("Setting name:" + Constants.username + " value: " + username);
+        log.trace("Setting name:" + Constants.USERNAME + " value: " + username);
         UsersDao.getInstance().setUsername(username);
 
-        log.trace("Setting name:" + Constants.password + " value: XXXXX");
+        log.trace("Setting name:" + Constants.PASSWORD + " value: XXXXX");
         UsersDao.getInstance().setPassword(password);
 
-        log.trace("Setting name:" + Constants.confDirectory + " value: " + confDirectory);
-        SettingsDao.getInstance().setSetting(Constants.confDirectory, confDirectory);
+        log.trace("Setting name:" + Constants.CONF_DIRECTORY + " value: " + confDirectory);
+        SettingsDao.getInstance().setSetting(Constants.CONF_DIRECTORY, confDirectory);
 
-        log.trace("Setting name:" + Constants.confFile + " value: " + confFile);
-        SettingsDao.getInstance().setSetting(Constants.confFile, confFile);
+        log.trace("Setting name:" + Constants.CONF_FILE + " value: " + confFile);
+        SettingsDao.getInstance().setSetting(Constants.CONF_FILE, confFile);
 
-        log.trace("Setting name:" + Constants.logDirectory + " value: " + logDirectory);
-        SettingsDao.getInstance().setSetting(Constants.logDirectory, logDirectory);
+        log.trace("Setting name:" + Constants.LOG_DIRECTORY + " value: " + logDirectory);
+        SettingsDao.getInstance().setSetting(Constants.LOG_DIRECTORY, logDirectory);
 
-        log.trace("Setting name:" + Constants.modulesDirectory + " value: " + modulesDirectory);
-        SettingsDao.getInstance().setSetting(Constants.modulesDirectory, modulesDirectory);
+        log.trace("Setting name:" + Constants.MODULES_DIRECTORY + " value: " + modulesDirectory);
+        SettingsDao.getInstance().setSetting(Constants.MODULES_DIRECTORY, modulesDirectory);
 
-        log.trace("Setting name:" + Constants.binFile + " value: " + binFile);
-        SettingsDao.getInstance().setSetting(Constants.binFile, binFile);
+        log.trace("Setting name:" + Constants.BIN_FILE + " value: " + binFile);
+        SettingsDao.getInstance().setSetting(Constants.BIN_FILE, binFile);
 
-        log.trace("Setting name:" + Constants.processInfoRefreshRate + " value: " + Constants.processInfoRefreshRateDefault);
-        SettingsDao.getInstance().setSetting(Constants.processInfoRefreshRate, Constants.processInfoRefreshRateDefault);
+        log.trace("Setting name:" + Constants.PROCESS_INFO_REFRESH_RATE + " value: " + Constants.PROCESS_INFO_REFRESH_RATE_DEFAULT);
+        SettingsDao.getInstance().setSetting(Constants.PROCESS_INFO_REFRESH_RATE, Constants.PROCESS_INFO_REFRESH_RATE_DEFAULT);
 
-        log.trace("Setting name:" + Constants.extendedStatus + " value: " + Constants.extendedStatusDefault);
-        SettingsDao.getInstance().setSetting(Constants.extendedStatus, Constants.extendedStatusDefault);
+        log.trace("Setting name:" + Constants.EXTENDED_STATUS + " value: " + Constants.EXTENDED_STATUS_DEFAULT);
+        SettingsDao.getInstance().setSetting(Constants.EXTENDED_STATUS, Constants.EXTENDED_STATUS_DEFAULT);
 
-        log.trace("Setting name:" + Constants.theme + " value: " + Constants.defaultTheme);
-        SettingsDao.getInstance().setSetting(Constants.theme, Constants.defaultTheme);
+        log.trace("Setting name:" + Constants.THEME + " value: " + Constants.DEFAULT_THEME);
+        SettingsDao.getInstance().setSetting(Constants.THEME, Constants.DEFAULT_THEME);
 
         log.trace("resetting history buffer");
-        SettingsDao.getInstance().setSetting(Constants.historyBuffer, Constants.defaultHistoryBuffer);
+        SettingsDao.getInstance().setSetting(Constants.HISTORY_BUFFER, Constants.DEFAULT_HISTORY_BUFFER);
 
         log.trace("resetting history retention");
-        SettingsDao.getInstance().setSetting(Constants.historyRetention, Constants.defaultHistoryRetention);
+        SettingsDao.getInstance().setSetting(Constants.HISTORY_RETENTION, Constants.DEFAULT_HISTORY_RETENTION);
 
         if (Utils.isWindows()) {
             // Setting SRVROOT Variable to entered Server Root
             String files[] = ConfFiles.getFullConfFileList();
             for (int i = 0; i < files.length; i++) {
-                new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(),
-                        SharedModuleHandler.getSharedModules()).setDirectiveInFile(Constants.defineDirective, files[i], Constants.serverRootDirectiveValue + " \"" + serverRoot + "\"",
-                        Pattern.compile(Constants.serverRootDirectiveValue), false, false);
+                new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT), StaticModuleHandler.getStaticModules(),
+                        SharedModuleHandler.getSharedModules()).setDirectiveInFile(Constants.DEFINE_DIRECTIVE, files[i], Constants.SERVER_ROOT_DIRECTIVE_VALUE + " \"" + serverRoot + "\"",
+                        Pattern.compile(Constants.SERVER_ROOT_DIRECTIVE_VALUE), false, false);
             }
         }
     }
@@ -288,52 +288,52 @@ public class InitController {
                 throw new Exception("");
             }
         } catch (Exception e) {
-            throw new Exception("This version of apache does not appear to be supported. Supported versions include " + Constants.versionSupportedString + ".");
+            throw new Exception("This version of apache does not appear to be supported. Supported versions include " + Constants.VERSION_SUPPORTED_STRING + ".");
         }
 
         log.info("Clearing the database");
         JdbcConnection.getInstance().clearAllDatabases();
 
-        log.trace("Setting name:" + Constants.init + " value: true");
-        SettingsDao.getInstance().setSetting(Constants.init, "true");
+        log.trace("Setting name:" + Constants.INIT + " value: true");
+        SettingsDao.getInstance().setSetting(Constants.INIT, "true");
 
-        log.trace("Setting name:" + Constants.serverRoot + " value: " + serverRoot);
-        SettingsDao.getInstance().setSetting(Constants.serverRoot, serverRoot);
+        log.trace("Setting name:" + Constants.SERVER_ROOT + " value: " + serverRoot);
+        SettingsDao.getInstance().setSetting(Constants.SERVER_ROOT, serverRoot);
 
-        log.trace("Setting name:" + Constants.username + " value: " + username);
+        log.trace("Setting name:" + Constants.USERNAME + " value: " + username);
         UsersDao.getInstance().setUsername(username);
 
-        log.trace("Setting name:" + Constants.password + " value: XXXXX");
+        log.trace("Setting name:" + Constants.PASSWORD + " value: XXXXX");
         UsersDao.getInstance().setPassword(password);
 
-        log.trace("Setting name:" + Constants.confDirectory + " value: " + confDirectory);
-        SettingsDao.getInstance().setSetting(Constants.confDirectory, confDirectory);
+        log.trace("Setting name:" + Constants.CONF_DIRECTORY + " value: " + confDirectory);
+        SettingsDao.getInstance().setSetting(Constants.CONF_DIRECTORY, confDirectory);
 
-        log.trace("Setting name:" + Constants.confFile + " value: " + confFile);
-        SettingsDao.getInstance().setSetting(Constants.confFile, confFile);
+        log.trace("Setting name:" + Constants.CONF_FILE + " value: " + confFile);
+        SettingsDao.getInstance().setSetting(Constants.CONF_FILE, confFile);
 
-        log.trace("Setting name:" + Constants.logDirectory + " value: " + logDirectory);
-        SettingsDao.getInstance().setSetting(Constants.logDirectory, logDirectory);
+        log.trace("Setting name:" + Constants.LOG_DIRECTORY + " value: " + logDirectory);
+        SettingsDao.getInstance().setSetting(Constants.LOG_DIRECTORY, logDirectory);
 
-        log.trace("Setting name:" + Constants.modulesDirectory + " value: " + modulesDirectory);
-        SettingsDao.getInstance().setSetting(Constants.modulesDirectory, modulesDirectory);
+        log.trace("Setting name:" + Constants.MODULES_DIRECTORY + " value: " + modulesDirectory);
+        SettingsDao.getInstance().setSetting(Constants.MODULES_DIRECTORY, modulesDirectory);
 
-        log.trace("Setting name:" + Constants.binFile + " value: " + binFile);
-        SettingsDao.getInstance().setSetting(Constants.binFile, binFile);
+        log.trace("Setting name:" + Constants.BIN_FILE + " value: " + binFile);
+        SettingsDao.getInstance().setSetting(Constants.BIN_FILE, binFile);
 
-        log.trace("Setting name:" + Constants.processInfoRefreshRate + " value: " + Constants.processInfoRefreshRateDefault);
-        SettingsDao.getInstance().setSetting(Constants.processInfoRefreshRate, Constants.processInfoRefreshRateDefault);
+        log.trace("Setting name:" + Constants.PROCESS_INFO_REFRESH_RATE + " value: " + Constants.PROCESS_INFO_REFRESH_RATE_DEFAULT);
+        SettingsDao.getInstance().setSetting(Constants.PROCESS_INFO_REFRESH_RATE, Constants.PROCESS_INFO_REFRESH_RATE_DEFAULT);
 
-        log.trace("Setting name:" + Constants.extendedStatus + " value: " + Constants.extendedStatusDefault);
-        SettingsDao.getInstance().setSetting(Constants.extendedStatus, Constants.extendedStatusDefault);
+        log.trace("Setting name:" + Constants.EXTENDED_STATUS + " value: " + Constants.EXTENDED_STATUS_DEFAULT);
+        SettingsDao.getInstance().setSetting(Constants.EXTENDED_STATUS, Constants.EXTENDED_STATUS_DEFAULT);
 
-        log.trace("Setting name:" + Constants.theme + " value: " + Constants.defaultTheme);
-        SettingsDao.getInstance().setSetting(Constants.theme, Constants.defaultTheme);
+        log.trace("Setting name:" + Constants.THEME + " value: " + Constants.DEFAULT_THEME);
+        SettingsDao.getInstance().setSetting(Constants.THEME, Constants.DEFAULT_THEME);
 
         log.trace("resetting history buffer");
-        SettingsDao.getInstance().setSetting(Constants.historyBuffer, Constants.defaultHistoryBuffer);
+        SettingsDao.getInstance().setSetting(Constants.HISTORY_BUFFER, Constants.DEFAULT_HISTORY_BUFFER);
 
         log.trace("resetting history retention");
-        SettingsDao.getInstance().setSetting(Constants.historyRetention, Constants.defaultHistoryRetention);
+        SettingsDao.getInstance().setSetting(Constants.HISTORY_RETENTION, Constants.DEFAULT_HISTORY_RETENTION);
     }
 }

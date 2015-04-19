@@ -23,7 +23,7 @@ public class Listen extends GlobalFactoryDirective {
     private String protocol;
 
     public Listen() {
-        super(Constants.listenDirective);
+        super(Constants.LISTEN_DIRECTIVE);
 
         this.ip = "";
         this.port = 0;
@@ -39,7 +39,7 @@ public class Listen extends GlobalFactoryDirective {
      *            - A String with a valid apache Listen directive value
      */
     public Listen(String directiveValue) {
-        super(Constants.listenDirective);
+        super(Constants.LISTEN_DIRECTIVE);
 
         directiveValue = Utils.sanitizeLineSpaces(directiveValue);
 
@@ -90,7 +90,7 @@ public class Listen extends GlobalFactoryDirective {
      *            - A string with a protocol
      */
     public Listen(String ip, int port, String protocol) {
-        super(Constants.listenDirective);
+        super(Constants.LISTEN_DIRECTIVE);
 
         this.ip = (ip == null ? "" : ip);
         this.port = port;
@@ -167,7 +167,7 @@ public class Listen extends GlobalFactoryDirective {
 
         ArrayList<Listen> listening = new ArrayList<Listen>();
 
-        String listeners[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        String listeners[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
         for (int i = 0; i < listeners.length; i++) {
             listening.add(new Listen(listeners[i]));

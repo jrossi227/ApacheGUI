@@ -36,7 +36,7 @@ public abstract class GlobalFactoryDirective extends BaseDirective {
         }
 
         // Add Listen after first found listener
-        new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(),
+        new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT), StaticModuleHandler.getStaticModules(),
                 SharedModuleHandler.getSharedModules()).insertDirectiveBeforeOrAfterFirstFound(directiveName, toString(), before, false);
     }
 
@@ -55,7 +55,7 @@ public abstract class GlobalFactoryDirective extends BaseDirective {
             }
         }
 
-        DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 
         String directive[] = parser.getDirectiveValue(directiveName, false);
@@ -84,7 +84,7 @@ public abstract class GlobalFactoryDirective extends BaseDirective {
      * @throws Exception
      */
     public void removeFromGlobalConfiguration() throws Exception {
-        DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 
         String file = parser.getDirectiveFile(directiveName, getGlobalReplacePattern(), false);

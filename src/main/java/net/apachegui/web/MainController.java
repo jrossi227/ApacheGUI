@@ -27,7 +27,7 @@ public class MainController {
 
         JSONObject result = new JSONObject();
 
-        result.put("file", SettingsDao.getInstance().getSetting(Constants.confDirectory));
+        result.put("file", SettingsDao.getInstance().getSetting(Constants.CONF_DIRECTORY));
 
         return result.toString();
     }
@@ -47,7 +47,7 @@ public class MainController {
 
         JSONObject result = new JSONObject();
 
-        result.put("file", SettingsDao.getInstance().getSetting(Constants.logDirectory));
+        result.put("file", SettingsDao.getInstance().getSetting(Constants.LOG_DIRECTORY));
 
         return result.toString();
     }
@@ -132,9 +132,9 @@ public class MainController {
     @RequestMapping(method = RequestMethod.GET, params = "option=activeFileList", produces = "application/json;charset=UTF-8")
     public String getActiveFileList() throws Exception {
 
-        String rootConfFile = SettingsDao.getInstance().getSetting(Constants.confFile);
+        String rootConfFile = SettingsDao.getInstance().getSetting(Constants.CONF_FILE);
 
-        String activeFileList[] = new Parser(rootConfFile, SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules())
+        String activeFileList[] = new Parser(rootConfFile, SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules())
                 .getActiveConfFileList();
 
         JSONArray files = new JSONArray();

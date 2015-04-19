@@ -16,13 +16,13 @@ public class Timeout extends GlobalSingletonDirective {
     private int seconds;
 
     public Timeout() {
-        super(Constants.timeoutDirective);
+        super(Constants.TIMEOUT_DIRECTIVE);
 
         this.seconds = getDefaultSeconds();
     }
 
     public Timeout(int seconds) {
-        super(Constants.timeoutDirective);
+        super(Constants.TIMEOUT_DIRECTIVE);
 
         this.seconds = seconds;
     }
@@ -35,7 +35,7 @@ public class Timeout extends GlobalSingletonDirective {
      * @param directiveValue
      */
     public Timeout(String directiveValue) {
-        super(Constants.timeoutDirective);
+        super(Constants.TIMEOUT_DIRECTIVE);
 
         directiveValue = directiveValue.trim().toLowerCase();
 
@@ -85,8 +85,8 @@ public class Timeout extends GlobalSingletonDirective {
      */
     @Override
     public Timeout getGlobalConfigured() throws Exception {
-        String timeout[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
-                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.timeoutDirective, false);
+        String timeout[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
+                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.TIMEOUT_DIRECTIVE, false);
 
         Timeout timeoutFound = null;
 
@@ -101,6 +101,6 @@ public class Timeout extends GlobalSingletonDirective {
 
     @Override
     public String toString() {
-        return Constants.timeoutDirective + " " + seconds;
+        return Constants.TIMEOUT_DIRECTIVE + " " + seconds;
     }
 }

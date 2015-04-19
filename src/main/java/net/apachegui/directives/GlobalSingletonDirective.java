@@ -24,7 +24,7 @@ public abstract class GlobalSingletonDirective extends BaseDirective {
      */
     public void saveToGlobalConfiguration() throws Exception {
 
-        DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        DirectiveParser parser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 
         String keepAliveDirective[] = parser.getDirectiveValue(directiveName, false);

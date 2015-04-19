@@ -40,14 +40,14 @@ public class SharedModuleHandler extends ModuleHandler {
      * @throws Exception
      */
     public static boolean removeModule(String name) throws Exception {
-        DirectiveParser directiveParser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        DirectiveParser directiveParser = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
 
-        String file = directiveParser.getDirectiveFile(Constants.loadModuleDirective, Pattern.compile(name), false);
+        String file = directiveParser.getDirectiveFile(Constants.LOAD_MODULE_DIRECTIVE, Pattern.compile(name), false);
 
         if (file != null) {
             log.trace("Module " + name + " Found in file " + file);
-            directiveParser.removeDirectiveFromFile(Constants.loadModuleDirective, file, Pattern.compile(name), true, false);
+            directiveParser.removeDirectiveFromFile(Constants.LOAD_MODULE_DIRECTIVE, file, Pattern.compile(name), true, false);
             return true;
         }
 
@@ -77,7 +77,7 @@ public class SharedModuleHandler extends ModuleHandler {
      * 
      */
     public static void updateSharedModules() throws Exception {
-        SharedModuleParser parser = new SharedModuleParser(new File(SettingsDao.getInstance().getSetting(Constants.binFile)));
+        SharedModuleParser parser = new SharedModuleParser(new File(SettingsDao.getInstance().getSetting(Constants.BIN_FILE)));
 
         savedSharedModules = parser.getSharedModules();
     }

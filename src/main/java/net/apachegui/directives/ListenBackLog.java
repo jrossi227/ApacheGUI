@@ -17,13 +17,13 @@ public class ListenBackLog extends GlobalSingletonDirective {
     private final int defaultBackLogLength = 511;
 
     public ListenBackLog() {
-        super(Constants.listenBackLogDirective);
+        super(Constants.LISTEN_BACK_LOG_DIRECTIVE);
 
         this.backLogLength = defaultBackLogLength;
     }
 
     public ListenBackLog(int backLogLength) {
-        super(Constants.listenBackLogDirective);
+        super(Constants.LISTEN_BACK_LOG_DIRECTIVE);
 
         this.backLogLength = backLogLength;
     }
@@ -36,7 +36,7 @@ public class ListenBackLog extends GlobalSingletonDirective {
      * @param directiveValue
      */
     public ListenBackLog(String directiveValue) {
-        super(Constants.listenBackLogDirective);
+        super(Constants.LISTEN_BACK_LOG_DIRECTIVE);
 
         directiveValue = directiveValue.trim().toLowerCase();
 
@@ -73,8 +73,8 @@ public class ListenBackLog extends GlobalSingletonDirective {
      */
     @Override
     public ListenBackLog getGlobalConfigured() throws Exception {
-        String listenBackLog[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
-                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.listenBackLogDirective, false);
+        String listenBackLog[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
+                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.LISTEN_BACK_LOG_DIRECTIVE, false);
 
         ListenBackLog listenBackLogFound = null;
 
@@ -89,7 +89,7 @@ public class ListenBackLog extends GlobalSingletonDirective {
 
     @Override
     public String toString() {
-        return Constants.listenBackLogDirective + " " + backLogLength;
+        return Constants.LISTEN_BACK_LOG_DIRECTIVE + " " + backLogLength;
     }
 
 }

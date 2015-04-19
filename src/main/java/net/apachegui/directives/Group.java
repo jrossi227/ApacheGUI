@@ -11,7 +11,7 @@ public class Group extends GlobalSingletonDirective {
     private String group;
 
     public Group() {
-        super(Constants.groupDirective);
+        super(Constants.GROUP_DIRECTIVE);
         group = "";
     }
 
@@ -23,7 +23,7 @@ public class Group extends GlobalSingletonDirective {
      * @param directiveValue
      */
     public Group(String directiveValue) {
-        super(Constants.groupDirective);
+        super(Constants.GROUP_DIRECTIVE);
         group = directiveValue.trim();
     }
 
@@ -53,7 +53,7 @@ public class Group extends GlobalSingletonDirective {
      */
     @Override
     Group getGlobalConfigured() throws Exception {
-        String group[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        String group[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 
         Group groupFound = null;

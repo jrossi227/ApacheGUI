@@ -24,7 +24,7 @@ public class NameVirtualHost extends GlobalFactoryDirective {
     private String port;
 
     public NameVirtualHost() {
-        super(Constants.nameVirtualHostDirective);
+        super(Constants.NAME_VIRTUAL_HOST_DIRECTIVE);
 
         this.address = "";
         this.port = "";
@@ -39,7 +39,7 @@ public class NameVirtualHost extends GlobalFactoryDirective {
      *            - A String with a valid apache NameVirtualHost directive
      */
     public NameVirtualHost(String directiveValue) {
-        super(Constants.nameVirtualHostDirective);
+        super(Constants.NAME_VIRTUAL_HOST_DIRECTIVE);
 
         directiveValue = Utils.sanitizeLineSpaces(directiveValue);
 
@@ -71,7 +71,7 @@ public class NameVirtualHost extends GlobalFactoryDirective {
      *            - An String with a valid port or * for all ports.
      */
     public NameVirtualHost(String address, String port) {
-        super(Constants.nameVirtualHostDirective);
+        super(Constants.NAME_VIRTUAL_HOST_DIRECTIVE);
 
         this.address = address;
         this.port = port;
@@ -132,7 +132,7 @@ public class NameVirtualHost extends GlobalFactoryDirective {
     public NameVirtualHost[] getAllGlobalConfigured() throws Exception {
         ArrayList<NameVirtualHost> currNameVirtualHosts = new ArrayList<NameVirtualHost>();
 
-        String nameVirtualHosts[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        String nameVirtualHosts[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
         for (int i = 0; i < nameVirtualHosts.length; i++) {
             currNameVirtualHosts.add(new NameVirtualHost(nameVirtualHosts[i]));
@@ -162,8 +162,8 @@ public class NameVirtualHost extends GlobalFactoryDirective {
         }
 
         // check if a virtual host exists
-        Enclosure virtualHosts[] = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
-                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.virtualHostDirectiveString, true);
+        Enclosure virtualHosts[] = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
+                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.VIRTUAL_HOST_DIRECTIVE_STRING, true);
         boolean exists = false;
         for (int i = 0; i < virtualHosts.length; i++) {
             if (this.equals(new NameVirtualHost(virtualHosts[i].getValue()))) {
@@ -176,8 +176,8 @@ public class NameVirtualHost extends GlobalFactoryDirective {
         }
 
         // Add Listen after first found listener
-        new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(),
-                SharedModuleHandler.getSharedModules()).insertDirectiveBeforeOrAfterFirstFound(Constants.listenDirective, toString(), before, false);
+        new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT), StaticModuleHandler.getStaticModules(),
+                SharedModuleHandler.getSharedModules()).insertDirectiveBeforeOrAfterFirstFound(Constants.LISTEN_DIRECTIVE, toString(), before, false);
     }
 
     @Override

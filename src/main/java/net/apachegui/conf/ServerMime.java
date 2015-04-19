@@ -36,17 +36,17 @@ public class ServerMime extends Mime {
      * @throws Exception
      */
     public static String getServerMimeFile() throws Exception {
-        String typesConfig[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
-                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.typesConfigDirective, false);
+        String typesConfig[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
+                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.TYPES_CONFIG_DIRECTIVE, false);
 
         if (typesConfig.length > 0) {
             if ((!Utils.isWindows() && typesConfig[0].startsWith("/")) || (Utils.isWindows() && typesConfig[0].contains(":"))) {
                 return typesConfig[0];
             } else {
-                return new File(SettingsDao.getInstance().getSetting(Constants.serverRoot), typesConfig[0]).getAbsolutePath();
+                return new File(SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT), typesConfig[0]).getAbsolutePath();
             }
         } else {
-            return new File(SettingsDao.getInstance().getSetting(Constants.confDirectory), "mime.types").getAbsolutePath();
+            return new File(SettingsDao.getInstance().getSetting(Constants.CONF_DIRECTORY), "mime.types").getAbsolutePath();
         }
     }
 

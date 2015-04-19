@@ -66,10 +66,10 @@ public class DocumentsController {
         String fileText = "";
         File file = new File(path);
         try {
-            if (file.length() < Constants.maximumDocumentFilesize) {
+            if (file.length() < Constants.MAXIMUM_DOCUMENT_FILESIZE) {
                 fileText = Utils.readFileAsString(file, Charset.forName("UTF-8"));
             } else {
-                fileText = "The Document is too large to render. The document must be less than " + Constants.maximumDocumentFilesize + " Bytes";
+                fileText = "The Document is too large to render. The document must be less than " + Constants.MAXIMUM_DOCUMENT_FILESIZE + " Bytes";
             }
         } catch (Exception e) {
             fileText = "File Not Found!!";

@@ -18,7 +18,7 @@ public class ServerTokens extends GlobalSingletonDirective {
     public final static String FULL = "Full";
 
     public ServerTokens() {
-        super(Constants.serverTokensDirective);
+        super(Constants.SERVER_TOKENS_DIRECTIVE);
 
         this.token = FULL;
     }
@@ -31,7 +31,7 @@ public class ServerTokens extends GlobalSingletonDirective {
      * @param directiveValue
      */
     public ServerTokens(String directiveValue) {
-        super(Constants.serverTokensDirective);
+        super(Constants.SERVER_TOKENS_DIRECTIVE);
 
         directiveValue = directiveValue.trim().toLowerCase();
         if (directiveValue.equals(MAJOR.toLowerCase())) {
@@ -76,7 +76,7 @@ public class ServerTokens extends GlobalSingletonDirective {
      */
     @Override
     public ServerTokens getGlobalConfigured() throws Exception {
-        String serverTokens[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        String serverTokens[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 
         ServerTokens serverTokensFound = null;

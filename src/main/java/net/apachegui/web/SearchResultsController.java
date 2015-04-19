@@ -5,9 +5,6 @@ import java.io.BufferedWriter;
 import apache.conf.parser.File;
 
 import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import net.apachegui.db.LogData;
@@ -48,13 +45,13 @@ public class SearchResultsController {
         log.trace("contentSize " + contentSize);
 
         if (maxResults == null || (maxResults.equals(""))) {
-            maxResults = Constants.maxHistoricalResults;
+            maxResults = Constants.MAX_HISTORICAL_RESULTS;
         }
 
         try {
             Integer.parseInt(maxResults);
         } catch (Exception e) {
-            maxResults = Constants.maxHistoricalResults;
+            maxResults = Constants.MAX_HISTORICAL_RESULTS;
         }
         log.trace("maxResults " + maxResults);
 
@@ -115,7 +112,7 @@ public class SearchResultsController {
             // ServletOutputStream stream = response.getOutputStream();
             log.trace("Entering csv option");
             LogData[] results = LogDataDao.getInstance().queryLogData(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize, maxResults);
-            File doc = new File(Utilities.getWebappDirectory(), "HistoryFiles/" + Constants.historyFilename);
+            File doc = new File(Utilities.getWebappDirectory(), "HistoryFiles/" + Constants.HISTORY_FILENAME);
             BufferedWriter writer = new BufferedWriter(new FileWriter(doc));
             writer.write("\"INSERTDATE\",\"HOST\",\"USERAGENT\",\"REQUESTSTRING\",\"STATUS\",\"CONTENTSIZE\"");
             writer.newLine();

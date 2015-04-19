@@ -15,7 +15,7 @@ public class ServerSignature extends GlobalSingletonDirective {
     public final static String EMAIL = "Email";
 
     public ServerSignature() {
-        super(Constants.serverSignatureDirective);
+        super(Constants.SERVER_SIGNATURE_DIRECTIVE);
 
         this.signature = OFF;
     }
@@ -28,7 +28,7 @@ public class ServerSignature extends GlobalSingletonDirective {
      * @param directiveValue
      */
     public ServerSignature(String directiveValue) {
-        super(Constants.serverSignatureDirective);
+        super(Constants.SERVER_SIGNATURE_DIRECTIVE);
 
         directiveValue = directiveValue.trim().toLowerCase();
         if (directiveValue.equals(ON.toLowerCase())) {
@@ -66,7 +66,7 @@ public class ServerSignature extends GlobalSingletonDirective {
      */
     @Override
     public ServerSignature getGlobalConfigured() throws Exception {
-        String serverSignature[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        String serverSignature[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 
         ServerSignature serverSignatureFound = null;

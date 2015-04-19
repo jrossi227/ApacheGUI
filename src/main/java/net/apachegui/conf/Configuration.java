@@ -38,13 +38,13 @@ public class Configuration {
         String output = "";
 
         if (Utils.isWindows()) {
-            String command[] = { "cmd", "/c", SettingsDao.getInstance().getSetting(Constants.binFile), "-t" };
+            String command[] = { "cmd", "/c", SettingsDao.getInstance().getSetting(Constants.BIN_FILE), "-t" };
             output = Utils.RunProcessWithOutput(command);
         } else {
-            String command[] = { SettingsDao.getInstance().getSetting(Constants.binFile), "-t" };
+            String command[] = { SettingsDao.getInstance().getSetting(Constants.BIN_FILE), "-t" };
             output = Utils.RunProcessWithOutput(command);
         }
-        output = output.replaceAll(Constants.newLine, "<br/>");
+        output = output.replaceAll(Constants.NEW_LINE, "<br/>");
 
         log.trace("returning " + output);
         return output;
@@ -88,12 +88,12 @@ public class Configuration {
         String confFiles[];
 
         if (activeFilesFilter) {
-            String includedFiles[] = new Parser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+            String includedFiles[] = new Parser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                     StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getActiveConfFileList();
             confFiles = includedFiles;
 
         } else {
-            confFiles = Utils.getFileList(new File(SettingsDao.getInstance().getSetting(Constants.confDirectory)));
+            confFiles = Utils.getFileList(new File(SettingsDao.getInstance().getSetting(Constants.CONF_DIRECTORY)));
         }
 
         if (!Utils.isWindows()) {
@@ -128,7 +128,7 @@ public class Configuration {
                             object.put("line", line);
                             object.put("content", Utilities.processSearchResultContent(strLine, patternMatcher.group()));
 
-                            if (results.length() < Constants.maximumConfigurationSearchResults) {
+                            if (results.length() < Constants.MAXIMUM_CONFIGURATION_SEARCH_RESULTS) {
                                 results.put(object);
                             } else {
                                 break;

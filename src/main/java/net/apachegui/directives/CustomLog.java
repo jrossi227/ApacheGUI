@@ -26,14 +26,14 @@ public class CustomLog extends GlobalFactoryDirective {
     private String formatOrNickname;
 
     public CustomLog() {
-        super(Constants.customLogDirective);
+        super(Constants.CUSTOM_LOG_DIRECTIVE);
 
         this.fileOrPipe = "";
         this.formatOrNickname = "";
     }
 
     public CustomLog(String directiveValue) {
-        super(Constants.customLogDirective);
+        super(Constants.CUSTOM_LOG_DIRECTIVE);
 
         fileOrPipe = directiveValue.substring(0, directiveValue.lastIndexOf(" "));
         formatOrNickname = directiveValue.substring(directiveValue.lastIndexOf(" ") + 1);
@@ -117,7 +117,7 @@ public class CustomLog extends GlobalFactoryDirective {
     CustomLog[] getAllGlobalConfigured() throws Exception {
         ArrayList<CustomLog> customLog = new ArrayList<CustomLog>();
 
-        String customLogs[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        String customLogs[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
         for (int i = 0; i < customLogs.length; i++) {
             customLog.add(new CustomLog(customLogs[i]));

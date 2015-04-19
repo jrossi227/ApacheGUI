@@ -16,13 +16,13 @@ public class MaxKeepAliveRequests extends GlobalSingletonDirective {
     private final static int defaultNumberOfRequests = 100;
 
     public MaxKeepAliveRequests() {
-        super(Constants.maxKeepAliveRequestsDirective);
+        super(Constants.MAX_KEEP_ALIVE_REQUESTS_DIRECTIVE);
 
         this.numberOfRequests = defaultNumberOfRequests;
     }
 
     public MaxKeepAliveRequests(int numberOfRequests) {
-        super(Constants.maxKeepAliveRequestsDirective);
+        super(Constants.MAX_KEEP_ALIVE_REQUESTS_DIRECTIVE);
 
         this.numberOfRequests = numberOfRequests;
     }
@@ -35,7 +35,7 @@ public class MaxKeepAliveRequests extends GlobalSingletonDirective {
      * @param directiveValue
      */
     public MaxKeepAliveRequests(String directiveValue) {
-        super(Constants.maxKeepAliveRequestsDirective);
+        super(Constants.MAX_KEEP_ALIVE_REQUESTS_DIRECTIVE);
 
         directiveValue = directiveValue.trim().toLowerCase();
 
@@ -73,8 +73,8 @@ public class MaxKeepAliveRequests extends GlobalSingletonDirective {
      */
     @Override
     public MaxKeepAliveRequests getGlobalConfigured() throws Exception {
-        String maxKeepAliveRequests[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
-                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.maxKeepAliveRequestsDirective, false);
+        String maxKeepAliveRequests[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
+                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.MAX_KEEP_ALIVE_REQUESTS_DIRECTIVE, false);
 
         MaxKeepAliveRequests maxKeepAliveRequestsFound = null;
 
@@ -89,6 +89,6 @@ public class MaxKeepAliveRequests extends GlobalSingletonDirective {
 
     @Override
     public String toString() {
-        return Constants.maxKeepAliveRequestsDirective + " " + numberOfRequests;
+        return Constants.MAX_KEEP_ALIVE_REQUESTS_DIRECTIVE + " " + numberOfRequests;
     }
 }

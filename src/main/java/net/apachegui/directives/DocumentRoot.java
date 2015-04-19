@@ -11,7 +11,7 @@ public class DocumentRoot extends GlobalSingletonDirective {
     private String directory;
 
     public DocumentRoot() {
-        super(Constants.documentRootDirectiveString);
+        super(Constants.DOCUMENT_ROOT_DIRECTIVE_STRING);
 
         this.directory = "";
     }
@@ -24,7 +24,7 @@ public class DocumentRoot extends GlobalSingletonDirective {
      * @param directiveValue
      */
     public DocumentRoot(String directiveValue) {
-        super(Constants.documentRootDirectiveString);
+        super(Constants.DOCUMENT_ROOT_DIRECTIVE_STRING);
 
         //remove trailing and leading quotes
         this.directory = directiveValue.replaceAll("^\"|\"$", "");;
@@ -57,8 +57,8 @@ public class DocumentRoot extends GlobalSingletonDirective {
 
     @Override
     public DocumentRoot getGlobalConfigured() throws Exception {
-        String documentRoot[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
-                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.documentRootDirectiveString, false);
+        String documentRoot[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
+                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.DOCUMENT_ROOT_DIRECTIVE_STRING, false);
 
         DocumentRoot documentRootFound = null;
 

@@ -89,7 +89,7 @@ public class ReceiveLogDataController {
         logDataCounter++;
         logData.add(data);
 
-        if (logDataCounter > (Integer.parseInt(SettingsDao.getInstance().getSetting(Constants.historyBuffer)))) {
+        if (logDataCounter > (Integer.parseInt(SettingsDao.getInstance().getSetting(Constants.HISTORY_BUFFER)))) {
             // commit in a new Thread
             InsertHistory history = new InsertHistory(logData.toArray(new LogData[logData.size()]));
             taskExecutor.execute(history);

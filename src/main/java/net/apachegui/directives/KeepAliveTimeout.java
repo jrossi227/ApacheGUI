@@ -17,13 +17,13 @@ public class KeepAliveTimeout extends GlobalSingletonDirective {
     private final static int defaultSeconds = 5;
 
     public KeepAliveTimeout() {
-        super(Constants.keepAliveTimeoutDirective);
+        super(Constants.KEEP_ALIVE_TIMEOUT_DIRECTIVE);
 
         this.seconds = defaultSeconds;
     }
 
     public KeepAliveTimeout(int seconds) {
-        super(Constants.keepAliveTimeoutDirective);
+        super(Constants.KEEP_ALIVE_TIMEOUT_DIRECTIVE);
 
         this.seconds = seconds;
     }
@@ -36,7 +36,7 @@ public class KeepAliveTimeout extends GlobalSingletonDirective {
      * @param directiveValue
      */
     public KeepAliveTimeout(String directiveValue) {
-        super(Constants.keepAliveTimeoutDirective);
+        super(Constants.KEEP_ALIVE_TIMEOUT_DIRECTIVE);
 
         directiveValue = directiveValue.trim().toLowerCase();
 
@@ -73,8 +73,8 @@ public class KeepAliveTimeout extends GlobalSingletonDirective {
      */
     @Override
     public KeepAliveTimeout getGlobalConfigured() throws Exception {
-        String keepAliveTimeout[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
-                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.keepAliveTimeoutDirective, false);
+        String keepAliveTimeout[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
+                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.KEEP_ALIVE_TIMEOUT_DIRECTIVE, false);
 
         KeepAliveTimeout keepAliveTimeoutFound = null;
 
@@ -89,7 +89,7 @@ public class KeepAliveTimeout extends GlobalSingletonDirective {
 
     @Override
     public String toString() {
-        return Constants.keepAliveTimeoutDirective + " " + seconds;
+        return Constants.KEEP_ALIVE_TIMEOUT_DIRECTIVE + " " + seconds;
     }
 
 }

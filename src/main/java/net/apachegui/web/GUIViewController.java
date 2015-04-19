@@ -3,7 +3,6 @@ package net.apachegui.web;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,12 +43,12 @@ public class GUIViewController {
 
     @ModelAttribute("theme")
     public String getTheme() {
-        return ((net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.theme) == null) ? Constants.defaultTheme : net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.theme));
+        return ((net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.THEME) == null) ? Constants.DEFAULT_THEME : net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.THEME));
     }
 
     @ModelAttribute("version")
     public String getVersion() {
-        return Constants.version;
+        return Constants.VERSION;
     }
 
     @ModelAttribute("windows")
@@ -59,12 +58,12 @@ public class GUIViewController {
 
     @ModelAttribute("confDirectory")
     public String getConfDirectory() {
-        return net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.confDirectory);
+        return net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.CONF_DIRECTORY);
     }
 
     @ModelAttribute("restartWarning")
     public String getRestartWarning() {
-        return Constants.restartWarning;
+        return Constants.RESTART_WARNING;
     }
 
     @RequestMapping(value = "/")
@@ -96,7 +95,7 @@ public class GUIViewController {
         model.addAttribute("advisory", UsersDao.getInstance().getLoginAdvisory());
 
         String userAgent = request.getHeader("User-Agent");
-        model.addAttribute("supportedBrowser", Utils.matchUserAgent(userAgent, Constants.supportedUserAgentRegex));
+        model.addAttribute("supportedBrowser", Utils.matchUserAgent(userAgent, Constants.SUPPORTED_USER_AGENT_REGEX));
         model.addAttribute("error", error == null ? false : true);
 
         return "views/Login";
@@ -120,9 +119,9 @@ public class GUIViewController {
     @RequestMapping(value = "/jsp/GUISettings.jsp")
     public String renderGUISettingsViewJsp(Model model) {
 
-        model.addAttribute("website", Constants.website);
-        model.addAttribute("supportWebsite", Constants.supportWebsite);
-        model.addAttribute("supportAddress", Constants.supportAddress);
+        model.addAttribute("website", Constants.WEBSITE);
+        model.addAttribute("supportWebsite", Constants.SUPPORT_WEBSITE);
+        model.addAttribute("supportAddress", Constants.SUPPORT_ADDRESS);
 
         return "views/GUISettings";
     }
@@ -248,9 +247,9 @@ public class GUIViewController {
     @RequestMapping(value = "/jsp/Control.jsp")
     public String renderControlViewJsp(Model model) throws Exception {
 
-        String startCommand = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.binFile) + " " + (Utils.isWindows() ? "-k" : "");
-        String stopCommand = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.binFile) + " " + (Utils.isWindows() ? "-k" : "");
-        String restartCommand = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.binFile) + " " + (Utils.isWindows() ? "-k" : "");
+        String startCommand = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.BIN_FILE) + " " + (Utils.isWindows() ? "-k" : "");
+        String stopCommand = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.BIN_FILE) + " " + (Utils.isWindows() ? "-k" : "");
+        String restartCommand = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.BIN_FILE) + " " + (Utils.isWindows() ? "-k" : "");
 
         model.addAttribute("startCommand", startCommand);
         model.addAttribute("stopCommand", stopCommand);
@@ -352,10 +351,10 @@ public class GUIViewController {
     @RequestMapping(value = "/jsp/global_settings/Modules.jsp")
     public String renderModulesViewJsp(Model model) throws Exception {
 
-        model.addAttribute("modulesDirectory", net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.modulesDirectory));
-        model.addAttribute("availableModulesType", Constants.availableModulesType);
-        model.addAttribute("sharedModulesType", Constants.sharedModulesType);
-        model.addAttribute("staticModulesType", Constants.staticModulesType);
+        model.addAttribute("modulesDirectory", net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.MODULES_DIRECTORY));
+        model.addAttribute("availableModulesType", Constants.AVAILABLE_MODULES_TYPE);
+        model.addAttribute("sharedModulesType", Constants.SHARED_MODULES_TYPE);
+        model.addAttribute("staticModulesType", Constants.STATIC_MODULES_TYPE);
 
         return "views/global_settings/Modules";
     }
