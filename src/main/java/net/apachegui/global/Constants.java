@@ -7,16 +7,8 @@ public class Constants {
     public final static String newLine = System.getProperty("line.separator");
 
     // Global database options
-    public final static String dbName = "apacheGUI";
-    public final static String settingsTable = "SETTINGS";
-    public final static String usersTable = "USERS";
-    public final static String rolesTable = "USER_ROLES";
-    public final static String logDataTable = "LOGDATA";
     public final static String processInfoRefreshRateDefault = "5";
     public final static String extendedStatusDefault = "off";
-    public final static String usersFile = "conf/tomcat-users.xml";
-    public final static String defaultUsername = "admin";
-    public final static String defaultPassword = "admin";
     public final static String defaultTheme = "claro";
     public final static String defaultHistoryBuffer = "1";
     public final static String defaultHistoryRetention = "5";
@@ -81,10 +73,6 @@ public class Constants {
     public final static String loadModuleDirective = "LoadModule";
     public final static String requireDirective = "(?i:require)";
     public final static String includeDirective = "\\b(?i:Include|IncludeOptional)\\b";
-
-    //Constants for jdbc
-    public final static String logDataDatabaseFile = "apachegui-history-database.db";
-    public final static String guiDatabaseFile = "apachegui-gui-database.db";
 
     // Constants used for processes
     public final static String[] processInfoCommand = Utils.isWindows() ? "cmd,/c,tasklist,/FO,CSV,/V,/NH".split(",") : "ps,-e,-o,user,-o,pid,-o,ppid,-o,time,-o,comm".split(",");

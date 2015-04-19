@@ -15,7 +15,7 @@ public class HistoryMaintenance {
     public void clean() throws Exception {
 
         if (SettingsDao.getInstance().getSetting("init") != null) {
-            log.trace("Shrinking " + Constants.logDataTable);
+            log.trace("Shrinking LogData");
 
             LogDataDao.getInstance().shrinkLogData(Integer.parseInt(SettingsDao.getInstance().getSetting(Constants.historyRetention)));
             // wake up once an interval
