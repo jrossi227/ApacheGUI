@@ -121,7 +121,7 @@
                resourceName="UserDatabase"/>
       </Realm>
 
-	<Realm className="org.apache.catalina.realm.JDBCRealm"
+	<Realm className="net.apachegui.tomcat.ApacheGUIRealm"
       		driverName="org.sqlite.JDBC"
    		connectionURL="jdbc:sqlite:/${catalina.home}/db/apachegui-gui-database.db"
        		userTable="users" userNameCol="user_name" userCredCol="user_pass"
