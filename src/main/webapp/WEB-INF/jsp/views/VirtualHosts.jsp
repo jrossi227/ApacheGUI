@@ -77,7 +77,7 @@
         <table>
             <tr class="dijitDialogPaneContentArea">
                     <td>
-                        <label for='addType'>
+                        <label for='addLineType'>
                             Type:
                          </label>
                     </td>
@@ -87,7 +87,7 @@
             </tr>
             <tr class="dijitDialogPaneContentArea">
                        <td>
-                           <label for='addValue'>
+                           <label for='addLineValue'>
                                Value:
                             </label>
                        </td>
@@ -180,7 +180,7 @@
         </tr>
         <tr class="dijitDialogPaneContentArea">
                 <td>
-                    <label for='addHostFile'>
+                    <label for='add_host_select_box'>
                         Current File:
                          </label>
                     </td>
@@ -190,7 +190,7 @@
         </tr>
         <tr class="dijitDialogPaneContentArea">
                 <td>
-                    <label for='addNewHostFile'>
+                    <label for='addHostNewFile'>
                         New File (Specify the file path):
                          </label>
                     </td>

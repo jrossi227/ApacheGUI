@@ -40,7 +40,7 @@ public class InitController {
 
     @RequestMapping(method = RequestMethod.POST, params = "option=submitSource", produces = "application/json;charset=UTF-8")
     public String submitSource(@RequestParam(value = "serverRoot") String serverRoot, @RequestParam(value = "username") String username, @RequestParam(value = "password1") String password1,
-            @RequestParam(value = "password2") String password2) throws Exception {
+            @RequestParam(value = "password2") String password2, @RequestParam(value = "enableAuthenticationSource") String enableAuthentication) throws Exception {
 
         log.trace("serverRoot " + serverRoot);
 
@@ -64,7 +64,9 @@ public class InitController {
             throw new Exception("The input passwords do not match");
         }
 
-        initializeDatabaseSource(serverRootFile.getAbsolutePath(), username, password1);
+        log.trace("enableAuthentication " + enableAuthentication);
+
+        initializeDatabaseSource(serverRootFile.getAbsolutePath(), username, password1, enableAuthentication);
 
         JSONObject result = new JSONObject();
         result.put("result", "success");
@@ -74,8 +76,8 @@ public class InitController {
 
     @RequestMapping(method = RequestMethod.POST, params = "option=submitPackage", produces = "application/json;charset=UTF-8")
     public String submitPackage(@RequestParam(value = "serverRoot") String serverRoot, @RequestParam(value = "confFile") String confFile, @RequestParam(value = "confDirectory") String confDirectory,
-            @RequestParam(value = "logDirectory") String logDirectory, @RequestParam(value = "modulesDirectory") String modulesDirectory, @RequestParam(value = "binFile") String binFile,
-            @RequestParam(value = "username") String username, @RequestParam(value = "password1") String password1, @RequestParam(value = "password2") String password2) throws Exception {
+                                @RequestParam(value = "logDirectory") String logDirectory, @RequestParam(value = "modulesDirectory") String modulesDirectory, @RequestParam(value = "binFile") String binFile,
+                                @RequestParam(value = "username") String username, @RequestParam(value = "password1") String password1, @RequestParam(value = "password2") String password2, @RequestParam(value = "enableAuthenticationPackage") String enableAuthentication) throws Exception {
 
         log.trace("serverRoot " + serverRoot);
         File serverRootFile = new File(serverRoot.trim());
@@ -153,8 +155,10 @@ public class InitController {
             throw new Exception("The input passwords do not match");
         }
 
+        log.trace("enableAuthentication " + enableAuthentication);
+
         initializeDatabasePackage(serverRootFile.getAbsolutePath(), confFileFile.getAbsolutePath(), confDirectoryFile.getAbsolutePath(), logDirectoryFile.getAbsolutePath(),
-                modulesDirectoryFile.getAbsolutePath(), binFileFile.getAbsolutePath(), username, password1);
+                modulesDirectoryFile.getAbsolutePath(), binFileFile.getAbsolutePath(), username, password1, enableAuthentication);
 
         JSONObject result = new JSONObject();
         result.put("result", "success");
@@ -162,7 +166,7 @@ public class InitController {
         return result.toString();
     }
 
-    private void initializeDatabaseSource(String serverRoot, String username, String password) throws Exception {
+    private void initializeDatabaseSource(String serverRoot, String username, String password, String enableAuthentication) throws Exception {
         log.trace("Init.initializeDatabaseSource called");
         log.trace("Initializing the database with source parameters ");
 
@@ -237,6 +241,9 @@ public class InitController {
         log.trace("Setting name:" + Constants.PASSWORD + " value: XXXXX");
         UsersDao.getInstance().setPassword(password);
 
+        log.trace("Setting name:" + Constants.AUTHENTICATION_ENABLED + " value: " + enableAuthentication);
+        SettingsDao.getInstance().setSetting(Constants.AUTHENTICATION_ENABLED, enableAuthentication);
+
         log.trace("Setting name:" + Constants.CONF_DIRECTORY + " value: " + confDirectory);
         SettingsDao.getInstance().setSetting(Constants.CONF_DIRECTORY, confDirectory);
 
@@ -278,7 +285,7 @@ public class InitController {
         }
     }
 
-    private void initializeDatabasePackage(String serverRoot, String confFile, String confDirectory, String logDirectory, String modulesDirectory, String binFile, String username, String password)
+    private void initializeDatabasePackage(String serverRoot, String confFile, String confDirectory, String logDirectory, String modulesDirectory, String binFile, String username, String password, String enableAuthentication)
             throws Exception {
         log.trace("Init.initializeDatabasePackage called");
         log.trace("Initializing the database with package parameters ");
@@ -320,6 +327,9 @@ public class InitController {
 
         log.trace("Setting name:" + Constants.BIN_FILE + " value: " + binFile);
         SettingsDao.getInstance().setSetting(Constants.BIN_FILE, binFile);
+
+        log.trace("Setting name:" + Constants.AUTHENTICATION_ENABLED + " value: " + enableAuthentication);
+        SettingsDao.getInstance().setSetting(Constants.AUTHENTICATION_ENABLED, enableAuthentication);
 
         log.trace("Setting name:" + Constants.PROCESS_INFO_REFRESH_RATE + " value: " + Constants.PROCESS_INFO_REFRESH_RATE_DEFAULT);
         SettingsDao.getInstance().setSetting(Constants.PROCESS_INFO_REFRESH_RATE, Constants.PROCESS_INFO_REFRESH_RATE_DEFAULT);

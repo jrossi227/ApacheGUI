@@ -148,5 +148,6 @@ public class Constants {
 
     // Constants used for Global Setting
     public final static String RESTART_WARNING = "If the server is currently running then it must be restarted for any changes to take effect.";
+    public final static String AUTHENTICATION_ADVISORY = "This field controls whether the user must enter a username and password to use ApacheGUI. Setting this to No is only recommended for local development.";
 
 }

@@ -1,3 +1,4 @@
+<%@ page import="net.apachegui.global.Constants" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
@@ -59,7 +60,7 @@
             </tr>
             <tr class="dijitDialogPaneContentArea">
                 <td>
-                    <label for='password1'>
+                    <label for='password1Source'>
                         Password:
                     </label>
                 </td>
@@ -70,13 +71,37 @@
             </tr>
             <tr class="dijitDialogPaneContentArea">
                 <td>
-                    <label for='password2'>
+                    <label for='password2Source'>
                         Password:
                     </label>
                 </td>
                 <td>
                     <div dojoType="dijit.form.ValidationTextBox" required="true" type="password" id="password2Source">
                     </div>
+                </td>
+            </tr>
+            <tr class="dijitDialogPaneContentArea">
+                <td>
+                    <label for='enableAuthenticationSource'>
+                        Enable Authentication:
+                        <span id="enableAuthenticationSourceTooltip" class="warningTooltip" onmouseover="dijit.Tooltip.defaultPosition=['below', 'above']"></span>
+                        <div class="dijitHidden">
+                            <div data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'enableAuthenticationSourceTooltip'">
+                                <div class="warningDialog"><%=Constants.AUTHENTICATION_ADVISORY%></div>
+                            </div>
+                        </div>
+
+                    </label>
+                </td>
+                <td>
+                    <select name="enableAuthenticationSource" id="enableAuthenticationSource" data-dojo-type="dijit/form/Select">
+                        <option value="yes" selected="selected">
+                            Yes
+                        </option>
+                        <option value="no">
+                            No
+                        </option>
+                    </select>
                 </td>
             </tr>
         </table>
@@ -190,6 +215,29 @@
                 <td>
                     <div dojoType="dijit.form.ValidationTextBox" required="true" type="password" id="password2Package">
                     </div>
+                </td>
+            </tr>
+            <tr class="dijitDialogPaneContentArea">
+                <td>
+                    <label for='enableAuthenticationPackage'>
+                        Enable Authentication:
+                        <span id="enableAuthenticationPackageTooltip" class="warningTooltip" onmouseover="dijit.Tooltip.defaultPosition=['below', 'above']"></span>
+                        <div class="dijitHidden">
+                            <div data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'enableAuthenticationPackageTooltip'">
+                                <div class="warningDialog"><%=Constants.AUTHENTICATION_ADVISORY%></div>
+                            </div>
+                        </div>
+                    </label>
+                </td>
+                <td>
+                    <select name="enableAuthenticationPackage" id="enableAuthenticationPackage" data-dojo-type="dijit/form/Select">
+                        <option value="yes" selected="selected">
+                            Yes
+                        </option>
+                        <option value="no">
+                            No
+                        </option>
+                    </select>
                 </td>
             </tr>
         </table>
