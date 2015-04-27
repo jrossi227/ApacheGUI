@@ -40,7 +40,7 @@ public class GUISettingsController {
         items.put(createJSON(Constants.PASSWORD, "Password", "************"));
         items.put(createJSON(Constants.THEME, "Theme", SettingsDao.getInstance().getSetting(Constants.THEME)));
         items.put(createJSON(Constants.ENCODING, "Document Encoding", "UTF-8"));
-        items.put(createJSON(Constants.AUTHENTICATION_ENABLED, "Authentication Enabled", SettingsDao.getInstance().getSetting(Constants.AUTHENTICATION_ENABLED)));
+        items.put(createJSON(Constants.ENABLE_AUTHENTICATION, "Enable Authentication", SettingsDao.getInstance().getSetting(Constants.ENABLE_AUTHENTICATION)));
 
         result.put("items", items);
 

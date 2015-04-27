@@ -37,7 +37,7 @@ public class SettingsController {
         result.put("editorTheme", Constants.EDITOR_THEME);
         result.put("showTabs", Constants.SHOW_TABS);
         result.put("encoding", Constants.ENCODING);
-        result.put("authenticationEnabled", Constants.AUTHENTICATION_ENABLED);
+        result.put("enableAuthentication", Constants.ENABLE_AUTHENTICATION);
 
         return result.toString();
     }

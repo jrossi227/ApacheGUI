@@ -133,7 +133,15 @@ define([ "dojo/_base/declare",
             {
                 var dialog=registry.byId('updateEncodingDialog');
                 dialog.show();
-            }     
+            }
+
+            if(id==net.apachegui.Settings.getInstance().settingsMap.enableAuthentication)
+            {
+                registry.byId('updateEnableAuthentication').set('value',net.apachegui.Settings.getInstance().getSetting(net.apachegui.Settings.getInstance().settingsMap.enableAuthentication));
+
+                var dialog=registry.byId('updateEnableAuthenticationDialog');
+                dialog.show();
+            }
             
         },
         
@@ -267,6 +275,14 @@ define([ "dojo/_base/declare",
                     window.location.reload();
                 }
             }
+
+            if(id==net.apachegui.Settings.getInstance().settingsMap.enableAuthentication)
+            {
+                var change=net.apachegui.Settings.getInstance().setSetting(net.apachegui.Settings.getInstance().settingsMap.enableAuthentication,registry.byId('updateEnableAuthentication').get('value'));
+                if(change===true) {
+                    window.location.reload();
+                }
+            }
             
             //dialog and ajax here
             var newStore = new ItemFileWriteStore({url: '../web/GUISettings/Current', urlPreventCache: true});
@@ -393,6 +409,15 @@ define([ "dojo/_base/declare",
             
             on(registry.byId('encodingUpdateCancel'), "click", function() {
                 var dialog=registry.byId('updateEncodingDialog');
+                dialog.hide();
+            });
+
+            on(registry.byId('enableAuthenticationUpdate'), "click", function() {
+                that.sendUpdate(net.apachegui.Settings.getInstance().settingsMap.enableAuthentication);
+            });
+
+            on(registry.byId('enableAuthenticationUpdateCancel'), "click", function() {
+                var dialog=registry.byId('updateEnableAuthenticationDialog');
                 dialog.hide();
             });
             

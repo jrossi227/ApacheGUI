@@ -241,8 +241,8 @@ public class InitController {
         log.trace("Setting name:" + Constants.PASSWORD + " value: XXXXX");
         UsersDao.getInstance().setPassword(password);
 
-        log.trace("Setting name:" + Constants.AUTHENTICATION_ENABLED + " value: " + enableAuthentication);
-        SettingsDao.getInstance().setSetting(Constants.AUTHENTICATION_ENABLED, enableAuthentication);
+        log.trace("Setting name:" + Constants.ENABLE_AUTHENTICATION + " value: " + enableAuthentication);
+        SettingsDao.getInstance().setSetting(Constants.ENABLE_AUTHENTICATION, enableAuthentication);
 
         log.trace("Setting name:" + Constants.CONF_DIRECTORY + " value: " + confDirectory);
         SettingsDao.getInstance().setSetting(Constants.CONF_DIRECTORY, confDirectory);
@@ -328,8 +328,8 @@ public class InitController {
         log.trace("Setting name:" + Constants.BIN_FILE + " value: " + binFile);
         SettingsDao.getInstance().setSetting(Constants.BIN_FILE, binFile);
 
-        log.trace("Setting name:" + Constants.AUTHENTICATION_ENABLED + " value: " + enableAuthentication);
-        SettingsDao.getInstance().setSetting(Constants.AUTHENTICATION_ENABLED, enableAuthentication);
+        log.trace("Setting name:" + Constants.ENABLE_AUTHENTICATION + " value: " + enableAuthentication);
+        SettingsDao.getInstance().setSetting(Constants.ENABLE_AUTHENTICATION, enableAuthentication);
 
         log.trace("Setting name:" + Constants.PROCESS_INFO_REFRESH_RATE + " value: " + Constants.PROCESS_INFO_REFRESH_RATE_DEFAULT);
         SettingsDao.getInstance().setSetting(Constants.PROCESS_INFO_REFRESH_RATE, Constants.PROCESS_INFO_REFRESH_RATE_DEFAULT);

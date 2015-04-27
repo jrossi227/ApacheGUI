@@ -96,10 +96,10 @@
                 <td>
                     <select name="enableAuthenticationSource" id="enableAuthenticationSource" data-dojo-type="dijit/form/Select">
                         <option value="yes" selected="selected">
-                            Yes
+                            yes
                         </option>
                         <option value="no">
-                            No
+                            no
                         </option>
                     </select>
                 </td>

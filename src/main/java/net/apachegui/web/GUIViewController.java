@@ -56,6 +56,14 @@ public class GUIViewController {
         return Utils.isWindows();
     }
 
+    @ModelAttribute("enableAuthentication")
+    public String getEnableAuthentication() {
+        String enableAuthentication = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.ENABLE_AUTHENTICATION);
+        enableAuthentication = (enableAuthentication == null ? "" : enableAuthentication);
+
+        return enableAuthentication;
+    }
+
     @ModelAttribute("confDirectory")
     public String getConfDirectory() {
         return net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.CONF_DIRECTORY);

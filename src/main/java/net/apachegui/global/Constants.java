@@ -31,7 +31,7 @@ public class Constants {
     public final static String EDITOR_THEME = "editorTheme";
     public final static String SHOW_TABS = "showTabs";
     public final static String ENCODING = "encoding";
-    public final static String AUTHENTICATION_ENABLED = "authenticationEnabled";
+    public final static String ENABLE_AUTHENTICATION = "enableAuthentication";
 
     // Relative paths with respect to the serverRoot for configuration
     public final static String SHORT_CONF_DIRECTORY = "conf";
