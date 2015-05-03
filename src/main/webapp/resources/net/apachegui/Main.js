@@ -254,7 +254,7 @@ define([ "dojo/_base/declare",
             }).response.then(
                 function(response) {
                     var data = response.data;
-                    if(data.indexOf('<html>') > -1) {
+                    if(data.indexOf('<html>') > -1 || !that.sessionActive) {
                         that.sessionActive = false;
                         window.location.reload();
                     }    
