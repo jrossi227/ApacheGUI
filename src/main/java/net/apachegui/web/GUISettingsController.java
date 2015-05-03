@@ -59,7 +59,7 @@ public class GUISettingsController {
     @RequestMapping(method = RequestMethod.POST, params = "option=newServer", produces = "application/json;charset=UTF-8")
     public String newServer() throws SQLException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
-        JdbcConnection.getInstance().clearAllDatabases();
+        JdbcConnection.clearAllDatabases();
         log.trace("Database Cleared");
 
         JSONObject result = new JSONObject();

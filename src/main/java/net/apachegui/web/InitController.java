@@ -227,7 +227,7 @@ public class InitController {
         }
 
         log.info("Clearing the database");
-        JdbcConnection.getInstance().clearAllDatabases();
+        JdbcConnection.clearAllDatabases();
 
         log.trace("Setting name:" + Constants.INIT + " value: true");
         SettingsDao.getInstance().setSetting(Constants.INIT, "true");
@@ -299,7 +299,7 @@ public class InitController {
         }
 
         log.info("Clearing the database");
-        JdbcConnection.getInstance().clearAllDatabases();
+        JdbcConnection.clearAllDatabases();
 
         log.trace("Setting name:" + Constants.INIT + " value: true");
         SettingsDao.getInstance().setSetting(Constants.INIT, "true");
