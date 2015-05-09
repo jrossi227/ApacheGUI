@@ -301,14 +301,26 @@ h1 {
 	margin-top: 10px;
 }
 
-#historyBody #search_database_schema h5,
-#historyBody #graph_database_schema h5 {
+#historyBody #search_database_schema h4,
+#historyBody #graph_database_schema h4 {
 	margin-top: 0;
 }
 
 #historyBody #search_database_query,
 #historyBody #graph_database_query {
 	margin-bottom: 10px;
+}
+
+#historyBody .SQLKeyword {
+	color: #0000AA;
+}
+
+#historyBody .SQLOperator {
+	color: #777777;
+}
+
+#historyBody pre {
+	white-space: pre-wrap;
 }
 
 /*GUISettings specific css rules*/

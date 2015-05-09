@@ -298,6 +298,15 @@ public class GUIViewController {
     }
 
     // Catch all view render
+    @RequestMapping(value = "/jsp/History.jsp")
+    public String renderHistoryViewJsp(Model model) {
+
+        model.addAttribute("databaseFile", (new File(Utilities.getTomcatInstallDirectory(), "db/apachegui-history-database.db")).getAbsolutePath());
+
+        return "views/History";
+    }
+
+    // Catch all view render
     @RequestMapping(value = "/jsp/{jspName}.jsp")
     public String renderViewJsp(@PathVariable String jspName) {
         return "views/" + jspName;

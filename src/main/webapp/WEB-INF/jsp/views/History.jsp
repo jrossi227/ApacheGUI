@@ -2,11 +2,27 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <c:set var="database_info" scope="page">
-    <h5>Database Information:</h5>
+    <h4>Database Version:</h4>
     <p>SQLite version 3.8.7</p>
 
-    <h5>Table Info:</h5>
-    <p>CREATE TABLE LOGDATA (HOST varchar(50), INSERTDATE timestamp, USERAGENT varchar(500), REQUESTSTRING varchar(1000), STATUS varchar(5), CONTENTSIZE varchar(10))</p>
+    <h4>Database File:</h4>
+    <p>${databaseFile}</p>
+
+    <h4>Table Info:</h4>
+
+    <div>
+
+<pre><span class="SQLKeyword">CREATE</span> <span class="SQLKeyword">TABLE</span> LOGDATA (
+    host          <span class="SQLKeyword">VARCHAR</span>(50)<span class="SQLOperator">,</span>
+    insertdate    <span class="SQLKeyword">TIMESTAMP</span><span class="SQLOperator">,</span>
+    useragent     <span class="SQLKeyword">VARCHAR</span>(500)<span class="SQLOperator">,</span>
+    requeststring <span class="SQLKeyword">VARCHAR</span>(1000)<span class="SQLOperator">,</span>
+    status        <span class="SQLKeyword">VARCHAR</span>(5)<span
+            class="SQLOperator">,</span>
+    contentsize   <span class="SQLKeyword">VARCHAR</span>(10)
+)</pre>
+
+    </div>
 </c:set>
 
 <!DOCTYPE html>
