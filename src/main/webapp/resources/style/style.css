@@ -262,7 +262,7 @@ h1 {
 
 #historyBody #searchTable,
 #historyBody #graphTable {
-	width:382px;	
+	width:650px;
 }
 
 #historyBody #searchTable > tbody > tr > td,
@@ -271,7 +271,7 @@ h1 {
 }
 
 #historyBody #optionsTable {
-	width: 600px;
+	width: 650px;
 	margin-bottom: 30px;	
 }
 
@@ -294,6 +294,21 @@ h1 {
 
 #historyBody .dijitButtonText {
 	font-weight: normal;
+}
+
+#historyBody #search_database_schema,
+#historyBody #graph_database_schema {
+	margin-top: 10px;
+}
+
+#historyBody #search_database_schema h5,
+#historyBody #graph_database_schema h5 {
+	margin-top: 0;
+}
+
+#historyBody #search_database_query,
+#historyBody #graph_database_query {
+	margin-bottom: 10px;
 }
 
 /*GUISettings specific css rules*/

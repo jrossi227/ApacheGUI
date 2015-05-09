@@ -1,6 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>    
-    
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+<c:set var="database_info" scope="page">
+    <h5>Database Information:</h5>
+    <p>SQLite version 3.8.7</p>
+
+    <h5>Table Info:</h5>
+    <p>CREATE TABLE LOGDATA (HOST varchar(50), INSERTDATE timestamp, USERAGENT varchar(500), REQUESTSTRING varchar(1000), STATUS varchar(5), CONTENTSIZE varchar(10))</p>
+</c:set>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -125,6 +133,24 @@
                               <td><b>Max Results</b></td>
                               <td><input id="maxResults" type="text" name="maxResults" class="medium" value="100" dojoType="dijit.form.TextBox"></td>
                           </tr>
+                          <tr>
+                            <td colspan="2">
+                                <div id="search_database_schema" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'Database Schema', open: false">
+                                    ${database_info}
+                                </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">
+                                <div id="search_database_query" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'View/Edit Database Query', open: false">
+
+                                    <div id="search_database_textarea">
+
+                                    </div>
+
+                                </div>
+                            </td>
+                          </tr>
                           <tr class="dijitDialogPaneActionBar">
                               <td>
                               </td>
@@ -185,6 +211,24 @@
                               <td><b>Content Size</b></td>
                               <td><input id="graphContentSize" type="text" name="graphContentSize" class="medium" value="" dojoType="dijit.form.TextBox"></td>
                           </tr>
+                        <tr>
+                            <td colspan="2">
+                                <div id="graph_database_schema" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'Database Schema', open: false">
+                                    ${database_info}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <div id="graph_database_query" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'View/Edit Database Query', open: false">
+
+                                    <div id="graph_database_textarea">
+
+                                    </div>
+
+                                </div>
+                            </td>
+                        </tr>
                         <tr class="dijitDialogPaneActionBar">
                               <td>
                               </td>
