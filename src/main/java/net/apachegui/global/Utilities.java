@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
 
+import apache.conf.global.Utils;
 import net.apachegui.db.SettingsDao;
 import net.apachegui.directives.Listen;
 
@@ -222,6 +223,39 @@ public class Utilities {
 
     public static String getWebappDirectory() {
         return (new File(context.getRealPath("/"))).getAbsolutePath();
+    }
+
+    public static String getJavaExecutablePath() {
+
+        String envPath = System.getenv("PATH");
+        if(envPath == null) {
+            return null;
+        }
+
+        String paths[] = null;
+        if(Utils.isWindows()) {
+            paths = envPath.split(";");
+        } else {
+            paths = envPath.split(":");
+        }
+
+        File dir;
+        java.io.File children[];
+        for(String path : paths) {
+
+            dir = new File(path);
+            children = dir.listFiles();
+            for(java.io.File child : children) {
+                if(child.isFile()) {
+                    if(child.getName().equals("java") || child.getName().equals("java.exe")) {
+                        String java = child.getAbsolutePath();
+                        return java;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     public static String getJavaHome() {

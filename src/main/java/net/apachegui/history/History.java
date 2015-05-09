@@ -38,14 +38,21 @@ public class History {
     private static String[] getIncludeStrings() {
 
         File cat = new File(Utilities.getTomcatInstallDirectory());
-        File java = new File(Utilities.getJavaHome(), "bin/java" + (Utils.isWindows() ? ".exe" : ""));
+
+        String javaExecutablePath = Utilities.getJavaExecutablePath();
+        String java;
+        if(javaExecutablePath != null) {
+            java = javaExecutablePath;
+        } else {
+            java = (new File(Utilities.getJavaHome(), "bin/java" + (Utils.isWindows() ? ".exe" : ""))).getAbsolutePath();
+        }
 
         ArrayList<String> includeStrings = new ArrayList<String>();
         includeStrings.add("#This section is written by the apache gui do not manually edit " + Constants.HISTORY_LOG_HOLDER);
         includeStrings.add("LogFormat \"%h\\\",\\\"%{User-agent}i\\\",\\\"%r\\\",\\\"%>s\\\",\\\"%B\" " + Constants.HISTORY_LOG_HOLDER);
 
-        includeStrings.add("CustomLog \"|\\\"" + java.getAbsolutePath() + "\\\" -jar \\\"" + (new File(cat, "bin/LogParser.jar")).getAbsolutePath() + "\\\" \\\""
-                + (new File(cat, "conf/server.xml")).getAbsolutePath() + "\\\"\" " + Constants.HISTORY_LOG_HOLDER);
+        includeStrings.add("CustomLog \"|\\\"" + java + "\\\" -jar \\\"" + (new File(cat, "bin/LogParser.jar")).getAbsolutePath() + "\\\" \\\""
+                + cat.getAbsolutePath() + "\\\"\" " + Constants.HISTORY_LOG_HOLDER);
 
         return includeStrings.toArray(new String[includeStrings.size()]);
     }
