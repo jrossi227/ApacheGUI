@@ -69,7 +69,8 @@ public class SearchResultsController {
 
         if (option.equals("window")) {
             log.trace("Entering window option");
-            LogData[] results = LogDataDao.getInstance().queryLogData(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize, maxResults);
+            String query = LogDataDao.getInstance().generateLogDataQuery(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize, maxResults);
+            LogData[] results = LogDataDao.getInstance().executeLogDataQuery(query);
 
             result.put("identifier", "id");
             result.put("label", "name");
@@ -111,7 +112,8 @@ public class SearchResultsController {
         if (option.equals("csv")) {
             // ServletOutputStream stream = response.getOutputStream();
             log.trace("Entering csv option");
-            LogData[] results = LogDataDao.getInstance().queryLogData(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize, maxResults);
+            String query = LogDataDao.getInstance().generateLogDataQuery(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize, maxResults);
+            LogData[] results = LogDataDao.getInstance().executeLogDataQuery(query);
             File doc = new File(Utilities.getWebappDirectory(), "HistoryFiles/" + Constants.HISTORY_FILENAME);
             BufferedWriter writer = new BufferedWriter(new FileWriter(doc));
             writer.write("\"INSERTDATE\",\"HOST\",\"USERAGENT\",\"REQUESTSTRING\",\"STATUS\",\"CONTENTSIZE\"");

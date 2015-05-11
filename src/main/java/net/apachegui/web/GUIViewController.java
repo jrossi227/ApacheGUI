@@ -167,7 +167,8 @@ public class GUIViewController {
             java.util.Date startParsedDate = startDateFormat.parse(date + " 00:00:00");
             Timestamp startTimestamp = new Timestamp(startParsedDate.getTime());
             cal.setTimeInMillis(startTimestamp.getTime());
-            int hourCount[] = LogDataDao.getInstance().getDailyReportByHour(startTimestamp, host, userAgent, requestString, status, contentSize);
+            String query = LogDataDao.getInstance().generateDailyReportByHourQuery(startTimestamp, host, userAgent, requestString, status, contentSize);
+            int hourCount[] = LogDataDao.getInstance().executeDailyReportByHourQuery(query);
             for (int i = 0; i < hourCount.length; i++) {
                 coordinates.append("[" + i + "," + hourCount[i] + "]");
                 if (i != (hourCount.length - 1))
@@ -179,7 +180,8 @@ public class GUIViewController {
             java.util.Date startParsedDate = startDateFormat.parse(date + " 00:00:00");
             Timestamp startTimestamp = new Timestamp(startParsedDate.getTime());
             cal.setTimeInMillis(startTimestamp.getTime());
-            int dayCount[] = LogDataDao.getInstance().getMonthlyReportByDay(startTimestamp, host, userAgent, requestString, status, contentSize);
+            String query = LogDataDao.getInstance().generateMonthlyReportByDayQuery(startTimestamp, host, userAgent, requestString, status, contentSize);
+            int dayCount[] = LogDataDao.getInstance().executeMonthlyReportByDayQuery(query, startTimestamp);
 
             for (int i = 1; i < dayCount.length; i++) {
                 coordinates.append("[" + i + "," + dayCount[i] + "]");

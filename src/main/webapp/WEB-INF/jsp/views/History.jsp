@@ -28,6 +28,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <script src="../resources/codemirror/lib/codemirror.js?version=${version}"></script>
+    <link rel="stylesheet" href="../resources/codemirror/lib/codemirror.css?version=${version}">
+    <script src="../resources/codemirror/mode/mysql/mysql.js?version=${version}"></script>
+
     <%-- Include standard js and css includes --%>
     <jsp:include page="/jsp/Head.jsp" flush="true" />
 
@@ -160,9 +165,9 @@
                             <td colspan="2">
                                 <div id="search_database_query" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'View/Edit Database Query', open: false">
 
-                                    <div id="search_database_textarea">
+                                    <textarea id="search_database_textarea">
 
-                                    </div>
+                                    </textarea>
 
                                 </div>
                             </td>
@@ -238,9 +243,9 @@
                             <td colspan="2">
                                 <div id="graph_database_query" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'View/Edit Database Query', open: false">
 
-                                    <div id="graph_database_textarea">
+                                    <textarea id="graph_database_textarea">
 
-                                    </div>
+                                    </textarea>
 
                                 </div>
                             </td>
