@@ -1,7 +1,7 @@
 {
     "name": "apachegui",
     "description": "ApacheGUI",
-    "version": "1.9.7",
+    "version": "1.10.0",
     "maintainers": [{
         "name": "Jonathan Rossi"
     }],

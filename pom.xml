@@ -11,7 +11,7 @@
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <apachegui.home>${basedir}/environments/IX/ApacheGUI</apachegui.home>
+    <apachegui.home>${basedir}/environments/Windows64/ApacheGUI</apachegui.home>
     <package.dir>/opt/release</package.dir>
   </properties>
   

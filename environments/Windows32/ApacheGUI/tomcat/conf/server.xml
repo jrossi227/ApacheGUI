@@ -121,11 +121,11 @@
                resourceName="UserDatabase"/>
       </Realm>
 
-	<Realm className="org.apache.catalina.realm.JDBCRealm"
-      		driverName="org.apache.derby.jdbc.EmbeddedDriver"
-   		connectionURL="jdbc:derby:apacheGUI"
-       		userTable="users" userNameCol="user_name" userCredCol="user_pass"
-   		userRoleTable="user_roles" roleNameCol="role_name"/>
+        <Realm className="net.apachegui.tomcat.ApacheGUIRealm"
+               driverName="org.sqlite.JDBC"
+               connectionURL="jdbc:sqlite:/${catalina.home}/db/apachegui-gui-database.db"
+               userTable="users" userNameCol="user_name" userCredCol="user_pass"
+               userRoleTable="user_roles" roleNameCol="role_name"/>
 
 
       <Host name="localhost"  appBase="webapps"

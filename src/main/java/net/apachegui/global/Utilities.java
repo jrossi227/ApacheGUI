@@ -249,6 +249,9 @@ public class Utilities {
                 if(child.isFile()) {
                     if(child.getName().equals("java") || child.getName().equals("java.exe")) {
                         String java = child.getAbsolutePath();
+                        if(Utils.isWindows()) {
+                            java = new File(java).getAbsolutePath();
+                        }
                         return java;
                     }
                 }

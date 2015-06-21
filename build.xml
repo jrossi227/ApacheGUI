@@ -61,7 +61,7 @@
                 <arg value="stop.bat"/>
         </exec>        
         
-        <delete includeemptydirs="true">
+        <delete includeemptydirs="true" failonerror="false">
             <fileset dir="${apachegui.home}/tomcat/webapps">
                 <include name="ApacheGUI.war"/>
             </fileset>
