@@ -146,18 +146,12 @@ public class GUIViewController {
     }
 
     @RequestMapping(value = "/jsp/GenerateGraph.jsp")
-    public String renderGenerateGraphViewJsp(@RequestParam(value = "date") String date, @RequestParam(value = "type") String type, @RequestParam(value = "host") String host,
-            @RequestParam(value = "userAgent") String userAgent, @RequestParam(value = "requestString") String requestString, @RequestParam(value = "status") String status,
-            @RequestParam(value = "contentSize") String contentSize, Model model) throws Exception {
+    public String renderGenerateGraphViewJsp(@RequestParam(value = "date") String date, @RequestParam(value = "query") String query, @RequestParam(value = "type") String type, Model model) throws Exception {
 
         Calendar cal = Calendar.getInstance();
 
         StringBuffer coordinates = new StringBuffer();
         if (type.equals("day")) {
-            SimpleDateFormat startDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-            java.util.Date startParsedDate = startDateFormat.parse(date + " 00:00:00");
-            Timestamp startTimestamp = new Timestamp(startParsedDate.getTime());
-            String query = LogDataDao.getInstance().generateDailyReportByHourQuery(startTimestamp, host, userAgent, requestString, status, contentSize);
             int hourCount[] = LogDataDao.getInstance().executeDailyReportByHourQuery(query);
             for (int i = 0; i < hourCount.length; i++) {
                 coordinates.append("[" + i + "," + hourCount[i] + "]");
@@ -170,7 +164,6 @@ public class GUIViewController {
             java.util.Date startParsedDate = startDateFormat.parse(date + " 00:00:00");
             Timestamp startTimestamp = new Timestamp(startParsedDate.getTime());
             cal.setTimeInMillis(startParsedDate.getTime());
-            String query = LogDataDao.getInstance().generateMonthlyReportByDayQuery(startTimestamp, host, userAgent, requestString, status, contentSize);
             int dayCount[] = LogDataDao.getInstance().executeMonthlyReportByDayQuery(query, startTimestamp);
 
             for (int i = 1; i < dayCount.length; i++) {

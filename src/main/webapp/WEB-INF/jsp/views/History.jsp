@@ -165,6 +165,8 @@
                             <td colspan="2">
                                 <div id="search_database_query" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'View/Edit Database Query', open: false">
 
+                                    <p>This auto-generated query is used when you click the Search or CSV button below. You may manually adjust the query.</p>
+
                                     <textarea id="search_database_textarea">
 
                                     </textarea>
@@ -175,6 +177,8 @@
                           <tr>
                              <td colspan="2">
                                  <div id="delete_database_update" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'View/Edit Delete Update', open: false">
+
+                                     <p>This auto-generated statement is used when you click the Delete button below. You may manually adjust the statement.</p>
 
                                     <textarea id="delete_database_textarea">
 
@@ -252,7 +256,9 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                <div id="graph_database_query" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'View/Edit Search Database Query', open: false">
+                                <div id="graph_database_query" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'View/Edit Graph Database Query', open: false">
+
+                                    <p>This auto-generated query is used when you click the Graph button below. You may manually adjust the query.</p>
 
                                     <textarea id="graph_database_textarea">
 
@@ -290,10 +296,10 @@
                             <td>
                                 Insert Buffer Size:&nbsp;
                                 <span id="bufferWarningTooltip" class="warningTooltip" onmouseover="dijit.Tooltip.defaultPosition=['below', 'above']"></span>
-                                     <div class="dijitHidden">
-                                         <div data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'bufferWarningTooltip'">
-                                             <div class="warningDialog">
-                                              This field controls how many transactions are buffered before being written to the Apache
+                                 <div class="dijitHidden">
+                                     <div data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'bufferWarningTooltip'">
+                                         <div class="warningDialog">
+                                             This field controls how many transactions are buffered before being written to the Apache
                                             GUI internal database. This field has performance
                                             impacts and the buffer should be kept as large as possible on
                                             high usage servers.
