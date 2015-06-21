@@ -7,6 +7,7 @@ import apache.conf.parser.File;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import net.apachegui.db.LogData;
 import net.apachegui.db.LogDataDao;
 import net.apachegui.db.Timestamp;
@@ -27,49 +28,16 @@ public class SearchResultsController {
     private static Logger log = Logger.getLogger(SearchResultsController.class);
 
     @RequestMapping(value = "/web/SearchResults", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String searchResults(@RequestParam(value = "option") String option, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "startTime") String startTime,
-            @RequestParam(value = "endDate") String endDate, @RequestParam(value = "endTime") String endTime, @RequestParam(value = "host") String host,
-            @RequestParam(value = "userAgent") String userAgent, @RequestParam(value = "requestString") String requestString, @RequestParam(value = "status") String status,
-            @RequestParam(value = "contentSize") String contentSize, @RequestParam(value = "maxResults", required = false) String maxResults, Model model) throws Exception {
+    public String searchResults(@RequestParam(value = "option") String option, @RequestParam(value = "query", required = false) String query, @RequestParam(value = "update", required = false) String update) throws Exception {
 
         log.trace("SearchResults.doGet Called");
         log.trace("option " + option);
-        log.trace("startDate " + startDate);
-        log.trace("startTime " + startTime);
-        log.trace("endDate " + endDate);
-        log.trace("endTime " + endTime);
-        log.trace("host " + host);
-        log.trace("userAgent " + userAgent);
-        log.trace("requestString " + requestString);
-        log.trace("status " + status);
-        log.trace("contentSize " + contentSize);
-
-        if (maxResults == null || (maxResults.equals(""))) {
-            maxResults = Constants.MAX_HISTORICAL_RESULTS;
-        }
-
-        try {
-            Integer.parseInt(maxResults);
-        } catch (Exception e) {
-            maxResults = Constants.MAX_HISTORICAL_RESULTS;
-        }
-        log.trace("maxResults " + maxResults);
-
-        SimpleDateFormat startDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        java.util.Date startParsedDate = startDateFormat.parse(startDate + " " + startTime);
-        Timestamp startTimestamp = new Timestamp(startParsedDate.getTime());
-        log.trace("startTimestamp " + startTimestamp.toString());
-
-        SimpleDateFormat endDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        java.util.Date endParsedDate = endDateFormat.parse(endDate + " " + endTime);
-        Timestamp endTimestamp = new Timestamp(endParsedDate.getTime());
-        log.trace("endTimestamp " + endTimestamp.toString());
+        log.trace("query " + query);
 
         JSONObject result = new JSONObject();
 
         if (option.equals("window")) {
             log.trace("Entering window option");
-            String query = LogDataDao.getInstance().generateLogDataQuery(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize, maxResults);
             LogData[] results = LogDataDao.getInstance().executeLogDataQuery(query);
 
             result.put("identifier", "id");
@@ -112,25 +80,23 @@ public class SearchResultsController {
         if (option.equals("csv")) {
             // ServletOutputStream stream = response.getOutputStream();
             log.trace("Entering csv option");
-            String query = LogDataDao.getInstance().generateLogDataQuery(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize, maxResults);
             LogData[] results = LogDataDao.getInstance().executeLogDataQuery(query);
             File doc = new File(Utilities.getWebappDirectory(), "HistoryFiles/" + Constants.HISTORY_FILENAME);
-            BufferedWriter writer = new BufferedWriter(new FileWriter(doc));
-            writer.write("\"INSERTDATE\",\"HOST\",\"USERAGENT\",\"REQUESTSTRING\",\"STATUS\",\"CONTENTSIZE\"");
-            writer.newLine();
+            CSVWriter writer = new CSVWriter(new FileWriter(doc));
+            String header[] = {"INSERTDATE","HOST","USERAGENT","REQUESTSTRING","STATUS","CONTENTSIZE"};
+            writer.writeNext(header);
+
             for (int i = 0; i < results.length; i++) {
-                writer.write("\"" + results[i].getInsertDate().toString() + "\",\"" + results[i].getHost() + "\",\"" + results[i].getUserAgent() + "\",\"" + results[i].getRequestString() + "\",\""
-                        + results[i].getStatus() + "\",\"" + results[i].getContentSize() + "\"");
-                writer.newLine();
+                String line[] = {results[i].getInsertDate().toString(),results[i].getHost(),results[i].getUserAgent(),results[i].getRequestString(),results[i].getStatus(),results[i].getContentSize()};
+                writer.writeNext(line);
             }
-            writer.flush();
             writer.close();
 
             result.put("result", "success");
         }
         if (option.equals("delete")) {
             log.trace("Entering delete option");
-            LogDataDao.getInstance().deleteLogData(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize);
+            LogDataDao.getInstance().executeDeleteLogDataUpdate(update);
 
             result.put("result", "success");
         }

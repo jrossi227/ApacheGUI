@@ -306,7 +306,7 @@ h1 {
 	margin-top: 0;
 }
 
-#historyBody #search_database_query,
+#historyBody #delete_database_update,
 #historyBody #graph_database_query {
 	margin-bottom: 10px;
 }

@@ -270,7 +270,12 @@
           <artifactId>jstl</artifactId>
           <version>1.2</version>
       </dependency>
-      
+      <dependency>
+          <groupId>net.sf.opencsv</groupId>
+          <artifactId>opencsv</artifactId>
+          <version>2.3</version>
+      </dependency>
+
       <!-- Spring dependencies -->
       <dependency>
           <groupId>org.springframework</groupId>
@@ -356,7 +361,7 @@
           <version>1.5.2</version>
           <scope>provided</scope>
       </dependency>
-      
+
   </dependencies>
   
 </project>

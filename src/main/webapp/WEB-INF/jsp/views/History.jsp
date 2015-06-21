@@ -172,6 +172,17 @@
                                 </div>
                             </td>
                           </tr>
+                          <tr>
+                             <td colspan="2">
+                                 <div id="delete_database_update" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'View/Edit Delete Update', open: false">
+
+                                    <textarea id="delete_database_textarea">
+
+                                    </textarea>
+
+                                </div>
+                             </td>
+                          </tr>
                           <tr class="dijitDialogPaneActionBar">
                               <td>
                               </td>
@@ -241,7 +252,7 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                <div id="graph_database_query" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'View/Edit Database Query', open: false">
+                                <div id="graph_database_query" data-dojo-type="net/apachegui/TitlePane" data-dojo-props="title: 'View/Edit Search Database Query', open: false">
 
                                     <textarea id="graph_database_textarea">
 

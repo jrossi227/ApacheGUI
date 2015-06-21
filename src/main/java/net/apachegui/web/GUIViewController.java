@@ -28,6 +28,7 @@ import net.apachegui.global.Constants;
 import net.apachegui.global.Utilities;
 import net.apachegui.server.ServerInfo;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -40,6 +41,8 @@ import apache.conf.parser.File;
 
 @Controller
 public class GUIViewController {
+
+    private static Logger log = Logger.getLogger(GUIViewController.class);
 
     @ModelAttribute("theme")
     public String getTheme() {
@@ -135,21 +138,9 @@ public class GUIViewController {
     }
 
     @RequestMapping(value = "/jsp/SearchResults.jsp")
-    public String renderSearchResultsViewJsp(@RequestParam(value = "startDate") String startDate, @RequestParam(value = "startTime") String startTime, @RequestParam(value = "endDate") String endDate,
-            @RequestParam(value = "endTime") String endTime, @RequestParam(value = "host") String host, @RequestParam(value = "userAgent") String userAgent,
-            @RequestParam(value = "requestString") String requestString, @RequestParam(value = "status") String status, @RequestParam(value = "contentSize") String contentSize,
-            @RequestParam(value = "maxResults") String maxResults, Model model) throws UnsupportedEncodingException {
+    public String renderSearchResultsViewJsp(@RequestParam(value = "query") String query, Model model) throws UnsupportedEncodingException {
 
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("startTime", startTime);
-        model.addAttribute("endDate", endDate);
-        model.addAttribute("endTime", endTime);
-        model.addAttribute("host", host);
-        model.addAttribute("userAgent", URLEncoder.encode(userAgent, "UTF-8"));
-        model.addAttribute("requestString", URLEncoder.encode(requestString, "UTF-8"));
-        model.addAttribute("status", status);
-        model.addAttribute("contentSize", contentSize);
-        model.addAttribute("maxResults", maxResults);
+        model.addAttribute("query", URLEncoder.encode(query, "UTF-8"));
 
         return "views/SearchResults";
     }
@@ -166,7 +157,6 @@ public class GUIViewController {
             SimpleDateFormat startDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             java.util.Date startParsedDate = startDateFormat.parse(date + " 00:00:00");
             Timestamp startTimestamp = new Timestamp(startParsedDate.getTime());
-            cal.setTimeInMillis(startTimestamp.getTime());
             String query = LogDataDao.getInstance().generateDailyReportByHourQuery(startTimestamp, host, userAgent, requestString, status, contentSize);
             int hourCount[] = LogDataDao.getInstance().executeDailyReportByHourQuery(query);
             for (int i = 0; i < hourCount.length; i++) {
@@ -179,7 +169,7 @@ public class GUIViewController {
             SimpleDateFormat startDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             java.util.Date startParsedDate = startDateFormat.parse(date + " 00:00:00");
             Timestamp startTimestamp = new Timestamp(startParsedDate.getTime());
-            cal.setTimeInMillis(startTimestamp.getTime());
+            cal.setTimeInMillis(startParsedDate.getTime());
             String query = LogDataDao.getInstance().generateMonthlyReportByDayQuery(startTimestamp, host, userAgent, requestString, status, contentSize);
             int dayCount[] = LogDataDao.getInstance().executeMonthlyReportByDayQuery(query, startTimestamp);
 

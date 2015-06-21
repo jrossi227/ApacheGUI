@@ -143,6 +143,32 @@ public class HistoryController {
         return result.toString();
     }
 
+    @RequestMapping(method = RequestMethod.GET,params = "option=getDeleteUpdate", produces = "application/json;charset=UTF-8")
+    public String getDeleteUpdate(@RequestParam(value = "option") String option, @RequestParam(value = "startDate") String startDate, @RequestParam(value = "startTime") String startTime,
+                                 @RequestParam(value = "endDate") String endDate, @RequestParam(value = "endTime") String endTime, @RequestParam(value = "host") String host,
+                                 @RequestParam(value = "userAgent") String userAgent, @RequestParam(value = "requestString") String requestString, @RequestParam(value = "status") String status,
+                                 @RequestParam(value = "contentSize") String contentSize) throws Exception {
+
+
+        SimpleDateFormat startDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        java.util.Date startParsedDate = startDateFormat.parse(startDate + " " + startTime);
+        net.apachegui.db.Timestamp startTimestamp = new net.apachegui.db.Timestamp(startParsedDate.getTime());
+        log.trace("startTimestamp " + startTimestamp.toString());
+
+        SimpleDateFormat endDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        java.util.Date endParsedDate = endDateFormat.parse(endDate + " " + endTime);
+        net.apachegui.db.Timestamp endTimestamp = new net.apachegui.db.Timestamp(endParsedDate.getTime());
+        log.trace("endTimestamp " + endTimestamp.toString());
+
+        String update = LogDataDao.getInstance().generateDeleteLogDataUpdate(startTimestamp, endTimestamp, host, userAgent, requestString, status, contentSize);
+
+        JSONObject result = new JSONObject();
+        result.put("result", "success");
+        result.put("update", update);
+
+        return result.toString();
+    }
+
     @RequestMapping(method = RequestMethod.GET, params = "option=getGraphQuery", produces = "application/json;charset=UTF-8")
     public String getGraphQuery(@RequestParam(value = "option") String option, @RequestParam(value = "date") String date, @RequestParam(value = "type") String type,
                                 @RequestParam(value = "host") String host,
