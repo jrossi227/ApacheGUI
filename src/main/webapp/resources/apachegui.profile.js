@@ -129,7 +129,8 @@ var profile = (function(){
                            "net/apachegui/Menu",
                            "net/apachegui/Settings",
                            "net/apachegui/AutoSuggest",
-                           "net/apachegui/RefreshableTree"
+                           "net/apachegui/RefreshableTree",
+                           "net/apachegui/SearchResults"
                 ],
                 customBase: true,
                 boot: true,
