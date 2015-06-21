@@ -41,8 +41,8 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 5. Run the Maven builds below.
 
 ######Maven options
-- ```mvn clean deploy -P prod``` minifies required javascript and builds a new war under the *target* directory. 
-- ```mvn clean deploy -P dev``` copies required javascript without minification and builds a new war under the *target* directory. This task is meant to speed up war builds for development. 
+- ```mvn clean package -P prod``` minifies required javascript and builds a new war under the *target* directory. 
+- ```mvn clean package -P dev``` copies required javascript without minification and builds a new war under the *target* directory. This task is meant to speed up war builds for development. 
 - ```mvn clean install -P prod``` minifies required javascript and builds a new war under the *target* directory. The war is then moved from the *target* directory to *[apachegui.home]/tomcat/webapps*. This will re-deploy the application.
 - ```mvn clean install -P dev``` copies required javascript without minification and builds a new war under the *target* directory. The war is then moved from the *target* directory to *[apachegui.home]/tomcat/webapps*. This will re-deploy the application. This task is meant to speed up war builds for development. 
 - ```mvn antrun:run -P package``` stops ApacheGUI and builds a new .tar.gz archive. The .tar.gz archive is put into the *package.dir* directory that is specified in the pom.xml properties.
@@ -56,7 +56,7 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 5. Run the Maven builds below.
 
 ######Maven options
-- ```mvn clean deploy -P prod``` minifies required javascript and builds a new war under the *target* directory. 
-- ```mvn clean deploy -P dev``` copies required javascript without minification and builds a new war under the *target* directory. This task is meant to speed up war builds for development. 
+- ```mvn clean package -P prod``` minifies required javascript and builds a new war under the *target* directory. 
+- ```mvn clean package -P dev``` copies required javascript without minification and builds a new war under the *target* directory. This task is meant to speed up war builds for development. 
 - ```mvn clean install -P prod``` minifies required javascript and builds a new war under the *target* directory. The task then stops ApacheGUI, moves the war from the *target* directory to *[apachegui.home]/tomcat/webapps* and starts ApacheGUI. This will re-deploy the application.
 - ```mvn clean install -P dev``` copies required javascript without minification and builds a new war under the *target* directory. The task then stops ApacheGUI, moves the war from the *target* directory to *[apachegui.home]/tomcat/webapps* and starts ApacheGUI. This will re-deploy the application. This task is meant to speed up war builds for development. 
