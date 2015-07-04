@@ -10,9 +10,10 @@
   <url>http://apachegui.net</url>
   
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <apachegui.home>${basedir}/environments/IX/ApacheGUI</apachegui.home>
-    <package.dir>/opt/release</package.dir>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <environment>IX</environment>
+      <apachegui.home>${basedir}/environments/${environment}/ApacheGUI</apachegui.home>
+      <package.dir>/opt/release</package.dir>
   </properties>
   
   <licenses>

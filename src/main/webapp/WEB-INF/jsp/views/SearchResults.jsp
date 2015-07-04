@@ -13,13 +13,16 @@
          ], function() {
              require([
                       "dojo/data/ItemFileWriteStore",
-                       "dojox/grid/DataGrid",
-                       "dojo/dom",
+                      "dojox/grid/DataGrid",
+                      "dojo/dom",
                       "dojo/parser",
+                      "net/apachegui/SearchResults",
                       "dojo/domReady!"
-             ], function(ItemFileWriteStore, DataGrid, dom, parser) {
+             ], function(ItemFileWriteStore, DataGrid, dom, parser, SearchResults) {
                  parser.parse();
                  dom.byId("searchResultsBody").style.visibility='visible';
+
+                 net.apachegui.SearchResults.getInstance().generateGrid("${query}");
              });
          });
 
@@ -30,35 +33,7 @@
     <div id="appLayout" class="demoLayout" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline'">
 
         <div id="mainPanel" class="centerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'top'" style="width: 100%; height:100%;overflow:auto;">
-            <span dojoType="dojo.data.ItemFileWriteStore" jsId="historyStore" url="../web/SearchResults?option=window&query=${query}">
-            </span>
-            <table dojoType="dojox.grid.DataGrid" jsId="historyGrid" store="historyStore" query="{ insertDate: '*' }" clientSort="false" selectable="true" style="width: 100%;" autoHeight="true" rowSelector="20px">
-                <thead>
-                    <tr>
-                        <th width="75px" field="id">
-                              Result
-                          </th>
-                        <th width="auto" field="insertDate">
-                              Insert Date
-                          </th>
-                          <th width="auto" field="host">
-                              Host
-                          </th>
-                          <th width="auto" field="userAgent">
-                                  User Agent
-                          </th>
-                          <th width="auto" field="requestString">
-                                  Request String
-                          </th>
-                          <th width="auto" field="status">
-                                  Status
-                          </th>
-                          <th width="auto" field="contentSize">
-                                  Content Size
-                          </th>
-                    </tr>
-                </thead>
-            </table>
+            <div id="grid"></div>
         </div>
     </div>
 

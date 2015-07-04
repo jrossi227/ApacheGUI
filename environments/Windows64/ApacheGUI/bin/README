@@ -1,0 +1,134 @@
+Home Page http://apachegui.ca
+
+This version of ApacheGUI has been validated against Windows Vista, Windows 7, Windows 8, Windows Server 2008 against Apache 2.2 and Apache 2.4
+
+****************************************************************************
+*************************INSTALLING APACHE**********************************
+****************************************************************************
+If you have already installed Apache you can disregard these instructions. If you haven't installed Apache you can grab a build from the download page. http://sourceforge.net/projects/apachegui/files/1.10-Windows/
+
+Apache 2.4 
+
+    MSI Installer 
+
+        1. Run the msi installer.
+
+        2. Apache should now be seen in your computers Program Files directory under 
+        "[PROGRAM_FILES]\Apache Software Foundation\Apache2.4”. This full path to Apache is known as the Server Root.
+
+        3. You can now install and use ApacheGUI. 
+
+    Zip File 
+
+        1. Download the appropriate zip file for your system architecture.
+
+        2. Extract the Apache24 directory to the desired location of the Apache installation. The full installation path that you use is known as the Server Root. For the purposes of these steps we will refer to the Server Root path as [SERVER_ROOT].
+
+        3. Open a command prompt as an Administrator. Go to [SERVER_ROOT]/bin and run the command "httpd -k install".
+
+        4. You can now install and use ApacheGUI or start Apache manually using "httpd -k start". 
+
+
+Apache 2.2 
+
+    MSI Installer 
+
+        1. Run the msi installer.
+
+        2. Apache should now be seen in your computers Program Files directory under "[PROGRAM_FILES]\Apache Software Foundation\Apache2.2". This full path to Apache is known as the Server Root.
+
+        3. You can now install and use ApacheGUI. 
+
+****************************************************************************
+***********************INSTALLING APACHEGUI*********************************
+****************************************************************************
+
+1.  Unzip the ApacheGUI zip archive to a directory of your choice. We will refer to this directory as [APACHEGUI_HOME] in the following installation steps.
+
+2.  You will need a jdk or jre in order to run Apache GUI. This means Java must be installed on your machine.
+
+    If you do not have Java installed then you can download Java from the Oracle download pages.
+    http://www.oracle.com/technetwork/java/javase/downloads/index.html
+
+    Set your JAVA_HOME and/or JRE_HOME environment variable to the pathname of the directory of your jdk or jre. You may add environment variables on Windows by selecting System from the Control Panel, selecting Advanced system settings, and clicking Environment Variables. 
+   
+    It is mandatory to set one of these environment variables, although you are free to set both.
+
+    JRE_HOME:
+
+        The following is an example path for a correct JRE_HOME:
+
+         C:\Program Files\Java\jdk1.7.0_05 (Incorrect) 
+
+         C:\Program Files\Java\jre7 (Correct) 
+   
+    JAVA_HOME:
+
+        JAVA_HOME must be set to a jdk and not a jre! 
+
+        The following is an example path for a correct JAVA_HOME:
+
+         C:\Program Files\Java\jdk1.7.0_05 (Correct) 
+
+         C:\Program Files\Java\jre7 (Incorrect)
+
+3.  To start the web tool go to [APACHEGUI_HOME]/bin and run the batch file run.bat. The GUI can be accessed through http://localhost:9999/ApacheGUI/ once it is started.
+
+4.  To stop the web tool to [APACHEGUI_HOME]/bin and run the batch file stop.bat 
+
+
+
+****************************************************************************
+************************ENDPOINTS*******************************************
+****************************************************************************
+ApacheGUI is configured by default to run using http on port 9999.
+
+The default endpoint and credentials are:
+
+http://[HOST]:9999/ApacheGUI/
+Username: admin
+Password: admin
+
+You may change the username and password when configuring ApacheGUI after the first login.
+
+****************************************************************************
+************************PORTS***********************************************
+****************************************************************************
+The ApacheGUI runs by default on port 9999.
+
+To change or add a port open [APACHEGUI_HOME]/tomcat/conf/server.xml and add or modify a connector.
+
+The following is the default connector that you will see in the server.xml file:
+
+<Connector port="9999" protocol="HTTP/1.1"
+           connectionTimeout="20000"
+           redirectPort="8443"
+           URIEncoding="UTF-8" />
+
+
+You may change the port 9999 in the above connector or add a new connector to the file.
+
+You must restart ApacheGUI for any connector changes to take affect.
+
+Please see the following for more information on tomcat connectors:
+http://tomcat.apache.org/tomcat-7.0-doc/config/http.html
+
+*****************************************************************************
+************************LOGGING**********************************************
+*****************************************************************************
+ApacheGUI currently only logs errors.
+
+The error output is logged to the following file:
+
+[APACHEGUI_HOME]/tomcat/logs/catalina.out
+
+*****************************************************************************
+************************SSL**************************************************
+*****************************************************************************
+SSL has not been configured by default due to the fact that each server requires a different ssl certificate. The ApacheGUI runs on tomcat 7.
+
+As such the following tutorial can be used to configure SSL:
+http://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html
+
+The following endpoint may be used once SSL has been configured:
+https://[HOST]:[SSLPORT]/ApacheGUI/

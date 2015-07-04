@@ -39,17 +39,22 @@ public class MenuController {
     public void menuRoot(HttpServletResponse response) throws Exception {
         PrintWriter out = response.getWriter();
 
-        String confDirectory = SettingsDao.getInstance().getSetting(Constants.CONF_DIRECTORY);
-        String logDirectory = SettingsDao.getInstance().getSetting(Constants.LOG_DIRECTORY);
+        String init = SettingsDao.getInstance().getSetting(Constants.INIT);
+        if(init == null) {
+            out.print("[{ $ref: 'ApacheGUI', name:'ApacheGUI', id:'ApacheGUI', type:'ApacheGUI'}]");
+        } else {
 
-        out.print("[" + "{ $ref: '" + Constants.CONFIGURATION_ROOT + confDirectory + "', name:'Configuration', id:'" + Constants.CONFIGURATION_ROOT + confDirectory + "', children:true}," + "{ $ref: '"
-                + Constants.DOCUMENTS_ROOT + (Utils.isWindows() ? Utilities.getFileSystemDrive() : "/") + "', name:'Documents', id:'" + Constants.DOCUMENTS_ROOT
-                + (Utils.isWindows() ? Utilities.getFileSystemDrive() : "/") + "', children:true}," + "{ $ref: '" + Constants.LOGS_ROOT + logDirectory + "', name:'Logs', id:'" + Constants.LOGS_ROOT
-                + logDirectory + "', children:true}," + "{ $ref: 'Control', name:'Control', id:'Control', type:'Control'},"
-                + "{ $ref: 'Global_Settings', name:'Global Settings', id:'Global_Settings', type:'Global_Settings'},"
-                + "{ $ref: 'Virtual_Hosts', name:'Virtual Hosts', id:'Virtual_Hosts', type:'Virtual_Hosts'}," + "{ $ref: 'History', name:'History', id:'History', type:'History'},"
-                + "{ $ref: 'GUISettings', name:'GUISettings', id:'GUISettings', type:'GUISettings'}" + "]");
+            String confDirectory = SettingsDao.getInstance().getSetting(Constants.CONF_DIRECTORY);
+            String logDirectory = SettingsDao.getInstance().getSetting(Constants.LOG_DIRECTORY);
 
+            out.print("[" + "{ $ref: '" + Constants.CONFIGURATION_ROOT + confDirectory + "', name:'Configuration', id:'" + Constants.CONFIGURATION_ROOT + confDirectory + "', children:true}," + "{ $ref: '"
+                    + Constants.DOCUMENTS_ROOT + (Utils.isWindows() ? Utilities.getFileSystemDrive() : "/") + "', name:'Documents', id:'" + Constants.DOCUMENTS_ROOT
+                    + (Utils.isWindows() ? Utilities.getFileSystemDrive() : "/") + "', children:true}," + "{ $ref: '" + Constants.LOGS_ROOT + logDirectory + "', name:'Logs', id:'" + Constants.LOGS_ROOT
+                    + logDirectory + "', children:true}," + "{ $ref: 'Control', name:'Control', id:'Control', type:'Control'},"
+                    + "{ $ref: 'Global_Settings', name:'Global Settings', id:'Global_Settings', type:'Global_Settings'},"
+                    + "{ $ref: 'Virtual_Hosts', name:'Virtual Hosts', id:'Virtual_Hosts', type:'Virtual_Hosts'}," + "{ $ref: 'History', name:'History', id:'History', type:'History'},"
+                    + "{ $ref: 'GUISettings', name:'GUISettings', id:'GUISettings', type:'GUISettings'}" + "]");
+        }
     }
 
     @RequestMapping(value = "/rest/**", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")

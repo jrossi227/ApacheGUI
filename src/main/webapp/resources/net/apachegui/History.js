@@ -723,8 +723,17 @@ define([ "dojo/_base/declare",
                 net.apachegui.Util.alert("Error","Please fix required field formats");
             }
             else {
-                window.open('GenerateGraph.jsp?date=' + dom.byId('graphDate').value + '&type=' + registry.byId('graphType').value + '&host=' + dom.byId('graphHost').value + '&userAgent=' + escape(dom.byId('graphUserAgent').value) + '&requestString=' + escape(dom.byId('graphRequestString').value) + '&status=' + dom.byId('graphStatus').value + '&contentSize=' + dom.byId('graphContentSize').value);
-            }    
+
+                var query = {
+                    query: this.graphEditor.getValue(),
+                    date: dom.byId('graphDate').value,
+                    type: registry.byId('graphType').value
+                };
+
+                var queryStr = ioQuery.objectToQuery(query);
+
+                window.open('GenerateGraph.jsp?' + queryStr);
+            }
         },
         
         getHistoryRetention: function () {
