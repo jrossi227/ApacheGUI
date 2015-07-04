@@ -32,11 +32,10 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 - Node js
 - Maven 2+
 - Java 1.6+
-- Latest ApacheGUI package
 
 ####Linux / Mac OSX build steps
-1. Set the *environment* property in pom.xml to IX. The *apachegui.home* property uses the environment property to determine the location of ApacheGUI.
-2. Navigate to the root directory in the source project (Where pom.xml is located).
+1. Navigate to the root directory in the source project (Where pom.xml is located).
+2. Open pom.xml and set the *environment* property in pom.xml to IX. The *apachegui.home* property uses the environment property to determine the location of ApacheGUI.
 3. Run the Maven builds below.
 
 ######Maven options
@@ -47,9 +46,8 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 - ```mvn antrun:run -P package``` stops ApacheGUI and builds a new .tar.gz archive. The .tar.gz archive is put into the *package.dir* directory that is specified in the pom.xml properties.
 
 ####Windows
-
-1. Set the *environment* property in pom.xml to Windows64 or Windows32 depending on your WIndows architecture. The *apachegui.home* property uses the environment property to determine the location of ApacheGUI.
-2. Navigate to the root directory in the source project (Where pom.xml is located).
+1. Navigate to the root directory in the source project (Where pom.xml is located).
+2. Open pom.xml and set the *environment* property in pom.xml to Windows64 or Windows32 depending on your WIndows architecture. The *apachegui.home* property uses the environment property to determine the location of ApacheGUI.
 3. Run the Maven builds below.
 
 ######Maven options
