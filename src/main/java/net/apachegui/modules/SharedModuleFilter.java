@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebFilter;
 
 import net.apachegui.db.SettingsDao;
 
+import net.apachegui.global.Constants;
 import org.apache.log4j.Logger;
 
 /**
@@ -38,7 +39,7 @@ public class SharedModuleFilter implements Filter {
      */
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
-            if (SettingsDao.getInstance().getSetting("init") != null) {
+            if (SettingsDao.getInstance().getSetting(Constants.INIT) != null) {
                 SharedModuleHandler.updateSharedModules();
             }
         } catch (Exception e) {

@@ -13,8 +13,9 @@ define([ "dojo/_base/declare",
          "dojo/query",
          "dojo/dom-attr",
          "dojo/_base/xhr",
-         "net/apachegui/Control"
-], function(declare, dom, registry, on, request, json, ItemFileWriteStore, DataGrid, Tooltip, Button, array, domStyle, query, domAttr, xhr, Control){
+         "net/apachegui/Control",
+         "dojo/io-query"
+], function(declare, dom, registry, on, request, json, ItemFileWriteStore, DataGrid, Tooltip, Button, array, domStyle, query, domAttr, xhr, Control, ioQuery){
     
     declare("net.apachegui.History", null,{
         initialized: false,
@@ -30,6 +31,9 @@ define([ "dojo/_base/declare",
             ENABLE: 'Enable',
             DISABLE: 'Disable'
         },
+
+        searchEditor: null,
+        graphEditor: null,
         
         init: function() {
             if(this.initialized==false) {
@@ -68,16 +72,125 @@ define([ "dojo/_base/declare",
             
                 dom.byId('endDate').value=day +'/' + month + '/' + year;
                 dom.byId('endTime').value=hours + ':' + minutes + ':' + seconds;
-            
+
+                dom.byId('graphDate').value=day +'/' + month + '/' + year;
+
                 this.populateEnabled();
                 this.populateDisabled();
                 
                 this.addListeners();
-                
+
+                this.searchEditor = CodeMirror.fromTextArea(dom.byId('search_database_textarea'), {
+                    mode: 'text/x-mysql'
+                });
+                this.updateSearchQuery();
+
+                this.deleteEditor = CodeMirror.fromTextArea(dom.byId('delete_database_textarea'), {
+                    mode: 'text/x-mysql'
+                });
+                this.updateDeleteUpdate();
+
+                this.graphEditor = CodeMirror.fromTextArea(dom.byId('graph_database_textarea'), {
+                    mode: 'text/x-mysql'
+                });
+                this.updateGraphQuery();
+
                 this.initialized=true;
             }
         },
-        
+
+        updateSearchQuery: function() {
+            var that = this;
+
+            request.get("../web/History", {
+                query:     {
+                    option: 'getSearchQuery',
+                    startDate: dom.byId('startDate').value,
+                    startTime: dom.byId('startTime').value,
+                    endDate: dom.byId('endDate').value,
+                    endTime: dom.byId('endTime').value,
+                    host: dom.byId('host').value,
+                    userAgent: dom.byId('userAgent').value,
+                    requestString: dom.byId('requestString').value,
+                    status: dom.byId('status').value,
+                    contentSize: dom.byId('contentSize').value,
+                    maxResults: dom.byId('maxResults').value
+                },
+                handleAs: 'json',
+                sync: false,
+                preventCache: true
+            }).response.then(
+                function(response) {
+                    var query = response.data.query;
+                    that.searchEditor.setValue(query);
+                },
+                function(error) {
+                    net.apachegui.Util.alert('Error',error.response.data.message);
+                }
+            );
+
+        },
+
+        updateDeleteUpdate: function() {
+            var that = this;
+
+            request.get("../web/History", {
+                query:     {
+                    option: 'getDeleteUpdate',
+                    startDate: dom.byId('startDate').value,
+                    startTime: dom.byId('startTime').value,
+                    endDate: dom.byId('endDate').value,
+                    endTime: dom.byId('endTime').value,
+                    host: dom.byId('host').value,
+                    userAgent: dom.byId('userAgent').value,
+                    requestString: dom.byId('requestString').value,
+                    status: dom.byId('status').value,
+                    contentSize: dom.byId('contentSize').value
+                },
+                handleAs: 'json',
+                sync: false,
+                preventCache: true
+            }).response.then(
+                function(response) {
+                    var update = response.data.update;
+                    that.deleteEditor.setValue(update);
+                },
+                function(error) {
+                    net.apachegui.Util.alert('Error',error.response.data.message);
+                }
+            );
+
+        },
+
+        updateGraphQuery: function() {
+            var that = this;
+
+            request.get("../web/History", {
+                query: {
+                    option: 'getGraphQuery',
+                    date: dom.byId('graphDate').value,
+                    type: registry.byId('graphType').value,
+                    host: dom.byId('graphHost').value,
+                    userAgent: dom.byId('graphUserAgent').value,
+                    requestString: dom.byId('graphRequestString').value,
+                    status: dom.byId('graphStatus').value,
+                    contentSize: dom.byId('graphContentSize').value
+                },
+                handleAs: 'json',
+                sync: false,
+                preventCache: true
+            }).response.then(
+                function(response) {
+                    var query = response.data.query;
+                    that.graphEditor.setValue(query);
+                },
+                function(error) {
+                    net.apachegui.Util.alert('Error',error.response.data.message);
+                }
+            );
+
+        },
+
         buildGraph: function(hostsArray, container, type, toggle) {
             
             var items = [];
@@ -523,8 +636,15 @@ define([ "dojo/_base/declare",
             else if(!registry.byId('startDate').isValid() || !registry.byId('startTime').isValid() || !registry.byId('endDate').isValid() || !registry.byId('endTime').isValid()) {
                 net.apachegui.Util.alert("Error","Please fix required field formats");
             }
-            else {    
-                window.open('SearchResults.jsp?startDate=' + dom.byId('startDate').value + '&startTime=' + dom.byId('startTime').value + '&endDate=' + dom.byId('endDate').value + '&endTime=' + dom.byId('endTime').value + '&host=' + dom.byId('host').value + '&userAgent=' + escape(dom.byId('userAgent').value) + '&requestString=' + escape(dom.byId('requestString').value) + '&status=' + dom.byId('status').value + '&contentSize=' + dom.byId('contentSize').value + '&maxResults=' + dom.byId('maxResults').value);
+            else {
+
+                var query = {
+                    query: this.searchEditor.getValue()
+                };
+
+                var queryStr = ioQuery.objectToQuery(query);
+
+                window.open('SearchResults.jsp?' + queryStr);
             }
         },
         
@@ -543,16 +663,7 @@ define([ "dojo/_base/declare",
                 request.get("../web/SearchResults", {
                     query:     {
                         option: 'csv',
-                        startDate: dom.byId('startDate').value,
-                        startTime: dom.byId('startTime').value,
-                        endDate: dom.byId('endDate').value,
-                        endTime: dom.byId('endTime').value,
-                        host: dom.byId('host').value,
-                        userAgent: dom.byId('userAgent').value,
-                        requestString: dom.byId('requestString').value,
-                        status: dom.byId('status').value,
-                        contentSize: dom.byId('contentSize').value,
-                        maxResults: dom.byId('maxResults').value
+                        query: this.searchEditor.getValue()
                     },
                     handleAs: 'json',
                     sync: false,
@@ -572,7 +683,8 @@ define([ "dojo/_base/declare",
         },
         
         deleteHistory: function () {
-            
+            var that = this;
+
             net.apachegui.Util.confirmDialog(
                 "Please Confirm", 
                 "Are you sure you want to delete this History?",
@@ -584,15 +696,7 @@ define([ "dojo/_base/declare",
                         request.get("../web/SearchResults", {
                             query:     {
                                 option: 'delete',
-                                startDate: dom.byId('startDate').value,
-                                startTime: dom.byId('startTime').value,
-                                endDate: dom.byId('endDate').value,
-                                endTime: dom.byId('endTime').value,
-                                host: dom.byId('host').value,
-                                userAgent: dom.byId('userAgent').value,
-                                requestString: dom.byId('requestString').value,
-                                status: dom.byId('status').value,
-                                contentSize: dom.byId('contentSize').value
+                                update: that.deleteEditor.getValue()
                             },
                             handleAs: 'json',
                             sync: false,
@@ -683,7 +787,102 @@ define([ "dojo/_base/declare",
             on(registry.byId('saveDisableButton'), "click", function() {
                 that.updateNonGlobal(that.type.DISABLE);
             });
-            
+
+            registry.byId('search_database_query').watch("open", function(param, oldValue, newValue) {
+                if(newValue) {
+                    that.searchEditor.setValue(that.searchEditor.getValue());
+                }
+            });
+
+            registry.byId('delete_database_update').watch("open", function(param, oldValue, newValue) {
+                if(newValue) {
+                    that.deleteEditor.setValue(that.deleteEditor.getValue());
+                }
+            });
+
+            registry.byId('graph_database_query').watch("open", function(param, oldValue, newValue) {
+                if(newValue) {
+                    that.graphEditor.setValue(that.graphEditor.getValue());
+                }
+            });
+
+            /*Listen to search form changes*/
+            on(dijit.byId('startDate'), 'change', function() {
+                that.updateSearchQuery();
+                that.updateDeleteUpdate();
+            });
+            on(dijit.byId('startTime'), 'change', function() {
+                that.updateSearchQuery();
+                that.updateDeleteUpdate();
+            });
+            on(dijit.byId('endDate'), 'change', function() {
+                that.updateSearchQuery();
+                that.updateDeleteUpdate();
+            });
+            on(dijit.byId('endTime'), 'change', function() {
+                that.updateSearchQuery();
+                that.updateDeleteUpdate();
+            });
+
+            on(dom.byId('host'), 'change,keyup', function() {
+                that.updateSearchQuery();
+                that.updateDeleteUpdate();
+            });
+
+            on(dom.byId('userAgent'), 'change,keyup', function() {
+                that.updateSearchQuery();
+                that.updateDeleteUpdate();
+            });
+
+            on(dom.byId('requestString'), 'change,keyup', function() {
+                that.updateSearchQuery();
+                that.updateDeleteUpdate();
+            });
+
+            on(dom.byId('status'), 'change,keyup', function() {
+                that.updateSearchQuery();
+                that.updateDeleteUpdate();
+            });
+
+            on(dom.byId('contentSize'), 'change,keyup', function() {
+                that.updateSearchQuery();
+                that.updateDeleteUpdate();
+            });
+
+            on(dom.byId('maxResults'), 'change,keyup', function() {
+                that.updateSearchQuery();
+                that.updateDeleteUpdate();
+            });
+
+            /*Listen to graph form changes*/
+            on(dijit.byId('graphDate'), 'change', function() {
+                that.updateGraphQuery();
+            });
+
+            on(dijit.byId('graphType'), 'change', function() {
+                that.updateGraphQuery();
+            });
+
+            on(dom.byId('graphHost'), 'change,keyup', function() {
+                that.updateGraphQuery();
+            });
+
+            on(dom.byId('graphUserAgent'), 'change,keyup', function() {
+                that.updateGraphQuery();
+            });
+
+            on(dom.byId('graphRequestString'), 'change,keyup', function() {
+                that.updateGraphQuery();
+            });
+
+            on(dom.byId('graphStatus'), 'change,keyup', function() {
+                that.updateGraphQuery();
+            });
+
+            on(dom.byId('graphContentSize'), 'change,keyup', function() {
+                that.updateGraphQuery();
+            });
+
         }
     });
    

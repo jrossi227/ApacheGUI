@@ -20,23 +20,24 @@ public class SettingsController {
     public String getAllSettingsNames() {
 
         JSONObject result = new JSONObject();
-        result.put("init", Constants.init);
-        result.put("confDirectory", Constants.confDirectory);
-        result.put("confFile", Constants.confFile);
-        result.put("serverRoot", Constants.serverRoot);
-        result.put("logDirectory", Constants.logDirectory);
-        result.put("modulesDirectory", Constants.modulesDirectory);
-        result.put("binFile", Constants.binFile);
-        result.put("username", Constants.username);
-        result.put("password", Constants.password);
-        result.put("processsInfoRefreshRate", Constants.processInfoRefreshRate);
-        result.put("extendedStatus", Constants.extendedStatus);
-        result.put("historyRetention", Constants.historyRetention);
-        result.put("historyBuffer", Constants.historyBuffer);
-        result.put("theme", Constants.theme);
-        result.put("editorTheme", Constants.editorTheme);
-        result.put("showTabs", Constants.showTabs);
-        result.put("encoding", Constants.encoding);
+        result.put("init", Constants.INIT);
+        result.put("confDirectory", Constants.CONF_DIRECTORY);
+        result.put("confFile", Constants.CONF_FILE);
+        result.put("serverRoot", Constants.SERVER_ROOT);
+        result.put("logDirectory", Constants.LOG_DIRECTORY);
+        result.put("modulesDirectory", Constants.MODULES_DIRECTORY);
+        result.put("binFile", Constants.BIN_FILE);
+        result.put("username", Constants.USERNAME);
+        result.put("password", Constants.PASSWORD);
+        result.put("processsInfoRefreshRate", Constants.PROCESS_INFO_REFRESH_RATE);
+        result.put("extendedStatus", Constants.EXTENDED_STATUS);
+        result.put("historyRetention", Constants.HISTORY_RETENTION);
+        result.put("historyBuffer", Constants.HISTORY_BUFFER);
+        result.put("theme", Constants.THEME);
+        result.put("editorTheme", Constants.EDITOR_THEME);
+        result.put("showTabs", Constants.SHOW_TABS);
+        result.put("encoding", Constants.ENCODING);
+        result.put("enableAuthentication", Constants.ENABLE_AUTHENTICATION);
 
         return result.toString();
     }
@@ -45,7 +46,7 @@ public class SettingsController {
     public String getSetting(@RequestParam(value = "name") String name) {
 
         String value = "";
-        if (name.equals(Constants.username)) {
+        if (name.equals(Constants.USERNAME)) {
             value = UsersDao.getInstance().getUsername();
         } else {
             value = net.apachegui.db.SettingsDao.getInstance().getSetting(name);
@@ -65,7 +66,7 @@ public class SettingsController {
 
         value = value.trim();
 
-        if (name.equals(Constants.serverRoot)) {
+        if (name.equals(Constants.SERVER_ROOT)) {
             if (value.endsWith("/")) {
                 value = value.substring(0, value.length() - 1);
             }
@@ -81,7 +82,7 @@ public class SettingsController {
             
             value = (new File(value).getAbsolutePath());
         }
-        if (name.equals(Constants.confDirectory)) {
+        if (name.equals(Constants.CONF_DIRECTORY)) {
             if (value.endsWith("/")) {
                 value = value.substring(0, value.length() - 1);
             }
@@ -97,7 +98,7 @@ public class SettingsController {
             
             value = (new File(value).getAbsolutePath());
         }
-        if (name.equals(Constants.confFile)) {
+        if (name.equals(Constants.CONF_FILE)) {
             log.trace("Setting confFile " + value);
 
             if (!(new File(value).exists())) {
@@ -110,7 +111,7 @@ public class SettingsController {
             
             value = (new File(value).getAbsolutePath());
         }
-        if (name.equals(Constants.logDirectory)) {
+        if (name.equals(Constants.LOG_DIRECTORY)) {
             if (value.endsWith("/")) {
                 value = value.substring(0, value.length() - 1);
             }
@@ -126,7 +127,7 @@ public class SettingsController {
             
             value = (new File(value).getAbsolutePath());
         }
-        if (name.equals(Constants.modulesDirectory)) {
+        if (name.equals(Constants.MODULES_DIRECTORY)) {
             if (value.endsWith("/")) {
                 value = value.substring(0, value.length() - 1);
             }
@@ -142,7 +143,7 @@ public class SettingsController {
             
             value = (new File(value).getAbsolutePath());
         }
-        if (name.equals(Constants.binFile)) {
+        if (name.equals(Constants.BIN_FILE)) {
             log.trace("Setting binFile " + value);
 
             if (!(new File(value).exists())) {
@@ -155,7 +156,7 @@ public class SettingsController {
             
             value = (new File(value).getAbsolutePath());
         }
-        if (name.equals(Constants.historyRetention) || name.equals(Constants.historyBuffer)) {
+        if (name.equals(Constants.HISTORY_RETENTION) || name.equals(Constants.HISTORY_BUFFER)) {
             log.trace("Setting historyRetention/historyBuffer " + value);
 
             try {
@@ -165,12 +166,12 @@ public class SettingsController {
             }
         }
 
-        if (name.equals(Constants.username)) {
+        if (name.equals(Constants.USERNAME)) {
             UsersDao.getInstance().setUsername(value);
-        } else if (name.equals(Constants.password)) {
+        } else if (name.equals(Constants.PASSWORD)) {
             UsersDao.getInstance().setPassword(value);
-        } else if (name.equals(Constants.confFile)) {
-            net.apachegui.db.SettingsDao.getInstance().setSetting(Constants.confFile, value);
+        } else if (name.equals(Constants.CONF_FILE)) {
+            net.apachegui.db.SettingsDao.getInstance().setSetting(Constants.CONF_FILE, value);
         } else {
             net.apachegui.db.SettingsDao.getInstance().setSetting(name, value);
         }

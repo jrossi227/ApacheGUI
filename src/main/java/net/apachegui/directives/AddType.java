@@ -15,7 +15,7 @@ public class AddType extends GlobalFactoryDirective {
     private String[] extensions;
 
     public AddType() {
-        super(Constants.addTypeDirective);
+        super(Constants.ADD_TYPE_DIRECTIVE);
         this.type = "";
         this.extensions = null;
     }
@@ -29,7 +29,7 @@ public class AddType extends GlobalFactoryDirective {
      *            - A String with a valid apache AddType directive value
      */
     public AddType(String directiveValue) {
-        super(Constants.addTypeDirective);
+        super(Constants.ADD_TYPE_DIRECTIVE);
 
         directiveValue = Utils.sanitizeLineSpaces(directiveValue);
 
@@ -45,7 +45,7 @@ public class AddType extends GlobalFactoryDirective {
     }
 
     public AddType(String type, String[] extensions) {
-        super(Constants.addTypeDirective);
+        super(Constants.ADD_TYPE_DIRECTIVE);
 
         this.type = type;
         this.extensions = extensions;
@@ -102,7 +102,7 @@ public class AddType extends GlobalFactoryDirective {
     public AddType[] getAllGlobalConfigured() throws Exception {
         ArrayList<AddType> addTypes = new ArrayList<AddType>();
 
-        String allAddTypes[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        String allAddTypes[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
         for (int i = 0; i < allAddTypes.length; i++) {
             addTypes.add(new AddType(allAddTypes[i]));

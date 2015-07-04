@@ -30,16 +30,17 @@ public class GUISettingsController {
 
         JSONArray items = new JSONArray();
 
-        items.put(createJSON(Constants.serverRoot, "Server Root", SettingsDao.getInstance().getSetting(Constants.serverRoot)));
-        items.put(createJSON(Constants.confDirectory, "Configuration Directory", SettingsDao.getInstance().getSetting(Constants.confDirectory)));
-        items.put(createJSON(Constants.confFile, "Configuration File", SettingsDao.getInstance().getSetting(Constants.confFile)));
-        items.put(createJSON(Constants.logDirectory, "Logs Directory", SettingsDao.getInstance().getSetting(Constants.logDirectory)));
-        items.put(createJSON(Constants.modulesDirectory, "Modules Directory", SettingsDao.getInstance().getSetting(Constants.modulesDirectory)));
-        items.put(createJSON(Constants.binFile, "Bin File", SettingsDao.getInstance().getSetting(Constants.binFile)));
-        items.put(createJSON(Constants.username, "Username", UsersDao.getInstance().getUsername()));
-        items.put(createJSON(Constants.password, "Password", "************"));
-        items.put(createJSON(Constants.theme, "Theme", SettingsDao.getInstance().getSetting(Constants.theme)));
-        items.put(createJSON(Constants.encoding, "Document Encoding", "UTF-8"));
+        items.put(createJSON(Constants.SERVER_ROOT, "Server Root", SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT)));
+        items.put(createJSON(Constants.CONF_DIRECTORY, "Configuration Directory", SettingsDao.getInstance().getSetting(Constants.CONF_DIRECTORY)));
+        items.put(createJSON(Constants.CONF_FILE, "Configuration File", SettingsDao.getInstance().getSetting(Constants.CONF_FILE)));
+        items.put(createJSON(Constants.LOG_DIRECTORY, "Logs Directory", SettingsDao.getInstance().getSetting(Constants.LOG_DIRECTORY)));
+        items.put(createJSON(Constants.MODULES_DIRECTORY, "Modules Directory", SettingsDao.getInstance().getSetting(Constants.MODULES_DIRECTORY)));
+        items.put(createJSON(Constants.BIN_FILE, "Bin File", SettingsDao.getInstance().getSetting(Constants.BIN_FILE)));
+        items.put(createJSON(Constants.USERNAME, "Username", UsersDao.getInstance().getUsername()));
+        items.put(createJSON(Constants.PASSWORD, "Password", "************"));
+        items.put(createJSON(Constants.THEME, "Theme", SettingsDao.getInstance().getSetting(Constants.THEME)));
+        items.put(createJSON(Constants.ENCODING, "Document Encoding", "UTF-8"));
+        items.put(createJSON(Constants.ENABLE_AUTHENTICATION, "Enable Authentication", SettingsDao.getInstance().getSetting(Constants.ENABLE_AUTHENTICATION)));
 
         result.put("items", items);
 
@@ -58,7 +59,7 @@ public class GUISettingsController {
     @RequestMapping(method = RequestMethod.POST, params = "option=newServer", produces = "application/json;charset=UTF-8")
     public String newServer() throws SQLException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
-        JdbcConnection.getInstance().clearDatabase();
+        JdbcConnection.clearAllDatabases();
         log.trace("Database Cleared");
 
         JSONObject result = new JSONObject();
@@ -69,7 +70,7 @@ public class GUISettingsController {
     @RequestMapping(method = RequestMethod.GET, params = "option=getServerInfo", produces = "text/plain;charset=UTF-8")
     public String getServerInfo() throws IOException, InterruptedException {
 
-        return ServerInfo.getServerInfo(null).replaceAll(Constants.newLine, "<br/>");
+        return ServerInfo.getServerInfo(null).replaceAll(Constants.NEW_LINE, "<br/>");
     }
 
 }

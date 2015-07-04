@@ -62,7 +62,7 @@ public class LogsController {
             if (patternMatcher.find()) {
                 list.addFirst(strLine);
 
-                if (list.size() > Constants.maximumSearchResults) {
+                if (list.size() > Constants.MAXIMUM_SEARCH_RESULTS) {
                     list.removeLast();
                 }
             }
@@ -74,7 +74,7 @@ public class LogsController {
         StringBuffer response = new StringBuffer();
         while (it.hasNext()) {
             String line = it.next();
-            response.append(line + Constants.newLine);
+            response.append(line + Constants.NEW_LINE);
         }
 
         return response.toString();
@@ -138,7 +138,7 @@ public class LogsController {
         File file = new File(filename);
         log.trace("export called with searchFilter " + searchFilter + " file " + file.getAbsolutePath());
 
-        File outputFile = new File(Utilities.getWebappDirectory(), "search/" + Constants.searchFile);
+        File outputFile = new File(Utilities.getWebappDirectory(), "search/" + Constants.SEARCH_FILE);
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputFile));
 
         FileInputStream fstream = new FileInputStream(file);

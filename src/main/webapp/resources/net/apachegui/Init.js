@@ -66,7 +66,8 @@ define([ "dojo/_base/declare",
                       serverRoot: dom.byId('serverRootSource').value,
                       username: dom.byId('usernameSource').value,
                       password1: dom.byId('password1Source').value,
-                      password2: dom.byId('password2Source').value
+                      password2: dom.byId('password2Source').value,
+                      enableAuthenticationSource: registry.byId('enableAuthenticationSource').get('value')
                 };
             }    
             
@@ -82,7 +83,8 @@ define([ "dojo/_base/declare",
                       binFile: dom.byId('binFilePackage').value,
                       username: dom.byId('usernamePackage').value,
                       password1: dom.byId('password1Package').value,
-                      password2: dom.byId('password2Package').value
+                      password2: dom.byId('password2Package').value,
+                      enableAuthenticationPackage: registry.byId('enableAuthenticationPackage').get('value')
                 };
             }
                         

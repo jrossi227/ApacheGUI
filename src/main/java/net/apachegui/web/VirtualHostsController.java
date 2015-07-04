@@ -158,10 +158,10 @@ public class VirtualHostsController {
                 documentRoot = documentRoot + "\""; 
             }
         }
-        String virtualHost = "<VirtualHost " + networkInfo.toString() + ">" + Constants.newLine 
-                + (serverName.equals("") ? "" : ("    ServerName " + serverName + Constants.newLine)) 
-                + (documentRoot.equals("") ? "" : ("    DocumentRoot " + documentRoot + Constants.newLine))
-                + "</VirtualHost>" + Constants.newLine;
+        String virtualHost = "<VirtualHost " + networkInfo.toString() + ">" + Constants.NEW_LINE
+                + (serverName.equals("") ? "" : ("    ServerName " + serverName + Constants.NEW_LINE))
+                + (documentRoot.equals("") ? "" : ("    DocumentRoot " + documentRoot + Constants.NEW_LINE))
+                + "</VirtualHost>" + Constants.NEW_LINE;
 
         File fileObj = new File(file);
         String path = fileObj.getAbsolutePath();
@@ -177,8 +177,8 @@ public class VirtualHostsController {
 
         Utils.setPermissions(fileObj);
 
-        String rootConfFile = SettingsDao.getInstance().getSetting(Constants.confFile);
-        String activeFileList[] = new Parser(rootConfFile, SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules())
+        String rootConfFile = SettingsDao.getInstance().getSetting(Constants.CONF_FILE);
+        String activeFileList[] = new Parser(rootConfFile, SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules())
                 .getActiveConfFileList();
 
         boolean found = false;

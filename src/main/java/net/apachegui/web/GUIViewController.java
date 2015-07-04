@@ -3,7 +3,6 @@ package net.apachegui.web;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import net.apachegui.conf.ServerMime;
 import net.apachegui.db.LogDataDao;
+import net.apachegui.db.Timestamp;
 import net.apachegui.db.UsersDao;
 import net.apachegui.directives.Group;
 import net.apachegui.directives.KeepAlive;
@@ -28,6 +28,7 @@ import net.apachegui.global.Constants;
 import net.apachegui.global.Utilities;
 import net.apachegui.server.ServerInfo;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -41,14 +42,16 @@ import apache.conf.parser.File;
 @Controller
 public class GUIViewController {
 
+    private static Logger log = Logger.getLogger(GUIViewController.class);
+
     @ModelAttribute("theme")
     public String getTheme() {
-        return ((net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.theme) == null) ? Constants.defaultTheme : net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.theme));
+        return ((net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.THEME) == null) ? Constants.DEFAULT_THEME : net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.THEME));
     }
 
     @ModelAttribute("version")
     public String getVersion() {
-        return Constants.version;
+        return Constants.VERSION;
     }
 
     @ModelAttribute("windows")
@@ -56,14 +59,22 @@ public class GUIViewController {
         return Utils.isWindows();
     }
 
+    @ModelAttribute("enableAuthentication")
+    public String getEnableAuthentication() {
+        String enableAuthentication = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.ENABLE_AUTHENTICATION);
+        enableAuthentication = (enableAuthentication == null ? "" : enableAuthentication);
+
+        return enableAuthentication;
+    }
+
     @ModelAttribute("confDirectory")
     public String getConfDirectory() {
-        return net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.confDirectory);
+        return net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.CONF_DIRECTORY);
     }
 
     @ModelAttribute("restartWarning")
     public String getRestartWarning() {
-        return Constants.restartWarning;
+        return Constants.RESTART_WARNING;
     }
 
     @RequestMapping(value = "/")
@@ -95,7 +106,7 @@ public class GUIViewController {
         model.addAttribute("advisory", UsersDao.getInstance().getLoginAdvisory());
 
         String userAgent = request.getHeader("User-Agent");
-        model.addAttribute("supportedBrowser", Utils.matchUserAgent(userAgent, Constants.supportedUserAgentRegex));
+        model.addAttribute("supportedBrowser", Utils.matchUserAgent(userAgent, Constants.SUPPORTED_USER_AGENT_REGEX));
         model.addAttribute("error", error == null ? false : true);
 
         return "views/Login";
@@ -119,29 +130,17 @@ public class GUIViewController {
     @RequestMapping(value = "/jsp/GUISettings.jsp")
     public String renderGUISettingsViewJsp(Model model) {
 
-        model.addAttribute("website", Constants.website);
-        model.addAttribute("supportWebsite", Constants.supportWebsite);
-        model.addAttribute("supportAddress", Constants.supportAddress);
+        model.addAttribute("website", Constants.WEBSITE);
+        model.addAttribute("supportWebsite", Constants.SUPPORT_WEBSITE);
+        model.addAttribute("supportAddress", Constants.SUPPORT_ADDRESS);
 
         return "views/GUISettings";
     }
 
     @RequestMapping(value = "/jsp/SearchResults.jsp")
-    public String renderSearchResultsViewJsp(@RequestParam(value = "startDate") String startDate, @RequestParam(value = "startTime") String startTime, @RequestParam(value = "endDate") String endDate,
-            @RequestParam(value = "endTime") String endTime, @RequestParam(value = "host") String host, @RequestParam(value = "userAgent") String userAgent,
-            @RequestParam(value = "requestString") String requestString, @RequestParam(value = "status") String status, @RequestParam(value = "contentSize") String contentSize,
-            @RequestParam(value = "maxResults") String maxResults, Model model) throws UnsupportedEncodingException {
+    public String renderSearchResultsViewJsp(@RequestParam(value = "query") String query, Model model) throws UnsupportedEncodingException {
 
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("startTime", startTime);
-        model.addAttribute("endDate", endDate);
-        model.addAttribute("endTime", endTime);
-        model.addAttribute("host", host);
-        model.addAttribute("userAgent", URLEncoder.encode(userAgent, "UTF-8"));
-        model.addAttribute("requestString", URLEncoder.encode(requestString, "UTF-8"));
-        model.addAttribute("status", status);
-        model.addAttribute("contentSize", contentSize);
-        model.addAttribute("maxResults", maxResults);
+        model.addAttribute("query", URLEncoder.encode(query, "UTF-8"));
 
         return "views/SearchResults";
     }
@@ -149,7 +148,7 @@ public class GUIViewController {
     @RequestMapping(value = "/jsp/GenerateGraph.jsp")
     public String renderGenerateGraphViewJsp(@RequestParam(value = "date") String date, @RequestParam(value = "type") String type, @RequestParam(value = "host") String host,
             @RequestParam(value = "userAgent") String userAgent, @RequestParam(value = "requestString") String requestString, @RequestParam(value = "status") String status,
-            @RequestParam(value = "contentSize") String contentSize, Model model) throws UnsupportedEncodingException, ParseException {
+            @RequestParam(value = "contentSize") String contentSize, Model model) throws Exception {
 
         Calendar cal = Calendar.getInstance();
 
@@ -157,9 +156,9 @@ public class GUIViewController {
         if (type.equals("day")) {
             SimpleDateFormat startDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             java.util.Date startParsedDate = startDateFormat.parse(date + " 00:00:00");
-            java.sql.Timestamp startTimestamp = new java.sql.Timestamp(startParsedDate.getTime());
-            cal.setTimeInMillis(startTimestamp.getTime());
-            int hourCount[] = LogDataDao.getInstance().getDailyReportByHour(startTimestamp, host, userAgent, requestString, status, contentSize);
+            Timestamp startTimestamp = new Timestamp(startParsedDate.getTime());
+            String query = LogDataDao.getInstance().generateDailyReportByHourQuery(startTimestamp, host, userAgent, requestString, status, contentSize);
+            int hourCount[] = LogDataDao.getInstance().executeDailyReportByHourQuery(query);
             for (int i = 0; i < hourCount.length; i++) {
                 coordinates.append("[" + i + "," + hourCount[i] + "]");
                 if (i != (hourCount.length - 1))
@@ -169,9 +168,10 @@ public class GUIViewController {
         if (type.equals("month")) {
             SimpleDateFormat startDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             java.util.Date startParsedDate = startDateFormat.parse(date + " 00:00:00");
-            java.sql.Timestamp startTimestamp = new java.sql.Timestamp(startParsedDate.getTime());
-            cal.setTimeInMillis(startTimestamp.getTime());
-            int dayCount[] = LogDataDao.getInstance().getMonthlyReportByDay(startTimestamp, host, userAgent, requestString, status, contentSize);
+            Timestamp startTimestamp = new Timestamp(startParsedDate.getTime());
+            cal.setTimeInMillis(startParsedDate.getTime());
+            String query = LogDataDao.getInstance().generateMonthlyReportByDayQuery(startTimestamp, host, userAgent, requestString, status, contentSize);
+            int dayCount[] = LogDataDao.getInstance().executeMonthlyReportByDayQuery(query, startTimestamp);
 
             for (int i = 1; i < dayCount.length; i++) {
                 coordinates.append("[" + i + "," + dayCount[i] + "]");
@@ -247,9 +247,9 @@ public class GUIViewController {
     @RequestMapping(value = "/jsp/Control.jsp")
     public String renderControlViewJsp(Model model) throws Exception {
 
-        String startCommand = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.binFile) + " " + (Utils.isWindows() ? "-k" : "");
-        String stopCommand = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.binFile) + " " + (Utils.isWindows() ? "-k" : "");
-        String restartCommand = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.binFile) + " " + (Utils.isWindows() ? "-k" : "");
+        String startCommand = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.BIN_FILE) + " " + (Utils.isWindows() ? "-k" : "");
+        String stopCommand = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.BIN_FILE) + " " + (Utils.isWindows() ? "-k" : "");
+        String restartCommand = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.BIN_FILE) + " " + (Utils.isWindows() ? "-k" : "");
 
         model.addAttribute("startCommand", startCommand);
         model.addAttribute("stopCommand", stopCommand);
@@ -287,6 +287,15 @@ public class GUIViewController {
     public String renderVirtualHostsViewJsp() {
 
         return "views/VirtualHosts";
+    }
+
+    // Catch all view render
+    @RequestMapping(value = "/jsp/History.jsp")
+    public String renderHistoryViewJsp(Model model) {
+
+        model.addAttribute("databaseFile", (new File(Utilities.getTomcatInstallDirectory(), "db/apachegui-history-database.db")).getAbsolutePath());
+
+        return "views/History";
     }
 
     // Catch all view render
@@ -351,10 +360,10 @@ public class GUIViewController {
     @RequestMapping(value = "/jsp/global_settings/Modules.jsp")
     public String renderModulesViewJsp(Model model) throws Exception {
 
-        model.addAttribute("modulesDirectory", net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.modulesDirectory));
-        model.addAttribute("availableModulesType", Constants.availableModulesType);
-        model.addAttribute("sharedModulesType", Constants.sharedModulesType);
-        model.addAttribute("staticModulesType", Constants.staticModulesType);
+        model.addAttribute("modulesDirectory", net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.MODULES_DIRECTORY));
+        model.addAttribute("availableModulesType", Constants.AVAILABLE_MODULES_TYPE);
+        model.addAttribute("sharedModulesType", Constants.SHARED_MODULES_TYPE);
+        model.addAttribute("staticModulesType", Constants.STATIC_MODULES_TYPE);
 
         return "views/global_settings/Modules";
     }

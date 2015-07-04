@@ -27,14 +27,14 @@ public class ExtendedStatus {
     public static boolean isExtendedStatusModuleLoaded() throws Exception {
         StaticModule staticModules[] = StaticModuleHandler.getStaticModules();
         for (int i = 0; i < staticModules.length; i++) {
-            if (staticModules[i].getName().equals(Constants.ServerStatusModuleName)) {
+            if (staticModules[i].getName().equals(Constants.SERVER_STATUS_MODULE_NAME)) {
                 return true;
             }
         }
 
         SharedModule sharedModules[] = SharedModuleHandler.getSharedModules();
         for (int i = 0; i < sharedModules.length; i++) {
-            if (sharedModules[i].getName().equals(Constants.ServerStatusModuleName)) {
+            if (sharedModules[i].getName().equals(Constants.SERVER_STATUS_MODULE_NAME)) {
                 return true;
             }
         }
@@ -77,19 +77,19 @@ public class ExtendedStatus {
      */
     public static boolean checkExtendedStatusEnclosure() throws Exception {
         log.trace("ExtendedStatusControl.checkExtendedStatusEnclosure called");
-        log.trace("Checking for Extended Status Enclosure " + "\"" + Constants.locationDirectiveString + "\"");
-        Enclosure enclosure[] = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
-                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.locationDirectiveString, false);
+        log.trace("Checking for Extended Status Enclosure " + "\"" + Constants.LOCATION_DIRECTIVE_STRING + "\"");
+        Enclosure enclosure[] = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
+                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.LOCATION_DIRECTIVE_STRING, false);
         Directive directives[] = null;
         for (int i = 0; i < enclosure.length; i++) {
             directives = enclosure[i].getDirectives();
             for (int j = 0; j < directives.length; j++) {
-                if (directives[j].getType().equals(Constants.setHandlerDirectiveString)) {
-                    log.trace("Found " + Constants.setHandlerDirectiveString);
+                if (directives[j].getType().equals(Constants.SET_HANDLER_DIRECTIVE_STRING)) {
+                    log.trace("Found " + Constants.SET_HANDLER_DIRECTIVE_STRING);
                     if (directives[j].getValues().length > 0) {
-                        log.trace(Constants.setHandlerDirectiveString + " has value " + directives[j].getValues()[0]);
-                        if (directives[j].getValues()[0].equals(Constants.serverInfoString)) {
-                            log.trace("found " + Constants.serverInfoString);
+                        log.trace(Constants.SET_HANDLER_DIRECTIVE_STRING + " has value " + directives[j].getValues()[0]);
+                        if (directives[j].getValues()[0].equals(Constants.SERVER_INFO_STRING)) {
+                            log.trace("found " + Constants.SERVER_INFO_STRING);
                             log.trace("Extended status enclosure found");
                             return true;
                         }
@@ -111,11 +111,11 @@ public class ExtendedStatus {
      */
     public static boolean checkExtendedStatusDirective() throws Exception {
         log.trace("ExtendedStatusControl.checkExtendedStatusDirective called");
-        log.trace("Checking for Extended Status Directive " + "\"" + Constants.extendedStatusDirectiveString + "\"");
-        String extendedStatusCheck[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
-                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.extendedStatusDirectiveString, false);
+        log.trace("Checking for Extended Status Directive " + "\"" + Constants.EXTENDED_STATUS_DIRECTIVE_STRING + "\"");
+        String extendedStatusCheck[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
+                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.EXTENDED_STATUS_DIRECTIVE_STRING, false);
         if (extendedStatusCheck.length > 0) {
-            log.trace("found " + Constants.extendedStatusDirectiveString);
+            log.trace("found " + Constants.EXTENDED_STATUS_DIRECTIVE_STRING);
             if (extendedStatusCheck[0].toLowerCase().equals("on")) {
                 log.trace("Extended status directive found and is set to on");
                 return true;
@@ -147,27 +147,27 @@ public class ExtendedStatus {
         String URL = null;
 
         // Check the listen directive for a listening port
-        String rootURL = Utilities.findRootURL(Constants.extendedProcessHost);
+        String rootURL = Utilities.findRootURL(Constants.EXTENDED_PROCESS_HOST);
         log.trace("rootURL " + rootURL);
 
         String path = "";
 
-        log.trace("Searching for Enclosure " + Constants.locationDirectiveString);
-        Enclosure enclosure[] = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
-                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.locationDirectiveString, false);
+        log.trace("Searching for Enclosure " + Constants.LOCATION_DIRECTIVE_STRING);
+        Enclosure enclosure[] = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
+                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.LOCATION_DIRECTIVE_STRING, false);
         Directive directives[] = null;
         boolean foundDirective = false;
         for (int i = 0; i < enclosure.length && !foundDirective; i++) {
-            log.trace("Enclosure " + Constants.locationDirectiveString + " found searching through directives for " + Constants.setHandlerDirectiveString);
+            log.trace("Enclosure " + Constants.LOCATION_DIRECTIVE_STRING + " found searching through directives for " + Constants.SET_HANDLER_DIRECTIVE_STRING);
             directives = enclosure[i].getDirectives();
             for (int j = 0; j < directives.length; j++) {
                 log.trace("Directive " + directives[j].getType());
-                if (directives[j].getType().equals(Constants.setHandlerDirectiveString)) {
-                    log.trace("Found " + Constants.setHandlerDirectiveString);
+                if (directives[j].getType().equals(Constants.SET_HANDLER_DIRECTIVE_STRING)) {
+                    log.trace("Found " + Constants.SET_HANDLER_DIRECTIVE_STRING);
                     if (directives[j].getValues().length > 0) {
-                        log.trace(Constants.setHandlerDirectiveString + " has value " + directives[j].getValues()[0] + " Checking if it matches " + Constants.serverInfoString);
-                        if (directives[j].getValues()[0].equals(Constants.serverInfoString)) {
-                            log.trace(Constants.setHandlerDirectiveString + " has value " + directives[j].getValues()[0] + " Setting path " + enclosure[i].getValue());
+                        log.trace(Constants.SET_HANDLER_DIRECTIVE_STRING + " has value " + directives[j].getValues()[0] + " Checking if it matches " + Constants.SERVER_INFO_STRING);
+                        if (directives[j].getValues()[0].equals(Constants.SERVER_INFO_STRING)) {
+                            log.trace(Constants.SET_HANDLER_DIRECTIVE_STRING + " has value " + directives[j].getValues()[0] + " Setting path " + enclosure[i].getValue());
                             path = enclosure[i].getValue().replaceAll("\"", "");
                             foundDirective = true;
                         }

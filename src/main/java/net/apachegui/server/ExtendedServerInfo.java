@@ -58,9 +58,9 @@ public class ExtendedServerInfo extends ExtendedStatus {
     public static ExtendedServerInfo getExtendedServerInfo() {
         log.trace("ExtendedServerInfo.getExtendedServerInfo called");
 
-        if (SettingsDao.getInstance().getSetting(Constants.extendedStatus).equals("on")) {
+        if (SettingsDao.getInstance().getSetting(Constants.EXTENDED_STATUS).equals("on")) {
             try {
-                String url = getExtendedStatusURL() + Constants.readableExtendedServerInfoQueryString;
+                String url = getExtendedStatusURL() + Constants.READABLE_EXTENDED_SERVER_INFO_QUERY_STRING;
                 log.trace("URL to scrape " + url);
 
                 URL extendedServerInfo = new URL(url);
@@ -79,32 +79,32 @@ public class ExtendedServerInfo extends ExtendedStatus {
                 }
                 in.close();
 
-                String totalRequests = extractString(Constants.totalRequestsRegex, page);
+                String totalRequests = extractString(Constants.TOTAL_REQUESTS_REGEX, page);
                 log.trace("totalRequests: " + totalRequests);
 
-                String totalKB = extractString(Constants.totalKBRegex, page);
+                String totalKB = extractString(Constants.TOTAL_KB_REGEX, page);
                 log.trace("totalKB: " + totalKB);
 
-                String cpuUsage = extractString(Constants.cpuUsageRegex, page);
+                String cpuUsage = extractString(Constants.CPU_USAGE_REGEX, page);
                 log.trace("cpuUsage: " + cpuUsage);
 
-                String upTime = extractString(Constants.upTimeRegex, page);
+                String upTime = extractString(Constants.UP_TIME_REGEX, page);
                 log.trace("upTime: " + upTime);
                 upTime = convertUpTime(upTime);
 
-                String requestsPerSecond = extractString(Constants.requestsPerSecondRegex, page);
+                String requestsPerSecond = extractString(Constants.REQUESTS_PER_SECOND_REGEX, page);
                 log.trace("requestsPerSecond: " + requestsPerSecond);
 
-                String bytesPerSecond = extractString(Constants.bytesPerSecondRegex, page);
+                String bytesPerSecond = extractString(Constants.BYTES_PER_SECOND_REGEX, page);
                 log.trace("bytesPerSecond: " + bytesPerSecond);
 
-                String bytesPerRequest = extractString(Constants.bytesPerRequestRegex, page);
+                String bytesPerRequest = extractString(Constants.BYTES_PER_REQUEST_REGEX, page);
                 log.trace("bytesPerRequest: " + bytesPerRequest);
 
-                String busyWorkers = extractString(Constants.busyWorkersRegex, page);
+                String busyWorkers = extractString(Constants.BUSY_WORKERS_REGEX, page);
                 log.trace("busyWorkers: " + busyWorkers);
 
-                String idleWorkers = extractString(Constants.idleWorkersRegex, page);
+                String idleWorkers = extractString(Constants.IDLE_WORKERS_REGEX, page);
                 log.trace("idleWorkers: " + idleWorkers);
 
                 return (new ExtendedServerInfo(totalRequests, totalKB, cpuUsage, upTime, requestsPerSecond, bytesPerSecond, bytesPerRequest, busyWorkers, idleWorkers));

@@ -71,10 +71,10 @@ public class ConfigurationController {
         String fileText = "";
         File file = new File(path);
         try {
-            if (file.length() < Constants.maximumDocumentFilesize) {
+            if (file.length() < Constants.MAXIMUM_DOCUMENT_FILESIZE) {
                 fileText = Utils.readFileAsString(file, Charset.forName("UTF-8"));
             } else {
-                fileText = "The Document is too large to render. The document must be less than " + Constants.maximumDocumentFilesize + " Bytes";
+                fileText = "The Document is too large to render. The document must be less than " + Constants.MAXIMUM_DOCUMENT_FILESIZE + " Bytes";
             }
         } catch (Exception e) {
             fileText = "File Not Found!!";
@@ -91,7 +91,7 @@ public class ConfigurationController {
         JSONArray results = net.apachegui.conf.Configuration.searchConfiguration(filter, activeFilesFilter, commentsFilter);
 
         JSONObject result = new JSONObject();
-        result.put("maxResults", Integer.toString(Constants.maximumConfigurationSearchResults));
+        result.put("maxResults", Integer.toString(Constants.MAXIMUM_CONFIGURATION_SEARCH_RESULTS));
         result.put("results", results);
 
         return result.toString();

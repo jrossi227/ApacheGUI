@@ -1,0 +1,121 @@
+Home Page http://apachegui.ca
+
+This version of ApacheGUI has been validated against Apache 2.2, and Apache 2.4 on the following OS's:
+Solaris 10, Ubuntu, Debian, Fedora, Cent OS, RHEL, Open SUSE, SUSE, MAC OSX 10.6,10.7,10.8
+
+CONTENTS:
+1. INSTALLATION
+2. PACKAGE SETTINGS
+3. ENDPOINTS
+4. PORTS
+5. LOGGING
+6. SSL
+
+***********************************************************
+**********************INSTALLATION*************************
+***********************************************************
+You will need a Java jdk in order to run Apache GUI. It is recommended that you install a jdk through your Operating System's package manager.
+
+1. Extract ApacheGUI.tar.gz to the desired location of install. For the purposes of these steps we will refer to this directory as [APACHEGUI_HOME].
+
+2. Open a terminal and switch to root permissions. You should be prompted for a password if you try to start ApacheGUI without root permissions.
+
+3. Set your JAVA_HOME environment variable to the pathname of the directory of your jdk. ApacheGUI will not start without a valid JAVA_HOME. If you install Java from a package manager JAVA_HOME should already be set up and you may skip this step.
+
+4. To start the web tool go to [APACHEGUI_HOME]/bin and run the command:
+#./run.sh
+Once the GUI has been started it may be accessed through http://localhost:9999/ApacheGUI/
+
+5. To stop the web tool to [APACHEGUI_HOME]/bin and run the command:
+#./stop.sh
+  
+*************************************************************
+***********************PACKAGE SETTINGS**********************
+*************************************************************
+The following settings can be used to configure the GUI if you have installed Apache by using your Operating System's package manager. These settings are not applicable if you have installed Apache from source.
+
+Mac OSX
+Server Root: /usr
+Primary Configuration File: /etc/apache2/httpd.conf
+Configuration Directory: /etc/apache2
+Log Directory: /var/log/apache2
+Modules Directory: /usr/libexec/apache2
+Binary File: /usr/sbin/apachectl 
+
+Debian, Ubuntu, Other Debian variants
+Server Root: /etc/apache2
+Primary Configuration File: /etc/apache2/apache2.conf
+Configuration Directory: /etc/apache2
+Log Directory: /var/log/apache2
+Modules Directory: /usr/lib/apache2/modules
+Binary File: /usr/sbin/apache2ctl
+
+Fedora, CentOS, RHEL, other fedora variants
+Server Root: /etc/httpd
+Primary Configuration File: /etc/httpd/conf/httpd.conf
+Configuration Directory: /etc/httpd
+Log Directory: /var/log/httpd
+Modules Directory: /etc/httpd/modules
+Binary File: /usr/sbin/apachectl
+
+OpenSUSE and SLES
+Server Root: /etc/apache2
+Primary Configuration File: /etc/apache2/httpd.conf
+Configuration Directory: /etc/apache2
+Log Directory: /var/log/apache2
+Modules Directory: /usr/lib/apache2 (32 bit OS) or /usr/lib64/apache2 (64 bit OS)
+Binary File: /usr/sbin/apache2ctl
+
+*************************************************************
+************************ENDPOINTS****************************
+*************************************************************
+ApacheGUI is configured by default to run using http on port 9999.
+
+The default endpoint and credentials are:
+
+http://[HOST]:9999/ApacheGUI/
+Username: admin
+Password: admin
+
+You may change the username and password when configuring ApacheGUI after the first login.
+
+*************************************************************
+************************PORTS********************************
+*************************************************************
+The ApacheGUI runs by default on port 9999.
+
+To change or add a port open [APACHEGUI_HOME]/tomcat/conf/server.xml and add or modify a connector.
+
+The following is the default connector that you will see in the server.xml file:
+
+<Connector port="9999" protocol="HTTP/1.1"
+       connectionTimeout="20000"
+       redirectPort="8443"
+       URIEncoding="UTF-8" />
+
+You may change the port 9999 in the above connector or add a new connector to the file.
+
+You must restart ApacheGUI for any connector changes to take affect.
+
+Please see the following for more information on tomcat connectors:
+http://tomcat.apache.org/tomcat-7.0-doc/config/http.html
+
+*************************************************************
+************************LOGGING******************************
+*************************************************************
+ApacheGUI currently only logs errors.
+
+The error output is logged to the following file:
+
+[APACHEGUI_HOME]/tomcat/logs/catalina.out
+
+*************************************************************
+************************SSL**********************************
+*************************************************************
+SSL has not been configured by default due to the fact that each server requires a different ssl certificate. The ApacheGUI runs on tomcat 7.
+
+As such the following tutorial can be used to configure SSL:
+http://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html
+
+The following endpoint may be used once SSL has been configured:
+https://[HOST]:[SSLPORT]/ApacheGUI/

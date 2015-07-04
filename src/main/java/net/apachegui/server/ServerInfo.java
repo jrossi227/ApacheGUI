@@ -37,7 +37,7 @@ public class ServerInfo {
         String output = "";
 
         if (binFile == null) {
-            output = Utils.RunProcessWithOutput(getVersionCommand(SettingsDao.getInstance().getSetting(Constants.binFile)));
+            output = Utils.RunProcessWithOutput(getVersionCommand(SettingsDao.getInstance().getSetting(Constants.BIN_FILE)));
         } else {
             output = Utils.RunProcessWithOutput(getVersionCommand(binFile));
         }
@@ -57,7 +57,7 @@ public class ServerInfo {
     public static String getServerVersionString(String binFile) throws IOException, InterruptedException {
         String info = getServerInfo(binFile);
 
-        Pattern pattern = Pattern.compile(Constants.versionRegex, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(Constants.VERSION_REGEX, Pattern.CASE_INSENSITIVE);
         java.util.regex.Matcher patternMatcher = null;
 
         BufferedReader reader = new BufferedReader(new StringReader(info));
@@ -90,7 +90,7 @@ public class ServerInfo {
             return false;
         }
 
-        Pattern pattern = Pattern.compile(Constants.versionSupportedRegex, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(Constants.VERSION_SUPPORTED_REGEX, Pattern.CASE_INSENSITIVE);
         java.util.regex.Matcher patternMatcher = pattern.matcher(versionString);
 
         if (patternMatcher.find()) {
@@ -112,7 +112,7 @@ public class ServerInfo {
     public static boolean isTwoPointTwo(String binFile) throws IOException, InterruptedException {
         String versionString = getServerVersionString(binFile);
 
-        return isVersion(versionString, Constants.versionTwoPointTwoRegex);
+        return isVersion(versionString, Constants.VERSION_TWO_POINT_TWO_REGEX);
     }
 
     /**
@@ -127,7 +127,7 @@ public class ServerInfo {
     public static boolean isTwoPointThree(String binFile) throws IOException, InterruptedException {
         String versionString = getServerVersionString(binFile);
 
-        return isVersion(versionString, Constants.versionTwoPointThreeRegex);
+        return isVersion(versionString, Constants.VERSION_TWO_POINT_THREE_REGEX);
     }
 
     /**
@@ -142,7 +142,7 @@ public class ServerInfo {
     public static boolean isTwoPointFour(String binFile) throws IOException, InterruptedException {
         String versionString = getServerVersionString(binFile);
 
-        return isVersion(versionString, Constants.versionTwoPointFourRegex);
+        return isVersion(versionString, Constants.VERSION_TWO_POINT_FOUR_REGEX);
     }
 
     /**

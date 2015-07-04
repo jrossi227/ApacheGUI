@@ -33,10 +33,10 @@ public class DocFiles {
 
         log.trace("DocFiles.getDirectories called Getting all directory enclosures");
 
-        String serverRoot = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.serverRoot);
+        String serverRoot = net.apachegui.db.SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT);
 
-        Enclosure directories[] = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
-                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.directoryDirectiveString, true);
+        Enclosure directories[] = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
+                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getEnclosure(Constants.DIRECTORY_DIRECTIVE_STRING, true);
 
         ArrayList<String> docFiles = new ArrayList<String>();
 
@@ -56,8 +56,8 @@ public class DocFiles {
         }
 
         // get DocumentRoot(s) here
-        String documentRoots[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
-                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.documentRootDirectiveString, true);
+        String documentRoots[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
+                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(Constants.DOCUMENT_ROOT_DIRECTIVE_STRING, true);
 
         String documentRoot;
         for (int i = 0; i < documentRoots.length; i++) {
@@ -112,7 +112,7 @@ public class DocFiles {
         }
 
         StringBuffer result = new StringBuffer();
-        result.append("{ id: '" + Constants.DocumentsRoot + targetDirectory.getAbsolutePath() + "', name:'" + (targetDirectory.equals(docDirectory) ? "Documents" : targetDirectory.getName())
+        result.append("{ id: '" + Constants.DOCUMENTS_ROOT + targetDirectory.getAbsolutePath() + "', name:'" + (targetDirectory.equals(docDirectory) ? "Documents" : targetDirectory.getName())
                 + "', type:'Documents', children:[");
 
         java.io.File[] children = targetDirectory.listFiles();
@@ -127,7 +127,7 @@ public class DocFiles {
                     if ((Utils.isSubDirectory(new File(child.getAbsolutePath()), new File(documentDirectories[j])) || Utils.isSubDirectory(new File(documentDirectories[j]),
                             new File(child.getAbsolutePath())))
                             && (!usedChildren.contains(child.getAbsolutePath()))) {
-                        result.append("{ $ref: '" + Constants.DocumentsRoot + child.getAbsolutePath() + "', id:'" + Constants.DocumentsRoot + child.getAbsolutePath() + "', type:'Documents', name: '"
+                        result.append("{ $ref: '" + Constants.DOCUMENTS_ROOT + child.getAbsolutePath() + "', id:'" + Constants.DOCUMENTS_ROOT + child.getAbsolutePath() + "', type:'Documents', name: '"
                                 + child.getName() + "', children: true},");
                         usedChildren.add(child.getAbsolutePath());
                     }
@@ -140,7 +140,7 @@ public class DocFiles {
                 ArrayList<String> usedChildren = new ArrayList<String>();
                 for (int j = 0; j < documentDirectories.length; j++) {
                     if ((documentDirectories[j].startsWith(child.getAbsolutePath()) || child.getAbsolutePath().startsWith(documentDirectories[j])) && (!usedChildren.contains(child.getAbsolutePath()))) {
-                        result.append("{ $ref: '" + Constants.DocumentsRoot + child.getAbsolutePath() + "', id:'" + Constants.DocumentsRoot + child.getAbsolutePath() + "', type:'Documents', name: '"
+                        result.append("{ $ref: '" + Constants.DOCUMENTS_ROOT + child.getAbsolutePath() + "', id:'" + Constants.DOCUMENTS_ROOT + child.getAbsolutePath() + "', type:'Documents', name: '"
                                 + child.getName() + "'},");
                         usedChildren.add(child.getAbsolutePath());
                     }

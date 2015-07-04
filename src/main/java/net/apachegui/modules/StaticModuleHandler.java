@@ -18,7 +18,7 @@ public class StaticModuleHandler extends ModuleHandler {
      */
     public static StaticModule[] getStaticModules() throws Exception {
         if (savedStaticModules == null) {
-            StaticModuleParser parser = new StaticModuleParser(new File(SettingsDao.getInstance().getSetting(Constants.binFile)));
+            StaticModuleParser parser = new StaticModuleParser(new File(SettingsDao.getInstance().getSetting(Constants.BIN_FILE)));
 
             savedStaticModules = parser.getStaticModules();
         }

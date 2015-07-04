@@ -39,12 +39,12 @@ public class MenuController {
     public void menuRoot(HttpServletResponse response) throws Exception {
         PrintWriter out = response.getWriter();
 
-        String confDirectory = SettingsDao.getInstance().getSetting(Constants.confDirectory);
-        String logDirectory = SettingsDao.getInstance().getSetting(Constants.logDirectory);
+        String confDirectory = SettingsDao.getInstance().getSetting(Constants.CONF_DIRECTORY);
+        String logDirectory = SettingsDao.getInstance().getSetting(Constants.LOG_DIRECTORY);
 
-        out.print("[" + "{ $ref: '" + Constants.ConfigurationRoot + confDirectory + "', name:'Configuration', id:'" + Constants.ConfigurationRoot + confDirectory + "', children:true}," + "{ $ref: '"
-                + Constants.DocumentsRoot + (Utils.isWindows() ? Utilities.getFileSystemDrive() : "/") + "', name:'Documents', id:'" + Constants.DocumentsRoot
-                + (Utils.isWindows() ? Utilities.getFileSystemDrive() : "/") + "', children:true}," + "{ $ref: '" + Constants.LogsRoot + logDirectory + "', name:'Logs', id:'" + Constants.LogsRoot
+        out.print("[" + "{ $ref: '" + Constants.CONFIGURATION_ROOT + confDirectory + "', name:'Configuration', id:'" + Constants.CONFIGURATION_ROOT + confDirectory + "', children:true}," + "{ $ref: '"
+                + Constants.DOCUMENTS_ROOT + (Utils.isWindows() ? Utilities.getFileSystemDrive() : "/") + "', name:'Documents', id:'" + Constants.DOCUMENTS_ROOT
+                + (Utils.isWindows() ? Utilities.getFileSystemDrive() : "/") + "', children:true}," + "{ $ref: '" + Constants.LOGS_ROOT + logDirectory + "', name:'Logs', id:'" + Constants.LOGS_ROOT
                 + logDirectory + "', children:true}," + "{ $ref: 'Control', name:'Control', id:'Control', type:'Control'},"
                 + "{ $ref: 'Global_Settings', name:'Global Settings', id:'Global_Settings', type:'Global_Settings'},"
                 + "{ $ref: 'Virtual_Hosts', name:'Virtual Hosts', id:'Virtual_Hosts', type:'Virtual_Hosts'}," + "{ $ref: 'History', name:'History', id:'History', type:'History'},"
@@ -58,16 +58,16 @@ public class MenuController {
 
         String path = URLDecoder.decode(request.getRequestURI().substring(request.getContextPath().length() + "/web/Menu/rest/".length()), "UTF-8");
 
-        if (path.startsWith(Constants.ConfigurationRoot)) {
-            out.print(ConfFiles.getNodeJson(path.substring(Constants.ConfigurationRoot.length())));
+        if (path.startsWith(Constants.CONFIGURATION_ROOT)) {
+            out.print(ConfFiles.getNodeJson(path.substring(Constants.CONFIGURATION_ROOT.length())));
         }
 
-        if (path.startsWith(Constants.DocumentsRoot)) {
-            out.print(DocFiles.getNodeJson(path.substring(Constants.DocumentsRoot.length())));
+        if (path.startsWith(Constants.DOCUMENTS_ROOT)) {
+            out.print(DocFiles.getNodeJson(path.substring(Constants.DOCUMENTS_ROOT.length())));
         }
 
-        if (path.startsWith(Constants.LogsRoot)) {
-            out.print(LogFiles.getNodeJson(path.substring(Constants.LogsRoot.length())));
+        if (path.startsWith(Constants.LOGS_ROOT)) {
+            out.print(LogFiles.getNodeJson(path.substring(Constants.LOGS_ROOT.length())));
         }
     }
 
@@ -231,7 +231,7 @@ public class MenuController {
 
         case IDLE:
             JSONOut.put("status", "done");
-            JSONOut.put("maxResults", Constants.maximumConfigurationSearchResults);
+            JSONOut.put("maxResults", Constants.MAXIMUM_CONFIGURATION_SEARCH_RESULTS);
             JSONOut.put("results", SearchTask.getLastResults());
             break;
 

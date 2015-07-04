@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>			
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
@@ -18,10 +18,10 @@
 
 //Dojo configuration needs to be included before script import
 var dojoConfig = {
-	isDebug: false,
-	cacheBust: true,
-	parseOnLoad: false,
-	locale: "en-us"
+    isDebug: false,
+    cacheBust: true,
+    parseOnLoad: false,
+    locale: "en-us"
 };
 
 </script>
@@ -34,8 +34,8 @@ var dojoConfig = {
 
 <script>
 require([ "net/apachegui/Main"
-], function(Main){	
-	net.apachegui.Main.getInstance().setApacheGuiVersion('${version}');
-	net.apachegui.Main.getInstance().setIsWindows(${windows});
+], function(Main){
+    net.apachegui.Main.getInstance().setApacheGuiVersion('${version}');
+    net.apachegui.Main.getInstance().setIsWindows(${windows});
 });
 </script>

@@ -13,7 +13,7 @@ public class ServerName extends GlobalSingletonDirective {
     private int port;
 
     public ServerName() {
-        super(Constants.serverNameDirectiveString);
+        super(Constants.SERVER_NAME_DIRECTIVE_STRING);
 
         this.scheme = "";
         this.port = -1;
@@ -28,7 +28,7 @@ public class ServerName extends GlobalSingletonDirective {
      * @param directiveValue
      */
     public ServerName(String directiveValue) {
-        super(Constants.serverNameDirectiveString);
+        super(Constants.SERVER_NAME_DIRECTIVE_STRING);
 
         this.scheme = "";
         this.port = -1;
@@ -106,7 +106,7 @@ public class ServerName extends GlobalSingletonDirective {
 
     @Override
     public ServerName getGlobalConfigured() throws Exception {
-        String serverName[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        String serverName[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 
         ServerName serverNameFound = null;

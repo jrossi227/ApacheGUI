@@ -15,7 +15,7 @@ public class ServerAlias extends BaseDirective {
     private ArrayList<String> hostnames;
     
     public ServerAlias() {
-        super(Constants.serverAliasDirectiveString);
+        super(Constants.SERVER_ALIAS_DIRECTIVE_STRING);
 
         this.hostnames = new ArrayList<String>();
     }

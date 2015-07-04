@@ -27,7 +27,7 @@ public class History {
 
         CustomLog customLogs[] = CustomLog.getAllCustomLogs();
         for (CustomLog customLog : customLogs) {
-            if (customLog.getFormatOrNickname().equals(Constants.historyLogHolder)) {
+            if (customLog.getFormatOrNickname().equals(Constants.HISTORY_LOG_HOLDER)) {
                 return true;
             }
         }
@@ -38,14 +38,21 @@ public class History {
     private static String[] getIncludeStrings() {
 
         File cat = new File(Utilities.getTomcatInstallDirectory());
-        File java = new File(Utilities.getJavaHome(), "bin/java" + (Utils.isWindows() ? ".exe" : ""));
+
+        String javaExecutablePath = Utilities.getJavaExecutablePath();
+        String java;
+        if(javaExecutablePath != null) {
+            java = javaExecutablePath;
+        } else {
+            java = (new File(Utilities.getJavaHome(), "bin/java" + (Utils.isWindows() ? ".exe" : ""))).getAbsolutePath();
+        }
 
         ArrayList<String> includeStrings = new ArrayList<String>();
-        includeStrings.add("#This section is written by the apache gui do not manually edit " + Constants.historyLogHolder);
-        includeStrings.add("LogFormat \"%h\\\",\\\"%{User-agent}i\\\",\\\"%r\\\",\\\"%>s\\\",\\\"%B\" " + Constants.historyLogHolder);
+        includeStrings.add("#This section is written by the apache gui do not manually edit " + Constants.HISTORY_LOG_HOLDER);
+        includeStrings.add("LogFormat \"%h\\\",\\\"%{User-agent}i\\\",\\\"%r\\\",\\\"%>s\\\",\\\"%B\" " + Constants.HISTORY_LOG_HOLDER);
 
-        includeStrings.add("CustomLog \"|\\\"" + java.getAbsolutePath() + "\\\" -jar \\\"" + (new File(cat, "bin/LogParser.jar")).getAbsolutePath() + "\\\" \\\""
-                + (new File(cat, "conf/server.xml")).getAbsolutePath() + "\\\"\" " + Constants.historyLogHolder);
+        includeStrings.add("CustomLog \"|\\\"" + java + "\\\" -jar \\\"" + (new File(cat, "bin/LogParser.jar")).getAbsolutePath() + "\\\" \\\""
+                + cat.getAbsolutePath() + "\\\"\" " + Constants.HISTORY_LOG_HOLDER);
 
         return includeStrings.toArray(new String[includeStrings.size()]);
     }
@@ -56,7 +63,7 @@ public class History {
         
         String includeStrings[] = getIncludeStrings();
         for(String include: includeStrings) {
-            includeString += include + Constants.newLine;
+            includeString += include + Constants.NEW_LINE;
         }
         
         return includeString;
@@ -74,8 +81,8 @@ public class History {
 
         String originalContents = ConfFiles.appendToGUIConfigFile(getIncludeString());
         
-        String confDirectory = SettingsDao.getInstance().getSetting(Constants.confDirectory);
-        File guiFile = (new File(confDirectory, Constants.guiConfFile));
+        String confDirectory = SettingsDao.getInstance().getSetting(Constants.CONF_DIRECTORY);
+        File guiFile = (new File(confDirectory, Constants.GUI_CONF_FILE));
         Configuration.testChanges(guiFile.getAbsolutePath(), originalContents);
     }
 
@@ -89,10 +96,10 @@ public class History {
             return;
         }
 
-        String originalContents = ConfFiles.removeFromGUIConfigFile(".*" + Constants.historyLogHolder + ".*");
+        String originalContents = ConfFiles.removeFromGUIConfigFile(".*" + Constants.HISTORY_LOG_HOLDER + ".*");
         
-        String confDirectory = SettingsDao.getInstance().getSetting(Constants.confDirectory);
-        File guiFile = (new File(confDirectory, Constants.guiConfFile));
+        String confDirectory = SettingsDao.getInstance().getSetting(Constants.CONF_DIRECTORY);
+        File guiFile = (new File(confDirectory, Constants.GUI_CONF_FILE));
         Configuration.testChanges(guiFile.getAbsolutePath(), originalContents);
     }
 
@@ -102,7 +109,7 @@ public class History {
     }
 
     public static void disable(VirtualHost host) throws Exception {
-        String originalContents = ConfFiles.deleteFromConfigFile(Pattern.compile(".*" + Constants.historyLogHolder + ".*", Pattern.CASE_INSENSITIVE), new File(host.getEnclosure().getFile()), host.getEnclosure().getLineOfStart(), host.getEnclosure().getLineOfEnd(), true);
+        String originalContents = ConfFiles.deleteFromConfigFile(Pattern.compile(".*" + Constants.HISTORY_LOG_HOLDER + ".*", Pattern.CASE_INSENSITIVE), new File(host.getEnclosure().getFile()), host.getEnclosure().getLineOfStart(), host.getEnclosure().getLineOfEnd(), true);
         Configuration.testChanges(host.getEnclosure().getFile(), originalContents);
     }
 
@@ -125,10 +132,10 @@ public class History {
             directives = virtualHost.getEnclosure().getDirectives();
 
             for (Directive directive : directives) {
-                if (directive.getType().equals(Constants.customLogDirective)) {
+                if (directive.getType().equals(Constants.CUSTOM_LOG_DIRECTIVE)) {
                     values = directive.getValues();
                     for (String value : values) {
-                        if (value.equals(Constants.historyLogHolder)) {
+                        if (value.equals(Constants.HISTORY_LOG_HOLDER)) {
                             enabledVirtualHosts.add(virtualHost);
 
                             continue OUTER;
@@ -164,12 +171,12 @@ public class History {
             directives = virtualHost.getEnclosure().getDirectives();
 
             for (Directive directive : directives) {
-                if (directive.getType().equals(Constants.customLogDirective)) {
+                if (directive.getType().equals(Constants.CUSTOM_LOG_DIRECTIVE)) {
                     containsCustomLog = true;
 
                     values = directive.getValues();
                     for (String value : values) {
-                        if (value.equals(Constants.historyLogHolder)) {
+                        if (value.equals(Constants.HISTORY_LOG_HOLDER)) {
                             continue OUTER;
                         }
                     }
@@ -205,7 +212,7 @@ public class History {
             directives = virtualHost.getEnclosure().getDirectives();
 
             for (Directive directive : directives) {
-                if (directive.getType().equals(Constants.customLogDirective)) {
+                if (directive.getType().equals(Constants.CUSTOM_LOG_DIRECTIVE)) {
                     containsCustomLog = true;
                     break;
                 }

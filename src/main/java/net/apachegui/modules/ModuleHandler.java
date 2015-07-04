@@ -42,10 +42,10 @@ public class ModuleHandler {
     public static String getModuleConfigString(String name) {
         String configString = "";
         if (Utils.isWindows()) {
-            configString = Constants.loadModuleDirective + " " + name + " \"" + (new File(SettingsDao.getInstance().getSetting(Constants.modulesDirectory), nameToFilename(name))).getAbsolutePath()
+            configString = Constants.LOAD_MODULE_DIRECTIVE + " " + name + " \"" + (new File(SettingsDao.getInstance().getSetting(Constants.MODULES_DIRECTORY), nameToFilename(name))).getAbsolutePath()
                     + "\"";
         } else {
-            configString = Constants.loadModuleDirective + " " + name + " " + (new File(SettingsDao.getInstance().getSetting(Constants.modulesDirectory), nameToFilename(name))).getAbsolutePath();
+            configString = Constants.LOAD_MODULE_DIRECTIVE + " " + name + " " + (new File(SettingsDao.getInstance().getSetting(Constants.MODULES_DIRECTORY), nameToFilename(name))).getAbsolutePath();
         }
         return configString;
     }

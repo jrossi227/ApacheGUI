@@ -253,7 +253,7 @@ public class ExtendedRunningProcess extends ExtendedStatus {
      */
     public static ExtendedRunningProcess[] getExtendedRunningProcessInfo() {
         log.trace("ExtendedRunningProcess.getExtendedRunningProcessInfo called");
-        if (SettingsDao.getInstance().getSetting(Constants.extendedStatus).equals("on")) {
+        if (SettingsDao.getInstance().getSetting(Constants.EXTENDED_STATUS).equals("on")) {
             try {
                 String url = getExtendedStatusURL();
                 log.trace("URL to scrape " + url);

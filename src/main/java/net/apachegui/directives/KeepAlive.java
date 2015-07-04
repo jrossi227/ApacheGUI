@@ -10,7 +10,7 @@ public class KeepAlive extends GlobalSingletonDirective {
     private boolean status;
 
     public KeepAlive() {
-        super(Constants.keepAliveDirective);
+        super(Constants.KEEP_ALIVE_DIRECTIVE);
 
         this.status = false;
     }
@@ -21,7 +21,7 @@ public class KeepAlive extends GlobalSingletonDirective {
      *            - true if status is on, false if status is off
      */
     public KeepAlive(boolean status) {
-        super(Constants.keepAliveDirective);
+        super(Constants.KEEP_ALIVE_DIRECTIVE);
 
         this.status = status;
     }
@@ -34,7 +34,7 @@ public class KeepAlive extends GlobalSingletonDirective {
      * @param directiveValue
      */
     public KeepAlive(String directiveValue) {
-        super(Constants.keepAliveDirective);
+        super(Constants.KEEP_ALIVE_DIRECTIVE);
 
         directiveValue = directiveValue.trim().toLowerCase();
 
@@ -71,7 +71,7 @@ public class KeepAlive extends GlobalSingletonDirective {
      */
     @Override
     public KeepAlive getGlobalConfigured() throws Exception {
-        String keepAlive[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot),
+        String keepAlive[] = new DirectiveParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules()).getDirectiveValue(directiveName, false);
 
         KeepAlive keepAliveFound = null;

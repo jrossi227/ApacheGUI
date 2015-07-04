@@ -155,7 +155,7 @@ public class SearchTask implements Runnable {
                         object.put("line", line);
                         object.put("content", Utilities.processSearchResultContent(strLine, patternMatcher.group()));
 
-                        if (results.length() < Constants.maximumFileSearchResults) {
+                        if (results.length() < Constants.MAXIMUM_FILE_SEARCH_RESULTS) {
                             results.put(object);
                         } else {
                             br.close();

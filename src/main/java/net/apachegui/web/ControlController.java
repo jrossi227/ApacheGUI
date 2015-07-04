@@ -35,7 +35,7 @@ public class ControlController {
         try {
             running = net.apachegui.server.Control.isServerRunning();
         } catch (Exception e) {
-            log.error("Process command: " + Constants.runningProcessName + " not found!!");
+            log.error("Process command: " + Constants.RUNNING_PROCESS_NAME + " not found!!");
         }
 
         JSONObject result = new JSONObject();
@@ -46,7 +46,7 @@ public class ControlController {
 
         log.trace("getting extended process info");
 
-        if (SettingsDao.getInstance().getSetting(Constants.extendedStatus).equals("on") && running) {
+        if (SettingsDao.getInstance().getSetting(Constants.EXTENDED_STATUS).equals("on") && running) {
             ExtendedRunningProcess processes[] = ExtendedRunningProcess.getExtendedRunningProcessInfo();
 
             if (processes == null) {
@@ -86,7 +86,7 @@ public class ControlController {
         try {
             running = net.apachegui.server.Control.isServerRunning();
         } catch (Exception e) {
-            log.error("Process command: " + Constants.runningProcessName + " not found!!");
+            log.error("Process command: " + Constants.RUNNING_PROCESS_NAME + " not found!!");
         }
 
         JSONObject result = new JSONObject();
@@ -100,7 +100,7 @@ public class ControlController {
         result.put("busyWorkers", "");
         result.put("idleWorkers", "");
 
-        if (SettingsDao.getInstance().getSetting(Constants.extendedStatus).equals("on") && running) {
+        if (SettingsDao.getInstance().getSetting(Constants.EXTENDED_STATUS).equals("on") && running) {
             ExtendedServerInfo extendedServerInfo = ExtendedServerInfo.getExtendedServerInfo();
 
             if (extendedServerInfo == null) {
@@ -128,7 +128,7 @@ public class ControlController {
     public String runningProcesses() throws Exception {
 
         log.trace("getting process info");
-        RunningProcess processes[] = RunningProcess.getRunningProcessInfo(Constants.runningProcessName);
+        RunningProcess processes[] = RunningProcess.getRunningProcessInfo(Constants.RUNNING_PROCESS_NAME);
 
         JSONObject result = new JSONObject();
         result.put("identifier", "id");
@@ -185,10 +185,10 @@ public class ControlController {
 
         JSONObject resultJSON = new JSONObject();
         try {
-            log.trace("checking " + Constants.processInfoCommand);
+            log.trace("checking " + Constants.PROCESS_INFO_COMMAND);
             net.apachegui.server.Control.isServerRunning();
 
-            log.trace("checking " + Constants.processKillCommand);
+            log.trace("checking " + Constants.PROCESS_KILL_COMMAND);
             RunningProcess.killProcess("9999999999");
 
             resultJSON.put("result", "success");
@@ -197,7 +197,7 @@ public class ControlController {
             e.printStackTrace(new PrintWriter(sw));
             log.error(sw.toString());
 
-            throw new Exception(Constants.processInfoCommandAdivsory);
+            throw new Exception(Constants.PROCESS_INFO_COMMAND_ADIVSORY);
         }
 
         return resultJSON.toString();
@@ -211,11 +211,11 @@ public class ControlController {
         JSONObject result = new JSONObject();
         if (off.equals("true") || processInfoRefreshRate.equals("0")) {
             log.trace("off is true setting processInfoRefreshRate to 0");
-            SettingsDao.getInstance().setSetting(Constants.processInfoRefreshRate, "0");
+            SettingsDao.getInstance().setSetting(Constants.PROCESS_INFO_REFRESH_RATE, "0");
             result.put("result", 0);
         } else {
             log.trace("Setting processInfoRefreshRate to " + processInfoRefreshRate);
-            SettingsDao.getInstance().setSetting(Constants.processInfoRefreshRate, processInfoRefreshRate);
+            SettingsDao.getInstance().setSetting(Constants.PROCESS_INFO_REFRESH_RATE, processInfoRefreshRate);
             result.put("result", processInfoRefreshRate);
         }
 
@@ -227,7 +227,7 @@ public class ControlController {
         JSONObject result = new JSONObject();
 
         try {
-            String currentExtendedStatus = SettingsDao.getInstance().getSetting(Constants.extendedStatus);
+            String currentExtendedStatus = SettingsDao.getInstance().getSetting(Constants.EXTENDED_STATUS);
 
             boolean change = false;
             if ((on.equals("true") && currentExtendedStatus.equals("off")) || (on.equals("false") && currentExtendedStatus.equals("on"))) {
@@ -237,36 +237,36 @@ public class ControlController {
             if (on.equals("true") && currentExtendedStatus.equals("off")) {
                 if (ExtendedStatus.checkExtendedStatusRestart()) {
                     // Comment out existing mod_status logic
-                    new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.confFile), SettingsDao.getInstance().getSetting(Constants.serverRoot), StaticModuleHandler.getStaticModules(),
+                    new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT), StaticModuleHandler.getStaticModules(),
                             SharedModuleHandler.getSharedModules()).deleteEnclosure("IfModule", Pattern.compile("mod_status\\.c"), true, false);
 
                     // Load the module if it isn't loaded
                     if (!ExtendedStatus.isExtendedStatusModuleLoaded()) {
-                        SharedModuleHandler.installModule(Constants.ServerStatusModuleName);
+                        SharedModuleHandler.installModule(Constants.SERVER_STATUS_MODULE_NAME);
                     }
 
                     // the handler isnt set
                     if (!ExtendedStatus.checkExtendedStatusEnclosure() && ExtendedStatus.checkExtendedStatusDirective()) {
-                        if (ServerInfo.isTwoPointTwo(SettingsDao.getInstance().getSetting(Constants.binFile))) {
-                            ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointTwo);
+                        if (ServerInfo.isTwoPointTwo(SettingsDao.getInstance().getSetting(Constants.BIN_FILE))) {
+                            ConfFiles.appendToGUIConfigFile(Constants.EXTENDED_STATUS_ENCLOSURE_TWO_POINT_TWO);
                         } else {
-                            ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointFour);
+                            ConfFiles.appendToGUIConfigFile(Constants.EXTENDED_STATUS_ENCLOSURE_TWO_POINT_FOUR);
                         }
                     }
                     // the extended status directive isnt set
                     else if (ExtendedStatus.checkExtendedStatusEnclosure() && !ExtendedStatus.checkExtendedStatusDirective()) {
-                        ConfFiles.deleteFromConfigFiles(Constants.extendedStatusDirectiveString, false);
-                        ConfFiles.appendToGUIConfigFile(Constants.extendedStatusDirective);
+                        ConfFiles.deleteFromConfigFiles(Constants.EXTENDED_STATUS_DIRECTIVE_STRING, false);
+                        ConfFiles.appendToGUIConfigFile(Constants.EXTENDED_STATUS_DIRECTIVE);
                     }
                     // both the handler isnt set and extended status isnt set
                     else {
-                        ConfFiles.deleteFromConfigFiles(Constants.extendedStatusDirectiveString, false);
-                        if (ServerInfo.isTwoPointTwo(SettingsDao.getInstance().getSetting(Constants.binFile))) {
-                            ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointTwo);
+                        ConfFiles.deleteFromConfigFiles(Constants.EXTENDED_STATUS_DIRECTIVE_STRING, false);
+                        if (ServerInfo.isTwoPointTwo(SettingsDao.getInstance().getSetting(Constants.BIN_FILE))) {
+                            ConfFiles.appendToGUIConfigFile(Constants.EXTENDED_STATUS_ENCLOSURE_TWO_POINT_TWO);
                         } else {
-                            ConfFiles.appendToGUIConfigFile(Constants.extendedStatusEnclosureTwoPointFour);
+                            ConfFiles.appendToGUIConfigFile(Constants.EXTENDED_STATUS_ENCLOSURE_TWO_POINT_FOUR);
                         }
-                        ConfFiles.appendToGUIConfigFile(Constants.extendedStatusDirective);
+                        ConfFiles.appendToGUIConfigFile(Constants.EXTENDED_STATUS_DIRECTIVE);
                     }
                     if (net.apachegui.server.Control.isServerRunning()) {
                         net.apachegui.server.Control.restartServer();
@@ -275,12 +275,12 @@ public class ControlController {
                         }
                     }
                 }
-                SettingsDao.getInstance().setSetting(Constants.extendedStatus, "on");
+                SettingsDao.getInstance().setSetting(Constants.EXTENDED_STATUS, "on");
                 result.put("result", "on");
                 result.put("change", change);
             }
             if (on.equals("false") && currentExtendedStatus.equals("on")) {
-                SettingsDao.getInstance().setSetting(Constants.extendedStatus, "off");
+                SettingsDao.getInstance().setSetting(Constants.EXTENDED_STATUS, "off");
                 result.put("result", "off");
                 result.put("change", change);
             }
@@ -307,7 +307,7 @@ public class ControlController {
 
         try {
             boolean isExtendedStatusModuleLoaded = ExtendedStatus.isExtendedStatusModuleLoaded();
-            boolean isExtendedStatusModuleAvailable = AvailableModuleHandler.exists(Constants.ServerStatusModuleName);
+            boolean isExtendedStatusModuleAvailable = AvailableModuleHandler.exists(Constants.SERVER_STATUS_MODULE_NAME);
 
             boolean isLoaded = true;
             if (!isExtendedStatusModuleLoaded && !isExtendedStatusModuleAvailable) {
@@ -402,7 +402,7 @@ public class ControlController {
     public String isExtendedStatusEnabled() throws Exception {
         JSONObject result = new JSONObject();
 
-        String extendedStatus = SettingsDao.getInstance().getSetting(Constants.extendedStatus);
+        String extendedStatus = SettingsDao.getInstance().getSetting(Constants.EXTENDED_STATUS);
         if (extendedStatus.equals("on")) {
             result.put("result", true);
         }
@@ -417,7 +417,7 @@ public class ControlController {
     public String getRefreshRate() throws Exception {
         JSONObject result = new JSONObject();
 
-        result.put("result", SettingsDao.getInstance().getSetting(Constants.processInfoRefreshRate));
+        result.put("result", SettingsDao.getInstance().getSetting(Constants.PROCESS_INFO_REFRESH_RATE));
 
         return result.toString();
     }

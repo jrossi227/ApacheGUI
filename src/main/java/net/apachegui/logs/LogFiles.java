@@ -17,7 +17,7 @@ public class LogFiles {
      * @throws IOException
      */
     public static String[] getLogFileList() throws IOException {
-        String logDirectory = SettingsDao.getInstance().getSetting(Constants.logDirectory);
+        String logDirectory = SettingsDao.getInstance().getSetting(Constants.LOG_DIRECTORY);
 
         return Utils.getFileList(new File(logDirectory));
     }
@@ -32,10 +32,10 @@ public class LogFiles {
     public static String getNodeJson(String path) {
 
         File targetDirectory = new File(path);
-        File logDirectory = new File(SettingsDao.getInstance().getSetting(Constants.logDirectory));
+        File logDirectory = new File(SettingsDao.getInstance().getSetting(Constants.LOG_DIRECTORY));
 
         StringBuffer result = new StringBuffer();
-        result.append("{ id: '" + Constants.LogsRoot + targetDirectory.getAbsolutePath() + "', name:'" + (targetDirectory.equals(logDirectory) ? "Logs" : targetDirectory.getName())
+        result.append("{ id: '" + Constants.LOGS_ROOT + targetDirectory.getAbsolutePath() + "', name:'" + (targetDirectory.equals(logDirectory) ? "Logs" : targetDirectory.getName())
                 + "', type:'Logs', children:[");
 
         java.io.File[] children = targetDirectory.listFiles();
@@ -45,14 +45,14 @@ public class LogFiles {
         for (int i = 0; i < children.length; i++) {
             child = new File(children[i]);
             if (child.isDirectory()) {
-                result.append("{ $ref: '" + Constants.LogsRoot + child.getAbsolutePath() + "', id:'" + Constants.LogsRoot + child.getAbsolutePath() + "', type:'Logs', name: '" + child.getName()
+                result.append("{ $ref: '" + Constants.LOGS_ROOT + child.getAbsolutePath() + "', id:'" + Constants.LOGS_ROOT + child.getAbsolutePath() + "', type:'Logs', name: '" + child.getName()
                         + "', children: true},");
             }
         }
         for (int i = 0; i < children.length; i++) {
             child = new File(children[i]);
             if (!child.isDirectory()) {
-                result.append("{ $ref: '" + Constants.LogsRoot + child.getAbsolutePath() + "', id:'" + Constants.LogsRoot + child.getAbsolutePath() + "', type:'Logs', name: '" + child.getName()
+                result.append("{ $ref: '" + Constants.LOGS_ROOT + child.getAbsolutePath() + "', id:'" + Constants.LOGS_ROOT + child.getAbsolutePath() + "', type:'Logs', name: '" + child.getName()
                         + "'},");
             }
         }
