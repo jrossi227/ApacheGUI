@@ -29,8 +29,8 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 
 ####Build Dependancies
 
-- Node js
-- Maven 2+
+- Node js v0.10.25+
+- Maven 3+
 - Java 1.6+
 
 ####Linux / Mac OSX development environment
