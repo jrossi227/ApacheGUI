@@ -79,9 +79,45 @@
     </target>
     
     <target name="install" depends="unix.install,windows.install"></target>
-    
+
+    <target name="windows.buildpackage" if="isWindows">
+
+        <exec dir="${apachegui.home}/bin" executable="cmd">
+            <arg value="/c"/>
+            <arg value="stop.bat"/>
+        </exec>
+
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="${package.dir}" includes="**/*"/>
+        </delete>
+
+        <mkdir dir="${package.dir}/ApacheGUI"/>
+
+        <echo message="Copying project"/>
+        <copy todir="${package.dir}/ApacheGUI">
+            <fileset dir="${apachegui.home}"/>
+        </copy>
+
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="${package.dir}" includes="**/*.log"/>
+            <fileset dir="${package.dir}" includes="**/*.gitignore"/>
+            <fileset dir="${package.dir}/ApacheGUI/tomcat/logs" includes="**/*"/>
+            <fileset dir="${package.dir}/ApacheGUI/tomcat/temp" includes="**/*"/>
+            <fileset dir="${package.dir}/ApacheGUI/tomcat/db" includes="**/*"/>
+        </delete>
+
+        <echo message="Copying default database"/>
+        <copy file="${package.dir}/ApacheGUI/bin/default-gui-database.db" tofile="${package.dir}/ApacheGUI/tomcat/db/apachegui-gui-database.db"/>
+        <copy file="${package.dir}/ApacheGUI/bin/default-history-database.db" tofile="${package.dir}/ApacheGUI/tomcat/db/apachegui-history-database.db"/>
+
+        <zip destfile="${package.dir}/ApacheGUI.zip"
+             basedir="${package.dir}"
+             update="true"/>
+
+    </target>
+
     <!-- package ready for release -->
-    <target name="buildpackage" description="Build the ApacheGUI tar package. This is Unix specific" if="isUnix">
+    <target name="unix.buildpackage" description="Build the ApacheGUI tar package. This is Unix specific" if="isUnix">
     
         <exec dir="${apachegui.home}/bin" executable="sudo">
             <arg line="./stop.sh"/>
@@ -116,5 +152,7 @@
         </exec>
         
     </target>
+
+    <target name="buildpackage" depends="unix.buildpackage,windows.buildpackage"></target>
     
 </project>    
