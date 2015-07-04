@@ -33,6 +33,9 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 - Maven 2+
 - Java 1.6+
 
+####Linux / Mac OSX development environment
+The IX based development environment is located under *environments/IX/ApacheGUI*. The build steps below assume that you will be developing ApacheGUI on top of this environment.
+
 ####Linux / Mac OSX build steps
 1. Navigate to the root directory in the source project (Where pom.xml is located).
 2. Open pom.xml and set the *environment* property in pom.xml to IX. The *apachegui.home* property uses the environment property to determine the location of ApacheGUI.
@@ -45,7 +48,10 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 - ```mvn clean install -P dev``` copies required javascript without minification and builds a new war under the *target* directory. The war is then moved from the *target* directory to *[apachegui.home]/tomcat/webapps*. This will re-deploy the application. This task is meant to speed up war builds for development. 
 - ```mvn antrun:run -P package``` stops ApacheGUI and builds a new .tar.gz archive. The .tar.gz archive is put into the *package.dir* directory that is specified in the pom.xml properties.
 
-####Windows
+####Windows development environment
+The Windows based development environment is located under *environments/Windows64/ApacheGUI* or *environments/Windows32/ApacheGUI*. The build steps below assume that you will be developing ApacheGUI on top of one of these environments.
+
+####Windows build steps
 1. Navigate to the root directory in the source project (Where pom.xml is located).
 2. Open pom.xml and set the *environment* property in pom.xml to Windows64 or Windows32 depending on your WIndows architecture. The *apachegui.home* property uses the environment property to determine the location of ApacheGUI.
 3. Run the Maven builds below.
