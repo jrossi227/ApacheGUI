@@ -5,7 +5,7 @@ This version of ApacheGUI has been validated against Windows Vista, Windows 7, W
 ****************************************************************************
 *************************INSTALLING APACHE**********************************
 ****************************************************************************
-If you have already installed Apache you can disregard these instructions. If you haven't installed Apache you can grab a build from the download page. http://sourceforge.net/projects/apachegui/files/1.9 Windows/ 
+If you have already installed Apache you can disregard these instructions. If you haven't installed Apache you can grab a build from the download page. http://sourceforge.net/projects/apachegui/files/1.10-Windows/
 
 Apache 2.4 
 
@@ -43,11 +43,9 @@ Apache 2.2
 ***********************INSTALLING APACHEGUI*********************************
 ****************************************************************************
 
-1.  Install ApacheGUI using the appropriate msi installer for your architecture. Once you have successfully installed ApacheGUI it should be available in your computers Program Files folder in a directory named "ApacheGUI". We will refer to this directory as [APACHEGUI_HOME] in the following installation steps.
+1.  Unzip the ApacheGUI zip archive to a directory of your choice. We will refer to this directory as [APACHEGUI_HOME] in the following installation steps.
 
-2.  If you have downloaded ApacheGUI with a Java bundle then you may skip step #2 and go directly to step #3. Otherwise you must perform the following:
-
-    You will need a jdk or jre in order to run Apache GUI. This means Java must be installed on your machine.
+2.  You will need a jdk or jre in order to run Apache GUI. This means Java must be installed on your machine.
 
     If you do not have Java installed then you can download Java from the Oracle download pages.
     http://www.oracle.com/technetwork/java/javase/downloads/index.html
@@ -74,7 +72,7 @@ Apache 2.2
 
          C:\Program Files\Java\jre7 (Incorrect)
 
-3.  To start the web tool go to [APACHEGUI_HOME]/bin and run the batch file run.bat. Once the GUI has been started it may be accessed though http://localhost:9999/ApacheGUI/.
+3.  To start the web tool go to [APACHEGUI_HOME]/bin and run the batch file run.bat. The GUI can be accessed through http://localhost:9999/ApacheGUI/ once it is started.
 
 4.  To stop the web tool to [APACHEGUI_HOME]/bin and run the batch file stop.bat 
 
