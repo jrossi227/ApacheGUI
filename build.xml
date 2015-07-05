@@ -110,7 +110,7 @@
         <copy file="${package.dir}/ApacheGUI/bin/default-gui-database.db" tofile="${package.dir}/ApacheGUI/tomcat/db/apachegui-gui-database.db"/>
         <copy file="${package.dir}/ApacheGUI/bin/default-history-database.db" tofile="${package.dir}/ApacheGUI/tomcat/db/apachegui-history-database.db"/>
 
-        <zip destfile="${package.dir}/ApacheGUI.zip"
+        <zip destfile="${package.dir}/ApacheGUI-${environment}-${version}.zip"
              basedir="${package.dir}"
              update="true"/>
 
@@ -136,14 +136,18 @@
         
         <delete includeemptydirs="true">
             <fileset dir="${package.dir}" includes="**/*.log"/>
-            <fileset dir="${package.dir}" includes="**/.DS_Store"/>
+            <fileset dir="${package.dir}" includes="**/*.gitignore"/>
             <fileset dir="${package.dir}/ApacheGUI/tomcat/logs" includes="**/*"/>
-            <fileset dir="${package.dir}/ApacheGUI/bin/apacheGUI"/>
-        </delete>    
-        
-        <echo message="Copying database"/>
+            <fileset dir="${package.dir}/ApacheGUI/tomcat/temp" includes="**/*"/>
+            <fileset dir="${package.dir}/ApacheGUI/tomcat/db" includes="**/*"/>
+        </delete>
+
+        <echo message="Copying databases"/>
         <exec executable="cp">
-            <arg line="-R ${dbdir} ${package.dir}/ApacheGUI/bin"/>
+            <arg line="${package.dir}/ApacheGUI/bin/default-gui-database.db ${package.dir}/ApacheGUI/tomcat/db/apachegui-gui-database.db"/>
+        </exec>
+        <exec executable="cp">
+            <arg line="${package.dir}/ApacheGUI/bin/default-history-database.db ${package.dir}/ApacheGUI/tomcat/db/apachegui-history-database.db"/>
         </exec>
         
         <echo message="Creating archive"/>
