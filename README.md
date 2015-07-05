@@ -19,10 +19,10 @@ The Windows based runtime environment that is used for development is located un
 
 Project Dependancies
 ---------------
-ApacheGUI is dependant on the following project(s). It is not required to download these projects however a large amount of source code uses classes and methods in these projects. The code from these projects are included as a Maven dependencies.
+ApacheGUI is dependant on the following project(s). It is not required to download these projects however a large amount of source code uses classes and methods in these projects. The code from these projects are included as Maven dependencies.
 
-- ApacheConfParser ([https://github.com/jrossi227/ApacheConfParser](https://github.com/jrossi227/ApacheConfParser)). This library is used to parse the Apache Server configuration. This library is included as a Maven dependency.
-- ApacheGUIJdbc ([https://github.com/jrossi227/ApacheGUIJdbc](https://github.com/jrossi227/ApacheGUIJdbc)). This library is used to communicate with the internal SQLite database that ApacheGUI uses. This library is included as a Maven dependency.
+- ApacheConfParser ([https://github.com/jrossi227/ApacheConfParser](https://github.com/jrossi227/ApacheConfParser)). This library is used to parse the Apache Server configuration.
+- ApacheGUIJdbc ([https://github.com/jrossi227/ApacheGUIJdbc](https://github.com/jrossi227/ApacheGUIJdbc)). This library is used to communicate with the internal SQLite database that ApacheGUI uses.
 
 Building ApacheGUI
 ----------------
@@ -36,7 +36,7 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 
 ####Linux / Mac OSX build steps
 1. Navigate to the root directory in the source project (Where pom.xml is located).
-2. Open pom.xml and set the *environment* property in pom.xml to IX. The *apachegui.home* property uses the environment property to determine the location of ApacheGUI.
+2. Open pom.xml and set the *environment* property to IX. The *apachegui.home* property uses the environment property to determine the location of ApacheGUI.
 3. Run the Maven builds below.
 
 ######Maven options
@@ -63,11 +63,11 @@ Running ApacheGUI
 You must first build ApacheGUI in order to successfuly launch the application.
 
 ####Linux / Mac OSX
-1. navigate to *environments/IX/ApacheGUI/bin*
+1. Navigate to *environments/IX/ApacheGUI/bin*
 2. Launch run.sh
 
 ####Windows
-1. navigate to *environments/Windows64/ApacheGUI/bin* or *environments/Windows32/ApacheGUI/bin*
+1. Navigate to *environments/Windows64/ApacheGUI/bin* or *environments/Windows32/ApacheGUI/bin*
 2. Launch run.bat
 
 Stopping ApacheGUI
@@ -75,9 +75,9 @@ Stopping ApacheGUI
 You must first build ApacheGUI in order to successfuly stop the application.
 
 ####Linux / Mac OSX
-1. navigate to *environments/IX/ApacheGUI/bin*
+1. Navigate to *environments/IX/ApacheGUI/bin*
 2. Launch stop.sh
 
 ####Windows
-1. navigate to *environments/Windows64/ApacheGUI/bin* or *environments/Windows32/ApacheGUI/bin*
+1. Navigate to *environments/Windows64/ApacheGUI/bin* or *environments/Windows32/ApacheGUI/bin*
 2. Launch stop.bat
