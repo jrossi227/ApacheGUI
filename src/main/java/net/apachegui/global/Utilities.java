@@ -244,15 +244,17 @@ public class Utilities {
         for(String path : paths) {
 
             dir = new File(path);
-            children = dir.listFiles();
-            for(java.io.File child : children) {
-                if(child.isFile()) {
-                    if(child.getName().equals("java") || child.getName().equals("java.exe")) {
-                        String java = child.getAbsolutePath();
-                        if(Utils.isWindows()) {
-                            java = new File(java).getAbsolutePath();
+            if(dir.exists()) {
+                children = dir.listFiles();
+                for(java.io.File child : children) {
+                    if(child.isFile()) {
+                        if(child.getName().equals("java") || child.getName().equals("java.exe")) {
+                            String java = child.getAbsolutePath();
+                            if(Utils.isWindows()) {
+                                java = new File(java).getAbsolutePath();
+                            }
+                            return java;
                         }
-                        return java;
                     }
                 }
             }
