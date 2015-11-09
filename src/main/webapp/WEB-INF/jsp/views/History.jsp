@@ -3,7 +3,7 @@
 
 <c:set var="database_info" scope="page">
     <h4>Database Version:</h4>
-    <p>SQLite version 3.8.7</p>
+    <p>SQLite version 3.8.11.2</p>
 
     <h4>Database File:</h4>
     <p>${databaseFile}</p>

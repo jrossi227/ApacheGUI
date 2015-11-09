@@ -141,9 +141,9 @@ public class Constants {
     public final static String VERSION_SUPPORTED_STRING = "Apache 2.2, Apache 2.3, Apache 2.4";
 
     // Constants used for gui info
-    public final static String VERSION = "1.10.0";
+    public final static String VERSION = "1.10.1";
     public final static String SUPPORT_ADDRESS = "apachegui.net@gmail.com";
-    public final static String SUPPORT_WEBSITE = "http://forum.apachegui.net";
+    public final static String SUPPORT_WEBSITE = "http://apachegui.net/phpBB3/";
     public final static String WEBSITE = "http://apachegui.net";
 
     // Constants used for Global Setting
