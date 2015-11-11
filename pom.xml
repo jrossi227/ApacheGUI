@@ -224,7 +224,7 @@
       <dependency>
           <groupId>net.apachegui</groupId>
           <artifactId>ApacheConfParser</artifactId>
-          <version>1.0.10</version>
+          <version>1.0.11-SNAPSHOT</version>
       </dependency>
       <dependency>
           <groupId>net.apachegui</groupId>

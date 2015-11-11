@@ -135,7 +135,7 @@ public class MainController {
         String rootConfFile = SettingsDao.getInstance().getSetting(Constants.CONF_FILE);
 
         String activeFileList[] = new Parser(rootConfFile, SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT), StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules())
-                .getActiveConfFileList();
+                .getActiveConfFileListWithDuplicates();
 
         JSONArray files = new JSONArray();
         for (int i = 0; i < activeFileList.length; i++) {

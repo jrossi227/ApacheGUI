@@ -52,8 +52,32 @@ define([ "dojo/_base/declare",
             
             net.apachegui.Main.getInstance().getActiveFileList(function(files) {
                 var list='';
-                for(var i in files) {
-                    list=list + '<a target="_blank" href="Configuration.jsp?file=' + files[i] + '">' + files[i] + '</a>' + "<br/>";
+
+                var duplicates = [];
+                var processed = {};
+                for(var i=0; i< files.length; i++) {
+                    list += '<a target="_blank" href="Configuration.jsp?file=' + files[i] + '">' + files[i] + '</a>' + "<br/>";
+
+                    if(processed[files[i]] === true) {
+                        if(duplicates.indexOf(files[i]) == -1) {
+                            duplicates.push(files[i]);
+                        }
+                    }
+                    processed[files[i]] = true;
+                }
+
+                if(duplicates.length > 0) {
+                    list +=  '<div style="margin-top: 10px;">' +
+                                '<strong>Warning!</strong><br>' +
+                                'The following file(s) have been included in the configuration multiple times:' +
+                                '<ul>';
+
+                    for(var i=0; i<duplicates.length; i++) {
+                     list +=        '<li>' + duplicates[i] + '</li>';
+                    }
+
+                    list +=     '</ul>' +
+                            '</div>';
                 }
                 
                 net.apachegui.Util.alert('Active File List',list);
