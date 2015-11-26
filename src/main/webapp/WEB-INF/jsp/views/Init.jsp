@@ -4,25 +4,38 @@
 
 <div dojoType="net.apachegui.NoCloseDialog" id="initDialogInstallationType" title="How was Apache installed?" style="display: none">
     <form dojoType="dijit.form.Form" id="initFormInstallationType">
+        <h4>Please select your Apache Server installation method.</h4>
         <table>
             <tr class="dijitDialogPaneContentArea">
-                <td>
-                    <label for='source'>
-                        Source:
-                       </label>
-                   </td>
-                <td>
-                    <input type="radio" name="installType" id="source" value="source" checked="checked">
+                <td colspan="2">
+                    <p> Select the Package option if you have installed Apache through your Operating Systems package manager.
+                        The Apache installation is typically spread out through your operating system.</p>
                 </td>
             </tr>
             <tr class="dijitDialogPaneContentArea">
-                <td>
+                <td width="60px">
                     <label for='package'>
                         Package:
                     </label>
                 </td>
                 <td>
-                    <input type="radio" name="installType" id="package" value="package">
+                    <input type="radio" name="installType" id="package" value="package" checked="checked">
+                </td>
+            </tr>
+            <tr class="dijitDialogPaneContentArea">
+                <td colspan="2">
+                    <p> Select the Source option if you have compiled the Apache server from its source code.
+                        The entire Apache installation is typically contained in one Server Root directory.</p>
+                </td>
+            </tr>
+            <tr class="dijitDialogPaneContentArea">
+                <td width="60px">
+                    <label for='source'>
+                        Source:
+                    </label>
+                </td>
+                <td>
+                    <input type="radio" name="installType" id="source" value="source">
                 </td>
             </tr>
         </table>
@@ -118,6 +131,35 @@
 <div dojoType="net.apachegui.NoCloseDialog" id="initDialogPackage" title="Apache Package Parameters" style="display: none">
     <form dojoType="dijit.form.Form" id="initFormPackage">
         <table>
+            <tr class="dijitDialogPaneContentArea">
+                <td>
+                    <label for='operatingSystemSuggestionPackage'>
+                        Operating System Suggestion (Optional):
+                    </label>
+                </td>
+                <td>
+                    <select name="operatingSystemSuggestionPackage" id="operatingSystemSuggestionPackage" data-dojo-type="dijit/form/Select">
+                        <option value="select" selected="selected">
+                            Select
+                        </option>
+                        <option value="mac">
+                            Mac OSX
+                        </option>
+                        <option value="debian">
+                            Debian, Ubuntu, Other Debian variants
+                        </option>
+                        <option value="fedora">
+                            Fedora, CentOS, RHEL, other fedora variants
+                        </option>
+                        <option value="suse32">
+                            OpenSUSE and SLES 32 bit
+                        </option>
+                        <option value="suse64">
+                            OpenSUSE and SLES 64 bit
+                        </option>
+                    </select>
+                </td>
+            </tr>
             <tr class="dijitDialogPaneContentArea">
                 <td>
                     <label for='serverRootPackage'>

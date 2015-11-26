@@ -633,7 +633,7 @@ define([ "dojo/_base/declare",
             if(dom.byId('startDate').value == '' || dom.byId('startTime').value == '' || dom.byId('endDate').value == '' || dom.byId('endTime').value == '') {
                 net.apachegui.Util.alert("Error","Please fill in all required fields");
             }
-            else if(!registry.byId('startDate').isValid() || !registry.byId('startTime').isValid() || !registry.byId('endDate').isValid() || !registry.byId('endTime').isValid()) {
+            else if(!registry.byId('startDate').validate() || !registry.byId('startTime').validate() || !registry.byId('endDate').validate() || !registry.byId('endTime').validate()) {
                 net.apachegui.Util.alert("Error","Please fix required field formats");
             }
             else {
@@ -652,7 +652,7 @@ define([ "dojo/_base/declare",
             if(dom.byId('startDate').value == '' || dom.byId('startTime').value == '' || dom.byId('endDate').value == '' || dom.byId('endTime').value == '') {
                 net.apachegui.Util.alert("Error","Please fill in all required fields");
             }
-            else if(!registry.byId('startDate').isValid() || !registry.byId('startTime').isValid() || !registry.byId('endDate').isValid() || !registry.byId('endTime').isValid()) {
+            else if(!registry.byId('startDate').validate() || !registry.byId('startTime').validate() || !registry.byId('endDate').validate() || !registry.byId('endTime').validate()) {
                 net.apachegui.Util.alert("Error","Please fix required field formats");
             }
             else
@@ -719,7 +719,7 @@ define([ "dojo/_base/declare",
             if(dom.byId('graphDate').value == '') {
                 net.apachegui.Util.alert("Error","Please fill in all required fields");
             }
-            if(!registry.byId('graphDate').isValid()) {
+            if(!registry.byId('graphDate').validate()) {
                 net.apachegui.Util.alert("Error","Please fix required field formats");
             }
             else {

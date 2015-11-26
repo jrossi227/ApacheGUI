@@ -149,7 +149,7 @@ define([ "dojo/_base/declare",
             
             if(id==net.apachegui.Settings.getInstance().settingsMap.serverRoot)
             {    
-                if (!registry.byId('updateServerRootForm').isValid()) {
+                if (!registry.byId('updateServerRootForm').validate()) {
                     net.apachegui.Util.alert('Error','Please fix fields');
                     return;
                 }
@@ -164,7 +164,7 @@ define([ "dojo/_base/declare",
             
             if(id==net.apachegui.Settings.getInstance().settingsMap.confDirectory)
             {    
-                if (!registry.byId('updateConfDirectoryForm').isValid()) {
+                if (!registry.byId('updateConfDirectoryForm').validate()) {
                     net.apachegui.Util.alert('Error','Please fix fields');
                     return;
                 }
@@ -178,7 +178,7 @@ define([ "dojo/_base/declare",
             
             if(id==net.apachegui.Settings.getInstance().settingsMap.confFile)
             {    
-                if (!registry.byId('updateConfFileForm').isValid()) {
+                if (!registry.byId('updateConfFileForm').validate()) {
                     net.apachegui.Util.alert('Error','Please fix fields');
                     return;
                 }
@@ -192,7 +192,7 @@ define([ "dojo/_base/declare",
             
             if(id==net.apachegui.Settings.getInstance().settingsMap.logDirectory)
             {    
-                if (!registry.byId('updateLogDirectoryForm').isValid()) {
+                if (!registry.byId('updateLogDirectoryForm').validate()) {
                     net.apachegui.Util.alert('Error','Please fix fields');
                     return;
                 }
@@ -206,7 +206,7 @@ define([ "dojo/_base/declare",
             
             if(id==net.apachegui.Settings.getInstance().settingsMap.modulesDirectory)
             {    
-                if (!registry.byId('updateModulesDirectoryForm').isValid()) {
+                if (!registry.byId('updateModulesDirectoryForm').validate()) {
                     net.apachegui.Util.alert('Error','Please fix fields');
                     return;
                 }
@@ -220,7 +220,7 @@ define([ "dojo/_base/declare",
             
             if(id==net.apachegui.Settings.getInstance().settingsMap.binFile)
             {    
-                if (!registry.byId('updateBinFileForm').isValid()) {
+                if (!registry.byId('updateBinFileForm').validate()) {
                     net.apachegui.Util.alert('Error','Please fix fields');
                     return;
                 }
@@ -234,7 +234,7 @@ define([ "dojo/_base/declare",
             
             if(id==net.apachegui.Settings.getInstance().settingsMap.username)
             {    
-                if (!registry.byId('updateUsernameForm').isValid()) {
+                if (!registry.byId('updateUsernameForm').validate()) {
                     net.apachegui.Util.alert('Error','Please fix fields');
                     return;
                 }
@@ -248,7 +248,7 @@ define([ "dojo/_base/declare",
             
             if(id==net.apachegui.Settings.getInstance().settingsMap.password)
             {    
-                if (!registry.byId('updatePasswordForm').isValid()) {
+                if (!registry.byId('updatePasswordForm').validate()) {
                     net.apachegui.Util.alert('Error','Please fix fields');
                     return;
                     }

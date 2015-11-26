@@ -485,7 +485,7 @@ define([ "dojo/_base/declare",
             
             on(registry.byId('editorNewFileForm'), "submit", function(e) {
                 event.stop(e); // prevent the default submit
-                if (!this.isValid()) {
+                if (!this.validate()) {
                     net.apachegui.Util.alert('Error','Please fix fields');
                     return;
                 }
