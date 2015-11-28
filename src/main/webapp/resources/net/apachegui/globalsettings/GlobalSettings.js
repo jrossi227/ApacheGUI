@@ -1,6 +1,7 @@
 define([ "dojo/_base/declare",
          "dijit/registry",
          "dojo/on",
+         "net/apachegui/globalsettings/GlobalTree",
          "net/apachegui/globalsettings/Networking",
          "net/apachegui/globalsettings/Modules",
          "net/apachegui/globalsettings/Mime"
@@ -13,7 +14,7 @@ define([ "dojo/_base/declare",
         init: function () {
             if(this.initialized===false) {
                 this.addListeners();
-                this.loadTab("networkingTab");
+                this.loadTab("globalTreeTab");
                 
                 this.initialized=true;
             }
@@ -28,7 +29,15 @@ define([ "dojo/_base/declare",
             
             var jsp='';
             var onLoad;
-            
+
+            if(tabId=="globalTreeTab") {
+                jsp='GlobalTree.jsp';
+
+                onLoad=function() {
+                    net.apachegui.globalsettings.GlobalTree.getInstance().init();
+                };
+            }
+
             if(tabId=="networkingTab") {
                 jsp='Networking.jsp';
                 

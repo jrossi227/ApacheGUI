@@ -310,6 +310,12 @@ public class GUIViewController {
         return "views/editor/" + jspName;
     }
 
+    @RequestMapping(value = "/jsp/global_settings/GlobalTree.jsp")
+    public String renderGlobalTreeViewJsp() throws Exception {
+
+        return "views/global_settings/GlobalTree";
+    }
+
     @RequestMapping(value = "/jsp/global_settings/Networking.jsp")
     public String renderNetworkingViewJsp(Model model) throws Exception {
 
