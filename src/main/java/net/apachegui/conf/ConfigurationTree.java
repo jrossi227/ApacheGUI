@@ -33,7 +33,7 @@ public class ConfigurationTree {
 
         children.put("id", 0);
         children.put("name", rootNodeName);
-        children.put("type", "");
+        children.put("type", "rootNode");
         children.put("value", "");
         children.put("file", SettingsDao.getInstance().getSetting(Constants.CONF_FILE));
         children.put("lineOfStart", -1);
