@@ -2,14 +2,9 @@ define([
     "dojo/_base/declare",
     "dojo/request",
     "dojo/dom",
-    "dojo/data/ItemFileWriteStore",
-    "dojo/store/Observable",
-    "net/apachegui/RefreshableTree",
-    "dijit/Tree",
-    "dijit/tree/ForestStoreModel",
+    "net/apachegui/ConfigurationTree",
     "dojo/dom-construct"
-
-], function(declare, request, dom, ItemFileWriteStore, Observable, RefreshableTree, Tree, ForestStoreModel, domConstruct){
+], function(declare, request, dom, ConfigurationTree, domConstruct){
     
     declare("net.apachegui.globalsettings.GlobalTree", null, {
 
@@ -35,48 +30,13 @@ define([
                     var data = response.data;
                     var tree = data.tree;
 
-                    var store = new ItemFileWriteStore({
-                        data : tree
+                    var configTree = new ConfigurationTree({
+                        id: 'global_tree',
+                        treeJSON: tree
                     });
-                    store = new Observable(store);
+                    configTree.startup();
 
-                    var treeModel = new ForestStoreModel({
-                        store : store,
-                        query : {
-                            "type" : "rootNode"
-                        },
-                        rootId : 0,
-                        childrenAttrs : [ "children" ],
-                        id : 'GlobalTreeModel'
-                    });
-
-                    var HostTreeNode = declare(Tree._TreeNode, {
-                        _setLabelAttr : {
-                            node : "labelNode",
-                            type : "innerHTML"
-                        }
-                    });
-
-                    var hostTree = new RefreshableTree({
-                        model : treeModel,
-                        showRoot : false,
-                        autoExpand : true,
-                        openOnClick : true,
-                        id : 'GlobalTreeTree',
-                        persist : true,
-                        _createTreeNode : function(args) {
-                            return new HostTreeNode(args);
-                        }
-                    });
-
-                    var div = document.createElement('div');
-                    div.id = 'global_tree';
-                    div.appendChild(hostTree.domNode);
-
-                    domConstruct.place(div, dom.byId('global_tree_container'), 'last');
-
-                    hostTree.startup();
-
+                    domConstruct.place(configTree.domNode, dom.byId('global_tree_container'), 'last');
                 });
         },
 
