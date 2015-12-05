@@ -81,7 +81,7 @@ define([
             this.menu.addChild(new MenuItem({
                 label : "Edit",
                 onClick : function() {
-
+                    //TODO implement menu functions, take them from virtual hosts
                 }
             }));
 
