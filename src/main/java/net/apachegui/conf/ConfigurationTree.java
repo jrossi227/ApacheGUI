@@ -31,7 +31,7 @@ public class ConfigurationTree {
 
         JSONObject children = new JSONObject();
 
-        children.put("id", 0);
+        children.put("id", "0");
         children.put("name", rootNodeName);
         children.put("type", "rootNode");
         children.put("value", "");
@@ -105,7 +105,7 @@ public class ConfigurationTree {
                 String name = getNameFromParts(parts);
 
                 JSONObject children = new JSONObject();
-                children.put("id", lineNum);
+                children.put("id", String.valueOf(lineNum));
                 children.put("name", name);
                 children.put("type", parts[0]);
                 children.put("value", name.replaceAll("<span.*</span> ", ""));
@@ -126,7 +126,7 @@ public class ConfigurationTree {
                 String name = getNameFromParts(parts);
 
                 JSONObject directive = new JSONObject();
-                directive.put("id", lineNum);
+                directive.put("id", String.valueOf(lineNum));
                 directive.put("name", name);
                 directive.put("type", parts[0]);
                 directive.put("value", name.replaceAll("<span.*</span> ", ""));
@@ -157,7 +157,7 @@ public class ConfigurationTree {
         String name = getNameFromParts(parts);
 
         JSONObject children = new JSONObject();
-        children.put("id", 0);
+        children.put("id", "0");
         children.put("name", name);
         children.put("type", parts[0]);
         children.put("value", name.replaceAll("<span.*</span> ", ""));
@@ -194,7 +194,7 @@ public class ConfigurationTree {
                 String name = getNameFromParts(parts);
 
                 JSONObject children = new JSONObject();
-                children.put("id", lineNum);
+                children.put("id", String.valueOf(lineNum));
                 children.put("name", name);
                 children.put("type", parts[0]);
                 children.put("value", name.replaceAll("<span.*</span> ", ""));
@@ -216,7 +216,7 @@ public class ConfigurationTree {
                 String name = getNameFromParts(parts);
 
                 JSONObject directive = new JSONObject();
-                directive.put("id", lineNum);
+                directive.put("id", String.valueOf(lineNum));
                 directive.put("name", name);
                 directive.put("type", parts[0]);
                 directive.put("value", name.replaceAll("<span.*</span> ", ""));

@@ -2,6 +2,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
+<jsp:include page="/jsp/ConfigurationTree.jsp"     flush="true" />
 
 <div id="global_tree_container">
 

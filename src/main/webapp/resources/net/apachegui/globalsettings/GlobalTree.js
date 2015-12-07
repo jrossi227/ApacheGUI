@@ -9,16 +9,16 @@ define([
     declare("net.apachegui.globalsettings.GlobalTree", null, {
 
         initialized: false,
+        configTree: null,
 
         init: function () {
             if(this.initialized===false) {
                 this.buildGlobalTree();
-                this.addListeners();
                 this.initialized=true;
             }
         },
 
-        buildGlobalTree: function() {
+        loadGlobalTreeJSON: function(callback) {
             request.get('../web/GlobalTree', {
                 query: {
                     option: 'getGlobalTree'
@@ -29,19 +29,34 @@ define([
             }).response.then(function (response) {
                     var data = response.data;
                     var tree = data.tree;
-
-                    var configTree = new ConfigurationTree({
-                        id: 'global_tree',
-                        treeJSON: tree
-                    });
-                    configTree.startup();
-
-                    domConstruct.place(configTree.domNode, dom.byId('global_tree_container'), 'last');
+                    callback(tree);
                 });
         },
 
-        addListeners: function() {
+        buildGlobalTree: function() {
+            var that = this;
 
+            this.loadGlobalTreeJSON(function(treeJSON) {
+                that.configTree = new ConfigurationTree({
+                    id: 'global_tree',
+                    treeJSON: treeJSON
+                });
+                that.configTree.startup();
+                that.addListeners();
+
+                domConstruct.place(that.configTree.domNode, dom.byId('global_tree_container'), 'last');
+            });
+        },
+
+        addListeners: function() {
+            var that = this;
+
+            this.configTree.on('aftereditline', function() {
+                that.loadGlobalTreeJSON(function(treeJSON) {
+                    that.configTree.reload(treeJSON);
+                });
+                return true;
+            });
         }
 
     });
