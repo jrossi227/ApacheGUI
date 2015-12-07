@@ -325,17 +325,19 @@ define([
         },
 
         _deleteLine: function() {
-
+            //todo implement delete line
         },
 
         _showAddLineDialog: function(type) {
-
+            //todo implement add line
         },
 
         _addListeners: function() {
             var that = this;
 
             var that = this;
+
+            //todo implement tree line hover
 
             on(registry.byId('editLineSubmit'), 'click', function() {
                 that._submitEditLine();
