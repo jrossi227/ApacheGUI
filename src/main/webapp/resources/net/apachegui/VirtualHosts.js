@@ -21,8 +21,9 @@ define([ "dojo/_base/declare",
          "dojo/dom-construct",
          "dijit/Tooltip",
          "dojo/dom-attr",
+         "net/apachegui/ConfigurationTree",
          "net/apachegui/InputAutoSuggest"
-], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query, array, lang, domConstruct, Tooltip, domAttr, InputAutoSuggest) {
+], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query, array, lang, domConstruct, Tooltip, domAttr, ConfigurationTree, InputAutoSuggest) {
 
     declare("net.apachegui.VirtualHosts", null, {
 
@@ -821,11 +822,37 @@ define([ "dojo/_base/declare",
 
         },
 
+        loadVirtualHostTreeJSON: function(callback) {
+            request.get('../web/GlobalTree', {
+                query: {
+                    option: 'getGlobalTree'
+                },
+                handleAs: 'json',
+                preventCache: true,
+                sync: false
+            }).response.then(function (response) {
+                    var data = response.data;
+                    var tree = data.tree;
+                    callback(tree);
+                });
+
+        },
+
         buildTreeHost : function(host, container, pos) {
             var that = this;
             
-            var id = "tree-" + this.currentTreeSummaryCount;
+            var id = "tree_" + this.currentTreeSummaryCount;
 
+            var virtualHostTree = new ConfigurationTree({
+                id: id + '_widget',
+                treeJSON: host.tree,
+                rootType: 'VirtualHost',
+                loadTreeJSON: this.loadVirtualHostTreeJSON
+            });
+
+            virtualHostTree.startup();
+
+            /**
             var store = new ItemFileWriteStore({
                 data : host.tree
             });
@@ -863,16 +890,16 @@ define([ "dojo/_base/declare",
                     return new HostTreeNode(args);
                 }
             });
-            
+
+            **/
             var div = document.createElement('div');
             div.id = id;
             div.innerHTML = '<h4 id=heading-' + id + '>' + this.buildTreeHeadingFromHost(host) + '</h4>';
-            div.appendChild(hostTree.domNode);
+            div.appendChild(virtualHostTree.domNode);
             
             domConstruct.place(div, container, pos);
 
-            hostTree.startup();
-
+            /**
             var menu = new Menu({
                 targetNodeIds : [ id ],
                 selector : ".dijitTreeNode"
@@ -906,10 +933,11 @@ define([ "dojo/_base/declare",
                 popup : subMenu
             }));
 
+             **/
             var virtualHost = (function(num) {
                 return {
                     number : num,
-                    tree : hostTree,
+                    tree : virtualHostTree.tree,
                     host : host,
                     lastModified : {
                         file : host.file,
@@ -919,13 +947,14 @@ define([ "dojo/_base/declare",
             })(this.currentTreeSummaryCount);
             
             this.virtualHosts.push(virtualHost);
-            
+
+            /**
             on(menu, "focus", function(e) {
                 var tn = registry.getEnclosingWidget(this.currentTarget);
                 that.currentTreeItem = tn.item;
                 that.currentVirtualHost = virtualHost;
             });
-
+            **/
             this.currentTreeSummaryCount++;
             
             return div;

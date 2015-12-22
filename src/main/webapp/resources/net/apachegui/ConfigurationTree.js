@@ -1,5 +1,6 @@
 //TODO stub out this file into a re-usable widget for GlobalTree.js
 //TODO VirtualHost js should end up using this widget (started)
+//TODO disable menu on root node
 define([
     "dojo/_base/declare",
     "dojo/dom",
@@ -17,8 +18,9 @@ define([
     "dojo/_base/lang",
     "dojo/request",
     "dojo/dom-attr",
-    "net/apachegui/InputAutoSuggest"
-], function(declare, dom, _WidgetBase, ItemFileWriteStore, Observable, RefreshableTree, Tree, ForestStoreModel, on, registry, Menu, MenuItem, PopupMenuItem, lang, request, domAttr, InputAutoSuggest){
+    "net/apachegui/InputAutoSuggest",
+    "dojo/dom-construct"
+], function(declare, dom, _WidgetBase, ItemFileWriteStore, Observable, RefreshableTree, Tree, ForestStoreModel, on, registry, Menu, MenuItem, PopupMenuItem, lang, request, domAttr, InputAutoSuggest, domConstruct){
 
     return declare([_WidgetBase], {
 
@@ -58,6 +60,7 @@ define([
             this.id = params.id;
             this.treeJSON = params.treeJSON || this.treeJSON;
             this.autoExpand = params.autoExpand || false;
+            this.rootType = params.rootType || 'rootNode';
             this.loadTreeJSON = params.loadTreeJSON || this.loadTreeJSON;
 
             var store = new ItemFileWriteStore({
@@ -68,7 +71,7 @@ define([
             var treeModel = new ForestStoreModel({
                 store : store,
                 query : {
-                    "type" : "rootNode"
+                    "type" : this.rootType
                 },
                 rootId : "0",
                 childrenAttrs : [ "children" ],
@@ -96,23 +99,23 @@ define([
 
             this._autoExpandRootNode();
             this._initializeAutoSuggest();
+
+            return this;
         },
 
         buildRendering: function(){
             var that = this;
 
             // create the DOM for this widget
-            var id  = this.id + '_container';
-
             var div = document.createElement('div');
-            div.id = id;
             div.appendChild(this.tree.domNode);
             this.domNode = div;
 
             this.menu = new Menu({
-                targetNodeIds : [ id ],
                 selector : ".dijitTreeNode"
             });
+
+            this.menu.bindDomNode(div);
 
             this.menu.addChild(new MenuItem({
                 label : "Expand All",
@@ -167,7 +170,9 @@ define([
 
         startup: function() {
             this.tree.startup();
-            this.reload();
+            if(this.treeJSON.items.length == 0) {
+                this.reload();
+            }
         },
 
         destroy: function() {
