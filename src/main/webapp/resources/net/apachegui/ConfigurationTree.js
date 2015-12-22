@@ -1,4 +1,5 @@
 //TODO stub out this file into a re-usable widget for GlobalTree.js
+//TODO VirtualHost js should end up using this widget
 define([
     "dojo/_base/declare",
     "dojo/dom",
@@ -35,6 +36,14 @@ define([
         },
 
         /**
+         * This function should be overriden with a custom JSON loader
+         * @param callback(treeJSON) callback function to execute. treeJSON should be passed in as a parameter
+         */
+        loadTreeJSON: function(callback) {
+
+        },
+
+        /**
          *  @param params - params are as follows:
          *      id - the id to give the tree
          *      treeJSON - the JSON structure for the tree
@@ -44,6 +53,7 @@ define([
             this.id = params.id;
             this.treeJSON = params.treeJSON || {};
             this.autoExpand = params.autoExpand || false;
+            this.loadTreeJSON = params.loadTreeJSON || this.loadTreeJSON;
 
             var store = new ItemFileWriteStore({
                 data : this.treeJSON
@@ -175,15 +185,19 @@ define([
             this.editable = true;
         },
 
-        reload: function(treeJSON) {
-            this.treeJSON = treeJSON;
-            this.tree.model.store = new ItemFileWriteStore({
-                data : this.treeJSON
+        reload: function() {
+            var that = this;
+
+            this.loadTreeJSON(function(treeJSON) {
+                that.treeJSON = treeJSON;
+                that.tree.model.store = new ItemFileWriteStore({
+                    data : that.treeJSON
+                });
+
+                that.tree.reload();
+
+                that._autoExpandRootNode();
             });
-
-            this.tree.reload();
-
-            this._autoExpandRootNode();
         },
 
         //--- PRIVATE FUNCTIONS -----------------------------------------------------------//
@@ -314,6 +328,7 @@ define([
                     registry.byId('editLineDialog').hide();
 
                     that.onAfterEditLine(type, value, response);
+                    that.reload();
                 }, function(error) {
                     thisdialog.remove();
 
@@ -326,6 +341,58 @@ define([
 
         _deleteLine: function() {
             //todo implement delete line
+            var that = this;
+
+            if(!this.editable) {
+                this.onDisabledError();
+                return;
+            }
+
+            var item = this._getSelectedTreeItem();
+
+            if (!!item) {
+                var type = this._getItemProperty(item, 'type');
+                var value = this._getItemProperty(item, 'value');
+
+                var shouldShow = this.onShowDeleteDialog(type, value);
+                if(!shouldShow) {
+                    return;
+                }
+
+                net.apachegui.Util.confirmDialog("Please Confirm", "Are you sure you want to delete the following " + this._getItemProperty(item,'lineType') + ":<br/><br/>" + this._getItemProperty(item,'name'), function confirm(conf) {
+                    if (conf) {
+
+                        var shouldDelete = that.onBeforeDeleteLine(type, value);
+                        if(!shouldDelete) {
+                            return;
+                        }
+
+                        var thisdialog = net.apachegui.Util.noCloseDialog('Deleting', 'Deleting Please Wait...');
+                        thisdialog.show();
+
+                        request.post("../web/ConfigurationTree", {
+                            data : {
+                                option : 'deleteLine',
+                                file : that._getItemProperty(item,'file'),
+                                lineOfStart : that._getItemProperty(item,'lineType') == 'enclosure' ? that._getItemProperty(item,'enclosureLineOfStart') : that._getItemProperty(item,'lineOfStart'),
+                                lineOfEnd : that._getItemProperty(item,'lineType') == 'enclosure' ? that._getItemProperty(item,'enclosureLineOfEnd') : that._getItemProperty(item,'lineOfEnd')
+                            },
+                            handleAs : 'json',
+                            sync : false
+                        }).response.then(function(response) {
+                                thisdialog.remove();
+
+                                that.onAfterDeleteLine(type, value, response);
+                                that.reload();
+                            }, function(error) {
+                                thisdialog.remove();
+                                var response = error.response;
+                                net.apachegui.Util.alert('Error', response.data.message);
+                                that.onDeleteLineError(type, value, response);
+                            });
+                    }
+                });
+            }
         },
 
         _showAddLineDialog: function(type) {
@@ -333,8 +400,6 @@ define([
         },
 
         _addListeners: function() {
-            var that = this;
-
             var that = this;
 
             //todo implement tree line hover
@@ -386,6 +451,22 @@ define([
         },
 
         onEditLineError: function(type, value, response) {
+            return true;
+        },
+
+        onShowDeleteDialog: function(type, value) {
+            return true;
+        },
+
+        onBeforeDeleteLine: function(type, value) {
+            return true;
+        },
+
+        onAfterDeleteLine: function(type, value, response) {
+            return true;
+        },
+
+        onDeleteLineError: function(type, value, response) {
             return true;
         }
     });

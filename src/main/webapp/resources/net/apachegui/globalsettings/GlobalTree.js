@@ -39,7 +39,8 @@ define([
             this.loadGlobalTreeJSON(function(treeJSON) {
                 that.configTree = new ConfigurationTree({
                     id: 'global_tree',
-                    treeJSON: treeJSON
+                    treeJSON: treeJSON,
+                    loadTreeJSON: that.loadGlobalTreeJSON
                 });
                 that.configTree.startup();
                 that.addListeners();
@@ -51,12 +52,6 @@ define([
         addListeners: function() {
             var that = this;
 
-            this.configTree.on('aftereditline', function() {
-                that.loadGlobalTreeJSON(function(treeJSON) {
-                    that.configTree.reload(treeJSON);
-                });
-                return true;
-            });
         }
 
     });
