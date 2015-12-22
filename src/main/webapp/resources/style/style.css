@@ -277,6 +277,14 @@ h1 {
     height: 16px;
 }
 
+.configuration_tree_legend_container,
+.configuration_tree_legend_container #example_container,
+.configuration_tree_legend_container #right_click_container {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
 /* Control specific css */
 #controlBody .running {
     color: #00ff00;
@@ -481,6 +489,7 @@ body.editor #filename_container em {
     margin-bottom: 35px;
 }
 
+#virtualHostsBody .configuration_tree_legend_container,
 #virtualHostsBody #example_container,
 #virtualHostsBody #select_host_container,
 #virtualHostsBody #right_click_container {

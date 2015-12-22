@@ -1,33 +1,15 @@
 package net.apachegui.web;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import apache.conf.global.Utils;
+import apache.conf.parser.File;
 import net.apachegui.conf.ServerMime;
 import net.apachegui.db.LogDataDao;
 import net.apachegui.db.Timestamp;
 import net.apachegui.db.UsersDao;
-import net.apachegui.directives.Group;
-import net.apachegui.directives.KeepAlive;
-import net.apachegui.directives.KeepAliveTimeout;
-import net.apachegui.directives.ListenBackLog;
-import net.apachegui.directives.MaxKeepAliveRequests;
-import net.apachegui.directives.ServerSignature;
-import net.apachegui.directives.ServerTokens;
-import net.apachegui.directives.Timeout;
-import net.apachegui.directives.User;
+import net.apachegui.directives.*;
 import net.apachegui.global.Constants;
 import net.apachegui.global.Utilities;
 import net.apachegui.server.ServerInfo;
-
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,8 +18,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import apache.conf.global.Utils;
-import apache.conf.parser.File;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 @Controller
 public class GUIViewController {
@@ -366,5 +355,11 @@ public class GUIViewController {
 
         return "views/global_settings/Modules";
     }
+
+    @RequestMapping(value = "/jsp/configuration_tree/{jspName}.jsp")
+    public String renderConfigurationTreeViewJsp(@PathVariable String jspName) {
+        return "views/configuration_tree/" + jspName;
+    }
+
 
 }
