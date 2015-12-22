@@ -67,6 +67,7 @@
 
   <input type="hidden" id="addLineBeforeLineType" value=""/>
   <input type="hidden" id="addLineLineType" value=""/>
+  <input type="hidden" id="addLineFile" value=""/>
   <input type="hidden" id="addLineLineOfStart" value=""/>
 
   <div class="dijitDialogPaneActionBar">

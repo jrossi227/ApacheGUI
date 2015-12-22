@@ -256,6 +256,27 @@ h1 {
    font-family: "Courier New",Courier,monospace; 
 }
 
+/* Configuration Tree Styling */
+.tree_container .dijitFolderOpened,
+.tree_container .dijitFolderClosed {
+    background: url('images/enclosure.png') !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
+.tree_container .dijitLeaf {
+    background: url('images/directive.png') !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
+.tree_container .example {
+    display: inline-block;
+    vertical-align: middle;
+    width: 16px;
+    height: 16px;
+}
+
 /* Control specific css */
 #controlBody .running {
     color: #00ff00;
@@ -458,26 +479,6 @@ body.editor #filename_container em {
 
 #virtualHostsBody #name_virtual_host_container {
     margin-bottom: 35px;
-}
-
-#virtualHostsBody #treeTab .dijitFolderOpened,
-#virtualHostsBody #treeTab .dijitFolderClosed {
-    background: url('images/enclosure.png') !important;
-    background-position: center !important; 
-    background-repeat: no-repeat !important; 
-}
-
-#virtualHostsBody #treeTab .dijitLeaf {
-    background: url('images/directive.png') !important;
-    background-position: center !important; 
-    background-repeat: no-repeat !important; 
-}
-
-#virtualHostsBody #treeTab .example {
-    display: inline-block;
-    vertical-align: middle;
-    width: 16px;
-    height: 16px;
 }
 
 #virtualHostsBody #example_container,

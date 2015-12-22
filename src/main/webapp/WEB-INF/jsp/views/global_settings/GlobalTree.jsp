@@ -4,7 +4,7 @@
 
 <jsp:include page="/jsp/ConfigurationTree.jsp"     flush="true" />
 
-<div id="global_tree_container">
+<div class="tree_container" id="global_tree_container">
 
 
 </div>

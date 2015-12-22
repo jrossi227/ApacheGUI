@@ -224,7 +224,7 @@
                         <div class="centerPanel" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region: 'center', tabPosition: 'top'">
                         
                             <div class="centerPanel" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'top', title:'Modify'">
-                                <div id="example_container">
+                                <div class="tree_container" id="example_container">
                                    <span class="example dijitFolderOpened"></span> = Enclosure <span class="example dijitLeaf"></span> = Directive
                                 </div>
                                 
@@ -250,7 +250,7 @@
                             
                             <div id="tree_virtual_host_content_pane" class="centerPanel" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'center', title:'Edit'" >
                             
-                                <div id="tree_virtual_host_container">
+                                <div class="tree_container" id="tree_virtual_host_container">
                                 
                                 </div>
                             

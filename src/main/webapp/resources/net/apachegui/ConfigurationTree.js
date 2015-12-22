@@ -16,8 +16,9 @@ define([
     "dijit/PopupMenuItem",
     "dojo/_base/lang",
     "dojo/request",
+    "dojo/dom-attr",
     "net/apachegui/InputAutoSuggest"
-], function(declare, dom, _WidgetBase, ItemFileWriteStore, Observable, RefreshableTree, Tree, ForestStoreModel, on, registry, Menu, MenuItem, PopupMenuItem, lang, request, InputAutoSuggest){
+], function(declare, dom, _WidgetBase, ItemFileWriteStore, Observable, RefreshableTree, Tree, ForestStoreModel, on, registry, Menu, MenuItem, PopupMenuItem, lang, request, domAttr, InputAutoSuggest){
 
     return declare([_WidgetBase], {
 
@@ -126,7 +127,6 @@ define([
             this.menu.addChild(new MenuItem({
                 label : "Edit",
                 onClick : function() {
-                    //TODO implement menu functions, take them from virtual hosts
                     that._showEditLineDialog();
                 }
             }));
@@ -142,13 +142,13 @@ define([
             subMenu.addChild(new MenuItem({
                 label : "New Enclosure",
                 onClick: function() {
-                    that._showAddLineDialog(this.LineTypes.ENCLOSUE);
+                    that._showAddLineDialog(that.LineTypes.ENCLOSURE);
                 }
             }));
             subMenu.addChild(new MenuItem({
                 label : "New Directive",
                 onClick: function() {
-                    that._showAddLineDialog(this.LineTypes.DIRECTIVE);
+                    that._showAddLineDialog(that.LineTypes.DIRECTIVE);
                 }
             }));
             this.menu.addChild(new PopupMenuItem({
@@ -264,7 +264,7 @@ define([
 
         _showEditLineDialog: function() {
             if(!this.editable) {
-                this.onDisabledError();
+                this.onEditDisabledError();
                 return;
             }
 
@@ -340,11 +340,10 @@ define([
         },
 
         _deleteLine: function() {
-            //todo implement delete line
             var that = this;
 
             if(!this.editable) {
-                this.onDisabledError();
+                this.onDeleteDisabledError();
                 return;
             }
 
@@ -397,6 +396,81 @@ define([
 
         _showAddLineDialog: function(type) {
             //todo implement add line
+            if(!this.editable) {
+                this.onAddDisabledError();
+                return;
+            }
+
+            var item = this._getSelectedTreeItem();
+            if (!!item) {
+
+                var shouldShow = this.onShowAddDialog(type);
+                if(!shouldShow) {
+                    return;
+                }
+
+                var addLineType = dom.byId('addLineType');
+                addLineType.value = '';
+                domAttr.set(addLineType, "data-type", type);
+                dom.byId('addLineValue').value = '';
+                dom.byId('addLineBeforeLineType').value = this._getItemProperty(item,'lineType');
+                dom.byId('addLineLineType').value = type;
+                dom.byId('addLineFile').value = this._getItemProperty(item,'file');
+                dom.byId('addLineLineOfStart').value = (parseInt(this._getItemProperty(item,'lineOfEnd')) + 1);
+
+                var dialog = registry.byId('addLineDialog');
+                dialog.set('title', type == this.LineTypes.ENCLOSURE ? 'Add Enclosure' : 'Add Directive');
+                dialog.show();
+            }
+        },
+
+        _submitAddLine: function() {
+
+            var that = this;
+
+
+            var file = dom.byId('addLineFile').value.trim();;
+            var type = dom.byId('addLineType').value.trim();
+            var value = dom.byId('addLineValue').value.trim();
+            var beforeLineType = dom.byId('addLineBeforeLineType').value;
+            var lineType = dom.byId('addLineLineType').value;
+            var lineOfStart = dom.byId('addLineLineOfStart').value;
+
+            var shouldAdd = this.onBeforeAddLine(type, value);
+            if(!shouldAdd) {
+                return;
+            }
+
+            var thisdialog = net.apachegui.Util.noCloseDialog('Adding', 'Adding Please Wait...');
+            thisdialog.show();
+
+            request.post("../web/ConfigurationTree", {
+                data : {
+                    option : 'addLine',
+                    type : type,
+                    value : value,
+                    lineType : lineType,
+                    beforeLineType : beforeLineType,
+                    file : file,
+                    lineOfStart : lineOfStart
+                },
+                handleAs : 'json',
+                sync : false
+            }).response.then(function(response) {
+                    thisdialog.remove();
+                    registry.byId('addLineDialog').hide();
+
+                    that.onAfterAddLine(type, value, response);
+                    that.reload();
+                }, function(error) {
+                    thisdialog.remove();
+
+                    var response = error.response;
+                    net.apachegui.Util.alert('Error', response.data.message);
+                    that.onAddLineError(type, value, response);
+                });
+
+
         },
 
         _addListeners: function() {
@@ -410,6 +484,14 @@ define([
 
             on(registry.byId('editLineCancel'), 'click', function() {
                 registry.byId('editLineDialog').hide();
+            });
+
+            on(registry.byId('addLineSubmit'), 'click', function() {
+                that._submitAddLine();
+            });
+
+            on(registry.byId('addLineCancel'), 'click', function() {
+                registry.byId('addLineDialog').hide();
             });
 
             on(this.menu, "focus", function(e) {
@@ -434,7 +516,27 @@ define([
             return true;
         },
 
-        onDisabledError: function() {
+        onAddDisabledError: function() {
+            return true;
+        },
+
+        onShowAddDialog: function(type) {
+            return true;
+        },
+
+        onBeforeAddLine: function(type, value) {
+            return true;
+        },
+
+        onAfterAddLine: function(type, value, response) {
+            return true;
+        },
+
+        onAddLineError: function(type, value, response) {
+            return true;
+        },
+
+        onEditDisabledError: function() {
             return true;
         },
 
@@ -451,6 +553,10 @@ define([
         },
 
         onEditLineError: function(type, value, response) {
+            return true;
+        },
+
+        onDeleteDisabledError: function() {
             return true;
         },
 
