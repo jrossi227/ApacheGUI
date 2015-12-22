@@ -1,5 +1,5 @@
 //TODO stub out this file into a re-usable widget for GlobalTree.js
-//TODO VirtualHost js should end up using this widget
+//TODO VirtualHost js should end up using this widget (started)
 define([
     "dojo/_base/declare",
     "dojo/dom",
@@ -27,7 +27,11 @@ define([
         menu: null,
         currentTreeItem: null,
         editable: true,
-        treeJSON: {},
+        treeJSON: {
+            identifier: "id",
+            items: [],
+            label: "name"
+        },
         autoExpand: false,
         inputAutoSuggest: null,
 
@@ -52,7 +56,7 @@ define([
          */
         constructor: function(params){
             this.id = params.id;
-            this.treeJSON = params.treeJSON || {};
+            this.treeJSON = params.treeJSON || this.treeJSON;
             this.autoExpand = params.autoExpand || false;
             this.loadTreeJSON = params.loadTreeJSON || this.loadTreeJSON;
 
@@ -111,7 +115,7 @@ define([
             });
 
             this.menu.addChild(new MenuItem({
-                label : "Exapnd All",
+                label : "Expand All",
                 onClick : function() {
                     that.expandAll();
                 }
@@ -163,6 +167,7 @@ define([
 
         startup: function() {
             this.tree.startup();
+            this.reload();
         },
 
         destroy: function() {

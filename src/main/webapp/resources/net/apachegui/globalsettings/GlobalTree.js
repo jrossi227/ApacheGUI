@@ -34,19 +34,14 @@ define([
         },
 
         buildGlobalTree: function() {
-            var that = this;
-
-            this.loadGlobalTreeJSON(function(treeJSON) {
-                that.configTree = new ConfigurationTree({
-                    id: 'global_tree',
-                    treeJSON: treeJSON,
-                    loadTreeJSON: that.loadGlobalTreeJSON
-                });
-                that.configTree.startup();
-                that.addListeners();
-
-                domConstruct.place(that.configTree.domNode, dom.byId('global_tree_container'), 'last');
+            this.configTree = new ConfigurationTree({
+                id: 'global_tree',
+                loadTreeJSON: this.loadGlobalTreeJSON
             });
+            this.configTree.startup();
+            this.addListeners();
+
+            domConstruct.place(this.configTree.domNode, dom.byId('global_tree_container'), 'last');
         },
 
         addListeners: function() {
