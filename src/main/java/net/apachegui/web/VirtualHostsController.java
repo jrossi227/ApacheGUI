@@ -1,14 +1,8 @@
 package net.apachegui.web;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.regex.Pattern;
-
+import apache.conf.global.Utils;
+import apache.conf.parser.File;
+import apache.conf.parser.Parser;
 import net.apachegui.conf.ConfFiles;
 import net.apachegui.conf.Configuration;
 import net.apachegui.db.SettingsDao;
@@ -20,7 +14,6 @@ import net.apachegui.modules.StaticModuleHandler;
 import net.apachegui.virtualhosts.NetworkInfo;
 import net.apachegui.virtualhosts.VirtualHost;
 import net.apachegui.virtualhosts.VirtualHosts;
-
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,9 +22,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import apache.conf.global.Utils;
-import apache.conf.parser.File;
-import apache.conf.parser.Parser;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 @RestController
 @RequestMapping("/web/VirtualHosts")
@@ -71,75 +68,7 @@ public class VirtualHostsController {
         return summary.toString();
         
     }
-    
-    @RequestMapping(method = RequestMethod.POST, params = "option=deleteLine", produces = "application/json;charset=UTF-8")
-    public String deleteLine(@RequestParam(value = "file") String file, 
-                               @RequestParam(value = "lineOfStart") int lineOfStart, 
-                               @RequestParam(value = "lineOfEnd") int lineOfEnd) throws Exception {
 
-        String originalContents = ConfFiles.deleteFromConfigFile(Pattern.compile(".*", Pattern.CASE_INSENSITIVE), new File(file), lineOfStart, lineOfEnd, true);
-        
-        Configuration.testChanges(file, originalContents);
-        
-        JSONObject result = populateFileModifiedResponse(file);
-      
-        return result.toString();
-    }
-    
-    @RequestMapping(method = RequestMethod.POST, params = "option=editLine", produces = "application/json;charset=UTF-8")
-    public String editLine(@RequestParam(value = "type") String type, 
-                           @RequestParam(value = "value") String value, 
-                           @RequestParam(value = "lineType") String lineType, 
-                           @RequestParam(value = "file") String file, 
-                           @RequestParam(value = "lineOfStart") int lineOfStart, 
-                           @RequestParam(value = "lineOfEnd") int lineOfEnd) throws Exception {
-        
-        String line;
-        if(lineType.equals("enclosure")) {
-            line = "<" + type + " " + value + ">";
-        } else {
-            line = type + " " + value;
-        }
-                
-        String originalContents = ConfFiles.replaceLinesInConfigFile(new File(file), new String[]{line}, lineOfStart, lineOfEnd);
-        
-        Configuration.testChanges(file, originalContents);
-        
-        JSONObject result = populateFileModifiedResponse(file);
-        
-        return result.toString();       
-    }
-    
-    @RequestMapping(method = RequestMethod.POST, params = "option=addLine", produces = "application/json;charset=UTF-8")
-    public String addLine(@RequestParam(value = "type") String type, 
-                           @RequestParam(value = "value") String value, 
-                           @RequestParam(value = "beforeLineType") String beforeLineType, 
-                           @RequestParam(value = "lineType") String lineType, 
-                           @RequestParam(value = "file") String file, 
-                           @RequestParam(value = "lineOfStart") int lineOfStart) throws Exception {
-        
-        String lines[];
-        if(lineType.equals("enclosure")) {
-            lines = new String[3];
-            lines[0] = "<" + type + " " + value + ">";
-            lines[1] = "";
-            lines[2] = "</" + type + ">";
-        } else {
-            lines = new String[1];
-            lines[0] = type + " " + value;
-        }
-                
-        boolean useWhitespaceBefore = beforeLineType.equals("directive");
-        
-        String originalContents = ConfFiles.writeToConfigFile(new File(file), lines, lineOfStart, useWhitespaceBefore);
-        
-        Configuration.testChanges(file, originalContents);
-        
-        JSONObject result = populateFileModifiedResponse(file);
-        
-        return result.toString();      
-    }
-    
     @RequestMapping(method = RequestMethod.POST, params = "option=addHost", produces = "application/json;charset=UTF-8")
     public String addHost(@RequestParam(value = "hostAddress") String hostAddress, 
                           @RequestParam(value = "port") String port, 

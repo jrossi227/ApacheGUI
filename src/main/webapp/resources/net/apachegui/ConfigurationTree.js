@@ -518,9 +518,6 @@ define([
                         return true;
                     });
 
-         configTree.on("showeditdialog", function() {
-                        return true;
-                    });
         **/
         onMenuFocus: function() {
             return true;

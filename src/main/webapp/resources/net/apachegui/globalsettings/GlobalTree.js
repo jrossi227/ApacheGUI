@@ -1,3 +1,4 @@
+//TODO add check to see if global config changed and force refresh
 define([
     "dojo/_base/declare",
     "dojo/request",

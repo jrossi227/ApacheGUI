@@ -31,6 +31,7 @@ define([ "dojo/_base/declare",
         {
             number: 0,
             tree: __tree object__,
+            configTree: __config tree object__,
             host: __host object,
             lastModified : {
                 file: __file path__,
@@ -53,22 +54,15 @@ define([ "dojo/_base/declare",
         disableEditing : false,
         
         addHostFileSelect: null,
-        
-        inputAutoSuggest: null,
-        
+
         initialized : false,
 
         init : function() {
             if (this.initialized === false) {
                 this.populateTreeVirtualHosts();
                 this.addListeners();
-                this.initializeAutoSuggest();
                 this.initialized = true;
             }
-        },
-        
-        initializeAutoSuggest: function() {
-            this.inputAutoSuggest = new InputAutoSuggest(dom.byId('addLineType'));
         },
 
         areHostsEqual : function(host1, host2) {
@@ -443,6 +437,10 @@ define([ "dojo/_base/declare",
             registry.byId('editLineSubmit').set('disabled', true);            
             registry.byId('addLineSubmit').set('disabled', true);
             registry.byId('addHostSubmit').set('disabled', true);
+
+            for(var i=0; i<this.virtualHosts.length; i++) {
+                this.virtualHosts[i].configTree.disableEditing();
+            }
         },
         
         deleteLine : function() {
@@ -655,6 +653,7 @@ define([ "dojo/_base/declare",
 
         },
 
+        /**
         showAddLineDialog : function(type) {
             
             if(this.disableEditing) {
@@ -745,6 +744,7 @@ define([ "dojo/_base/declare",
             });
             
         },
+         **/
 
         reloadAllTreeHosts : function(hosts) {
 
@@ -773,7 +773,7 @@ define([ "dojo/_base/declare",
 
         },
 
-        reloadTreeHost : function(virtualHost) {
+        reloadTreeHost : function() {
             var that = this;
             
             var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Tree Host...');
@@ -789,30 +789,8 @@ define([ "dojo/_base/declare",
             }).response.then(function(response) {
                 var data = response.data;
 
-                var hosts = data.hosts;
-
-                if (!!virtualHost) {
-                                        
-                    var host;
-                    for (var i = 0; i < hosts.length; i++) {
-                        host = hosts[i];
-
-                        if (that.areHostsEqual(virtualHost.host, host)) {
-                                                        
-                            virtualHost.tree.model.store = new ItemFileWriteStore({
-                                data : host.tree
-                            });
-                            
-                            virtualHost.tree.reload();
-                                                        
-                            that.reloadAllTreeHosts(hosts);
-
-                            break;
-                        }
-                    }
-                } else {
+                    var hosts = data.hosts;
                     that.reloadAllTreeHosts(hosts);
-                }
 
                 thisdialog.remove();
             }, function(error) {
@@ -823,31 +801,57 @@ define([ "dojo/_base/declare",
         },
 
         loadVirtualHostTreeJSON: function(callback) {
-            request.get('../web/GlobalTree', {
-                query: {
-                    option: 'getGlobalTree'
+            var that = this;
+
+            var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Tree Host...');
+            thisdialog.show();
+
+            var virtualHost = this.currentVirtualHost;
+
+            request.get('../web/VirtualHosts', {
+                query : {
+                    option : 'getTreeHosts'
                 },
-                handleAs: 'json',
-                preventCache: true,
-                sync: false
-            }).response.then(function (response) {
-                    var data = response.data;
-                    var tree = data.tree;
-                    callback(tree);
-                });
+                handleAs : 'json',
+                preventCache : true,
+                sync : false
+            }).response.then(function(response) {
+                var data = response.data;
+
+                var hosts = data.hosts;
+
+                var host;
+                for (var i = 0; i < hosts.length; i++) {
+                    host = hosts[i];
+
+                    if (that.areHostsEqual(virtualHost.host, host)) {
+
+                        callback(host.tree);
+
+                        that.reloadAllTreeHosts(hosts);
+
+                        break;
+                    }
+                }
+
+                thisdialog.remove();
+            }, function(error) {
+                thisdialog.remove();
+                net.apachegui.Util.alert('Info', error.response.data.message);
+            });
 
         },
 
         buildTreeHost : function(host, container, pos) {
             var that = this;
             
-            var id = "tree_" + this.currentTreeSummaryCount;
+            var id = "tree-" + this.currentTreeSummaryCount;
 
             var virtualHostTree = new ConfigurationTree({
                 id: id + '_widget',
                 treeJSON: host.tree,
                 rootType: 'VirtualHost',
-                loadTreeJSON: this.loadVirtualHostTreeJSON
+                loadTreeJSON: this.loadVirtualHostTreeJSON.bind(this)
             });
 
             virtualHostTree.startup();
@@ -938,6 +942,7 @@ define([ "dojo/_base/declare",
                 return {
                     number : num,
                     tree : virtualHostTree.tree,
+                    configTree: virtualHostTree,
                     host : host,
                     lastModified : {
                         file : host.file,
@@ -955,6 +960,56 @@ define([ "dojo/_base/declare",
                 that.currentVirtualHost = virtualHost;
             });
             **/
+            virtualHostTree.on("menufocus", function() {
+                that.currentVirtualHost = virtualHost;
+                return true;
+            });
+
+            virtualHostTree.on("addDisabledError", function() {
+                that.showDisabledError();
+                return false;
+            });
+
+            virtualHostTree.on("editDisabledError", function() {
+                that.showDisabledError();
+                return false;
+            });
+
+            virtualHostTree.on("deleteDisabledError", function() {
+                that.showDisabledError();
+                return false;
+            });
+
+            virtualHostTree.on("beforeAddLine", function(type, value) {
+                if (type == "ServerName") {
+
+                    var host = that.currentVirtualHost.host;
+                    var currHost = that.getHost(value, host.NetworkInfo);
+                    if (!!currHost) {
+                        that.showHostExistsError(currHost);
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            virtualHostTree.on("afterAddLine", function(type, value, response) {
+                if (type == "ServerName") {
+                    var host = that.currentVirtualHost.host;
+                    host.ServerName = value;
+                    dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(host);
+                    that.buildTreeHostSelect();
+                }
+
+                var data = response.data;
+                that.updateLastModifiedTime(data.file, data.lastModifiedTime);
+            });
+
+            virtualHostTree.on("addLineError", function(type, value, response) {
+                that.updateLastModifiedTime(that.currentVirtualHost.host.file);
+            });
+
             this.currentTreeSummaryCount++;
             
             return div;
@@ -1368,22 +1423,6 @@ define([ "dojo/_base/declare",
         
         addListeners : function() {
             var that = this;
-
-            on(registry.byId('editLineSubmit'), 'click', function() {
-                that.submitEditLine();
-            });
-
-            on(registry.byId('editLineCancel'), 'click', function() {
-                registry.byId('editLineDialog').hide();
-            });
-            
-            on(registry.byId('addLineSubmit'), 'click', function() {
-                that.submitAddLine();
-            });
-
-            on(registry.byId('addLineCancel'), 'click', function() {
-                registry.byId('addLineDialog').hide();
-            });
             
             on(registry.byId('addHostButton'), 'click', function() {
                 
