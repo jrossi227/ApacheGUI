@@ -1,6 +1,7 @@
 //TODO stub out this file into a re-usable widget for GlobalTree.js
 //TODO VirtualHost js should end up using this widget (started)
 //TODO disable menu on root node
+//TODO must make this templated so you can use multiple trees
 define([
     "dojo/_base/declare",
     "dojo/dom",
@@ -211,6 +212,10 @@ define([
         },
 
         //--- PRIVATE FUNCTIONS -----------------------------------------------------------//
+        _initializeTemplate: function() {
+
+        },
+
        _getItemProperty : function(item,name) {
             var val = item[name];
 
@@ -288,6 +293,8 @@ define([
                 if(!shouldShow) {
                     return;
                 }
+
+                this._setCurrentWidgetId();
 
                 dom.byId('editLineType').innerHTML = type;
                 dom.byId('editLineValue').value = value;
@@ -418,6 +425,8 @@ define([
                     return;
                 }
 
+                this._setCurrentWidgetId();
+
                 var addLineType = dom.byId('addLineType');
                 addLineType.value = '';
                 domAttr.set(addLineType, "data-type", type);
@@ -482,24 +491,44 @@ define([
 
         },
 
+        _checkIfCurrentWidget: function() {
+            return dom.byId('currentConfigurationTreeId').value == this.id;
+        },
+
+        _setCurrentWidgetId: function() {
+            dom.byId('currentConfigurationTreeId').value = this.id;
+        },
+
         _addListeners: function() {
             var that = this;
 
             //todo implement tree line hover
 
             on(registry.byId('editLineSubmit'), 'click', function() {
+                if(!that._checkIfCurrentWidget()) {
+                    return;
+                }
                 that._submitEditLine();
             });
 
             on(registry.byId('editLineCancel'), 'click', function() {
+                if(!that._checkIfCurrentWidget()) {
+                    return;
+                }
                 registry.byId('editLineDialog').hide();
             });
 
             on(registry.byId('addLineSubmit'), 'click', function() {
+                if(!that._checkIfCurrentWidget()) {
+                    return;
+                }
                 that._submitAddLine();
             });
 
             on(registry.byId('addLineCancel'), 'click', function() {
+                if(!that._checkIfCurrentWidget()) {
+                    return;
+                }
                 registry.byId('addLineDialog').hide();
             });
 
@@ -512,12 +541,6 @@ define([
 
         //--- EVENTS -----------------------------------------------------------//
         // These will all be left empty, it will be used as the extension point
-        /**
-         configTree.on("menufocus", function() {
-                        return true;
-                    });
-
-        **/
         onMenuFocus: function() {
             return true;
         },

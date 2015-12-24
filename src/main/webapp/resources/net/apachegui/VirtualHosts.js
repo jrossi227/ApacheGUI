@@ -423,7 +423,7 @@ define([ "dojo/_base/declare",
 
         /**
          *
-         * @param success callback, hosts array will be passed in as a paramete
+         * @param success callback, json response will be passed in as a parameter
          * @param error callback, message will be passed in as a parameter
          */
         requestAllTreeHosts: function(success, error) {
@@ -435,23 +435,27 @@ define([ "dojo/_base/declare",
                 preventCache: true,
                 sync: false
             }).response.then(function (response) {
-                    success(response.data.hosts);
+                    success(response.data);
                 }, function (response) {
                     error(response.response.data.message);
                 });
 
         },
 
-        loadVirtualHostTreeJSON: function(callback) {
+        loadVirtualHostTreeJSON: function(callback, virtualHost) {
             var that = this;
+
+            if(this.currentVirtualHost == null) {
+                return;
+            }
 
             var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Tree Host...');
             thisdialog.show();
 
-            var virtualHost = this.currentVirtualHost;
-
             this.requestAllTreeHosts(
-                function (hosts) {
+                function (data) {
+
+                    var hosts = data.hosts;
                     var host;
                     for (var i = 0; i < hosts.length; i++) {
                         host = hosts[i];
@@ -476,30 +480,12 @@ define([ "dojo/_base/declare",
 
         buildTreeHost : function(host, container, pos) {
             var that = this;
-            
+
             var id = "tree-" + this.currentTreeSummaryCount;
-
-            var virtualHostTree = new ConfigurationTree({
-                id: id + '_widget',
-                treeJSON: host.tree,
-                rootType: 'VirtualHost',
-                loadTreeJSON: this.loadVirtualHostTreeJSON.bind(this)
-            });
-
-            virtualHostTree.startup();
-
-            var div = document.createElement('div');
-            div.id = id;
-            div.innerHTML = '<h4 id=heading-' + id + '>' + this.buildTreeHeadingFromHost(host) + '</h4>';
-            div.appendChild(virtualHostTree.domNode);
-            
-            domConstruct.place(div, container, pos);
 
             var virtualHost = (function(num) {
                 return {
                     number : num,
-                    tree : virtualHostTree.tree,
-                    configTree: virtualHostTree,
                     host : host,
                     lastModified : {
                         file : host.file,
@@ -507,8 +493,29 @@ define([ "dojo/_base/declare",
                     }
                 };
             })(this.currentTreeSummaryCount);
-            
+
+            var virtualHostTree = new ConfigurationTree({
+                id: id + '_widget',
+                treeJSON: host.tree,
+                rootType: 'VirtualHost',
+                loadTreeJSON: function(callback) {
+                    that.loadVirtualHostTreeJSON(callback, virtualHost);
+                }
+            });
+
+            virtualHost.tree = virtualHostTree.tree;
+            virtualHost.configTree = virtualHostTree;
+
             this.virtualHosts.push(virtualHost);
+
+            var div = document.createElement('div');
+            div.id = id;
+            div.innerHTML = '<h4 id=heading-' + id + '>' + this.buildTreeHeadingFromHost(host) + '</h4>';
+            div.appendChild(virtualHostTree.domNode);
+
+            domConstruct.place(div, container, pos);
+
+            virtualHostTree.startup();
 
             virtualHostTree.on("menufocus", function() {
                 that.currentVirtualHost = virtualHost;
@@ -597,6 +604,7 @@ define([ "dojo/_base/declare",
             virtualHostTree.on("afterEditLine", function(type, value, response) {
 
                 var host = that.currentVirtualHost.host;
+                var NetworkInfo = that.buildNetworkInfoArrayFromValue(value);
                 if (type == "VirtualHost") {
                     host.NetworkInfo = NetworkInfo;
 
@@ -691,7 +699,8 @@ define([ "dojo/_base/declare",
             thisdialog.show();
 
             this.requestAllTreeHosts(
-                function (hosts) {
+                function (data) {
+                    var hosts = data.hosts;
                     that.treeGlobalServerName = data.ServerName;
 
                     if(hosts.length == 0) {
@@ -1071,12 +1080,13 @@ define([ "dojo/_base/declare",
                     that.updateLastModifiedTime(file);
                 }
 
-                var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Tree Hosts...');
+                thisdialog = null;
+                thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Tree Hosts...');
                 thisdialog.show();
 
-                this.requestAllTreeHosts(
-                    function (hosts) {
-                        that.reloadAllTreeHosts(hosts);
+                that.requestAllTreeHosts(
+                    function (data) {
+                        that.reloadAllTreeHosts(data.hosts);
                         thisdialog.remove();
                     },
                     function (message) {

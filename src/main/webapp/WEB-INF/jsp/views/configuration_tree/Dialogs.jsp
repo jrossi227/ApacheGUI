@@ -2,6 +2,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
+<input type="hidden" id="currentConfigurationTreeId" value=""/>
 <div data-dojo-type="dijit/Dialog" id="editLineDialog" title="Edit " style="width: 700px; display: none">
   <table>
     <tr class="dijitDialogPaneContentArea">
