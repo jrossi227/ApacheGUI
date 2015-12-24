@@ -119,6 +119,7 @@ define([
             this.menu.bindDomNode(div);
 
             this.menu.addChild(new MenuItem({
+                id: this.id + '-menu-item-expand-all',
                 label : "Expand All",
                 onClick : function() {
                     that.expandAll();
@@ -126,6 +127,7 @@ define([
             }));
 
             this.menu.addChild(new MenuItem({
+                id: this.id + '-menu-item-collapse-all',
                 label : "Collapse All",
                 onClick : function() {
                     that.collapseAll();
@@ -133,6 +135,7 @@ define([
             }));
 
             this.menu.addChild(new MenuItem({
+                id: this.id + '-menu-item-edit',
                 label : "Edit",
                 onClick : function() {
                     that._showEditLineDialog();
@@ -140,6 +143,7 @@ define([
             }));
 
             this.menu.addChild(new MenuItem({
+                id: this.id + '-menu-item-delete',
                 label : "Delete",
                 onClick : function() {
                     that._deleteLine()
@@ -148,18 +152,21 @@ define([
 
             var subMenu = new Menu();
             subMenu.addChild(new MenuItem({
+                id: this.id + '-menu-item-add-enclosure',
                 label : "New Enclosure",
                 onClick: function() {
                     that._showAddLineDialog(that.LineTypes.ENCLOSURE);
                 }
             }));
             subMenu.addChild(new MenuItem({
+                id: this.id + '-menu-item-add-directive',
                 label : "New Directive",
                 onClick: function() {
                     that._showAddLineDialog(that.LineTypes.DIRECTIVE);
                 }
             }));
             this.menu.addChild(new PopupMenuItem({
+                id: this.id + '-menu-item-add-submenu',
                 label : "Add",
                 popup : subMenu
             }));
@@ -535,6 +542,15 @@ define([
             on(this.menu, "focus", function(e) {
                 var tn = registry.getEnclosingWidget(this.currentTarget);
                 that.currentTreeItem = tn.item;
+
+                var lineType = that._getItemProperty(that.currentTreeItem, 'lineType');
+                var isConfigurationItem = (lineType == that.LineTypes.ENCLOSURE || lineType == that.LineTypes.DIRECTIVE);
+
+                registry.byId(that.id + '-menu-item-edit').set('disabled', !isConfigurationItem);
+                registry.byId(that.id + '-menu-item-delete').set('disabled', !isConfigurationItem);
+                registry.byId(that.id + '-menu-item-add-enclosure').set('disabled', !isConfigurationItem);
+                registry.byId(that.id + '-menu-item-add-directive').set('disabled', !isConfigurationItem);
+
                 that.onMenuFocus();
             });
         },

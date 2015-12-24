@@ -22,8 +22,7 @@ define([ "dojo/_base/declare",
          "dijit/Tooltip",
          "dojo/dom-attr",
          "net/apachegui/ConfigurationTree",
-         "net/apachegui/InputAutoSuggest"
-], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query, array, lang, domConstruct, Tooltip, domAttr, ConfigurationTree, InputAutoSuggest) {
+], function(declare, dom, request, registry, on, ItemFileWriteStore, DataGrid, TitlePane, RefreshableTree, Tree, ForestStoreModel, Observable, Menu, MenuItem, PopupMenuItem, Select, scroll, query, array, lang, domConstruct, Tooltip, domAttr, ConfigurationTree) {
 
     declare("net.apachegui.VirtualHosts", null, {
 
