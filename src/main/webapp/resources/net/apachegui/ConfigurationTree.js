@@ -20,8 +20,9 @@ define([
     "dojo/request",
     "dojo/dom-attr",
     "net/apachegui/InputAutoSuggest",
-    "dojo/dom-construct"
-], function(declare, dom, _WidgetBase, ItemFileWriteStore, Observable, RefreshableTree, Tree, ForestStoreModel, on, registry, Menu, MenuItem, PopupMenuItem, lang, request, domAttr, InputAutoSuggest, domConstruct){
+    "dojo/dom-geometry",
+    "dojo/dom-style"
+], function(declare, dom, _WidgetBase, ItemFileWriteStore, Observable, RefreshableTree, Tree, ForestStoreModel, on, registry, Menu, MenuItem, PopupMenuItem, lang, request, domAttr, InputAutoSuggest, domGeom, domStyle){
 
     return declare([_WidgetBase], {
 
@@ -207,6 +208,10 @@ define([
             var that = this;
 
             this.loadTreeJSON(function(treeJSON) {
+
+                var initialContentBox = domGeom.getContentBox(that.domNode);
+                domStyle.set(that.domNode, "height", initialContentBox.h + 'px');
+
                 that.treeJSON = treeJSON;
                 that.tree.model.store = new ItemFileWriteStore({
                     data : that.treeJSON
@@ -215,6 +220,10 @@ define([
                 that.tree.reload();
 
                 that._autoExpandRootNode();
+
+                setTimeout(function(){
+                    domStyle.set(that.domNode, "height", "");
+                }, 2500);
             });
         },
 
