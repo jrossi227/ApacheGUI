@@ -218,16 +218,6 @@ define([ "dojo/_base/declare",
         //-----------------END OF LAST MODIFIED TRACKING---------------//
 
         //------------------TREE VIRTUAL HOSTS-------------------------//
-        getItemProperty : function(item,name) {
-            var val = item[name];
-            
-            if(lang.isArray(val)){
-                return val[0];
-            }
-            
-            return val;
-        },
-        
         valueContainsLogHolder : function (value) {
             if(value.indexOf('apacheguilogholder') > -1) {
                 return true;
@@ -261,10 +251,6 @@ define([ "dojo/_base/declare",
 
         getCurrentTreeContainerId : function() {
             return 'tree-' + this.currentVirtualHost.number;
-        },
-
-        getCurrentTreeId : function() {
-            return 'tree-' + this.getCurrentTreeContainerId();
         },
 
         getTreePositionFromHost : function(host) {
@@ -319,41 +305,6 @@ define([ "dojo/_base/declare",
             var networkInfoValue = this.buildNetworkInfoString(host);
           
             return '<span class="network">' + serverName + ' ' + networkInfoValue + '</span>&nbsp;&nbsp;&nbsp;<span class="file"><a target="_blank" href="Configuration.jsp?file=' + host.file + '&lineNum=' + host.lineOfStart + '">' + host.file + '</a> Line: ' + host.lineOfStart + '</span>';
-        },
-
-        getTreeItem : function(id, items) {
-
-            var item = null;
-
-            for (var i = 0; i < items.length; i++) {
-
-                if (items[i].id == id) {
-                    item = items[i];
-                } else if (!!items[i].children) {
-                    item = this.getTreeItem(id, items[i].children);
-                }
-
-                if (!!item) {
-                    break;
-                }
-            }
-
-            return item;
-        },
-
-        getSelectedTreeItem : function() {
-            var itemId = this.currentTreeItem.id;
-            var items = this.currentVirtualHost.host.tree.items;
-
-            var item = this.getTreeItem(itemId, items);
-
-            if (this.currentTreeItem.type != this.getItemProperty(item,'type') && this.currentTreeItem.value != this.getItemProperty(item, 'value')) {
-                this.showTreeHostOutOfDateError();
-
-                return null;
-            }
-
-            return item;
         },
 
         buildTreeHostSelectOption : function(host) {
@@ -442,309 +393,6 @@ define([ "dojo/_base/declare",
                 this.virtualHosts[i].configTree.disableEditing();
             }
         },
-        
-        deleteLine : function() {
-            var that = this;
-
-            if(this.disableEditing) {
-                this.showDisabledError();
-                return;
-            }
-            
-            var item = this.getSelectedTreeItem();
-            var type = this.getItemProperty(item, 'type');
-            var value = this.getItemProperty(item, 'value');
-            
-            if(this.valueContainsLogHolder(value)) {
-                this.showLogHolderError();
-                return;
-            }
-            
-            if (!!item) {
-                net.apachegui.Util.confirmDialog("Please Confirm", "Are you sure you want to delete the following " + this.getItemProperty(item,'lineType') + ":<br/><br/>" + this.getItemProperty(item,'name'), function confirm(conf) {
-                    if (conf) {
-
-                        if(that.disableEditing) {
-                            that.showDisabledError();
-                            return;
-                        }
-                        
-                        var tree = that.currentVirtualHost.tree;
-                        var host = that.currentVirtualHost.host;
-                        
-                        var callback;
-                        if (type == "VirtualHost") {
-                            callback = function() {
-                                var index = that.getTreePositionFromHost(host);
-                                
-                                tree.destroyRecursive();
-                                
-                                var container = dom.byId(that.getCurrentTreeContainerId());
-                                container.parentNode.removeChild(container);
-                                
-                                that.virtualHosts.splice(index,1);
-                                that.currentVirtualHost = null;
-
-                                that.buildTreeHostSelect();
-                            };
-                        }
-
-                        if (type == "ServerName") {
-
-                            var currHost = that.getHost('', host.NetworkInfo);
-                            if (!!currHost) {
-                                that.showHostExistsError(currHost);
-                                return;
-                            }
-
-                            callback = function() {
-                                host.ServerName = '';
-                                dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(host);
-                                that.buildTreeHostSelect();
-                            };
-                        }
-
-                        var thisdialog = net.apachegui.Util.noCloseDialog('Deleting', 'Deleting Please Wait...');
-                        thisdialog.show();
-
-                        that.checkModifiedTimes = false;
-                        var file = host.file;
-                        request.post("../web/VirtualHosts", {
-                            data : {
-                                option : 'deleteLine',
-                                file : file,
-                                lineOfStart : that.getItemProperty(item,'lineType') == 'enclosure' ? that.getItemProperty(item,'enclosureLineOfStart') : that.getItemProperty(item,'lineOfStart'),
-                                lineOfEnd : that.getItemProperty(item,'lineType') == 'enclosure' ? that.getItemProperty(item,'enclosureLineOfEnd') : that.getItemProperty(item,'lineOfEnd')
-                            },
-                            handleAs : 'json',
-                            sync : false
-                        }).response.then(function(response) {
-                            if (!!callback) {
-                                callback();
-                            }
-
-                            that.reloadTreeHost(that.currentVirtualHost);
-                            thisdialog.remove();
-                            
-                            var data = response.data;
-                            that.updateLastModifiedTime(data.file, data.lastModifiedTime);
-                        }, function(error) {
-                            thisdialog.remove();
-                            net.apachegui.Util.alert('Error', error.response.data.message);
-                            that.updateLastModifiedTime(file);
-                        });
-                    }
-                });
-            }
-        },
-
-        showEditLineDialog : function() {
-            
-            if(this.disableEditing) {
-                this.showDisabledError();
-                return;
-            }
-            
-            var item = this.getSelectedTreeItem();
-            if (!!item) {
-
-                var type = this.getItemProperty(item, 'type');
-                var value = this.getItemProperty(item, 'value');
-                
-                if(this.valueContainsLogHolder(value)) {
-                    this.showLogHolderError();
-                    return;
-                }
-                
-                dom.byId('editLineType').innerHTML = type;
-                dom.byId('editLineValue').value = value;
-                dom.byId('editLineLineType').value = this.getItemProperty(item,'lineType');
-                dom.byId('editLineLineOfStart').value = this.getItemProperty(item,'lineOfStart');
-                dom.byId('editLineLineOfEnd').value = this.getItemProperty(item,'lineOfEnd');
-
-                var dialog = registry.byId('editLineDialog');
-                dialog.set('title', this.getItemProperty(item,'lineType') == 'enclosure' ? 'Edit Enclosure' : 'Edit Directive');
-                dialog.show();
-            }
-        },
-
-        submitEditLine : function() {
-            var that = this;
-
-            var host = this.currentVirtualHost.host;
-            var file = host.file;
-
-            var type = dom.byId('editLineType').innerHTML;
-            var value = dom.byId('editLineValue').value.trim();
-            var lineType = dom.byId('editLineLineType').value;
-            var lineOfStart = dom.byId('editLineLineOfStart').value;
-            var lineOfEnd = dom.byId('editLineLineOfEnd').value;
-            
-            // cover special case when editing virtual host network info
-            var callback;
-            if (type == "VirtualHost") {
-                
-                var NetworkInfo = that.buildNetworkInfoArrayFromValue(value);
-                
-                var currHost = this.getHost(host.ServerName, NetworkInfo);
-                if (!!currHost) {
-                    this.showHostExistsError(currHost);
-                    return;
-                }
-                
-                callback = function() {                    
-                    host.NetworkInfo = NetworkInfo;
-
-                    dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(host);
-                    that.buildTreeHostSelect();
-
-                };
-            }
-
-            if (type == "ServerName") {
-                
-                var currHost = this.getHost(value, host.NetworkInfo);
-                if (!!currHost) {
-                    this.showHostExistsError(currHost);
-                    return;
-                }
-                
-                callback = function() {
-                    
-                    host.ServerName = value;
-                    dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(host);
-                    that.buildTreeHostSelect();
-                };
-            }
-
-            var thisdialog = net.apachegui.Util.noCloseDialog('Modifying', 'Modifying Please Wait...');
-            thisdialog.show();
-
-            that.checkModifiedTimes = false;
-            request.post("../web/VirtualHosts", {
-                data : {
-                    option : 'editLine',
-                    type : type,
-                    value : value,
-                    lineType : lineType,
-                    file : file,
-                    lineOfStart : lineOfStart,
-                    lineOfEnd : lineOfEnd
-                },
-                handleAs : 'json',
-                sync : false
-            }).response.then(function(response) {
-
-                if (!!callback) {
-                    callback();
-                }
-
-                that.reloadTreeHost(that.currentVirtualHost);
-                thisdialog.remove();
-                registry.byId('editLineDialog').hide();
-                
-                var data = response.data;
-                that.updateLastModifiedTime(data.file, data.lastModifiedTime);
-            }, function(error) {
-                thisdialog.remove();
-                net.apachegui.Util.alert('Error', error.response.data.message);
-                that.updateLastModifiedTime(file);
-            });
-
-        },
-
-        /**
-        showAddLineDialog : function(type) {
-            
-            if(this.disableEditing) {
-                this.showDisabledError();
-                return;
-            }
-            
-            var item = this.getSelectedTreeItem();
-            if (!!item) {
-
-                var addLineType = dom.byId('addLineType');
-                addLineType.value = '';
-                domAttr.set(addLineType, "data-type", type);
-                dom.byId('addLineValue').value = '';
-                dom.byId('addLineBeforeLineType').value = this.getItemProperty(item,'lineType');
-                dom.byId('addLineLineType').value = type;
-                dom.byId('addLineLineOfStart').value = (parseInt(this.getItemProperty(item,'lineOfEnd')) + 1);
-
-                var dialog = registry.byId('addLineDialog');
-                dialog.set('title', type == 'enclosure' ? 'Add Enclosure' : 'Add Directive');
-                dialog.show();
-                
-            }
-        },
-        
-        submitAddLine : function() {
-            
-            var that = this;
-
-            var host = this.currentVirtualHost.host;
-            
-            var file = host.file;
-            var type = dom.byId('addLineType').value.trim();
-            var value = dom.byId('addLineValue').value.trim();
-            var beforeLineType = dom.byId('addLineBeforeLineType').value;
-            var lineType = dom.byId('addLineLineType').value;
-            var lineOfStart = dom.byId('addLineLineOfStart').value;
-                        
-            var callback;
-            if (type == "ServerName") {
-                
-                var currHost = this.getHost(value, host.NetworkInfo);
-                if (!!currHost) {
-                    this.showHostExistsError(currHost);
-                    return;
-                }
-                
-                callback = function() {
-                    
-                    host.ServerName = value;
-                    dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(host);
-                    that.buildTreeHostSelect();
-                };
-            }
-            
-            var thisdialog = net.apachegui.Util.noCloseDialog('Adding', 'Adding Please Wait...');
-            thisdialog.show();
-
-            that.checkModifiedTimes = false;
-            request.post("../web/VirtualHosts", {
-                data : {
-                    option : 'addLine',
-                    type : type,
-                    value : value,
-                    lineType : lineType,
-                    beforeLineType : beforeLineType,
-                    file : file,
-                    lineOfStart : lineOfStart
-                },
-                handleAs : 'json',
-                sync : false
-            }).response.then(function(response) {
-
-                if (!!callback) {
-                    callback();
-                }
-
-                that.reloadTreeHost(that.currentVirtualHost);
-                thisdialog.remove();
-                registry.byId('addLineDialog').hide();
-                
-                var data = response.data;
-                that.updateLastModifiedTime(data.file, data.lastModifiedTime);
-            }, function(error) {
-                thisdialog.remove();
-                net.apachegui.Util.alert('Error', error.response.data.message);
-                that.updateLastModifiedTime(file);
-            });
-            
-        },
-         **/
 
         reloadAllTreeHosts : function(hosts) {
 
@@ -773,30 +421,24 @@ define([ "dojo/_base/declare",
 
         },
 
-        reloadTreeHost : function() {
-            var that = this;
-            
-            var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Tree Host...');
-            thisdialog.show();
-
+        /**
+         *
+         * @param success callback, hosts array will be passed in as a paramete
+         * @param error callback, message will be passed in as a parameter
+         */
+        requestAllTreeHosts: function(success, error) {
             request.get('../web/VirtualHosts', {
-                query : {
-                    option : 'getTreeHosts'
+                query: {
+                    option: 'getTreeHosts'
                 },
-                handleAs : 'json',
-                preventCache : true,
-                sync : false
-            }).response.then(function(response) {
-                var data = response.data;
-
-                    var hosts = data.hosts;
-                    that.reloadAllTreeHosts(hosts);
-
-                thisdialog.remove();
-            }, function(error) {
-                thisdialog.remove();
-                net.apachegui.Util.alert('Info', error.response.data.message);
-            });
+                handleAs: 'json',
+                preventCache: true,
+                sync: false
+            }).response.then(function (response) {
+                    success(response.data.hosts);
+                }, function (response) {
+                    error(response.response.data.message);
+                });
 
         },
 
@@ -808,38 +450,28 @@ define([ "dojo/_base/declare",
 
             var virtualHost = this.currentVirtualHost;
 
-            request.get('../web/VirtualHosts', {
-                query : {
-                    option : 'getTreeHosts'
-                },
-                handleAs : 'json',
-                preventCache : true,
-                sync : false
-            }).response.then(function(response) {
-                var data = response.data;
+            this.requestAllTreeHosts(
+                function (hosts) {
+                    var host;
+                    for (var i = 0; i < hosts.length; i++) {
+                        host = hosts[i];
 
-                var hosts = data.hosts;
+                        if (that.areHostsEqual(virtualHost.host, host)) {
 
-                var host;
-                for (var i = 0; i < hosts.length; i++) {
-                    host = hosts[i];
+                            callback(host.tree);
 
-                    if (that.areHostsEqual(virtualHost.host, host)) {
+                            that.reloadAllTreeHosts(hosts);
 
-                        callback(host.tree);
-
-                        that.reloadAllTreeHosts(hosts);
-
-                        break;
+                            break;
+                        }
                     }
-                }
 
-                thisdialog.remove();
-            }, function(error) {
-                thisdialog.remove();
-                net.apachegui.Util.alert('Info', error.response.data.message);
-            });
-
+                    thisdialog.remove();
+                },
+                function (message) {
+                    thisdialog.remove();
+                    net.apachegui.Util.alert('Info', message);
+                });
         },
 
         buildTreeHost : function(host, container, pos) {
@@ -856,46 +488,6 @@ define([ "dojo/_base/declare",
 
             virtualHostTree.startup();
 
-            /**
-            var store = new ItemFileWriteStore({
-                data : host.tree
-            });
-            store = new Observable(store);
-
-            var modelId = 'model-' + id;
-
-            var treeModel = new ForestStoreModel({
-                store : store,
-                query : {
-                    "type" : "VirtualHost"
-                },
-                rootId : 0,
-                childrenAttrs : [ "children" ],
-                id : modelId
-            });
-
-            var HostTreeNode = declare(Tree._TreeNode, {
-                _setLabelAttr : {
-                    node : "labelNode",
-                    type : "innerHTML"
-                }
-            });
-
-            var treeId = 'tree-' + id;
-
-            var hostTree = new RefreshableTree({
-                model : treeModel,
-                showRoot : false,
-                autoExpand : true,
-                openOnClick : true,
-                id : treeId,
-                persist : true,
-                _createTreeNode : function(args) {
-                    return new HostTreeNode(args);
-                }
-            });
-
-            **/
             var div = document.createElement('div');
             div.id = id;
             div.innerHTML = '<h4 id=heading-' + id + '>' + this.buildTreeHeadingFromHost(host) + '</h4>';
@@ -903,41 +495,6 @@ define([ "dojo/_base/declare",
             
             domConstruct.place(div, container, pos);
 
-            /**
-            var menu = new Menu({
-                targetNodeIds : [ id ],
-                selector : ".dijitTreeNode"
-            });
-
-            menu.addChild(new MenuItem({
-                label : "Edit",
-                onClick : this.showEditLineDialog.bind(this)
-            }));
-
-            menu.addChild(new MenuItem({
-                label : "Delete",
-                onClick : this.deleteLine.bind(this)
-            }));
-
-            var subMenu = new Menu();
-            subMenu.addChild(new MenuItem({
-                label : "New Enclosure",
-                onClick: function() {
-                    that.showAddLineDialog('enclosure');
-                }
-            }));
-            subMenu.addChild(new MenuItem({
-                label : "New Directive",
-                onClick: function() {
-                    that.showAddLineDialog('directive');
-                }
-            }));
-            menu.addChild(new PopupMenuItem({
-                label : "Add",
-                popup : subMenu
-            }));
-
-             **/
             var virtualHost = (function(num) {
                 return {
                     number : num,
@@ -953,16 +510,13 @@ define([ "dojo/_base/declare",
             
             this.virtualHosts.push(virtualHost);
 
-            /**
-            on(menu, "focus", function(e) {
-                var tn = registry.getEnclosingWidget(this.currentTarget);
-                that.currentTreeItem = tn.item;
-                that.currentVirtualHost = virtualHost;
-            });
-            **/
             virtualHostTree.on("menufocus", function() {
                 that.currentVirtualHost = virtualHost;
                 return true;
+            });
+
+            virtualHostTree.on("outOfDateError", function() {
+                that.showTreeHostOutOfDateError();
             });
 
             virtualHostTree.on("addDisabledError", function() {
@@ -991,6 +545,8 @@ define([ "dojo/_base/declare",
                     }
                 }
 
+                that.checkModifiedTimes = false;
+
                 return true;
             });
 
@@ -1010,6 +566,119 @@ define([ "dojo/_base/declare",
                 that.updateLastModifiedTime(that.currentVirtualHost.host.file);
             });
 
+            virtualHostTree.on("beforeEditLine", function(type, value) {
+
+                var host = that.currentVirtualHost.host;
+                if (type == "VirtualHost") {
+
+                    var NetworkInfo = that.buildNetworkInfoArrayFromValue(value);
+
+                    var currHost = that.getHost(host.ServerName, NetworkInfo);
+                    if (!!currHost) {
+                        that.showHostExistsError(currHost);
+                        return false;
+                    }
+                }
+
+                if (type == "ServerName") {
+
+                    var currHost = that.getHost(value, host.NetworkInfo);
+                    if (!!currHost) {
+                        that.showHostExistsError(currHost);
+                        return false;
+                    }
+                }
+
+                that.checkModifiedTimes = false;
+
+                return true;
+            });
+
+            virtualHostTree.on("afterEditLine", function(type, value, response) {
+
+                var host = that.currentVirtualHost.host;
+                if (type == "VirtualHost") {
+                    host.NetworkInfo = NetworkInfo;
+
+                    dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(host);
+                    that.buildTreeHostSelect();
+                }
+                if (type == "ServerName") {
+
+                    host.ServerName = value;
+                    dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(host);
+                    that.buildTreeHostSelect();
+                }
+
+                var data = response.data;
+                that.updateLastModifiedTime(data.file, data.lastModifiedTime);
+            });
+
+            virtualHostTree.on("editLineError", function(type, value, response) {
+                that.updateLastModifiedTime(that.currentVirtualHost.host.file);
+            });
+
+            virtualHostTree.on("showDeleteDialog", function(type, value) {
+
+                if(that.valueContainsLogHolder(value)) {
+                    that.showLogHolderError();
+                    return false;
+                }
+
+                return true;
+            });
+
+            virtualHostTree.on("beforeDeleteLine", function(type, value) {
+
+                var host = that.currentVirtualHost.host;
+                if (type == "ServerName") {
+
+                    var currHost = that.getHost('', host.NetworkInfo);
+                    if (!!currHost) {
+                        that.showHostExistsError(currHost);
+                        return false;
+                    }
+                }
+
+                that.checkModifiedTimes = false;
+
+                return true;
+            });
+
+            virtualHostTree.on("afterDeleteLine", function(type, value, response) {
+
+                var host = that.currentVirtualHost.host;
+                var tree = that.currentVirtualHost.tree;
+                if (type == "VirtualHost") {
+                    var index = that.getTreePositionFromHost(host);
+
+                    tree.destroyRecursive();
+
+                    var container = dom.byId(that.getCurrentTreeContainerId());
+                    container.parentNode.removeChild(container);
+
+                    that.virtualHosts.splice(index,1);
+                    that.currentVirtualHost = null;
+
+                    that.buildTreeHostSelect();
+                }
+
+                if (type == "ServerName") {
+                    host.ServerName = '';
+                    dom.byId('heading-' + that.getCurrentTreeContainerId()).innerHTML = that.buildTreeHeadingFromHost(host);
+                    that.buildTreeHostSelect();
+                }
+
+                var data = response.data;
+                that.updateLastModifiedTime(data.file, data.lastModifiedTime);
+
+                return true;
+            });
+
+            virtualHostTree.on("deleteLineError", function(type, value, response) {
+                that.updateLastModifiedTime(that.currentVirtualHost.host.file);
+            });
+
             this.currentTreeSummaryCount++;
             
             return div;
@@ -1021,66 +690,57 @@ define([ "dojo/_base/declare",
             var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Tree Hosts...');
             thisdialog.show();
 
-            request.get('../web/VirtualHosts', {
-                query : {
-                    option : 'getTreeHosts'
-                },
-                handleAs : 'json',
-                preventCache : true,
-                sync : false
-            }).response.then(function(response) {
-                var data = response.data;
+            this.requestAllTreeHosts(
+                function (hosts) {
+                    that.treeGlobalServerName = data.ServerName;
 
-                var hosts = data.hosts;
-                that.treeGlobalServerName = data.ServerName;
+                    if(hosts.length == 0) {
+                        that.showNoConfiguredHosts();
+                    } else {
 
-                if(hosts.length == 0) {
-                    that.showNoConfiguredHosts();
-                } else {
-                    
-                    var hostsError = false;
-                    for (var i = 0; i < hosts.length && !hostsError; i++) {
-                        
-                        for (var j = i+1; j < hosts.length; j++) {
-                            if(that.areHostsEqual(hosts[i], hosts[j])) {
-                                dom.byId('tree_virtual_host_container').innerHTML = 'There was an error processing the hosts';
-                                
-                                net.apachegui.Util.alert('Error', 'There was an error processing the Virtual Hosts.<br/>' + 
+                        var hostsError = false;
+                        for (var i = 0; i < hosts.length && !hostsError; i++) {
+
+                            for (var j = i+1; j < hosts.length; j++) {
+                                if(that.areHostsEqual(hosts[i], hosts[j])) {
+                                    dom.byId('tree_virtual_host_container').innerHTML = 'There was an error processing the hosts';
+
+                                    net.apachegui.Util.alert('Error', 'There was an error processing the Virtual Hosts.<br/>' +
                                         'There are duplicate hosts with the following values:<br/><br/>' +
-                                        
+
                                         '<strong>File</strong>: ' + hosts[i].file + ' Line: ' + hosts[i].lineOfStart +'<br/>' +
                                         '<strong>ServerName</strong>: ' + hosts[i].ServerName + '<br/>' +
                                         '<strong>NetworkInfo</strong>: ' + that.buildNetworkInfoString(hosts[i]) + '<br/><br/>' +
-                                        
+
                                         '<strong>File</strong>: ' + hosts[j].file + ' Line: ' + hosts[j].lineOfStart +'<br/>' +
                                         '<strong>ServerName</strong>: ' + hosts[j].ServerName + '<br/>' +
                                         '<strong>NetworkInfo</strong>: ' + that.buildNetworkInfoString(hosts[j]) + '<br/><br/>' +
-                                        
+
                                         'You must fix the configuration error before using the Virtual Host functionality');
-                                
-                                hostsError = true;
-                                break;
+
+                                    hostsError = true;
+                                    break;
+                                }
+                            }
+
+                        }
+
+                        if(!hostsError) {
+                            for (var i = 0; i < hosts.length; i++) {
+                                that.buildTreeHost(hosts[i],dom.byId('tree_virtual_host_container'),'last');
                             }
                         }
-                        
                     }
-                    
-                    if(!hostsError) {
-                        for (var i = 0; i < hosts.length; i++) {
-                            that.buildTreeHost(hosts[i],dom.byId('tree_virtual_host_container'),'last');
-                        }
-                    }
-                }
-                
-                that.buildTreeHostSelect();
-                that.populateHierarchicalVirtualHosts();              
-                that.launchLastModifedUpdater();    
-                thisdialog.remove();
-                
-            }, function(error) {
-                thisdialog.remove();
-                net.apachegui.Util.alert('Info', error.response.data.message);
-            });
+
+                    that.buildTreeHostSelect();
+                    that.populateHierarchicalVirtualHosts();
+                    that.launchLastModifedUpdater();
+                    thisdialog.remove();
+                },
+                function (message) {
+                    thisdialog.remove();
+                    net.apachegui.Util.alert('Info', message);
+                });
         },
 
         //------------------END OF TREE VIRTUAL HOSTS-------------------------//
@@ -1410,8 +1070,19 @@ define([ "dojo/_base/declare",
                 } else {
                     that.updateLastModifiedTime(file);
                 }
-                
-                that.reloadTreeHost();
+
+                var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading Tree Hosts...');
+                thisdialog.show();
+
+                this.requestAllTreeHosts(
+                    function (hosts) {
+                        that.reloadAllTreeHosts(hosts);
+                        thisdialog.remove();
+                    },
+                    function (message) {
+                        thisdialog.remove();
+                        net.apachegui.Util.alert('Info', message);
+                    });
             }, function(error) {
                 thisdialog.remove();
                 net.apachegui.Util.alert('Error', error.response.data.message);

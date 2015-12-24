@@ -248,7 +248,7 @@ define([
             var item = this._getTreeItem(itemId, items);
 
             if (this.currentTreeItem.type != this._getItemProperty(item,'type') && this.currentTreeItem.value != this._getItemProperty(item, 'value')) {
-                //TODO out of date tree
+                this.onOutOfDateError();
 
                 return null;
             }
@@ -320,7 +320,6 @@ define([
             var thisdialog = net.apachegui.Util.noCloseDialog('Modifying', 'Modifying Please Wait...');
             thisdialog.show();
 
-            that.checkModifiedTimes = false;
             request.post("../web/ConfigurationTree", {
                 data : {
                     option : 'editLine',
@@ -520,6 +519,10 @@ define([
 
         **/
         onMenuFocus: function() {
+            return true;
+        },
+
+        onOutOfDateError: function() {
             return true;
         },
 
