@@ -572,6 +572,7 @@ define([
                     var id = 'tooltipDialog-' + that._getItemProperty(item, 'id');
 
                     var tooltipDialog = that.tooltipDialogs[id] || null;
+                    var inTooltip = false;
                     if(tooltipDialog == null) {
                         tooltipDialog = new TooltipDialog({
                             id: id,
@@ -579,6 +580,9 @@ define([
                             content: '<a target="_blank" href="Configuration.jsp?file=' + file + '&lineNum=' + lineNumber + '">' + file + '</a> Line: ' + lineNumber,
                             onMouseLeave: function(){
                                 popup.close(tooltipDialog);
+                            },
+                            onMouseEnter: function(){
+                                inTooltip = true;
                             }
                         });
 
@@ -588,12 +592,20 @@ define([
                     var leaveTimer = setTimeout(function() {
                         popup.open({
                             popup: tooltipDialog,
-                            around: node
+                            around: node,
+                            onCancel: function(){
+                                popup.close(tooltipDialog);
+                            }
                         });
                     }, 750);
 
                     on.once(node, 'mouseleave', function() {
                         clearTimeout(leaveTimer);
+                        setTimeout(function() {
+                            if(!inTooltip) {
+                                popup.close(tooltipDialog);
+                            }
+                        }, 500);
                     });
                 }
             });
