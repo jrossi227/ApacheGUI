@@ -427,7 +427,6 @@ define([
         },
 
         _showAddLineDialog: function(type) {
-            //todo implement add line
             if(!this.editable) {
                 this.onAddDisabledError();
                 return;
@@ -515,8 +514,6 @@ define([
 
         _addListeners: function() {
             var that = this;
-
-            //todo implement tree line hover
 
             on(registry.byId('editLineSubmit'), 'click', function() {
                 if(!that._checkIfCurrentWidget()) {
