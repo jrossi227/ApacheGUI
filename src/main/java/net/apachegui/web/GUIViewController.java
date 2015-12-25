@@ -271,6 +271,12 @@ public class GUIViewController {
         return "views/VirtualHosts";
     }
 
+    @RequestMapping(value = "/jsp/GlobalTree.jsp")
+    public String renderGlobalTreeViewJsp() {
+
+        return "views/GlobalTree";
+    }
+
     // Catch all view render
     @RequestMapping(value = "/jsp/History.jsp")
     public String renderHistoryViewJsp(Model model) {
@@ -297,12 +303,6 @@ public class GUIViewController {
     @RequestMapping(value = "/jsp/editor/{jspName}.jsp")
     public String renderEditorViewJsp(@PathVariable String jspName) {
         return "views/editor/" + jspName;
-    }
-
-    @RequestMapping(value = "/jsp/global_settings/GlobalTree.jsp")
-    public String renderGlobalTreeViewJsp() throws Exception {
-
-        return "views/global_settings/GlobalTree";
     }
 
     @RequestMapping(value = "/jsp/global_settings/Networking.jsp")

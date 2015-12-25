@@ -52,9 +52,6 @@
 
             <div id="centerPanel" class="centerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'center'">
                 <div data-dojo-type="dijit/layout/TabContainer" style="width: 100%; height: 100%;" id="globalSettingsTabs">
-                    <div data-dojo-type="dijit/layout/ContentPane" title="Global Tree" id="globalTreeTab">
-
-                    </div>
 
                     <div data-dojo-type="dijit/layout/ContentPane" title="Networking" id="networkingTab">
 

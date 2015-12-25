@@ -163,7 +163,7 @@ define([ "dojo/_base/declare",
              this.moveAutoSuggestContainerHandle = on(this.getAutoSuggestContainer(), 'mousemove', function(e) {
                  that.clearHoverOutTimeout();
                  e.stopPropagation();
-             })
+             });
              
              this.moveBodyHandle = on(document.body, 'mousemove', function() {
                  if(that.hoverOutTimer == '') {

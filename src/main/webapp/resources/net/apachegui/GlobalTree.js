@@ -1,13 +1,13 @@
-//TODO add check to see if global config changed and force refresh
+//TODO add check to see if global config changed and force refresh, if on the same tab issue a warning, if on a different tab force a refresh
 define([
-    "dojo/_base/declare",
+    "../../dojo/_base/declare",
     "dojo/request",
     "dojo/dom",
     "net/apachegui/ConfigurationTree",
     "dojo/dom-construct"
 ], function(declare, request, dom, ConfigurationTree, domConstruct){
     
-    declare("net.apachegui.globalsettings.GlobalTree", null, {
+    declare("net.apachegui.GlobalTree", null, {
 
         initialized: false,
         configTree: null,
@@ -52,6 +52,6 @@ define([
 
     });
     
-    net.apachegui.Util.setupSingletonInstance(net.apachegui.globalsettings.GlobalTree);
+    net.apachegui.Util.setupSingletonInstance(net.apachegui.GlobalTree);
     
 });    

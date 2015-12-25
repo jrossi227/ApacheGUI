@@ -1,13 +1,7 @@
 package net.apachegui.web;
 
+import apache.conf.global.Utils;
 import apache.conf.parser.File;
-
-import java.io.PrintWriter;
-import java.net.URLDecoder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import net.apachegui.conf.ConfFiles;
 import net.apachegui.db.SettingsDao;
 import net.apachegui.docs.DocFiles;
@@ -16,7 +10,6 @@ import net.apachegui.global.SearchTask;
 import net.apachegui.global.SearchTaskExecutor;
 import net.apachegui.global.Utilities;
 import net.apachegui.logs.LogFiles;
-
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +18,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import apache.conf.global.Utils;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.net.URLDecoder;
 
 @RestController
 @RequestMapping("/web/Menu")
@@ -52,7 +48,9 @@ public class MenuController {
                     + (Utils.isWindows() ? Utilities.getFileSystemDrive() : "/") + "', children:true}," + "{ $ref: '" + Constants.LOGS_ROOT + logDirectory + "', name:'Logs', id:'" + Constants.LOGS_ROOT
                     + logDirectory + "', children:true}," + "{ $ref: 'Control', name:'Control', id:'Control', type:'Control'},"
                     + "{ $ref: 'Global_Settings', name:'Global Settings', id:'Global_Settings', type:'Global_Settings'},"
-                    + "{ $ref: 'Virtual_Hosts', name:'Virtual Hosts', id:'Virtual_Hosts', type:'Virtual_Hosts'}," + "{ $ref: 'History', name:'History', id:'History', type:'History'},"
+                    + "{ $ref: 'Virtual_Hosts', name:'Virtual Hosts', id:'Virtual_Hosts', type:'Virtual_Hosts'},"
+                    + "{ $ref: 'Global_Tree', name:'Global Tree', id:'Global_Tree', type:'Global_Tree'},"
+                    + "{ $ref: 'History', name:'History', id:'History', type:'History'},"
                     + "{ $ref: 'GUISettings', name:'GUISettings', id:'GUISettings', type:'GUISettings'}" + "]");
         }
     }

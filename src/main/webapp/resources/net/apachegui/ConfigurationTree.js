@@ -1,7 +1,3 @@
-//TODO stub out this file into a re-usable widget for GlobalTree.js
-//TODO VirtualHost js should end up using this widget (started)
-//TODO disable menu on root node
-//TODO must make this templated so you can use multiple trees
 define([
     "dojo/_base/declare",
     "dojo/dom",
@@ -21,8 +17,11 @@ define([
     "dojo/dom-attr",
     "net/apachegui/InputAutoSuggest",
     "dojo/dom-geometry",
-    "dojo/dom-style"
-], function(declare, dom, _WidgetBase, ItemFileWriteStore, Observable, RefreshableTree, Tree, ForestStoreModel, on, registry, Menu, MenuItem, PopupMenuItem, lang, request, domAttr, InputAutoSuggest, domGeom, domStyle){
+    "dojo/dom-style",
+    "dojo/dom-class",
+    "dijit/TooltipDialog",
+    "dijit/popup"
+], function(declare, dom, _WidgetBase, ItemFileWriteStore, Observable, RefreshableTree, Tree, ForestStoreModel, on, registry, Menu, MenuItem, PopupMenuItem, lang, request, domAttr, InputAutoSuggest, domGeom, domStyle, domClass, TooltipDialog, popup){
 
     return declare([_WidgetBase], {
 
@@ -31,6 +30,7 @@ define([
         menu: null,
         currentTreeItem: null,
         editable: true,
+        tooltipDialogs: {},
         treeJSON: {
             identifier: "id",
             items: [],
@@ -459,9 +459,7 @@ define([
         },
 
         _submitAddLine: function() {
-
             var that = this;
-
 
             var file = dom.byId('addLineFile').value.trim();;
             var type = dom.byId('addLineType').value.trim();
@@ -561,6 +559,43 @@ define([
                 registry.byId(that.id + '-menu-item-add-directive').set('disabled', !isConfigurationItem);
 
                 that.onMenuFocus();
+            });
+
+            on(this.domNode, 'mouseover', function(e) {
+
+                var node = e.target;
+                if(domClass.contains(node, 'directive_value')) {
+                    var tn = registry.getEnclosingWidget(node);
+                    var item = tn.item;
+                    var file = that._getItemProperty(item, 'file');
+                    var lineNumber = that._getItemProperty(item, 'lineOfStart');
+                    var id = 'tooltipDialog-' + that._getItemProperty(item, 'id');
+
+                    var tooltipDialog = that.tooltipDialogs[id] || null;
+                    if(tooltipDialog == null) {
+                        tooltipDialog = new TooltipDialog({
+                            id: id,
+                            style: "width: auto;",
+                            content: '<a target="_blank" href="Configuration.jsp?file=' + file + '&lineNum=' + lineNumber + '">' + file + '</a> Line: ' + lineNumber,
+                            onMouseLeave: function(){
+                                popup.close(tooltipDialog);
+                            }
+                        });
+
+                        that.tooltipDialogs[id] = tooltipDialog;
+                    }
+
+                    var leaveTimer = setTimeout(function() {
+                        popup.open({
+                            popup: tooltipDialog,
+                            around: node
+                        });
+                    }, 750);
+
+                    on.once(node, 'mouseleave', function() {
+                        clearTimeout(leaveTimer);
+                    });
+                }
             });
         },
 

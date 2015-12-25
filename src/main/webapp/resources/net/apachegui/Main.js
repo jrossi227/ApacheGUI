@@ -338,6 +338,11 @@ define([ "dojo/_base/declare",
                 {
                     net.apachegui.VirtualHosts.getInstance().init();
                 }
+
+                if(menuInstance.isGlobalTree(option))
+                {
+                    net.apachegui.GlobalTree.getInstance().init();
+                }
                 
                 if(menuInstance.isLogs(option)) {
                     net.apachegui.Logs.getInstance().init();

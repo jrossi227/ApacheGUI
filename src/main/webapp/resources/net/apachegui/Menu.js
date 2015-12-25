@@ -307,6 +307,11 @@ define([ "dojo/_base/declare",
              {
                  window.open('VirtualHosts.jsp');
              }
+
+             if(this.isGlobalTree(this.getCurrentMenuId()))
+             {
+                 window.open('GlobalTree.jsp');
+             }
              
              if(this.isLogs(this.getCurrentMenuId()))
              {
@@ -641,6 +646,11 @@ define([ "dojo/_base/declare",
             {
                 vtree.set('path', ['apacheRoot','Virtual_Hosts']);
             }
+
+            if(this.isGlobalTree(option))
+            {
+                vtree.set('path', ['apacheRoot','Global_Tree']);
+            }
             
             var pathArray;
             var subOption;
@@ -747,6 +757,10 @@ define([ "dojo/_base/declare",
              {
                  window.location.href='VirtualHosts.jsp';
              }
+             if(this.isGlobalTree(sid))
+             {
+                 window.location.href='GlobalTree.jsp';
+             }
              if(this.isLogs(sid))
              {
                  window.location.href='Logs.jsp?file=' + this.extractLogFile(sid);         
@@ -829,6 +843,10 @@ define([ "dojo/_base/declare",
         
         isVirtualHosts: function(menuOption) {
             return menuOption == 'Virtual_Hosts';
+        },
+
+        isGlobalTree: function(menuOption) {
+            return menuOption == 'Global_Tree';
         },
         
         addListeners: function() {

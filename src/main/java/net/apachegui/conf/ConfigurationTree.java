@@ -16,7 +16,8 @@ public class ConfigurationTree {
     private static String getNameFromParts(String parts[]) {
         String name = Utilities.join(parts, " ");
 
-        name = "<span class=\"directive_type\">" + name.replaceFirst(" ", "</span> ");
+        name = "<span class=\"directive_type\">" + name.replaceFirst(" ", "</span><span class=\"directive_value\"> ");
+        name += "</span>";
 
         return name;
     }
