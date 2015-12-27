@@ -1,4 +1,3 @@
-//TODO add check to see if global config changed and force refresh, if on the same tab issue a warning, if on a different tab force a refresh
 define([
     "../../dojo/_base/declare",
     "dojo/request",
