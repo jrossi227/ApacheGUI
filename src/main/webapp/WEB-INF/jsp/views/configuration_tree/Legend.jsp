@@ -4,7 +4,7 @@
 
 <div class="configuration_tree_legend_container">
     <div class="tree_container" id="example_container">
-        <span class="example dijitFolderOpened"></span> = Enclosure <span class="example dijitLeaf"></span> = Directive
+        <span class="example enclosure"></span> = Enclosure <span class="example directive"></span> = Directive
     </div>
 
     <div id="right_click_container">

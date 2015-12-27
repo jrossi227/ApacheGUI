@@ -59,10 +59,12 @@ define([
          *      autoExpand - true to auto expand the tree, false other wise, defualts to false
          */
         constructor: function(params){
+            var ROOT_NODE_TYPE = 'rootNode';
+
             this.id = params.id;
             this.treeJSON = params.treeJSON || this.treeJSON;
             this.autoExpand = params.autoExpand || false;
-            this.rootType = params.rootType || 'rootNode';
+            this.rootType = params.rootType || ROOT_NODE_TYPE;
             this.loadTreeJSON = params.loadTreeJSON || this.loadTreeJSON;
 
             var store = new ItemFileWriteStore({
@@ -93,6 +95,13 @@ define([
                 autoExpand : this.autoExpand,
                 openOnClick : true,
                 id : this.id + '_tree',
+                getIconClass: function(item, opened) {
+                    if(item.type == ROOT_NODE_TYPE) {
+                        return '';
+                    }
+
+                    return (!!item.children ? 'enclosure' : 'directive');
+                },
                 persist : true,
                 _createTreeNode : function(args) {
                     return new HostTreeNode(args);

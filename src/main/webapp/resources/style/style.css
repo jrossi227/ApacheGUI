@@ -257,14 +257,18 @@ h1 {
 }
 
 /* Configuration Tree Styling */
-.tree_container .dijitFolderOpened,
-.tree_container .dijitFolderClosed {
+.tree_container .enclosure,
+.tree_container .directive {
+    width: 15px;
+    height: 15px;
+}
+.tree_container .enclosure {
     background: url('images/enclosure.png') !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
 }
 
-.tree_container .dijitLeaf {
+.tree_container .directive {
     background: url('images/directive.png') !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
