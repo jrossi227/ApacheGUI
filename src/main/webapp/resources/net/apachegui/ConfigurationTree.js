@@ -237,10 +237,6 @@ define([
         },
 
         //--- PRIVATE FUNCTIONS -----------------------------------------------------------//
-        _initializeTemplate: function() {
-
-        },
-
        _getItemProperty : function(item,name) {
             var val = item[name];
 
@@ -575,7 +571,7 @@ define([
                     var item = tn.item;
                     var file = that._getItemProperty(item, 'file');
                     var lineNumber = that._getItemProperty(item, 'lineOfStart');
-                    var id = 'tooltipDialog-' + that._getItemProperty(item, 'id');
+                    var id = 'tooltipDialog-' + that.id + '-' + that._getItemProperty(item, 'id');
 
                     var tooltipDialog = that.tooltipDialogs[id] || null;
                     var inTooltip = false;
@@ -583,13 +579,7 @@ define([
                         tooltipDialog = new TooltipDialog({
                             id: id,
                             style: "width: auto;",
-                            content: '<a target="_blank" href="Configuration.jsp?file=' + file + '&lineNum=' + lineNumber + '">' + file + '</a> Line: ' + lineNumber,
-                            onMouseLeave: function(){
-                                popup.close(tooltipDialog);
-                            },
-                            onMouseEnter: function(){
-                                inTooltip = true;
-                            }
+                            content: '<div><a target="_blank" href="Configuration.jsp?file=' + file + '&lineNum=' + lineNumber + '">' + file + '</a> Line: ' + lineNumber + '</div>'
                         });
 
                         that.tooltipDialogs[id] = tooltipDialog;
@@ -598,10 +588,7 @@ define([
                     var leaveTimer = setTimeout(function() {
                         popup.open({
                             popup: tooltipDialog,
-                            around: node,
-                            onCancel: function(){
-                                popup.close(tooltipDialog);
-                            }
+                            around: node
                         });
                     }, 750);
 
@@ -611,7 +598,7 @@ define([
                             if(!inTooltip) {
                                 popup.close(tooltipDialog);
                             }
-                        }, 500);
+                        }, 1250);
                     });
                 }
             });
