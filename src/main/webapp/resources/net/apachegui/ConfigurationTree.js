@@ -563,7 +563,13 @@ define([
                 that.onMenuFocus();
             });
 
+            var closeTimer;
             on(this.domNode, 'mouseover', function(e) {
+                if(!!closeTimer) {
+                    popup.close();
+                    clearTimeout(closeTimer);
+                    closeTimer = null;
+                }
 
                 var node = e.target;
                 if(domClass.contains(node, 'directive_value')) {
@@ -574,7 +580,6 @@ define([
                     var id = 'tooltipDialog-' + that.id + '-' + that._getItemProperty(item, 'id');
 
                     var tooltipDialog = that.tooltipDialogs[id] || null;
-                    var inTooltip = false;
                     if(tooltipDialog == null) {
                         tooltipDialog = new TooltipDialog({
                             id: id,
@@ -594,10 +599,9 @@ define([
 
                     on.once(node, 'mouseleave', function() {
                         clearTimeout(leaveTimer);
-                        setTimeout(function() {
-                            if(!inTooltip) {
-                                popup.close(tooltipDialog);
-                            }
+                        closeTimer = setTimeout(function() {
+                            popup.close(tooltipDialog);
+                            closeTimer = null;
                         }, 1250);
                     });
                 }
