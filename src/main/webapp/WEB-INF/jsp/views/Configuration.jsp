@@ -47,20 +47,40 @@
 
     <jsp:include page="/jsp/Init.jsp" flush="true" />
 
+    <jsp:include page="/jsp/configuration_tree/Dialogs.jsp"     flush="true" />
+
     <div id="appLayout" class="demoLayout" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline'">
 
         <jsp:include page="/jsp/Heading.jsp"     flush="true" />
 
         <jsp:include page="/jsp/Menu.jsp"     flush="true" />
 
-        <div id="centerPanel" class="centerPanel" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="region: 'center', tabPosition: 'top'">
+        <div id="centerPanel" class="centerPanel" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'center'">
+            <div data-dojo-type="dijit/layout/TabContainer" style="width: 100%; height: 100%;" id="configurationTabs">
 
-            <jsp:include page="/jsp/editor/EditorMenu.jsp"     flush="true" >
-                <jsp:param name="option" value="Configuration" />
-            </jsp:include>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Editor View" id="editorTab">
 
-            <div id="pane2" class="centerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'center', title:'Edit'" >
-                <div id="fileform"><textarea id="fileTextArea" name="fileTextArea">Loading File...</textarea></div>
+                    <div class="centerPanel" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region: 'center', tabPosition: 'top'">
+
+                        <jsp:include page="/jsp/editor/EditorMenu.jsp"     flush="true" >
+                            <jsp:param name="option" value="Configuration" />
+                        </jsp:include>
+
+                        <div id="pane2" class="centerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'center', title:'Edit'" >
+                            <div id="fileform"><textarea id="fileTextArea" name="fileTextArea">Loading File...</textarea></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div data-dojo-type="dijit/layout/ContentPane" title="Tree View" id="treeTab">
+
+                    <div class="tree_container" id="configuration_tree_container">
+
+                    </div>
+
+                </div>
+
             </div>
         </div>
     </div>

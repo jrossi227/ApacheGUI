@@ -1,25 +1,77 @@
+//TODO add click handler for file links
+//TODO monitor update times and refresh editor or tree accordingly
+
 define([ "dojo/_base/declare",
          "dojo/dom",
          "dijit/registry",
          "dojo/on",
          "dojo/request",
          "net/apachegui/Editor",
-         "dojo/_base/json"        
-], function(declare, dom, registry, on, request, Editor, json){    
+         "dojo/_base/json",
+         "dojo/dom-construct",
+         "net/apachegui/ConfigurationTree"
+], function(declare, dom, registry, on, request, Editor, json, domConstruct, ConfigurationTree){
     
     declare("net.apachegui.Configuration", [net.apachegui.Editor], {        
         
         initialized: false,
-        
+        loadedTabs: [],
+        file: '',
+        TABS: {
+            EDITOR: 'editorTab',
+            TREE: 'treeTab'
+        },
+
         init: function() {
             
             if(this.initialized===false) {
                 this.inherited(arguments);
                 this.addListeners();
+                this.loadTab(this.TABS.EDITOR);
                 this.initialized=true;
             }    
         },
-        
+
+        loadTab: function(tabId) {
+            if (this.loadedTabs.indexOf(tabId) != -1) {
+                return;
+            }
+
+            if(tabId==this.TABS.TREE) {
+                this.buildConfigurationTree();
+            }
+
+            this.loadedTabs.push(tabId);
+        },
+
+        loadConfigurationTreeJSON: function(callback) {
+
+            var file = net.apachegui.Util.getQueryParam('file');
+            request.get('../web/Configuration', {
+                query: {
+                    option: 'getConfigurationTree',
+                    file: file
+                },
+                handleAs: 'json',
+                preventCache: true,
+                sync: false
+            }).response.then(function (response) {
+                    var data = response.data;
+                    var tree = data.tree;
+                    callback(tree);
+                });
+        },
+
+        buildConfigurationTree: function() {
+            this.configTree = new ConfigurationTree({
+                id: 'configuration_tree',
+                loadTreeJSON: this.loadConfigurationTreeJSON
+            });
+            this.configTree.startup();
+
+            domConstruct.place(this.configTree.domNode, dom.byId('configuration_tree_container'), 'last');
+        },
+
         testConfiguration: function () {
             
             var thisdialog = net.apachegui.Util.noCloseDialog('Loading', 'Loading ...');
@@ -153,6 +205,10 @@ define([ "dojo/_base/declare",
             
             on(registry.byId('editorConfigurationSearch'), "click", function() {
                 registry.byId('searchConfigurationDialog').show();
+            });
+
+            registry.byId("configurationTabs").watch("selectedChildWidget", function(name, oval, nval){
+                that.loadTab(nval.id);
             });
         }    
             

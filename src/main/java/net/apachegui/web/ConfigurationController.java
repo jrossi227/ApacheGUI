@@ -1,14 +1,13 @@
 package net.apachegui.web;
 
 import apache.conf.global.Utils;
-import apache.conf.parser.File;
-
-import java.nio.charset.Charset;
-
+import apache.conf.parser.*;
 import net.apachegui.conf.Configuration;
+import net.apachegui.conf.ConfigurationTree;
+import net.apachegui.db.SettingsDao;
 import net.apachegui.global.Constants;
 import net.apachegui.modules.SharedModuleHandler;
-
+import net.apachegui.modules.StaticModuleHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -17,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.nio.charset.Charset;
 
 
 @RestController
@@ -95,6 +96,21 @@ public class ConfigurationController {
         result.put("results", results);
 
         return result.toString();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, params = "option=getConfigurationTree", produces = "application/json;charset=UTF-8")
+    public String getConfigurationTree(@RequestParam(value = "file") String file) throws NullPointerException, Exception {
+
+        Parser parser = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
+                StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());
+
+        ParsableLine parsableLines[] = parser.getFileParsableLines(file, true);
+
+        JSONObject tree = new JSONObject();
+        tree.put("tree", ConfigurationTree.toTreeJSON(parsableLines, file));
+
+        return tree.toString();
+
     }
 
 }

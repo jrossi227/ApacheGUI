@@ -1,6 +1,5 @@
 package net.apachegui.web;
 
-import apache.conf.parser.Enclosure;
 import apache.conf.parser.EnclosureParser;
 import apache.conf.parser.ParsableLine;
 import apache.conf.parser.Parser;
@@ -20,10 +19,6 @@ public class GlobalTreeController {
 
     @RequestMapping(method = RequestMethod.GET, params = "option=getGlobalTree", produces = "application/json;charset=UTF-8")
     public String getGlobalTree() throws NullPointerException, Exception {
-
-        Enclosure globalEnclosure = new Enclosure();
-        globalEnclosure.setType("Configuration");
-        globalEnclosure.setValue("");
 
         Parser parser = new EnclosureParser(SettingsDao.getInstance().getSetting(Constants.CONF_FILE), SettingsDao.getInstance().getSetting(Constants.SERVER_ROOT),
                 StaticModuleHandler.getStaticModules(), SharedModuleHandler.getSharedModules());

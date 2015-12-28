@@ -10,11 +10,16 @@ define([ "dojo/_base/declare",
     declare("net.apachegui.globalsettings.GlobalSettings", null, {    
         initialized: false,
         loadedTabs: [],
+        TABS: {
+            NETWORKING: 'networkingTab',
+            MIME: 'mimeTab',
+            MODULES: 'modulesTab'
+        },
         
         init: function () {
             if(this.initialized===false) {
                 this.addListeners();
-                this.loadTab("networkingTab");
+                this.loadTab(this.TABS.NETWORKING);
                 
                 this.initialized=true;
             }
@@ -30,7 +35,7 @@ define([ "dojo/_base/declare",
             var jsp='';
             var onLoad;
 
-            if(tabId=="networkingTab") {
+            if(tabId==this.TABS.NETWORKING) {
                 jsp='Networking.jsp';
                 
                 onLoad=function() {
@@ -38,7 +43,7 @@ define([ "dojo/_base/declare",
                 };
             }
             
-            if(tabId=="mimeTab") {
+            if(tabId==this.TABS.MIME) {
                 jsp='Mime.jsp';
                 
                 onLoad=function() {
@@ -46,7 +51,7 @@ define([ "dojo/_base/declare",
                 };
             }
             
-            if(tabId=="modulesTab") {
+            if(tabId==this.TABS.MODULES) {
                 jsp='Modules.jsp';
                 
                 onLoad=function() {
