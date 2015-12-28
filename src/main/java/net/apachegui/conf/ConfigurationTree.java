@@ -22,6 +22,15 @@ public class ConfigurationTree {
         return name;
     }
 
+    private static String getValueFromParts(String parts[]) {
+        if(parts.length <= 1) {
+            return "";
+        }
+        String value = Utilities.join(parts, " ");
+        value = value.substring(value.indexOf(" ") + 1);
+        return value;
+    }
+
     public static JSONObject toTreeJSON(ParsableLine parsableLines[], String rootNodeName) throws Exception {
 
         JSONObject tree = new JSONObject();
@@ -104,12 +113,13 @@ public class ConfigurationTree {
 
                 String parts[] = EnclosureParser.extractEnclosureToParts(line);
                 String name = getNameFromParts(parts);
+                String value = getValueFromParts(parts);
 
                 JSONObject children = new JSONObject();
                 children.put("id", String.valueOf(lineNum));
                 children.put("name", name);
                 children.put("type", parts[0]);
-                children.put("value", name.replaceAll("<span.*</span> ", ""));
+                children.put("value", value);
                 children.put("file", configurationLine.getFile());
                 children.put("lineOfStart", configurationLine.getLineOfStart());
                 children.put("lineOfEnd", configurationLine.getLineOfEnd());
@@ -125,12 +135,13 @@ public class ConfigurationTree {
             } else if((!Parser.isEnclosureMatch(line) && !Parser.isCloseEnclosureMatch(line))) {
                 String parts[] = DirectiveParser.extractDirectiveToParts(line);
                 String name = getNameFromParts(parts);
+                String value = getValueFromParts(parts);
 
                 JSONObject directive = new JSONObject();
                 directive.put("id", String.valueOf(lineNum));
                 directive.put("name", name);
                 directive.put("type", parts[0]);
-                directive.put("value", name.replaceAll("<span.*</span> ", ""));
+                directive.put("value", value);
                 directive.put("file", configurationLine.getFile());
                 directive.put("lineOfStart", configurationLine.getLineOfStart());
                 directive.put("lineOfEnd", configurationLine.getLineOfEnd());
@@ -156,12 +167,13 @@ public class ConfigurationTree {
 
         String parts[] = EnclosureParser.extractEnclosureToParts(line);
         String name = getNameFromParts(parts);
+        String value = getValueFromParts(parts);
 
         JSONObject children = new JSONObject();
         children.put("id", "0");
         children.put("name", name);
         children.put("type", parts[0]);
-        children.put("value", name.replaceAll("<span.*</span> ", ""));
+        children.put("value", value);
         children.put("file", enclosure.getConfigurationLines()[0].getFile());
         children.put("lineOfStart", enclosure.getConfigurationLines()[0].getLineOfStart());
         children.put("lineOfEnd", enclosure.getConfigurationLines()[0].getLineOfEnd());
@@ -193,12 +205,13 @@ public class ConfigurationTree {
             if(Parser.isEnclosureMatch(line) && i > 0) {
                 String parts[] = EnclosureParser.extractEnclosureToParts(line);
                 String name = getNameFromParts(parts);
+                String value = getValueFromParts(parts);
 
                 JSONObject children = new JSONObject();
                 children.put("id", String.valueOf(lineNum));
                 children.put("name", name);
                 children.put("type", parts[0]);
-                children.put("value", name.replaceAll("<span.*</span> ", ""));
+                children.put("value", value);
                 children.put("file", configurationLines[i].getFile());
                 children.put("lineOfStart", configurationLines[i].getLineOfStart());
                 children.put("lineOfEnd", configurationLines[i].getLineOfEnd());
@@ -215,12 +228,13 @@ public class ConfigurationTree {
             } else if((!Parser.isEnclosureMatch(line) && !Parser.isCloseEnclosureMatch(line))) {
                 String parts[] = DirectiveParser.extractDirectiveToParts(line);
                 String name = getNameFromParts(parts);
+                String value = getValueFromParts(parts);
 
                 JSONObject directive = new JSONObject();
                 directive.put("id", String.valueOf(lineNum));
                 directive.put("name", name);
                 directive.put("type", parts[0]);
-                directive.put("value", name.replaceAll("<span.*</span> ", ""));
+                directive.put("value", value);
                 directive.put("file", configurationLines[i].getFile());
                 directive.put("lineOfStart", configurationLines[i].getLineOfStart());
                 directive.put("lineOfEnd", configurationLines[i].getLineOfEnd());
