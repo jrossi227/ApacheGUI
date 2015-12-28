@@ -17,6 +17,9 @@ define([ "dojo/_base/declare",
         initialized: false,
         loadedTabs: [],
         file: '',
+        configTree: null,
+        isTreeUpdated: false,
+        isEditorUpdated: false,
         TABS: {
             EDITOR: 'editorTab',
             TREE: 'treeTab'
@@ -33,15 +36,26 @@ define([ "dojo/_base/declare",
         },
 
         loadTab: function(tabId) {
-            if (this.loadedTabs.indexOf(tabId) != -1) {
-                return;
-            }
+            if (this.loadedTabs.indexOf(tabId) == -1) {
+                if(tabId==this.TABS.TREE) {
+                    this.buildConfigurationTree();
+                }
 
-            if(tabId==this.TABS.TREE) {
-                this.buildConfigurationTree();
+                this.loadedTabs.push(tabId);
+            } else {
+                if(tabId==this.TABS.EDITOR && this.isTreeUpdated) {
+                    this.isTreeUpdated = false;
+                    this.refreshEditor();
+                }
+                if(tabId==this.TABS.TREE && this.isEditorUpdated) {
+                    this.isEditorUpdated = false;
+                    this.configTree.reload();
+                }
             }
+        },
 
-            this.loadedTabs.push(tabId);
+        refreshEditor: function() {
+            this.setEditorFromFile('../web/Configuration', net.apachegui.Util.getQueryParam('file'));
         },
 
         loadConfigurationTreeJSON: function(callback) {
@@ -63,11 +77,41 @@ define([ "dojo/_base/declare",
         },
 
         buildConfigurationTree: function() {
+            var that = this;
+
             this.configTree = new ConfigurationTree({
                 id: 'configuration_tree',
                 loadTreeJSON: this.loadConfigurationTreeJSON
             });
             this.configTree.startup();
+
+            var handleBefore = function() {
+                that.stopUpdateTimer();
+            };
+            var handleAfterResponse = function(response) {
+                var data = response.data;
+                that.setOpenTime(data.lastModifiedTime);
+                that.isTreeUpdated = true;
+                that.startUpdateTimer();
+            };
+            this.configTree.on("beforeAddLine", function(type, value) {
+                handleBefore();
+            });
+            this.configTree.on("afterAddLine", function(type, value, response) {
+                handleAfterResponse(response);
+            });
+            this.configTree.on("beforeEditLine", function(type, value) {
+                handleBefore();
+            });
+            this.configTree.on("afterEditLine", function(type, value, response) {
+                handleAfterResponse(response);
+            });
+            this.configTree.on("beforeDeleteLine", function(type, value) {
+                handleBefore();
+            });
+            this.configTree.on("afterDeleteLine", function(type, value, response) {
+                handleAfterResponse(response);
+            });
 
             domConstruct.place(this.configTree.domNode, dom.byId('configuration_tree_container'), 'last');
         },
@@ -174,7 +218,8 @@ define([ "dojo/_base/declare",
                     }
                     
                     thisdialog.remove();
-                    
+
+                    that.isEditorUpdated = true;
                     that.startUpdateTimer();
                 },
                 function(error) {
