@@ -75,8 +75,18 @@
 
                 <div data-dojo-type="dijit/layout/ContentPane" title="Tree View" id="treeTab">
 
-                    <div class="tree_container" id="configuration_tree_container">
+                    <div class="centerPanel" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region: 'center', tabPosition: 'top'">
+                        <div class="centerPanel" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'top'">
 
+                            <jsp:include page="/jsp/configuration_tree/Legend.jsp" flush="true" /><span><strong>File</strong>: ${filePath}</span>
+
+                        </div>
+
+                        <div class="centerPanel" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'center'">
+                            <div class="tree_container" id="configuration_tree_container">
+
+                            </div>
+                        </div>
                     </div>
 
                 </div>
