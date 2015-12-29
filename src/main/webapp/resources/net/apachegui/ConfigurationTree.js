@@ -611,9 +611,9 @@ define([
             });
 
             on(document, 'click', function(e) {
-                e.preventDefault();
                 var target = e.target;
                 if(domClass.contains(target, 'configuration_tree_link')) {
+                    e.preventDefault();
                     var id = domAttr.get(target, 'data-id');
                     if(id == that.id) {
                         var lineNumber = domAttr.get(target, 'data-line-number');
