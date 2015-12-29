@@ -1,5 +1,3 @@
-//TODO add click handler for file links
-
 define([ "dojo/_base/declare",
          "dojo/dom",
          "dijit/registry",
