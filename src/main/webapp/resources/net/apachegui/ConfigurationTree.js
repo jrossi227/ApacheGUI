@@ -66,6 +66,9 @@ define([
             this.autoExpand = params.autoExpand || false;
             this.rootType = params.rootType || ROOT_NODE_TYPE;
             this.loadTreeJSON = params.loadTreeJSON || this.loadTreeJSON;
+            this.handleTreeLink = params.handleTreeLink || function(file, lineNumber) {
+                    window.open('Configuration.jsp?file=' + file + '&lineNum=' + lineNumber);
+                };
 
             var store = new ItemFileWriteStore({
                 data : this.treeJSON
@@ -584,7 +587,7 @@ define([
                         tooltipDialog = new TooltipDialog({
                             id: id,
                             style: "width: auto;",
-                            content: '<div><a target="_blank" href="Configuration.jsp?file=' + file + '&lineNum=' + lineNumber + '">' + file + '</a> Line: ' + lineNumber + '</div>'
+                            content: '<div><a class="configuration_tree_link" data-id="' + that.id + '" data-file="' + file + '" data-line-number="' + lineNumber + '" href="#">' + file + '</a> Line: ' + lineNumber + '</div>'
                         });
 
                         that.tooltipDialogs[id] = tooltipDialog;
@@ -604,6 +607,19 @@ define([
                             closeTimer = null;
                         }, 1250);
                     });
+                }
+            });
+
+            on(document, 'click', function(e) {
+                e.preventDefault();
+                var target = e.target;
+                if(domClass.contains(target, 'configuration_tree_link')) {
+                    var id = domAttr.get(target, 'data-id');
+                    if(id == that.id) {
+                        var lineNumber = domAttr.get(target, 'data-line-number');
+                        var file = domAttr.get(target, 'data-file');
+                        that.handleTreeLink(file, lineNumber);
+                    }
                 }
             });
         },

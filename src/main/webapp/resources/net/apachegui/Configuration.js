@@ -1,5 +1,4 @@
 //TODO add click handler for file links
-//TODO monitor update times and refresh editor or tree accordingly
 
 define([ "dojo/_base/declare",
          "dojo/dom",
@@ -9,8 +8,9 @@ define([ "dojo/_base/declare",
          "net/apachegui/Editor",
          "dojo/_base/json",
          "dojo/dom-construct",
-         "net/apachegui/ConfigurationTree"
-], function(declare, dom, registry, on, request, Editor, json, domConstruct, ConfigurationTree){
+         "net/apachegui/ConfigurationTree",
+         "dijit/popup"
+], function(declare, dom, registry, on, request, Editor, json, domConstruct, ConfigurationTree, popup){
     
     declare("net.apachegui.Configuration", [net.apachegui.Editor], {        
         
@@ -81,7 +81,12 @@ define([ "dojo/_base/declare",
 
             this.configTree = new ConfigurationTree({
                 id: 'configuration_tree',
-                loadTreeJSON: this.loadConfigurationTreeJSON
+                loadTreeJSON: this.loadConfigurationTreeJSON,
+                handleTreeLink: function(file, lineNumber) {
+                    popup.close();
+                    registry.byId("configurationTabs").selectChild(registry.byId('editorTab'));
+                    that.scrollToLine(lineNumber);
+                }
             });
             this.configTree.startup();
 
