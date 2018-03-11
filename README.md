@@ -15,7 +15,7 @@ ApacheGUI is a Maven enabled web project. The project is portable and can be imp
 The IX based runtime environment that is used for development is located under *environments/IX/ApacheGUI*.
 
 #### Windows runtime environment
-The Windows based runtime environment that is used for development is located under *environments/Windows64/ApacheGUI* or *environments/Windows32/ApacheGUI*.
+The Windows based runtime environment that is used for development is located under *environments/Windows64/ApacheGUI*
 
 Project Dependancies
 ---------------
@@ -67,7 +67,7 @@ You must first build ApacheGUI in order to successfuly launch the application.
 2. Launch run.sh
 
 #### Windows
-1. Navigate to *environments/Windows64/ApacheGUI/bin* or *environments/Windows32/ApacheGUI/bin*
+1. Navigate to *environments/Windows64/ApacheGUI/bin*
 2. Launch run.bat
 
 Stopping ApacheGUI
@@ -79,5 +79,5 @@ You must first build ApacheGUI in order to successfuly stop the application.
 2. Launch stop.sh
 
 #### Windows
-1. Navigate to *environments/Windows64/ApacheGUI/bin* or *environments/Windows32/ApacheGUI/bin*
+1. Navigate to *environments/Windows64/ApacheGUI/bin*
 2. Launch stop.bat
