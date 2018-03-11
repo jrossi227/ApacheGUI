@@ -48,7 +48,7 @@ Although Windows is fully supported, it is recommended to use a Linux or Mac OSX
 
 #### Windows build steps
 1. Navigate to the root directory in the source project (Where pom.xml is located).
-2. Open pom.xml and set the *environment* property in pom.xml to Windows64 or Windows32 depending on your WIndows architecture. The *apachegui.home* property uses the environment property to determine the location of ApacheGUI.
+2. Open pom.xml and set the *environment* property in pom.xml to Windows64. The *apachegui.home* property uses the environment property to determine the location of ApacheGUI.
 3. Run the Maven builds below.
 
 ###### Maven options
