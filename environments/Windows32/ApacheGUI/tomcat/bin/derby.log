@@ -1,8 +1,0 @@
-----------------------------------------------------------------
-Sat Jul 28 13:47:42 EDT 2012:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.7.1.1 - (1040133): instance a816c00e-0138-ceb3-717c-000006735288 
-on database directory C:\Users\Jonathan\ApacheGUI-x86\tomcat\bin\apacheGUI  with class loader org.apache.catalina.loader.StandardClassLoader@3c22d5b5 
-Loaded from file:/C:/Users/Jonathan/ApacheGUI-x86/tomcat/lib/derby.jar
-java.vendor=Oracle Corporation
-java.runtime.version=1.7.0_05-b06
-Database Class Loader started - derby.database.classpath=''
